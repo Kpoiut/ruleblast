@@ -3,9 +3,11 @@ import { sha256 } from "../src/canonical.js";
 import { parseProfileId, type Projection } from "../src/model.js";
 import {
   defineEvidenceRef,
+  digestNormalizedPayload,
   type EvidenceRef,
   type PreparedProfile,
   type ProfileDefinition,
+  unitizePayloadContributions,
 } from "../src/profiles/profile.js";
 import type { RepositorySnapshot, SnapshotEntry } from "../src/snapshot.js";
 
@@ -52,6 +54,7 @@ function createProjection(
     truncated: false,
   }));
   const payload = Object.values(dependencyContents);
+  const normalizedPayloadUnits = unitizePayloadContributions(payload);
   return {
     profile: profileId,
     context: {
@@ -63,9 +66,9 @@ function createProjection(
     status: "COMPLETE",
     composition: "ORDERED",
     sources,
-    normalizedPayloadUnits: [payload],
+    normalizedPayloadUnits,
     projectionDigest: sha256(JSON.stringify({ targetPath, dependencyContents })),
-    normalizedPayloadDigest: sha256(JSON.stringify(payload)),
+    normalizedPayloadDigest: digestNormalizedPayload(normalizedPayloadUnits, "ORDERED"),
     evidence: ["fake evidence"],
   };
 }
@@ -125,6 +128,15 @@ async function consumeForImpact(
 }
 
 describe("profile contract", () => {
+  it("unitizes payload contributions with the shared vendor-neutral line contract", () => {
+    const emptyLine = sha256("ruleblast-payload-line-v1\0");
+    const a = sha256("ruleblast-payload-line-v1\0a");
+    const b = sha256("ruleblast-payload-line-v1\0b");
+    expect(unitizePayloadContributions(["", "a\r\nb\n", "\n", "a\rb", "a", "a"]))
+      .toEqual([[a, b], [emptyLine], [sha256("ruleblast-payload-line-v1\0a\rb")], [a], [a]]);
+    expect(digestNormalizedPayload([[a], [a]], "ORDERED"))
+      .toBe(sha256('{"composition":"ORDERED","units":[["' + a + '"],["' + a + '"]]}'));
+  });
   it("lets the impact layer consume a prepared fake profile deterministically without branching on its id", async () => {
     const snapshot = createSnapshot();
     const profile = createFakeProfile();

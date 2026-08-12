@@ -1,4 +1,5 @@
 import type { ProfileId, Projection } from "../model.js";
+import { canonicalJson, sha256 } from "../canonical.js";
 import type { RepositorySnapshot } from "../snapshot.js";
 
 export interface EvidenceRef {
@@ -19,6 +20,31 @@ export interface PreparedProfile {
   readonly id: ProfileId;
   readonly sourceDependencyPaths: readonly string[];
   project(targetPath: string): Projection;
+}
+
+const PAYLOAD_LINE_DOMAIN = "ruleblast-payload-line-v1\0";
+
+/** Converts model-visible content contributions into vendor-neutral payload units. */
+export function unitizePayloadContributions(
+  contributions: readonly string[],
+): string[][] {
+  return contributions
+    .filter((contribution) => contribution !== "")
+    .map((contribution) => {
+      const normalized = contribution.replace(/\r\n/g, "\n");
+      const lines = normalized.split("\n");
+      if (normalized.endsWith("\n")) {
+        lines.pop();
+      }
+      return lines.map((line) => sha256(`${PAYLOAD_LINE_DOMAIN}${line}`));
+    });
+}
+
+export function digestNormalizedPayload(
+  units: readonly (readonly string[])[],
+  composition: Projection["composition"],
+): string {
+  return sha256(canonicalJson({ composition, units }));
 }
 
 const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
