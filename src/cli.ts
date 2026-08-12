@@ -6,6 +6,7 @@ import { pathToFileURL } from "node:url";
 import { CliUsageError, parseArgs } from "./args.js";
 import { displayText, writeLine } from "./cli-output.js";
 import { runAnalysisAction } from "./cli-actions.js";
+import { openDemo } from "./demo.js";
 import {
   captureInvocation,
   CliRuntimeError,
@@ -70,12 +71,7 @@ const DEFAULT_DEPENDENCIES: CliDependencies = Object.freeze({
   openTrackedWorktree,
   analyzeCurrent,
   analyzeDiff,
-  openDemo: async () => {
-    throw new CliRuntimeError(
-      "DEMO_NOT_AVAILABLE",
-      "The packaged demo arrives in Task 11; use a Git repository for now.",
-    );
-  },
+  openDemo,
 });
 
 const GIT_ERROR_MESSAGES: Readonly<Record<GitSnapshotErrorCode, string>> = {

@@ -1,4 +1,5 @@
 import type { OutputIo } from "./cli-output.js";
+import type { DemoSnapshots } from "./demo.js";
 import type {
   AnalysisInput,
   DiffAnalysisInput,
@@ -19,10 +20,7 @@ export interface CliIo {
   readonly stdoutIsTTY: boolean;
 }
 
-export interface DemoSnapshots {
-  readonly before: RepositorySnapshot;
-  readonly after: RepositorySnapshot;
-}
+export type { DemoSnapshots } from "./demo.js";
 
 export interface CliDependencies {
   readonly version: string;
