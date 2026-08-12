@@ -12,6 +12,7 @@ All notable user-visible changes to RuleBlast are recorded here. The project has
 - Four CLI actions: scan, diff, explain, and demo, with deterministic text and canonical JSON output.
 - A packaged `DEMO FIXTURE` that exercises the production pipeline and offers a one-path explanation.
 - A stable public behavior contract, contribution unit, long-horizon roadmap, and focused issue forms.
+- A no-overwrite Blast Case capture path for canonical, source-content-free receipts from immutable public Git commits; promotion remains behind the field-evidence gate.
 
 ### Release state
 
