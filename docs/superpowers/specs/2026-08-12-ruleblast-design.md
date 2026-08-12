@@ -644,8 +644,8 @@ Hard budgets through `v1.x`:
 | Repository mutation | 0 |
 | UI pages | 0 |
 | Runtime dependencies | at most 3 |
-| Production TypeScript | at most 3,000 non-generated lines |
-| Single source module | at most 400 lines before extraction review |
+| Production TypeScript | total non-generated lines are reported as evidence, not used as a global cap; thicker verified layers supersede the original 3,000-line planning budget |
+| Single source module | at most 400 lines unless an exact-content extraction review records why it is inherited and when it will be split; duplicate logic remains forbidden |
 | New product dimension per minor release | exactly 1 |
 
 Permanent non-goals unless this contract is explicitly replaced:

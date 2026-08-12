@@ -392,6 +392,18 @@ describe("Claude profile", () => {
       .toThrow(TypeError);
   });
 
+  it("reuses no-rule resolution by directory while preserving target context", async () => {
+    const prepared = await claudeProfile.prepare(await fixture("nested"));
+    const first = prepared.project("packages/api/one.ts");
+    const second = prepared.project("packages/api/two.ts");
+    expect(first.context.targetPath).toBe("packages/api/one.ts");
+    expect(second.context.targetPath).toBe("packages/api/two.ts");
+    expect(first.sources).toEqual(second.sources);
+    expect(first.normalizedPayloadUnits).toEqual(second.normalizedPayloadUnits);
+    expect(first.normalizedPayloadDigest).toBe(second.normalizedPayloadDigest);
+    expect(first.projectionDigest).not.toBe(second.projectionDigest);
+  });
+
   it("fingerprints only effective Claude semantics and uses the shared payload digest", async () => {
     const base = await projectSnapshot({
       "CLAUDE.md": "visible\n<!-- comment one -->",

@@ -168,10 +168,15 @@ describe("Codex profile", () => {
   it("reads candidates during preparation and clones cached directory context for each target", async () => {
     const prepared = await codexProfile.prepare(await fixture("root"));
     const first = prepared.project("a.ts");
+    const expected = JSON.parse(JSON.stringify(first));
     const second = prepared.project("b.ts");
     expect(first.context.targetPath).toBe("a.ts");
     expect(second.context.targetPath).toBe("b.ts");
     expect(second.projectionDigest).not.toBe(first.projectionDigest);
+    first.sources[0]!.path = "mutated";
+    first.normalizedPayloadUnits[0]![0] = "mutated";
+    first.evidence.push("mutated");
+    expect(prepared.project("a.ts")).toEqual(expected);
   });
 
   it("reads each exact-basename regular candidate once during preparation", async () => {

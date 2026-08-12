@@ -21,7 +21,10 @@
     "check": "tsc -p tsconfig.json && vitest run",
     "test": "vitest run",
     "test:watch": "vitest",
-    "pack:check": "npm run build && npm pack --dry-run"
+    "pack:check": "npm run build && npm pack --dry-run",
+    "package:smoke": "node scripts/package-smoke.mjs",
+    "benchmark": "npm run build && node scripts/benchmark.mjs",
+    "release:check": "node scripts/release-check.mjs"
   },
   "dependencies": {
     "diff": "9.0.0",

@@ -62,6 +62,11 @@ function dirname(path: string): string {
   return slash === -1 ? "." : path.slice(0, slash);
 }
 
+/** Rules match full paths; without rules, resolution changes only by directory. */
+function claudeResolutionCacheKey(targetPath: string, hasRules: boolean): string {
+  return hasRules ? targetPath : dirname(targetPath);
+}
+
 function ancestorDirectories(path: string): readonly string[] {
   const directory = dirname(path);
   if (directory === ".") return ["."];
@@ -115,6 +120,18 @@ interface Resolution {
   readonly evidence: readonly string[];
 }
 
+interface ProjectionMaterial {
+  readonly status: Projection["status"];
+  readonly composition: Projection["composition"];
+  readonly sources: readonly ResolvedSource[];
+  readonly units: readonly (readonly string[])[];
+  readonly normalizedPayloadDigest: string;
+  readonly evidence: readonly string[];
+  readonly effectiveSources: readonly {
+    path: string; disposition: ResolvedSource["disposition"]; truncated: boolean;
+  }[];
+}
+
 function boundarySource(
   file: CapturedClaudeFile, disposition: ResolvedSource["disposition"],
 ): ResolvedSource {
@@ -135,33 +152,44 @@ function mergeExpansion(
   state.evidence.push(...expansion.evidence);
 }
 
-function makeProjection(resolution: Resolution, targetPath: string): Projection {
+function projectionMaterial(resolution: Resolution): ProjectionMaterial {
+  const units = unitizePayloadContributions(resolution.contributions);
+  return {
+    status: resolution.status,
+    composition: resolution.composition,
+    sources: resolution.sources,
+    units,
+    normalizedPayloadDigest: digestNormalizedPayload(units, resolution.composition),
+    evidence: resolution.evidence,
+    effectiveSources: resolution.sources.map(({ path, disposition, truncated }) =>
+      ({ path, disposition, truncated })),
+  };
+}
+
+function makeProjection(material: ProjectionMaterial, targetPath: string): Projection {
   const context = {
     cwd: ".", trigger: "READ_TARGET" as const, targetPath, repositoryOnly: true as const,
   };
-  const units = unitizePayloadContributions(resolution.contributions);
-  const normalizedPayloadDigest = digestNormalizedPayload(units, resolution.composition);
   const projectionDigest = sha256(canonicalJson({
     profile: ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
     context,
-    status: resolution.status,
-    composition: resolution.composition,
+    status: material.status,
+    composition: material.composition,
     evidenceRevisions: CLAUDE_EVIDENCE.map((item) => item.revision),
-    effectiveSources: resolution.sources.map(({ path, disposition, truncated }) =>
-      ({ path, disposition, truncated })),
-    normalizedPayloadUnits: units,
-    evidence: resolution.evidence,
+    effectiveSources: material.effectiveSources,
+    normalizedPayloadUnits: material.units,
+    evidence: material.evidence,
   }));
   return {
     profile: ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
     context,
-    status: resolution.status,
-    composition: resolution.composition,
-    sources: resolution.sources.map((item) => ({ ...item })),
-    normalizedPayloadUnits: units.map((unit) => [...unit]),
+    status: material.status,
+    composition: material.composition,
+    sources: material.sources.map((item) => ({ ...item })),
+    normalizedPayloadUnits: material.units.map((unit) => [...unit]),
     projectionDigest,
-    normalizedPayloadDigest,
-    evidence: [...resolution.evidence],
+    normalizedPayloadDigest: material.normalizedPayloadDigest,
+    evidence: [...material.evidence],
   };
 }
 
@@ -351,17 +379,20 @@ export const claudeProfile: ProfileDefinition = Object.freeze({
     const { files, documents, rules } = await captureDependencies(snapshot);
     const settings = parseClaudeProjectSettings(files.get(SETTINGS_PATH));
     const sourceDependencyPaths = Object.freeze([...files.keys()].sort(compareCodePoints));
-    const cache = new Map<string, Resolution>();
+    const cache = new Map<string, ProjectionMaterial>();
     return Object.freeze({
       id: ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
       sourceDependencyPaths,
       project(targetPath: string): Projection {
-        let resolution = cache.get(targetPath);
-        if (resolution === undefined) {
-          resolution = resolveTarget(targetPath, files, rules, documents, settings);
-          cache.set(targetPath, resolution);
+        const cacheKey = claudeResolutionCacheKey(targetPath, rules.length > 0);
+        let material = cache.get(cacheKey);
+        if (material === undefined) {
+          material = projectionMaterial(
+            resolveTarget(targetPath, files, rules, documents, settings),
+          );
+          cache.set(cacheKey, material);
         }
-        return makeProjection(resolution, targetPath);
+        return makeProjection(material, targetPath);
       },
     });
   },

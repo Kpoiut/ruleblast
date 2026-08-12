@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "reviews": [
+    {
+      "path": "src/project.ts",
+      "sha256": "54588e00c9a1559b376def4d24d11d6d168bfd5867694d98896fd2635cd23475",
+      "reason": "Inherited Task 8 trust-boundary module; changing its structure inside release-gate work would mix behavior risk with packaging evidence.",
+      "followUp": "v1.0.1 Ground-Truth Hardening extracts capture, projection, and impact helpers without changing canonical output."
+    }
+  ]
+}

@@ -66,6 +66,19 @@ interface Resolution {
   readonly evidence: readonly string[];
 }
 
+interface ProjectionMaterial {
+  readonly status: Projection["status"];
+  readonly sources: readonly ResolvedSource[];
+  readonly units: readonly (readonly string[])[];
+  readonly normalizedPayloadDigest: string;
+  readonly evidence: readonly string[];
+  readonly assembledPayload: string;
+  readonly effectiveSources: readonly {
+    path: string; disposition: ResolvedSource["disposition"];
+    bytesUsed: number; truncated: boolean;
+  }[];
+}
+
 function basename(path: string): string {
   const slash = path.lastIndexOf("/");
   return slash === -1 ? path : path.slice(slash + 1);
@@ -205,10 +218,24 @@ export function assembleCodexProjectInstructions(
   return contributions.filter((contribution) => contribution !== "").join("\n\n");
 }
 
-function makeProjection(resolution: Resolution, targetPath: string): Projection {
+function projectionMaterial(resolution: Resolution): ProjectionMaterial {
   const units = unitizePayloadContributions(resolution.contributions);
-  const normalizedPayloadDigest = digestNormalizedPayload(units, "ORDERED");
-  const assembledPayload = assembleCodexProjectInstructions(resolution.contributions);
+  return {
+    status: resolution.status,
+    sources: resolution.sources,
+    units,
+    normalizedPayloadDigest: digestNormalizedPayload(units, "ORDERED"),
+    evidence: resolution.evidence,
+    assembledPayload: assembleCodexProjectInstructions(resolution.contributions),
+    effectiveSources: resolution.sources
+      .filter((source) => source.disposition === "SELECTED" ||
+        source.disposition === "SELECTED_EMPTY")
+      .map(({ path, disposition, bytesUsed, truncated }) =>
+        ({ path, disposition, bytesUsed, truncated })),
+  };
+}
+
+function makeProjection(material: ProjectionMaterial, targetPath: string): Projection {
   const context = {
     cwd: directoryFromTarget(targetPath),
     trigger: "STARTUP" as const,
@@ -218,33 +245,23 @@ function makeProjection(resolution: Resolution, targetPath: string): Projection 
   const projectionDigest = sha256(canonicalJson({
     profile: OPENAI_CODEX_CLI_PROFILE_ID,
     context,
-    status: resolution.status,
+    status: material.status,
     composition: "ORDERED",
-    assembledPayload,
+    assembledPayload: material.assembledPayload,
     evidenceRevisions: CODEX_EVIDENCE.map((evidence) => evidence.revision),
-    effectiveSources: resolution.sources
-      .filter(
-        (source) =>
-          source.disposition === "SELECTED" || source.disposition === "SELECTED_EMPTY",
-      )
-      .map(({ path, disposition, bytesUsed, truncated }) => ({
-        path,
-        disposition,
-        bytesUsed,
-        truncated,
-      })),
-    normalizedPayloadUnits: units,
+    effectiveSources: material.effectiveSources,
+    normalizedPayloadUnits: material.units,
   }));
   return {
     profile: OPENAI_CODEX_CLI_PROFILE_ID,
     context,
-    status: resolution.status,
+    status: material.status,
     composition: "ORDERED",
-    sources: resolution.sources.map((item) => ({ ...item })),
-    normalizedPayloadUnits: units.map((unit) => [...unit]),
+    sources: material.sources.map((item) => ({ ...item })),
+    normalizedPayloadUnits: material.units.map((unit) => [...unit]),
     projectionDigest,
-    normalizedPayloadDigest,
-    evidence: [...resolution.evidence],
+    normalizedPayloadDigest: material.normalizedPayloadDigest,
+    evidence: [...material.evidence],
   };
 }
 
@@ -291,18 +308,18 @@ export const codexProfile: ProfileDefinition = Object.freeze({
         Object.freeze({ ...capturedEntry, bytes: new Uint8Array(bytes) }),
       );
     }
-    const cachedResolutions = new Map<string, Resolution>();
+    const cachedMaterials = new Map<string, ProjectionMaterial>();
     return Object.freeze({
       id: OPENAI_CODEX_CLI_PROFILE_ID,
       sourceDependencyPaths: Object.freeze([...candidates.keys()].sort(compareCodePoints)),
       project(targetPath: string): Projection {
         const directory = directoryFromTarget(targetPath);
-        let resolution = cachedResolutions.get(directory);
-        if (resolution === undefined) {
-          resolution = resolve(directory, candidates);
-          cachedResolutions.set(directory, resolution);
+        let material = cachedMaterials.get(directory);
+        if (material === undefined) {
+          material = projectionMaterial(resolve(directory, candidates));
+          cachedMaterials.set(directory, material);
         }
-        return makeProjection(resolution, targetPath);
+        return makeProjection(material, targetPath);
       },
     });
   },
