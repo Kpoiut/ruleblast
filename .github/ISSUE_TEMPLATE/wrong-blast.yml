@@ -1,0 +1,105 @@
+name: Wrong blast
+description: Report a reproducible path, count, relation, or source decision that is wrong.
+title: "[Blast Case] wrong: "
+labels:
+  - blast-case
+  - wrong-blast
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Reduce this to one atomic Blast Case. Preserve uncertainty and remove private content before submitting.
+  - type: dropdown
+    id: surface_id
+    attributes:
+      label: Profile surface
+      options:
+        - openai/codex-cli@1
+        - anthropic/claude-code-cli@1
+        - cross-profile relation
+    validations:
+      required: true
+  - type: input
+    id: repository_url
+    attributes:
+      label: Public repository URL (optional)
+      description: Leave blank for a fixture-only or privately reduced case.
+      placeholder: https://github.com/owner/repository
+  - type: input
+    id: before_ref
+    attributes:
+      label: Immutable before ref (when public)
+      description: For a public repository, use a full commit object id; leave blank for a fixture-only or privately reduced case.
+  - type: input
+    id: after_ref
+    attributes:
+      label: Immutable after ref (when public)
+      description: For a public repository, use a full commit object id; leave blank for a fixture-only or privately reduced case.
+  - type: input
+    id: command
+    attributes:
+      label: Exact RuleBlast command and version
+    validations:
+      required: true
+  - type: input
+    id: official_source_url
+    attributes:
+      label: Official evidence URL
+      description: Link the documented loading rule contradicted by the result.
+    validations:
+      required: true
+  - type: input
+    id: retrieval_date
+    attributes:
+      label: Evidence retrieval date
+      placeholder: YYYY-MM-DD
+    validations:
+      required: true
+  - type: textarea
+    id: before_manifest
+    attributes:
+      label: Minimal before manifest
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: after_manifest
+    attributes:
+      label: Minimal after manifest
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: expected_canonical_json
+    attributes:
+      label: Expected canonical JSON
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: observed_canonical_json
+    attributes:
+      label: Observed canonical JSON
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: negative_control
+    attributes:
+      label: Smallest negative or boundary control
+      description: Show the nearest repository shape that should not produce this result.
+    validations:
+      required: true
+  - type: input
+    id: surprise
+    attributes:
+      label: One-sentence surprise
+    validations:
+      required: true
+  - type: checkboxes
+    id: publication_permission
+    attributes:
+      label: Publication permission
+      options:
+        - label: I have permission to publish these reduced manifests, outputs, and links under the repository license.
+          required: true

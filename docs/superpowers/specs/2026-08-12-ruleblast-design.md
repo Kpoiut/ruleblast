@@ -1,9 +1,11 @@
 # RuleBlast — Product, Narrative, and Scope Contract
 
-**Status:** Approved product contract · `v1.0.0` implementation in progress
+**Status:** Historical product and narrative design record
 **Date:** 2026-08-12
 **Public launch target:** `v1.0.0`
 **Product form:** local, text-first npm CLI
+
+The maintained behavior contract is [`CONTRACT.md`](../../../CONTRACT.md). Current release maturity and future admission gates live in [`ROADMAP.md`](../../../ROADMAP.md). If this design record and those maintained documents diverge, the maintained contract and verified code win.
 
 ## 1. The decision
 
@@ -74,14 +76,15 @@ RuleBlast will copy that information order, not their feature breadth.
 
 ### 5.1 Name
 
-**RuleBlast** is locked for implementation.
+**RuleBlast** is the public repository and CLI name.
 
 As of 2026-08-12:
 
-- GitHub repository name search returned no exact `ruleblast` repository.
-- npm returned `404` for the exact `ruleblast` package.
+- the public repository is [`Kpoiut/ruleblast`](https://github.com/Kpoiut/ruleblast);
+- repository package metadata uses the `ruleblast` name for a development build;
+- no public npm release has been published.
 
-This is an availability snapshot, not trademark clearance. The GitHub repository and npm package must be reserved before any teaser or launch post.
+This records project state, not trademark clearance. npm publication remains behind the release gates; repository existence does not imply that an installable artifact exists.
 
 The name contract learned from the strongest repositories is:
 
@@ -309,7 +312,7 @@ This is a deterministic comparison context, not a claim about how every user lau
 
 Public `v1.0.0` includes only Git-tracked repository bytes.
 
-The tracked worktree is captured as an immutable overlay on the index before any profile runs. Stable stage-0 index blobs back unchanged and sparse paths; modified paths are copied without following symlinks. All Git discovery runs with optional locks and fsmonitor disabled, so RuleBlast neither refreshes the index nor invokes repository hooks/daemons. Unmerged entries, special-file replacements, or a worktree that changes during capture stop analysis with an explicit boundary error instead of being reclassified as deletion. This is a consistency boundary, not a security feature.
+The tracked worktree is captured before any profile runs. Existing tracked regular files and symlinks are copied from filesystem nodes after type and stability checks, without following symlinks. Only a missing skip-worktree path falls back to its stable stage-zero blob; other missing tracked paths are absent. All Git discovery runs with optional locks and fsmonitor disabled, so RuleBlast neither refreshes the index nor invokes repository hooks/daemons. Unmerged entries, special-file replacements, or a worktree that changes during capture stop analysis with an explicit boundary error instead of being reclassified as deletion. This is a consistency boundary, not a security feature.
 
 Excluded:
 
@@ -321,7 +324,7 @@ Excluded:
 - network state and vendor APIs.
 
 An external import or unresolved boundary produces `UNKNOWN`; it is never silently treated as absent.
-Instruction-file symlinks and gitlinks are unresolved boundaries in v1: the snapshot records their kind, `explain` names the boundary, and definitive counts exclude the affected projection.
+Instruction-file symlinks are unresolved boundaries in v1: the snapshot records their kind, `explain` names the boundary, and definitive counts exclude the affected projection. Gitlinks (index mode `160000`) are excluded from snapshot inventory.
 
 ### 7.4 Codex profile: `openai/codex-cli@1`
 
@@ -659,7 +662,7 @@ Permanent non-goals unless this contract is explicitly replaced:
 
 ## 11. Release architecture: a large story in small layers
 
-The repository launches publicly only when the full `v1.0.0` contract works. Internal `v0.x` tags are engineering checkpoints, not a public “half-product” campaign.
+The repository is public while `v1.0.0` remains an explicitly labeled development build. A public npm release occurs only when the full release contract works. Internal `v0.x` milestones are engineering checkpoints, not published support claims.
 
 ### Internal build staircase
 
@@ -769,7 +772,7 @@ Pick one path. See which world each agent sees:
 
 The N-profile and composition fields already exist in schema v1, and `v2.0` already exposes aggregate multi-profile facts. This release adds pairwise output, product-level clustering, and the compact summary rather than rewriting the projection model. The count comes from clustering normalized payload relations. Partial/unknown projections and non-total composition states remain visible; they are never forced into a cleaner-looking cluster.
 
-The public roadmap shows `v1.1` as **Next** and later releases as **Horizon**. It gives readers a larger world without presenting unbuilt features as available or promising dates that exist only for marketing. Multi-platform support is therefore a visible product mechanism, not a support-matrix promise that forces v1 to grow sideways.
+The public roadmap keeps `v1.0.0` **IN BUILD**, places `v1.0.1` and `v1.1.0` under **NEXT**, and labels later releases **HORIZON** or **EXPLORING**. It gives readers a larger world without presenting unbuilt features as available or promising dates that exist only for marketing. Multi-platform support is therefore a visible product mechanism, not a support-matrix promise that forces v1 to grow sideways.
 
 ## 12. Fork and contribution loop
 

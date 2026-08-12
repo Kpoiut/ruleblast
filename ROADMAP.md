@@ -22,7 +22,9 @@ The development build now has the proof-bearing path from repository bytes to an
 - profile-neutral current, diff, transition, and impact analysis without vendor logic in the impact engine;
 - one parser and application seam for the four public actions: scan, diff, explain, and demo;
 - semantic text rendering with golden views for aligned, split, changed, unchanged, unresolved, and no-source states;
-- deterministic JSON kept separate from presentation aliases and terminal wording.
+- deterministic JSON kept separate from presentation aliases and terminal wording;
+- a packaged, manifest-backed demo that expands deterministically and passes through the same snapshot, resolver, impact, explanation, and renderer path as repository analysis.
+- a self-explaining README, maintained behavior contract, Blast Case contribution unit, changelog, and focused evidence forms whose claims are checked against behavior.
 
 These capabilities are merged to main and verified as development code. They are not yet an installable public release.
 
@@ -39,13 +41,11 @@ ruleblast explain <path> [--from <base>]
 ruleblast demo [--explain <path>]
 ```
 
-The remaining release gates are deliberately narrow:
+The production-pipeline demo and self-explaining documentation set are merged to main. The remaining release gates are deliberately narrow:
 
-1. **Production-pipeline demo** — generate the labeled fixture deterministically, run it through the same snapshot, resolver, impact, and renderer path as a real repository, and put `DEMO FIXTURE` before its first number.
-2. **Self-explaining contract** — make the README, CLI recovery text, limitations, evidence revision, and Blast Case format agree with behavior rather than duplicating it.
-3. **Packed-install proof** — install the packed artifact in a clean location and prove the four actions, JSON determinism, read-only behavior, side-effect boundary, file allowlist, and performance budget.
-4. **Reproducible field evidence** — pin one immutable public repository case and complete a private-repository pilot without publishing private content.
-5. **Release authority** — tag and publish only after the evidence packet is reviewable and the release is explicitly authorized.
+1. **Packed-install proof** — install the packed artifact in a clean location and prove the four actions, JSON determinism, read-only behavior, side-effect boundary, file allowlist, and performance budget.
+2. **Reproducible field evidence** — pin one immutable public repository case and complete a private-repository pilot without publishing private content.
+3. **Release authority** — tag and publish only after the evidence packet is reviewable and the release is explicitly authorized.
 
 The `v1.0.0` boundary does not admit another agent surface, command, output product, hosted component, model call, or repository mutation. An attractive idea that crosses that line waits outside the release.
 
@@ -134,7 +134,7 @@ These are unresolved questions, not current support or promised work:
 - Can a licensed corpus of Blast Cases cover monorepos, nested instructions, imports, exclusions, and uncertain order without publishing sensitive content?
 - How many documented rule realities are genuinely distinct once equivalent projections are clustered by evidence rather than brand?
 
-Candidate examples for investigation include Copilot CLI or its editor surface, Gemini CLI, and Cursor. These names are examples only; RuleBlast does not currently support them, and none enters the roadmap without passing the same evidence gate.
+Candidate examples for investigation include Copilot CLI, Copilot VS Code, Gemini CLI, and Cursor. These names are examples only; RuleBlast does not currently support them, and none enters the roadmap without passing the same evidence gate. CLI, editor, and hosted modes remain distinct surfaces whenever their documented loading semantics differ.
 
 ## Permanent scope firewall
 

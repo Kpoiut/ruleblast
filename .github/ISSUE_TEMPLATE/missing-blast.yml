@@ -1,0 +1,108 @@
+name: Missing blast
+description: Report one documented affected path that RuleBlast omitted.
+title: "[Blast Case] missing: "
+labels:
+  - blast-case
+  - missing-blast
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Name one missing path and provide the smallest before/after repository shape that proves it should be present.
+  - type: dropdown
+    id: surface_id
+    attributes:
+      label: Profile surface
+      options:
+        - openai/codex-cli@1
+        - anthropic/claude-code-cli@1
+        - cross-profile relation
+    validations:
+      required: true
+  - type: input
+    id: repository_url
+    attributes:
+      label: Public repository URL (optional)
+      description: Leave blank for a fixture-only or privately reduced case.
+  - type: input
+    id: before_ref
+    attributes:
+      label: Immutable before ref (when public)
+      description: Full commit object id for a public repository; leave blank for a fixture-only or privately reduced case.
+  - type: input
+    id: after_ref
+    attributes:
+      label: Immutable after ref (when public)
+      description: Full commit object id for a public repository; leave blank for a fixture-only or privately reduced case.
+  - type: input
+    id: command
+    attributes:
+      label: Exact RuleBlast command and version
+    validations:
+      required: true
+  - type: input
+    id: missing_path
+    attributes:
+      label: Missing Git-tracked path
+    validations:
+      required: true
+  - type: input
+    id: official_source_url
+    attributes:
+      label: Official evidence URL
+    validations:
+      required: true
+  - type: input
+    id: retrieval_date
+    attributes:
+      label: Evidence retrieval date
+      placeholder: YYYY-MM-DD
+    validations:
+      required: true
+  - type: textarea
+    id: before_manifest
+    attributes:
+      label: Minimal before manifest
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: after_manifest
+    attributes:
+      label: Minimal after manifest
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: expected_canonical_json
+    attributes:
+      label: Expected canonical JSON
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: observed_canonical_json
+    attributes:
+      label: Observed canonical JSON
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: negative_control
+    attributes:
+      label: Smallest negative or boundary control
+    validations:
+      required: true
+  - type: input
+    id: surprise
+    attributes:
+      label: One-sentence surprise
+    validations:
+      required: true
+  - type: checkboxes
+    id: publication_permission
+    attributes:
+      label: Publication permission
+      options:
+        - label: I have permission to publish these reduced manifests, outputs, and links under the repository license.
+          required: true

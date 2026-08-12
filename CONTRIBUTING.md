@@ -1,55 +1,79 @@
 # Contributing to RuleBlast
 
-RuleBlast is in its `v1.0.0` build. The highest-value contribution right now is a small, reproducible challenge to the contract—not a broad feature pitch.
+RuleBlast is in its `v1.0.0` build. The highest-value contribution is a small, reproducible challenge to the [public contract](CONTRACT.md), not a broad feature pitch.
 
-## Useful contributions
+## One atomic contribution: a Blast Case
 
-- Point to an official source or pinned implementation revision that contradicts a resolver rule.
-- Provide a minimal positive, negative, ordering, ambiguity, or unknown fixture.
-- Provide immutable public repository refs that reveal a surprising instruction blast.
-- Request an agent surface with official, versionable discovery and applicability evidence.
-- Show how to remove an operator or dependency without weakening the result.
+A Blast Case is exactly one surprising repository-instruction transition with enough evidence to reproduce it:
 
-## Evidence format
+```text
+official source URL + retrieval date
+before manifest
+after manifest
+expected canonical JSON
+one sentence explaining the surprise
+```
 
-Include:
+The manifests must be minimal, repository-relative, and free of credentials or proprietary content. If the case came from a public repository, also include its URL, immutable before and after Git refs, the RuleBlast commit or pinned package version, command, profile ids, and permission or license to publish the reduced case.
+
+Expected JSON must preserve partial, unknown, and indeterminate states. A useful case includes the smallest positive and negative controls needed to distinguish the proposed rule from a coincidence.
+
+Choose the focused form that matches the evidence:
+
+- [Wrong blast](.github/ISSUE_TEMPLATE/wrong-blast.yml) — RuleBlast includes, classifies, or counts a path incorrectly.
+- [Missing blast](.github/ISSUE_TEMPLATE/missing-blast.yml) — a documented affected path is absent.
+- [Weird blast](.github/ISSUE_TEMPLATE/weird-blast.yml) — the result is reproducible but an uncertainty, source, grouping, or explanation is misleading.
+- [Profile evidence](.github/ISSUE_TEMPLATE/profile-evidence.yml) — one future surface has official, versionable loading evidence.
+
+## Rejection criteria
+
+A case is not ready when it contains any of these:
+
+- a generic prompt instead of repository manifests;
+- an undocumented client or a surface identified only by a shared brand name;
+- a feature dump that crosses more than one product dimension;
+- fixtures with only positive cases and no negative or boundary control;
+- mutable branch names instead of immutable refs;
+- copied private content or no permission to publish the fixture;
+- a confident expected result where the source evidence leaves order or applicability unresolved.
+
+Rejection is a request for a smaller proof, not a verdict on the underlying problem.
+
+## Profile evidence
+
+Resolver changes need:
 
 ```text
 surface id
-official source URL or pinned source revision
+official source URL or pinned implementation revision
 retrieval date
-exact claim being tested
-smallest before/after repository shape
-expected canonical outcome
-one sentence explaining why the result is surprising
+exact discovery, precedence, applicability, limit, or composition claim
+smallest positive fixture
+smallest negative fixture
+expected canonical outcome, including uncertainty
 ```
 
-Do not include credentials, private repository content, generated marketing numbers, or assumptions about what a model obeyed. RuleBlast models documented repository instruction projection; it does not claim to observe a model's private runtime prompt or behavior.
+CLI, editor, and hosted modes are separate surfaces whenever their documented loading semantics differ. Missing evidence produces an explicit unknown; it does not authorize a guess.
 
-## Implementation contributions
+## Implementation workflow
 
-Implementation changes follow this test-first, evidence-first discipline:
+1. Write a failing behavior test.
+2. Run it and confirm that it fails for the intended reason.
+3. Implement the smallest complete change inside [CONTRACT.md](CONTRACT.md).
+4. Run the focused test, `npm run check`, `npm run build`, and `git diff --check`.
+5. Simplify changed code and remove duplicate paths or speculative abstractions.
+6. Review contract compliance before code quality.
+7. Commit one coherent change with a Conventional Commit subject.
 
-1. write a failing behavior test;
-2. confirm it fails for the intended reason;
-3. implement the smallest complete behavior;
-4. run focused tests and the repository checks;
-5. simplify changed code;
-6. pass spec-compliance review before code-quality review;
-7. commit one coherent change with a Conventional Commit message.
-
-Avoid duplicate adapters, generic plugin hooks, executable profile extensions, speculative abstractions, and placeholder modules. If a change is not required by the current release boundary or a reproduced defect, keep it out.
-
-For a reusable public example, follow the [Blast Case format](ROADMAP.md#contribute-a-blast-case) instead of pasting an unpinned result.
+Do not add generic plugin hooks, executable profile extensions, placeholder modules, or a new command to solve one fixture. A new surface must pass the [roadmap admission gate](ROADMAP.md#admission-gate-for-a-new-reality).
 
 ## Commit style
 
-Use Conventional Commits, for example:
+Examples:
 
 ```text
-docs: publish ruleblast product contract
+docs: tell the ruleblast story
 test(snapshot): define immutable manifest behavior
-feat(snapshot): add deterministic repository snapshots
 fix(codex): preserve empty override shadowing
 ```
 

@@ -1,0 +1,90 @@
+name: Profile evidence
+description: Propose evidence for one precisely identified future agent surface.
+title: "[Profile evidence] "
+labels:
+  - profile-evidence
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is an evidence form, not a support promise. CLI, editor, and hosted modes are separate when their loading semantics differ.
+  - type: input
+    id: surface_id
+    attributes:
+      label: Proposed surface id
+      description: Use vendor/product-surface@revision and identify exactly one surface.
+      placeholder: vendor/product-cli@1
+    validations:
+      required: true
+  - type: dropdown
+    id: surface_mode
+    attributes:
+      label: Surface mode
+      options:
+        - CLI
+        - editor
+        - hosted or cloud
+        - another precisely documented mode
+    validations:
+      required: true
+  - type: input
+    id: official_source_url
+    attributes:
+      label: Official evidence URL
+    validations:
+      required: true
+  - type: input
+    id: retrieval_date
+    attributes:
+      label: Evidence retrieval date
+      placeholder: YYYY-MM-DD
+    validations:
+      required: true
+  - type: input
+    id: implementation_revision
+    attributes:
+      label: Immutable implementation revision, if used
+      description: Full commit object id and repository URL; write documentation-only when no implementation source is used.
+    validations:
+      required: true
+  - type: textarea
+    id: loading_semantics
+    attributes:
+      label: Exact loading semantics supported by the evidence
+      description: Separate discovery, precedence, applicability, composition, and limits.
+    validations:
+      required: true
+  - type: textarea
+    id: positive_case
+    attributes:
+      label: Smallest positive manifest and expected result
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: negative_case
+    attributes:
+      label: Smallest negative manifest and expected result
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: ordering_or_unknown
+    attributes:
+      label: Ordering evidence or explicit unknown boundary
+    validations:
+      required: true
+  - type: textarea
+    id: repository_shape
+    attributes:
+      label: Reproducible repository shape and demand
+      description: Explain one real answer this surface changes; include immutable refs when public.
+    validations:
+      required: true
+  - type: checkboxes
+    id: publication_permission
+    attributes:
+      label: Publication permission
+      options:
+        - label: I have permission to publish these reduced fixtures, evidence links, and expected results under the repository license.
+          required: true
