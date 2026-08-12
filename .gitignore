@@ -1,0 +1,18 @@
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+*.tgz
+
+# Local development state
+.worktrees/
+worktrees/
+.playwright-cli/
+*.log
+
+# Environment and editor files
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
