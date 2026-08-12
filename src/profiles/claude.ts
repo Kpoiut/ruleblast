@@ -113,10 +113,6 @@ interface Resolution {
   readonly sources: readonly ResolvedSource[];
   readonly contributions: readonly string[];
   readonly evidence: readonly string[];
-  readonly semanticSettings: {
-    readonly patterns: readonly string[];
-    readonly unsupportedPatternCount: number;
-  };
 }
 
 function boundarySource(
@@ -139,13 +135,6 @@ function mergeExpansion(
   state.evidence.push(...expansion.evidence);
 }
 
-function semanticSettings(settings: ClaudeProjectSettings) {
-  return {
-    patterns: settings.patterns,
-    unsupportedPatternCount: settings.unsupportedPatternCount,
-  };
-}
-
 function makeProjection(resolution: Resolution, targetPath: string): Projection {
   const context = {
     cwd: ".", trigger: "READ_TARGET" as const, targetPath, repositoryOnly: true as const,
@@ -161,7 +150,6 @@ function makeProjection(resolution: Resolution, targetPath: string): Projection 
     effectiveSources: resolution.sources.map(({ path, disposition, truncated }) =>
       ({ path, disposition, truncated })),
     normalizedPayloadUnits: units,
-    semanticSettings: resolution.semanticSettings,
     evidence: resolution.evidence,
   }));
   return {
@@ -281,7 +269,6 @@ function resolveTarget(
     sources: state.sources,
     contributions: state.contributions,
     evidence: state.evidence,
-    semanticSettings: semanticSettings(settings),
   };
 }
 
