@@ -1,14 +1,56 @@
-import { chmodSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { chmodSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readlinkSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { execFile, execFileSync } from "node:child_process";
 import { promisify } from "node:util";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { findRepositoryRoot, openGitSnapshot } from "../src/git.js";
+import { findRepositoryRoot, openGitSnapshot, openTrackedWorktree } from "../src/git.js";
 
 const repositories: string[] = [];
 const decoder = new TextDecoder();
+
+async function withMockedFs<T>(
+  mutateAfterLstat: (path: string, count: number) => void,
+  action: (gitModule: typeof import("../src/git.js")) => Promise<T>,
+): Promise<T> {
+  let count = 0;
+  vi.resetModules();
+  vi.doMock("node:fs/promises", async (importOriginal) => {
+    const original = await importOriginal<typeof import("node:fs/promises")>();
+    return {
+      ...original,
+      lstat: async (...args: Parameters<typeof original.lstat>) => {
+        try {
+          const result = await original.lstat(...args);
+          mutateAfterLstat(String(args[0]), ++count);
+          return result;
+        } catch (error) {
+          mutateAfterLstat(String(args[0]), ++count);
+          throw error;
+        }
+      },
+    };
+  });
+  try {
+    return await action(await import("../src/git.js"));
+  } finally {
+    vi.doUnmock("node:fs/promises");
+    vi.resetModules();
+  }
+}
+
+async function withMockedNodeLstat<T>(
+  node: string,
+  mutate: (count: number) => void,
+  action: (gitModule: typeof import("../src/git.js")) => Promise<T>,
+): Promise<T> {
+  let count = 0;
+  return withMockedFs((path) => {
+    if (path === node) mutate(++count);
+  }, action);
+}
+
 
 function git(directory: string, args: readonly string[]): Buffer {
   return execFileSync("git", ["-C", directory, ...args], { encoding: "buffer" });
@@ -258,5 +300,188 @@ describe("Git commit snapshots", () => {
     expect(lstatSync(index).mtimeMs).toBe(beforeMtime);
     expect(readFileSync(index)).toEqual(beforeBytes);
     expect(() => lstatSync(join(root, "fsmonitor-was-called"))).toThrow();
+  });
+});
+
+describe("tracked worktree snapshots", () => {
+  it("captures an empty freshly initialized repository with no index", async () => {
+    const root = repository();
+    const snapshot = await openTrackedWorktree(root);
+    expect(await snapshot.listPaths()).toEqual([]);
+  });
+  it("captures only tracked paths and eagerly copies modified bytes", async () => {
+    const root = repository();
+    writeFileSync(join(root, "tracked.txt"), "committed");
+    commit(root);
+    writeFileSync(join(root, "tracked.txt"), "modified");
+    writeFileSync(join(root, "AGENTS.md"), "untracked");
+
+    const snapshot = await openTrackedWorktree(root);
+    writeFileSync(join(root, "tracked.txt"), "later");
+    expect(await snapshot.listPaths()).toEqual(["tracked.txt"]);
+    expect(decoder.decode((await snapshot.read("tracked.txt"))!)).toBe("modified");
+    expect(await snapshot.read("AGENTS.md")).toBeNull();
+  });
+
+  it("omits deleted tracked files", async () => {
+    const root = repository();
+    writeFileSync(join(root, "gone.txt"), "committed");
+    commit(root);
+    rmSync(join(root, "gone.txt"));
+
+    const snapshot = await openTrackedWorktree(root);
+    expect(await snapshot.listPaths()).toEqual([]);
+    expect(await snapshot.read("gone.txt")).toBeNull();
+  });
+
+  it("does not modify the index while capturing the overlay", async () => {
+    const root = repository();
+    writeFileSync(join(root, "tracked.txt"), "tracked");
+    commit(root);
+    const index = join(root, ".git", "index");
+    const before = readFileSync(index);
+    const mtime = lstatSync(index).mtimeMs;
+
+    await openTrackedWorktree(root);
+
+    expect(readFileSync(index)).toEqual(before);
+    expect(lstatSync(index).mtimeMs).toBe(mtime);
+  });
+
+  it("keeps NUL-delimited unusual tracked names intact", async () => {
+    const root = repository();
+    const paths = ["space name.txt", "café.txt", "tab\tname.txt", "line\nbreak.txt"];
+    try { for (const path of paths) writeFileSync(join(root, path), path); } catch (error: unknown) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") return; throw error;
+    }
+    commit(root);
+    const snapshot = await openTrackedWorktree(root);
+    expect(await snapshot.listPaths()).toEqual(["café.txt", "line\nbreak.txt", "space name.txt", "tab\tname.txt"]);
+  });
+
+  it("uses the actual node type for regular-to-symlink replacements", async () => {
+    const root = repository();
+    writeFileSync(join(root, "node"), "regular"); commit(root);
+    rmSync(join(root, "node"));
+    try { symlinkSync("outside-target", join(root, "node")); } catch (error: unknown) {
+      if ((error as NodeJS.ErrnoException).code === "EPERM") return; throw error;
+    }
+    const snapshot = await openTrackedWorktree(root);
+    expect(await snapshot.entry("node")).toEqual({ path: "node", kind: "symlink", executable: false });
+    expect(Buffer.from((await snapshot.read("node"))!)).toEqual(Buffer.from("outside-target"));
+  });
+
+  it("rejects a directory replacement with a typed error", async () => {
+    const root = repository();
+    writeFileSync(join(root, "node"), "regular"); commit(root);
+    rmSync(join(root, "node")); mkdirSync(join(root, "node"));
+    await expect(openTrackedWorktree(root)).rejects.toMatchObject({ code: "UNSUPPORTED_WORKTREE_NODE" });
+  });
+
+  it("rejects a tracked path whose existing ancestor is a symlink", async () => {
+    const root = repository(); const outside = repository();
+    mkdirSync(join(root, "dir")); writeFileSync(join(root, "dir", "tracked.txt"), "inside"); commit(root);
+    writeFileSync(join(outside, "tracked.txt"), "outside bytes"); rmSync(join(root, "dir"), { recursive: true });
+    try { symlinkSync(outside, join(root, "dir"), "junction"); } catch (error: unknown) {
+      if ((error as NodeJS.ErrnoException).code === "EPERM") return; throw error;
+    }
+    await expect(openTrackedWorktree(root)).rejects.toMatchObject({ code: "UNSUPPORTED_WORKTREE_NODE" });
+  });
+
+  it("rejects unmerged index stages before capture", async () => {
+    const root = repository(); writeFileSync(join(root, "node"), "regular"); commit(root);
+    const oid = decoder.decode(git(root, ["rev-parse", "HEAD:node"])).trim();
+    gitInput(root, ["update-index", "--index-info"], Buffer.from(`100644 ${oid} 1\tnode\n`));
+    await expect(openTrackedWorktree(root)).rejects.toMatchObject({ code: "UNMERGED_INDEX" });
+  });
+
+  it("uses the stage-zero blob for a missing skip-worktree path", async () => {
+    const root = repository(); writeFileSync(join(root, "node"), "indexed"); commit(root);
+    git(root, ["update-index", "--skip-worktree", "node"]); rmSync(join(root, "node"));
+    const snapshot = await openTrackedWorktree(root);
+    expect(await snapshot.listPaths()).toEqual(["node"]);
+    expect(decoder.decode((await snapshot.read("node"))!)).toBe("indexed");
+  });
+
+  it("does not invoke an fsmonitor hook", async () => {
+    const root = repository(); writeFileSync(join(root, "node"), "tracked"); commit(root);
+    const sentinel = join(root, "fsmonitor-sentinel"); writeFileSync(sentinel, "#!/bin/sh\ntouch fsmonitor-was-called\n"); chmodSync(sentinel, 0o755);
+    git(root, ["config", "core.fsmonitor", sentinel]);
+    await openTrackedWorktree(root);
+    expect(() => lstatSync(join(root, "fsmonitor-was-called"))).toThrow();
+  });
+
+  it("captures a stable symlink-to-regular replacement as a file", async () => {
+    const root = repository(); writeFileSync(join(root, "target"), "target");
+    try { symlinkSync("target", join(root, "node")); } catch (error: unknown) {
+      if ((error as NodeJS.ErrnoException).code === "EPERM") return; throw error;
+    }
+    commit(root); rmSync(join(root, "node")); writeFileSync(join(root, "node"), "regular");
+    const snapshot = await openTrackedWorktree(root);
+    expect(await snapshot.entry("node")).toEqual({ path: "node", kind: "file", executable: false });
+    expect(decoder.decode((await snapshot.read("node"))!)).toBe("regular");
+  });
+
+  it("retries a deterministic regular-file mutation and returns second-attempt bytes", async () => {
+    const root = repository(); const node = join(root, "node"); writeFileSync(node, "one"); commit(root);
+    const snapshot = await withMockedFs((path, count) => {
+      if (path === node && count === 2) writeFileSync(node, "two");
+    }, ({ openTrackedWorktree: openTracked }) => openTracked(root));
+    expect(decoder.decode((await snapshot.read("node"))!)).toBe("two");
+  });
+
+  it("fails when deterministic mutations invalidate both capture attempts", async () => {
+    const root = repository(); const node = join(root, "node"); writeFileSync(node, "one"); commit(root);
+    let version = 1;
+    await expect(withMockedFs((path, count) => {
+      if (path === node && (count === 2 || count === 4)) writeFileSync(node, `changed-${++version}`);
+    }, ({ openTrackedWorktree: openTracked }) => openTracked(root))).rejects.toMatchObject({ code: "WORKTREE_CHANGED_DURING_SNAPSHOT" });
+  });
+
+  it("does not let a missing path restored during capture escape as a deletion", async () => {
+    const root = repository(); const node = join(root, "node"); writeFileSync(node, "indexed"); commit(root); rmSync(node);
+    const snapshot = await withMockedFs((path, count) => {
+      if (path === node && count === 2) writeFileSync(node, "restored");
+    }, ({ openTrackedWorktree: openTracked }) => openTracked(root));
+    expect(await snapshot.listPaths()).toEqual(["node"]);
+    expect(decoder.decode((await snapshot.read("node"))!)).toBe("restored");
+  });
+
+  it("does not let a symlink retarget during capture escape with stale target bytes", async () => {
+    const root = repository(); const node = join(root, "node");
+    try { symlinkSync("first", node); } catch (error: unknown) {
+      if ((error as NodeJS.ErrnoException).code === "EPERM") return; throw error;
+    }
+    commit(root);
+    const snapshot = await withMockedFs((path, count) => {
+      if (path === node && count === 2) { rmSync(node); symlinkSync("second", node); }
+    }, ({ openTrackedWorktree: openTracked }) => openTracked(root));
+    expect(await snapshot.entry("node")).toEqual({ path: "node", kind: "symlink", executable: false });
+    expect(decoder.decode((await snapshot.read("node"))!)).toBe("second");
+  });
+
+  it("never returns transient symlink bytes when a target changes A-to-B-to-A", async () => {
+    const root = repository(); const node = join(root, "node");
+    try { symlinkSync("A", node); } catch (error: unknown) {
+      if ((error as NodeJS.ErrnoException).code === "EPERM") return; throw error;
+    }
+    commit(root);
+    let changedToB = false; let restoredToA = false;
+    await expect(withMockedNodeLstat(node, (count) => {
+      if (count === 1) { rmSync(node); symlinkSync("B", node); changedToB = true; }
+      if (count === 3) { rmSync(node); symlinkSync("A", node); restoredToA = true; }
+    }, ({ openTrackedWorktree: openTracked }) => openTracked(root))).rejects.toMatchObject({ code: "WORKTREE_CHANGED_DURING_SNAPSHOT" });
+    expect(changedToB).toBe(true);
+    expect(restoredToA).toBe(true);
+    expect(readlinkSync(node)).toBe("A");
+  });
+
+  it("returns detached entry records and byte copies", async () => {
+    const root = repository(); writeFileSync(join(root, "node"), "bytes"); commit(root);
+    const snapshot = await openTrackedWorktree(root); const entry = (await snapshot.entry("node"))!;
+    entry.path = "changed"; entry.executable = true;
+    const bytes = (await snapshot.read("node"))!; bytes[0] = 0;
+    expect(await snapshot.entry("node")).toEqual({ path: "node", kind: "file", executable: false });
+    expect(decoder.decode((await snapshot.read("node"))!)).toBe("bytes");
   });
 });
