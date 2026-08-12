@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude external import boundary",
+  "entries": [
+    { "path": "CLAUDE.md", "kind": "file", "executable": false, "base64": "QC9ob21lL2FsaWNlL3NlY3JldC5tZA==" },
+    { "path": "src/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

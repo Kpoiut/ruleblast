@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude documented and unsupported glob edges",
+  "entries": [
+    { "path": ".claude/rules/edges.md", "kind": "file", "executable": false, "base64": "LS0tCnBhdGhzOgogIC0gInNyYy8qKi8qLnRzIgogIC0gInNyYy8qKi8qLnt0c3gsanN4fSIKICAtICIuY29uZmlnLyoudHMiCiAgLSAic3JjL2ZpbGVbW10xXS50cyIKICAtICJzcmMvWy50cyIKLS0tCkVkZ2UgcnVsZQ==" },
+    { "path": "src/deep/a.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" },
+    { "path": "src/deep/a.tsx", "kind": "file", "executable": false, "base64": "dGFyZ2V0" },
+    { "path": ".config/a.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" },
+    { "path": "src/file[1].ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" },
+    { "path": "src/[.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude path-scoped rule",
+  "entries": [
+    { "path": ".claude/rules/api.md", "kind": "file", "executable": false, "base64": "LS0tCnBhdGhzOgogIC0gInNyYy9hcGkvKiovKi50cyIKLS0tCkFQSSBydWxl" },
+    { "path": "src/api/internal/refund.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" },
+    { "path": "src/ui/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

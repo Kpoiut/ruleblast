@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude instruction symlink boundary",
+  "entries": [
+    { "path": "CLAUDE.md", "kind": "symlink", "executable": false, "base64": "b3V0c2lkZQ==" },
+    { "path": "src/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude four-edge import boundary",
+  "entries": [
+    { "path": "CLAUDE.md", "kind": "file", "executable": false, "base64": "QG9uZS5tZA==" },
+    { "path": "one.md", "kind": "file", "executable": false, "base64": "QHR3by5tZA==" },
+    { "path": "two.md", "kind": "file", "executable": false, "base64": "QHRocmVlLm1k" },
+    { "path": "three.md", "kind": "file", "executable": false, "base64": "QGZvdXIubWQ=" },
+    { "path": "four.md", "kind": "file", "executable": false, "base64": "QGZpdmUubWQ=" },
+    { "path": "five.md", "kind": "file", "executable": false, "base64": "VG9vIGRlZXA=" },
+    { "path": "src/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

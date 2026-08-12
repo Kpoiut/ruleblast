@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude non-relocatable project exclusions",
+  "entries": [
+    { "path": ".claude/settings.json", "kind": "file", "executable": false, "base64": "eyJjbGF1ZGVNZEV4Y2x1ZGVzIjpbIkM6XFxVc2Vyc1xcQWxpY2VcXHJlcG9cXENMQVVERS5tZCIsIi9ob21lL2FsaWNlL3JlcG8vKioiXX0=" },
+    { "path": "CLAUDE.md", "kind": "file", "executable": false, "base64": "cm9vdA==" },
+    { "path": "src/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

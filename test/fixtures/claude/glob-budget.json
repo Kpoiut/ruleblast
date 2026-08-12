@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude glob alternative budget",
+  "entries": [
+    { "path": ".claude/rules/budget.md", "kind": "file", "executable": false, "base64": "LS0tCnBhdGhzOgogIC0gInNyYy97YSxiLGMsZCxlLGYsZyxoLGksan17YSxiLGMsZCxlLGYsZyxoLGksan17YSxiLGMsZCxlLGYsZyxoLGksan17YSxifS8qKi8qLnRzIgotLS0KQnVkZ2V0IHJ1bGU=" },
+    { "path": "src/a/a/a/a/deep/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

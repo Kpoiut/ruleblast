@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude malformed rule frontmatter",
+  "entries": [
+    { "path": ".claude/rules/bad.md", "kind": "file", "executable": false, "base64": "LS0tCnBhdGhzOiBbCi0tLQpOZXZlciBnbG9iYWw=" },
+    { "path": "src/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

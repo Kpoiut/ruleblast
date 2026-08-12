@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude tracked local memory",
+  "entries": [
+    { "path": "CLAUDE.md", "kind": "file", "executable": false, "base64": "cm9vdA==" },
+    { "path": "CLAUDE.local.md", "kind": "file", "executable": false, "base64": "bG9jYWw=" },
+    { "path": "src/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

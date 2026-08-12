@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude unconditional rule",
+  "entries": [
+    { "path": ".claude/rules/general.md", "kind": "file", "executable": false, "base64": "IyBHZW5lcmFsCkFsd2F5cyB0ZXN0Lg==" },
+    { "path": "src/api/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

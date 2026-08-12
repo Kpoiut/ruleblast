@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude ambiguous root alternatives",
+  "entries": [
+    { "path": "CLAUDE.md", "kind": "file", "executable": false, "base64": "cm9vdA==" },
+    { "path": ".claude/CLAUDE.md", "kind": "file", "executable": false, "base64": "ZG90IHJvb3Q=" },
+    { "path": "src/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

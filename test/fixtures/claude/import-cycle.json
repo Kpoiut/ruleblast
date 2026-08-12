@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude import cycle",
+  "entries": [
+    { "path": "CLAUDE.md", "kind": "file", "executable": false, "base64": "QGEubWQ=" },
+    { "path": "a.md", "kind": "file", "executable": false, "base64": "QGIubWQ=" },
+    { "path": "b.md", "kind": "file", "executable": false, "base64": "QGEubWQ=" },
+    { "path": "src/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

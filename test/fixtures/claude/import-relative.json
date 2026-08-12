@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude recursive relative imports",
+  "entries": [
+    { "path": "CLAUDE.md", "kind": "file", "executable": false, "base64": "QGRvY3MvZ3VpZGUubWQ=" },
+    { "path": "docs/guide.md", "kind": "file", "executable": false, "base64": "R3VpZGUKQHNoYXJlZC5tZA==" },
+    { "path": "docs/shared.md", "kind": "file", "executable": false, "base64": "U2hhcmVk" },
+    { "path": "src/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

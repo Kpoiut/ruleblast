@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude dot-directory root memory",
+  "entries": [
+    { "path": ".claude/CLAUDE.md", "kind": "file", "executable": false, "base64": "ZG90IHJvb3Q=" },
+    { "path": "src/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

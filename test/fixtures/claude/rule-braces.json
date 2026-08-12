@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude rule patterns and brace alternatives",
+  "entries": [
+    { "path": ".claude/rules/code.md", "kind": "file", "executable": false, "base64": "LS0tCnBhdGhzOgogIC0gInNyYy8qKi8qLnt0cyx0c3h9IgogIC0gImxpYi8qKi8qLnRzIgotLS0KQ29kZSBydWxl" },
+    { "path": "src/view/app.tsx", "kind": "file", "executable": false, "base64": "dGFyZ2V0" },
+    { "path": "lib/deep/a.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" },
+    { "path": "src/view/app.js", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}

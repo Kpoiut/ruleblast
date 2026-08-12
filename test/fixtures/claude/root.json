@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude root project memory",
+  "entries": [
+    {
+      "path": "CLAUDE.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "cm9vdCBtZW1vcnk="
+    },
+    {
+      "path": "src/app.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "ZXhwb3J0IHt9"
+    }
+  ]
+}

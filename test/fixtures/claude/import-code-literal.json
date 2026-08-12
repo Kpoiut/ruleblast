@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude Markdown import state",
+  "entries": [
+    { "path": "CLAUDE.md", "kind": "file", "executable": false, "base64": "VXNlIGBAaW5saW5lLm1kYC4KYGBgCkBmZW5jZWQubWQKYGBgCkByZWFsLm1k" },
+    { "path": "inline.md", "kind": "file", "executable": false, "base64": "aW5saW5lIGltcG9ydGVkIGluY29ycmVjdGx5" },
+    { "path": "fenced.md", "kind": "file", "executable": false, "base64": "ZmVuY2VkIGltcG9ydGVkIGluY29ycmVjdGx5" },
+    { "path": "real.md", "kind": "file", "executable": false, "base64": "UmVhbCBpbXBvcnQ=" },
+    { "path": "src/app.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0" }
+  ]
+}
