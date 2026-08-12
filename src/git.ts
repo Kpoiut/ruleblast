@@ -135,16 +135,29 @@ class GitSnapshot implements RepositorySnapshot {
 }
 
 export async function findRepositoryRoot(start: string): Promise<string> {
-  return lineOutput(await runGit(start, ["rev-parse", "--show-toplevel"]));
+  try {
+    return lineOutput(await runGit(start, ["rev-parse", "--show-toplevel"]));
+  } catch (error: unknown) {
+    if (isGitCommandFailure(error)) throw new GitSnapshotError("NOT_REPOSITORY");
+    throw error;
+  }
 }
 
 export async function openGitSnapshot(root: string, ref: string): Promise<RepositorySnapshot> {
-  const oid = parseFullObjectId(await runGit(root, ["rev-parse", "--verify", "--end-of-options", `${ref}^{commit}`]));
+  let oid: string;
+  try {
+    oid = parseFullObjectId(await runGit(root, ["rev-parse", "--verify", "--end-of-options", `${ref}^{commit}`]));
+  } catch (error: unknown) {
+    if (isGitCommandFailure(error)) throw new GitSnapshotError("REF_NOT_FOUND");
+    throw error;
+  }
   const entries = parseTree(await runGit(root, ["ls-tree", "-rz", "--full-tree", "-r", oid]));
   return new GitSnapshot(root, oid, entries);
 }
 
 export type GitSnapshotErrorCode =
+  | "NOT_REPOSITORY"
+  | "REF_NOT_FOUND"
   | "UNMERGED_INDEX"
   | "UNSUPPORTED_WORKTREE_NODE"
   | "WORKTREE_CHANGED_DURING_SNAPSHOT";
@@ -154,6 +167,11 @@ export class GitSnapshotError extends Error {
     super(code);
     this.name = "GitSnapshotError";
   }
+}
+
+function isGitCommandFailure(error: unknown): boolean {
+  return typeof error === "object" && error !== null &&
+    typeof (error as NodeJS.ErrnoException).code === "number";
 }
 
 interface IndexEntry extends SnapshotEntry {

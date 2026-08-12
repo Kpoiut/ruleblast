@@ -5,7 +5,12 @@ import { pathToFileURL } from "node:url";
 import { execFile, execFileSync } from "node:child_process";
 import { promisify } from "node:util";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { findRepositoryRoot, openGitSnapshot, openTrackedWorktree } from "../src/git.js";
+import {
+  findRepositoryRoot,
+  GitSnapshotError,
+  openGitSnapshot,
+  openTrackedWorktree,
+} from "../src/git.js";
 
 const repositories: string[] = [];
 const decoder = new TextDecoder();
@@ -117,12 +122,35 @@ describe("Git commit snapshots", () => {
     expect(await findRepositoryRoot(nested)).toBe(root.replace(/\\/g, "/"));
   });
 
+  it("classifies an actual Git non-repository failure", async () => {
+    const directory = mkdtempSync(join(tmpdir(), "ruleblast-non-repo-"));
+    repositories.push(directory);
+
+    await expect(findRepositoryRoot(directory)).rejects.toEqual(
+      expect.objectContaining<Partial<GitSnapshotError>>({
+        name: "GitSnapshotError",
+        code: "NOT_REPOSITORY",
+      }),
+    );
+  });
+
   it("accepts only a full Git object ID returned while resolving a ref", async () => {
     const root = repository();
     writeFileSync(join(root, "tracked.txt"), "tracked");
     const oid = commit(root);
 
     expect((await openGitSnapshot(root, "HEAD")).ref.oid).toBe(oid);
+  });
+
+  it("classifies an actual missing-ref failure", async () => {
+    const root = repository();
+
+    await expect(openGitSnapshot(root, "missing-ref")).rejects.toEqual(
+      expect.objectContaining<Partial<GitSnapshotError>>({
+        name: "GitSnapshotError",
+        code: "REF_NOT_FOUND",
+      }),
+    );
   });
 
   it("rejects a non-object-ID result while resolving a ref", async () => {
