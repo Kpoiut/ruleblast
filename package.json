@@ -1,0 +1,37 @@
+{
+  "name": "ruleblast",
+  "version": "0.0.0-development",
+  "description": "Map where AGENTS.md and CLAUDE.md changes land across a repo—and where Codex and Claude Code split.",
+  "type": "module",
+  "bin": {
+    "ruleblast": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "fixtures/demo",
+    "README.md",
+    "CONTRACT.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "check": "tsc -p tsconfig.json && vitest run",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "pack:check": "npm run build && npm pack --dry-run"
+  },
+  "dependencies": {
+    "diff": "9.0.0",
+    "minimatch": "10.2.6",
+    "yaml": "2.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.19.43",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10"
+  },
+  "license": "Apache-2.0"
+}
