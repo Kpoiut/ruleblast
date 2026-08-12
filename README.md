@@ -8,9 +8,9 @@ Git shows the first diff. RuleBlast finds the second.
 
 Codex and Claude Code can share one repository without reading the same repository instructions. RuleBlast is being built as a local, Git-native CLI that makes that hidden split inspectable—down to one path and every source that landed there.
 
-**Status: design locked · implementation starting · `v1.0.0` in build**
+**Status: ground-truth core on main · `v1.0.0` in build**
 
-There is no installable release yet. This repository is public now so the resolution contract, product boundary, and implementation order can be challenged before the code hardens around them.
+There is no installable release yet. Deterministic snapshots, evidence-pinned resolvers, profile-neutral impact analysis, the four-action command seam, and terminal rendering are merged to main while the release gates remain open to challenge.
 
 ## What v1 will answer
 
@@ -27,14 +27,13 @@ scan → see the blast → pick a path → explain every source
 
 One npm package. Four CLI actions. Two evidence-pinned profiles. No product UI, cloud service, model call, telemetry, auto-fix, or repository mutation.
 
-## Read the build before it ships
+## Read the contract while v1 is built
 
 - [Product, narrative, and scope contract](docs/superpowers/specs/2026-08-12-ruleblast-design.md)
-- [v1.0 implementation plan](docs/superpowers/plans/2026-08-12-ruleblast-v1-implementation.md)
 - [Release roadmap](ROADMAP.md)
 - [How to challenge or contribute](CONTRIBUTING.md)
 
-The implementation plan locks the public types, snapshot boundary, resolver evidence, fixture matrix, TDD order, package gates, and release criteria. Code lands in reviewed milestones; placeholder subsystems and speculative integrations do not.
+The public contract fixes what RuleBlast may claim. Canonical types, resolver evidence, fixture behavior, and release gates are enforced by tests and reviewed milestones on main. The roadmap separates what has landed from what remains.
 
 ## The larger reveal
 
@@ -55,7 +54,7 @@ See [ROADMAP.md](ROADMAP.md) for the release boundary. Candidate surfaces are ev
 
 ## Follow the work
 
-Star or watch the repository if this is a problem you have hit. During the planning release, the most useful contributions are:
+Star or watch the repository if this is a problem you have hit. During the v1 build, the most useful contributions are:
 
 - a documented resolver edge the contract gets wrong;
 - a public repository/ref pair with a surprising instruction blast;

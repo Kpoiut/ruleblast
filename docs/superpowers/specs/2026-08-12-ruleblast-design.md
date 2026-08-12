@@ -1,6 +1,6 @@
 # RuleBlast — Product, Narrative, and Scope Contract
 
-**Status:** Approved direction, ready for implementation planning
+**Status:** Approved product contract · `v1.0.0` implementation in progress
 **Date:** 2026-08-12
 **Public launch target:** `v1.0.0`
 **Product form:** local, text-first npm CLI

@@ -1,6 +1,6 @@
 # Contributing to RuleBlast
 
-RuleBlast is in its public planning release. The highest-value contribution right now is a small, reproducible challenge to the contract—not a broad feature pitch.
+RuleBlast is in its `v1.0.0` build. The highest-value contribution right now is a small, reproducible challenge to the contract—not a broad feature pitch.
 
 ## Useful contributions
 
@@ -28,7 +28,7 @@ Do not include credentials, private repository content, generated marketing numb
 
 ## Implementation contributions
 
-Implementation follows the committed [v1.0 plan](docs/superpowers/plans/2026-08-12-ruleblast-v1-implementation.md) in small milestones:
+Implementation changes follow this test-first, evidence-first discipline:
 
 1. write a failing behavior test;
 2. confirm it fails for the intended reason;
@@ -38,7 +38,9 @@ Implementation follows the committed [v1.0 plan](docs/superpowers/plans/2026-08-
 6. pass spec-compliance review before code-quality review;
 7. commit one coherent change with a Conventional Commit message.
 
-Avoid duplicate adapters, generic plugin hooks, executable profile extensions, speculative abstractions, and placeholder modules. If a change is not required by the current milestone or a reproduced defect, keep it out.
+Avoid duplicate adapters, generic plugin hooks, executable profile extensions, speculative abstractions, and placeholder modules. If a change is not required by the current release boundary or a reproduced defect, keep it out.
+
+For a reusable public example, follow the [Blast Case format](ROADMAP.md#contribute-a-blast-case) instead of pasting an unpinned result.
 
 ## Commit style
 
