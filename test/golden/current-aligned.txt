@@ -1,0 +1,8 @@
+RULEBLAST · WORKTREE
+
+One documented reality across 4 tracked paths.
+
+Pick one path. See every source:
+  ruleblast explain src/a.ts
+
+Scope: 4 tracked paths · repository-only · resolver revision 1

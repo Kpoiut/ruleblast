@@ -1,0 +1,8 @@
+RULEBLAST · WORKTREE
+
+No repo instructions yet.
+
+Want the 10-second reveal?
+  npx ruleblast@latest demo
+
+Scope: 4 tracked paths · repository-only · resolver revision 1

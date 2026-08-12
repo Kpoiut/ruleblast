@@ -14,6 +14,10 @@ import type {
   CurrentRuleBlastResult,
   DiffRuleBlastResult,
 } from "./model.js";
+import type {
+  DiffTextPresentationContext,
+  ShellDialect,
+} from "./render-text.js";
 import type { RepositorySnapshot } from "./snapshot.js";
 
 function captureDemoSnapshots(value: unknown): DemoSnapshots {
@@ -76,6 +80,23 @@ function selectedPath<T extends { readonly path: string }>(
   return selected;
 }
 
+function selectorLabel(selector: SnapshotSelector): string {
+  return selector.kind === "worktree" ? "WORKTREE" : selector.ref;
+}
+
+function diffTextContext(
+  beforeLabel: string,
+  target: SnapshotSelector,
+  shellDialect: ShellDialect,
+): DiffTextPresentationContext {
+  return Object.freeze({
+    beforeLabel,
+    afterLabel: selectorLabel(target),
+    demoFixture: false,
+    shellDialect,
+  });
+}
+
 async function openSelector(
   root: string,
   selector: SnapshotSelector,
@@ -129,11 +150,21 @@ export async function runAnalysisAction(
       profiles: dependencies.profiles,
     });
     if (args.explainPath === null) {
-      present(result, args.output, io);
+      present(result, args.output, io, {
+        beforeLabel: "BEFORE",
+        afterLabel: "AFTER",
+        demoFixture: true,
+        shellDialect: dependencies.shellDialect,
+      });
       return noDefensibleResult(result) ? 2 : 0;
     }
     const selected = selectedPath(result.paths, args.explainPath);
-    present(diffExplain(result, args.explainPath), args.output, io);
+    present(diffExplain(result, args.explainPath), args.output, io, {
+      beforeLabel: "BEFORE",
+      afterLabel: "AFTER",
+      demoFixture: true,
+      shellDialect: dependencies.shellDialect,
+    });
     return noDefensibleDiffPath(selected) ? 2 : 0;
   }
 
@@ -147,7 +178,11 @@ export async function runAnalysisAction(
       snapshot,
       profiles: dependencies.profiles,
     });
-    present(result, args.output, io);
+    present(result, args.output, io, {
+      currentLabel: "WORKTREE",
+      demoFixture: false,
+      shellDialect: dependencies.shellDialect,
+    });
     return noDefensibleResult(result) ? 2 : 0;
   }
   if (args.action === "diff") {
@@ -159,7 +194,12 @@ export async function runAnalysisAction(
       after,
       profiles: dependencies.profiles,
     });
-    present(result, args.output, io);
+    present(
+      result,
+      args.output,
+      io,
+      diffTextContext(args.base.ref, args.target, dependencies.shellDialect),
+    );
     return noDefensibleResult(result) ? 2 : 0;
   }
 
@@ -171,7 +211,11 @@ export async function runAnalysisAction(
       profiles: dependencies.profiles,
     });
     const selected = selectedPath(result.paths, args.path);
-    present(currentExplain(result, args.path), args.output, io);
+    present(currentExplain(result, args.path), args.output, io, {
+      currentLabel: selectorLabel(args.target),
+      demoFixture: false,
+      shellDialect: dependencies.shellDialect,
+    });
     return noDefensibleCurrentPath(selected) ? 2 : 0;
   }
   const before = await dependencies.openGitSnapshot(root, args.from.ref);
@@ -182,6 +226,11 @@ export async function runAnalysisAction(
     profiles: dependencies.profiles,
   });
   const selected = selectedPath(result.paths, args.path);
-  present(diffExplain(result, args.path), args.output, io);
+  present(
+    diffExplain(result, args.path),
+    args.output,
+    io,
+    diffTextContext(args.from.ref, args.target, dependencies.shellDialect),
+  );
   return noDefensibleDiffPath(selected) ? 2 : 0;
 }

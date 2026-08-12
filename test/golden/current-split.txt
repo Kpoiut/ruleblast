@@ -1,0 +1,9 @@
+RULEBLAST · WORKTREE
+
+2
+tracked paths are split across profiles.
+
+Pick one path. See every source:
+  ruleblast explain src/a.ts
+
+Scope: 4 tracked paths · repository-only · resolver revision 1

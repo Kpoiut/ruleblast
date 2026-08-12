@@ -1,0 +1,31 @@
+RULEBLAST EXPLAIN · WORKTREE
+
+src/a.ts
+
+CLAUDE CODE · anthropic/claude-code-cli@1
+  CURRENT · UNKNOWN · UNSPECIFIED
+  Context: cwd=. · trigger=READ_TARGET · target=src/a.ts · repository-only
+  Sources:
+    [SELECTED] CLAUDE.md · digest=claude-source · bytes=14
+    [UNRESOLVED_IMPORT] <external-import> · digest=unknown-source · bytes=0
+  Projection digest: unresolved
+  Payload digest: unresolved
+  Evidence:
+    external import
+
+CODEX · openai/codex-cli@1
+  CURRENT · COMPLETE · ORDERED
+  Context: cwd=src · trigger=STARTUP · target=src/a.ts · repository-only
+  Sources:
+    [SELECTED] AGENTS.md · digest=agents-source · bytes=8
+  Projection digest: codex-current-projection
+  Payload digest: codex-current-payload
+  Evidence:
+    vendor:codex
+
+PROFILE RELATION · INDETERMINATE
+
+UNRESOLVED
+  [UNKNOWN_PROJECTION] anthropic/claude-code-cli@1 · projection is unknown
+
+Repository-only · Git-tracked sources · resolver revision 1

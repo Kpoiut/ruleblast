@@ -1,0 +1,10 @@
+RULEBLAST · HEAD → WORKTREE
+
+No tracked instruction sources changed.
+
+0
+tracked paths changed stack.
+
+No paths newly split across profiles.
+
+Scope: 4 tracked paths · repository-only · resolver revision 1

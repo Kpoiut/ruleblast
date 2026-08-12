@@ -1,0 +1,48 @@
+RULEBLAST EXPLAIN · HEAD → WORKTREE
+
+packages/api/internal/refund.ts
+
+CLAUDE CODE · anthropic/claude-code-cli@1
+  BEFORE · COMPLETE · ORDERED
+  Context: cwd=. · trigger=READ_TARGET · target=packages/api/internal/refund.ts · repository-only
+  Sources:
+    [SELECTED] CLAUDE.md · digest=claude-source · bytes=12
+  Projection digest: claude-projection
+  Payload digest: shared-payload
+  Evidence:
+    vendor:claude
+  WORKTREE · COMPLETE · ORDERED
+  Context: cwd=. · trigger=READ_TARGET · target=packages/api/internal/refund.ts · repository-only
+  Sources:
+    [SELECTED] CLAUDE.md · digest=claude-source · bytes=12
+  Projection digest: claude-projection
+  Payload digest: shared-payload
+  Evidence:
+    vendor:claude
+
+CODEX · openai/codex-cli@1
+  BEFORE · COMPLETE · ORDERED
+  Context: cwd=packages/api/internal · trigger=STARTUP · target=packages/api/internal/refund.ts · repository-only
+  Sources:
+    [SELECTED] AGENTS.md · digest=root-source · bytes=10
+  Projection digest: codex-before-projection
+  Payload digest: shared-payload
+  Evidence:
+    vendor:codex
+  WORKTREE · COMPLETE · ORDERED
+  Context: cwd=packages/api/internal · trigger=STARTUP · target=packages/api/internal/refund.ts · repository-only
+  Sources:
+    [SELECTED] AGENTS.md · digest=root-source · bytes=10
+    [SELECTED] packages/api/AGENTS.md · digest=api-source · bytes=21 · truncated
+  Projection digest: codex-after-projection
+  Payload digest: codex-after-payload
+  Evidence:
+    vendor:codex
+
+WHY THIS PATH COUNTS
+  + packages/api/AGENTS.md
+  = changed profiles: openai/codex-cli@1
+  = profile relation: SAME → DIFFERENT
+  = newly split: yes
+
+Repository-only · Git-tracked sources · resolver revision 1

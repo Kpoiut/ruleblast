@@ -153,6 +153,7 @@ function harness(overrides: Partial<CliDependencies> = {}) {
   const after = snapshot(gitRef("b".repeat(40)));
   const dependencies: CliDependencies = {
     version: "1.2.3",
+    shellDialect: "posix",
     profiles: [],
     resolvePath: (...parts) => parts.join("/"),
     findRepositoryRoot: vi.fn(async () => "C:\\workspace"),
@@ -204,6 +205,34 @@ describe("runCli", () => {
     const result = JSON.parse(h.stdout[0]!);
     expect(result.before).toEqual(gitRef("a".repeat(40)));
     expect(result.after).toEqual(gitRef("b".repeat(40)));
+  });
+
+  it("carries the captured shell dialect into text CTAs", async () => {
+    const result = diffResult();
+    result.counts.changedStackPathCount = 1;
+    result.groups = [{
+      root: "src",
+      changedStackPathCount: 1,
+      newlySplitPathCount: 0,
+      samplePaths: ["src/index.ts"],
+    }];
+    const h = harness({
+      shellDialect: "powershell",
+      openGitSnapshot: vi.fn(async (_root, ref) =>
+        snapshot(gitRef((ref.startsWith("base") ? "a" : "b").repeat(40)))
+      ),
+      analyzeDiff: vi.fn(async () => result),
+    });
+
+    expect(await runCli([
+      "diff",
+      "base it's",
+      "--to",
+      "target it's",
+    ], h.io, h.dependencies)).toBe(0);
+    expect(h.stdout.join("")).toContain(
+      "ruleblast explain src/index.ts --from 'base it''s' --to 'target it''s'",
+    );
   });
 
   it("uses current analysis for explain without --from and projects only the selected path", async () => {
@@ -272,7 +301,7 @@ describe("runCli", () => {
     expect(await runCli(["explain", "missing.ts"], h.io, h.dependencies)).toBe(1);
     expect(h.dependencies.analyzeCurrent).not.toHaveBeenCalled();
     expect(h.stderr).toEqual([
-      "TARGET_PATH_NOT_TRACKED: Tracked target path not found: \\\"missing.ts\\\"\n",
+      "TARGET_PATH_NOT_TRACKED: Tracked target path not found: \\\"missing.ts\\\" Choose a Git-tracked repository-relative path and retry.\n",
     ]);
   });
 
@@ -387,6 +416,8 @@ describe("runCli", () => {
     expect(await runCli(["--wat"], usage.io, usage.dependencies)).toBe(1);
     expect(usage.stdout).toEqual([]);
     expect(usage.stderr.join("")).toContain("UNKNOWN_OPTION");
+    expect(usage.stderr).toHaveLength(1);
+    expect(usage.stderr[0]).toContain("Run ruleblast --help for usage.");
   });
 
   it("uses package metadata for the default version and a URL-safe entry guard", async () => {
@@ -505,10 +536,11 @@ describe("runCli", () => {
       ["explain", result.paths[0]!.path], text.io, text.dependencies,
     )).toBe(0);
     expect(text.stdout).toHaveLength(1);
-    const rendered = text.stdout[0]!.slice(0, -1);
-    for (const control of ["\n", "\u001b", "\u009b", "\u2028", "\u202e"]) {
+    const rendered = text.stdout[0]!;
+    for (const control of ["\u001b", "\u009b", "\u2028", "\u202e"]) {
       expect(rendered).not.toContain(control);
     }
+    expect(rendered).not.toContain("src/line\n");
 
     const json = harness({
       analyzeCurrent: base.dependencies.analyzeCurrent,
@@ -536,6 +568,8 @@ describe("runCli", () => {
     expect(await runCli([".", "--json"], h.io, h.dependencies)).toBe(1);
     expect(h.stdout).toEqual([]);
     expect(h.stderr.join("")).toContain("NOT_REPOSITORY");
+    expect(h.stderr).toHaveLength(1);
+    expect(h.stderr[0]).toContain("Run ruleblast from a Git repository.");
   });
 
   it("maps each repository/ref/path adapter boundary to exit 1", async () => {
@@ -622,6 +656,7 @@ describe("runCli", () => {
     };
     const dependencies: CliDependencies = {
       version: "test", profiles: [claudeProfile, codexProfile], resolvePath: join,
+      shellDialect: "posix",
       findRepositoryRoot, openGitSnapshot, openTrackedWorktree,
       analyzeCurrent, analyzeDiff,
       openDemo: async () => { throw new Error("not used"); },

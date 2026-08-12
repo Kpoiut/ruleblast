@@ -62,6 +62,7 @@ function packageVersion(): string {
 const DEFAULT_PROFILES = Object.freeze([claudeProfile, codexProfile]);
 const DEFAULT_DEPENDENCIES: CliDependencies = Object.freeze({
   version: packageVersion(),
+  shellDialect: process.platform === "win32" ? "powershell" : "posix",
   profiles: DEFAULT_PROFILES,
   resolvePath: resolve,
   findRepositoryRoot,
@@ -90,12 +91,35 @@ interface KnownError {
   readonly message: string;
 }
 
+const RUNTIME_RECOVERY: Readonly<Record<CliRuntimeError["code"], string>> = {
+  NOT_REPOSITORY: "Run ruleblast from a Git repository.",
+  REF_NOT_FOUND: "Choose a Git ref that resolves to a commit and retry.",
+  INVALID_PATH: "Choose a valid repository-relative path and retry.",
+  TARGET_PATH_NOT_TRACKED: "Choose a Git-tracked repository-relative path and retry.",
+  IDENTICAL_ENDPOINTS: "Choose two different Git endpoints and retry.",
+  DEMO_NOT_AVAILABLE: "Run ruleblast from a Git repository instead.",
+};
+
+const GIT_RECOVERY: Readonly<Record<GitSnapshotErrorCode, string>> = {
+  NOT_REPOSITORY: "Run ruleblast from a Git repository.",
+  REF_NOT_FOUND: "Choose a Git ref that resolves to a commit and retry.",
+  UNMERGED_INDEX: "Resolve the unmerged index entries and retry.",
+  UNSUPPORTED_WORKTREE_NODE: "Restore the tracked path as a regular file or symlink and retry.",
+  WORKTREE_CHANGED_DURING_SNAPSHOT: "Wait for repository writes to finish and retry.",
+};
+
 function knownError(error: unknown): KnownError | null {
   if (error instanceof CliRuntimeError) {
-    return { code: error.code, message: error.message };
+    return {
+      code: error.code,
+      message: `${error.message} ${RUNTIME_RECOVERY[error.code]}`,
+    };
   }
   if (error instanceof GitSnapshotError) {
-    return { code: error.code, message: GIT_ERROR_MESSAGES[error.code] };
+    return {
+      code: error.code,
+      message: `${GIT_ERROR_MESSAGES[error.code]} ${GIT_RECOVERY[error.code]}`,
+    };
   }
   return null;
 }
@@ -148,13 +172,9 @@ export async function runCli(
     if (error instanceof CliUsageError) {
       const wroteError = tryWriteLine(
         io.stderr,
-        `${error.code}: ${displayText(error.message)}`,
+        `${error.code}: ${displayText(error.message)} Run ruleblast --help for usage.`,
       );
-      const wroteHint = wroteError && tryWriteLine(
-        io.stderr,
-        "Run ruleblast --help for usage.",
-      );
-      return wroteHint ? 1 : 70;
+      return wroteError ? 1 : 70;
     }
     const known = knownError(error);
     if (known !== null) {

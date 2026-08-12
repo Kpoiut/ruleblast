@@ -8,6 +8,7 @@ import type {
   DiffRuleBlastResult,
 } from "./model.js";
 import type { ProfileDefinition } from "./profiles/profile.js";
+import type { ShellDialect } from "./render-text.js";
 import type { RepositorySnapshot } from "./snapshot.js";
 
 export interface CliIo {
@@ -25,6 +26,7 @@ export interface DemoSnapshots {
 
 export interface CliDependencies {
   readonly version: string;
+  readonly shellDialect: ShellDialect;
   readonly profiles: readonly ProfileDefinition[];
   readonly resolvePath: (...parts: readonly string[]) => string;
   readonly findRepositoryRoot: (start: string) => Promise<string>;
@@ -70,7 +72,7 @@ export interface CapturedInvocation {
 }
 
 const DEPENDENCY_FIELDS = [
-  "version", "profiles", "resolvePath", "findRepositoryRoot",
+  "version", "shellDialect", "profiles", "resolvePath", "findRepositoryRoot",
   "openGitSnapshot", "openTrackedWorktree", "analyzeCurrent", "analyzeDiff",
   "openDemo",
 ] as const;
@@ -189,6 +191,7 @@ function captureDependencies(value: CliDependencies): CliDependencies {
     "CliDependencies",
   );
   const version = dataValue(descriptors, "version");
+  const shellDialect = dataValue(descriptors, "shellDialect");
   const resolvePath = dataValue(descriptors, "resolvePath");
   const findRoot = dataValue(descriptors, "findRepositoryRoot");
   const openGit = dataValue(descriptors, "openGitSnapshot");
@@ -196,7 +199,9 @@ function captureDependencies(value: CliDependencies): CliDependencies {
   const current = dataValue(descriptors, "analyzeCurrent");
   const diff = dataValue(descriptors, "analyzeDiff");
   const demo = dataValue(descriptors, "openDemo");
-  if (typeof version !== "string" || typeof resolvePath !== "function" ||
+  if (typeof version !== "string" ||
+      (shellDialect !== "posix" && shellDialect !== "powershell") ||
+      typeof resolvePath !== "function" ||
       typeof findRoot !== "function" || typeof openGit !== "function" ||
       typeof openWorktree !== "function" || typeof current !== "function" ||
       typeof diff !== "function" || typeof demo !== "function") {
@@ -205,6 +210,7 @@ function captureDependencies(value: CliDependencies): CliDependencies {
   const profiles = denseProfiles(dataValue(descriptors, "profiles"));
   return Object.freeze({
     version,
+    shellDialect,
     profiles,
     resolvePath: (...parts: readonly string[]) =>
       resolvePath.call(value, ...parts) as string,

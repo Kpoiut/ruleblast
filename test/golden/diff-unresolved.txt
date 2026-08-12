@@ -1,0 +1,15 @@
+RULEBLAST · HEAD → WORKTREE
+
+1 instruction-line edit.
+
+1
+tracked path changed stack.
+
+No paths newly split across profiles.
+
+Coverage notes:
+  2 paths have partial projections.
+  3 paths have unknown projections.
+  4 paths have indeterminate profile relations.
+
+Scope: 5 tracked paths · repository-only · resolver revision 1

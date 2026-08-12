@@ -1,5 +1,10 @@
 import type { CliOutput } from "./args.js";
 import { canonicalJson } from "./canonical.js";
+import {
+  displayText,
+  renderText,
+  type TextPresentationContext,
+} from "./render-text.js";
 import type {
   CurrentRuleBlastResult,
   DiffRuleBlastResult,
@@ -35,17 +40,12 @@ export interface DiffExplainResult {
 }
 
 export type ExplainResult = CurrentExplainResult | DiffExplainResult;
-type PresentedResult = CurrentRuleBlastResult | DiffRuleBlastResult | ExplainResult;
+export type PresentedResult = CurrentRuleBlastResult | DiffRuleBlastResult | ExplainResult;
+
+export { displayText } from "./render-text.js";
 
 export function writeLine(callback: (text: string) => void, text: string): void {
   callback(`${text.replace(/[\r\n]+$/g, "")}\n`);
-}
-
-export function displayText(value: string): string {
-  return JSON.stringify(value).slice(1, -1).replace(
-    /[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/gu,
-    (character) => `\\u${character.codePointAt(0)!.toString(16).padStart(4, "0")}`,
-  );
 }
 
 function effectiveColor(output: CliOutput, io: OutputIo): boolean {
@@ -55,26 +55,17 @@ function effectiveColor(output: CliOutput, io: OutputIo): boolean {
   return io.stdoutIsTTY;
 }
 
-function temporaryText(result: PresentedResult, color: boolean): string {
-  const label = result.mode === "explain"
-    ? `EXPLAIN · ${displayText(result.path.path)}`
-    : result.mode === "current"
-      ? `CURRENT · ${result.counts.candidatePathCount} tracked paths`
-      : `DIFF · ${result.counts.changedStackPathCount} paths changed stack`;
-  const text = `RULEBLAST · ${label}`;
-  return color ? `\u001b[36m${text}\u001b[0m` : text;
-}
-
 export function present(
   value: PresentedResult,
   output: CliOutput,
   io: OutputIo,
+  context?: TextPresentationContext,
 ): void {
   writeLine(
     io.stdout,
     output.kind === "json"
       ? canonicalJson(value)
-      : temporaryText(value, effectiveColor(output, io)),
+      : renderText(value, context, effectiveColor(output, io)),
   );
 }
 
