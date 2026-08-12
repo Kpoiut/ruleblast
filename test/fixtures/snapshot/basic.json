@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "label": "basic snapshot",
+  "entries": [
+    {
+      "path": "README.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "cnVsZWJsYXN0Cg=="
+    },
+    {
+      "path": "bin\\run.sh",
+      "kind": "file",
+      "executable": true,
+      "base64": "IyEvYmluL3NoCg=="
+    },
+    {
+      "path": "latest",
+      "kind": "symlink",
+      "executable": false,
+      "base64": "UkVBRE1FLm1k"
+    }
+  ]
+}
