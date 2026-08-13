@@ -24,6 +24,8 @@ The development build now has the proof-bearing path from repository bytes to an
 - semantic text rendering with golden views for aligned, split, changed, unchanged, unresolved, and no-source states;
 - deterministic JSON kept separate from presentation aliases and terminal wording;
 - a packaged, manifest-backed demo that expands deterministically and passes through the same snapshot, resolver, impact, explanation, and renderer path as repository analysis.
+- packed-install verification for all four actions, deterministic JSON, side-effect boundaries, the published-file allowlist, and the measured performance budget;
+- a completed local-only field pilot and a promoted, source-content-free receipt for one immutable public-repository comparison;
 - a self-explaining README, maintained behavior contract, Blast Case contribution unit, changelog, and focused evidence forms whose claims are checked against behavior.
 
 These capabilities are merged to main and verified as development code. They are not yet an installable public release.
@@ -41,13 +43,15 @@ ruleblast explain <path> [--from <base>]
 ruleblast demo [--explain <path>]
 ```
 
-The production-pipeline demo and self-explaining documentation set are merged to main. The remaining release gates are deliberately narrow:
+The production-pipeline demo and self-explaining documentation set are merged to main. Release maturity is now explicit:
 
-1. **Packed-install proof** — install the packed artifact in a clean location and prove the four actions, JSON determinism, read-only behavior, side-effect boundary, file allowlist, and performance budget.
-2. **Reproducible field evidence** — pin one immutable public repository case and complete a private-repository pilot without publishing private content.
-3. **Release authority** — tag and publish only after the evidence packet is reviewable and the release is explicitly authorized.
+1. **COMPLETE ON MAIN — Packed-install and performance proof.** The packed artifact has passed clean-location verification for the four actions, JSON determinism, read-only behavior, side-effect boundaries, file allowlist, and performance budget.
+2. **COMPLETE ON MAIN — Field pilot and canonical receipt.** The local-only pilot covered 25 immutable, real instruction-changing commits from the public Apache-2.0 `openai/codex` repository; its ledger was not published. It produced 24 useful non-obvious results and no unresolved count-changing P0/P1 defect. The promoted public case separately pins RuleBlast commits `27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8` → `e420008a1c10c5c328e506247560117f4d40b855`: 33 instruction-line edits changed 106 of 106 candidate stacks for each profile, with zero current split, partial, unknown, or indeterminate paths.
+3. **REMAINING — Release authority and publication.** Change the development package version to `1.0.0`, create the immutable release tag, publish to npm, and verify the receipt's versioned reproduction command only after the evidence packet is reviewable and release is explicitly authorized.
 
 The `v1.0.0` boundary does not admit another agent surface, command, output product, hosted component, model call, or repository mutation. An attractive idea that crosses that line waits outside the release.
+
+Earlier roadmap copy called this a “private-repository pilot.” The implementation gate has always required a **private/local-only pilot process** plus a separate license-or-permission check for any promoted public case; it did not require private source ownership. This wording is corrected here rather than claiming that public `openai/codex` commits came from a private repository.
 
 > The blast can now be explained. Can it travel without losing the receipt?
 
@@ -73,7 +77,7 @@ Admission gates:
 
 ## **NEXT** — `v1.1.0`: Blast Receipts
 
-The target is a portable Markdown receipt derived only from `RuleBlastResult`.
+The current canonical JSON Blast Case is an evidence record for one immutable comparison. The `v1.1.0` target is a portable, user-facing Markdown receipt derived only from `RuleBlastResult`.
 
 A receipt may carry:
 

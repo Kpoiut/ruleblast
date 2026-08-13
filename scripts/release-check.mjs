@@ -66,6 +66,7 @@ export function expectedPackedFiles() {
     "README.md",
     "CONTRACT.md",
     "LICENSE",
+    "assets/ruleblast-demo-terminal.gif",
     "fixtures/demo/case.json",
   ];
   const dist = filesBelow(join(REPOSITORY_ROOT, "src"))

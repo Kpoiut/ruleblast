@@ -114,6 +114,19 @@ describe("README story contract", () => {
     expect(transcript).toBe(golden);
   });
 
+  it("ships the packed-output terminal recording referenced by README", () => {
+    const asset = "assets/ruleblast-demo-terminal.gif";
+    expect(readme).toContain(`![RuleBlast packed terminal recording](${asset})`);
+    const bytes = readFileSync(join(repositoryRoot, asset));
+    expect(bytes.subarray(0, 6).toString("ascii")).toBe("GIF89a");
+    expect(bytes.byteLength).toBeGreaterThan(10_000);
+    expect(bytes.byteLength).toBeLessThan(150_000);
+    const descriptor = JSON.parse(read("package.json")) as {
+      readonly files?: readonly string[];
+    };
+    expect(descriptor.files).toContain(asset);
+  });
+
   it("keeps release commands exact without claiming the package exists", () => {
     const commands = [...readme.matchAll(/^npx ruleblast[^\r\n]*$/gmu)]
       .map((match) => match[0]);
@@ -144,6 +157,15 @@ The profile seam is already there for the rest.
 
 Two agents share this repo.
 How many rule realities are still hiding in it…?`);
+  });
+
+  it("describes the completed pilot without inventing a private repository", () => {
+    const roadmap = read("ROADMAP.md");
+    expect(roadmap).toContain("local-only pilot covered 25 immutable");
+    expect(roadmap).toContain("public Apache-2.0 `openai/codex` repository");
+    expect(roadmap).toContain("24 useful non-obvious results");
+    expect(roadmap).toContain("Earlier roadmap copy called this a “private-repository pilot.”");
+    expect(roadmap).not.toMatch(/private repository (was|has been) analyzed/iu);
   });
 });
 

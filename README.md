@@ -10,9 +10,19 @@ Git shows the first diff. RuleBlast finds the second.
 
 That result comes from a packaged, deterministic change to `AGENTS.md` and `CLAUDE.md`, projected across 3,906 synthetic Git-tracked paths. Codex and Claude Code can share a repository without receiving the same repository instructions. RuleBlast makes that difference inspectable—locally, without calling a model, and with every counted path tied back to its sources.
 
+## Verified public-repository receipt — not a demo fixture
+
+RuleBlast has also captured its own public repository across two immutable commits: [`27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8`](https://github.com/Kpoiut/ruleblast/commit/27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8) → [`e420008a1c10c5c328e506247560117f4d40b855`](https://github.com/Kpoiut/ruleblast/commit/e420008a1c10c5c328e506247560117f4d40b855).
+
+The 33 instruction-line edits changed the projected stack for all 106 of 106 tracked candidate paths. Both pinned profiles changed on all 106 paths, while the two resulting profile payloads remained aligned: zero current split paths, zero partial paths, zero unknown paths, and zero indeterminate paths. That distinction matters—a repository-wide blast does not necessarily create two different rule realities.
+
+The checked-in [canonical receipt](cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json) binds those metrics to immutable refs, resolver revision 1, core digest `1e907a88ed648ebbd68b4f588c3bd09058ab7714e8f85a3f2d4a1c60e5a40938`, and producer provenance without copying source contents. Its `npx ruleblast@1.0.0 ...` reproduction command remains a pending release command; npm `1.0.0` has not been published.
+
 ## Terminal transcript — DEMO FIXTURE
 
 This is production CLI output over the packaged fixture, not prewritten animation:
+
+![RuleBlast packed terminal recording](assets/ruleblast-demo-terminal.gif)
 
 ```text
 RULEBLAST · DEMO FIXTURE
@@ -142,13 +152,13 @@ ruleblast diff HEAD~1 --json
 
 The most useful contribution is one small result that challenges the resolver or makes the second diff surprising. A Blast Case is atomic: official evidence, retrieval date, before manifest, after manifest, expected canonical JSON, and one sentence explaining the surprise.
 
-Promoted public-repository evidence lives under [`cases/`](cases/README.md) as a source-content-free canonical receipt: immutable refs, resolver revision, result core, digest, producer provenance, and a future release reproduction command. The capture tool analyzes an existing checkout through the same production pipeline and derives the receipt path; it cannot overwrite an accepted case. Promotion remains gated by the field pilot, so a synthetic fixture can never stand in for real evidence.
+Promoted public-repository evidence lives under [`cases/`](cases/README.md) as a source-content-free canonical receipt: immutable refs, resolver revision, result core, digest, producer provenance, and a future release reproduction command. The capture tool analyzes an existing checkout through the same production pipeline and derives the receipt path; it cannot overwrite an accepted case. The first receipt passed the field-pilot gate; the synthetic fixture remains a separately labeled teaching surface and can never stand in for real evidence.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for immutable-ref, publication-permission, rejection, and test requirements, or open a focused [wrong blast](.github/ISSUE_TEMPLATE/wrong-blast.yml), [missing blast](.github/ISSUE_TEMPLATE/missing-blast.yml), [weird blast](.github/ISSUE_TEMPLATE/weird-blast.yml), or [profile evidence](.github/ISSUE_TEMPLATE/profile-evidence.yml) form.
 
 ## Roadmap
 
-The development core and reproducible demo are merged to main; the public npm release remains `IN BUILD`. Future stages are labeled by maturity and evidence gate rather than dates.
+The development core, packed-install and performance proof, local-only field pilot, and first real receipt are on main; the public npm release remains `IN BUILD` pending release authority, the `1.0.0` package version, an immutable tag, and npm publication. Future stages are labeled by maturity and evidence gate rather than dates.
 
 Today: Codex + Claude Code.
 
