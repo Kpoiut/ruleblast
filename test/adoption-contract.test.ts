@@ -232,22 +232,37 @@ describe("v1.0.2 adoption contract", () => {
     expect(bytes.readUInt16LE(6)).toBe(1200);
     expect(bytes.readUInt16LE(8)).toBe(675);
     expect(statSync(heroPath).size).toBeLessThanOrEqual(5 * 1024 * 1024);
-    expect(bytes.toString("latin1").match(/\x21\xf9\x04/gu)?.length ?? 0)
-      .toBeGreaterThanOrEqual(12);
-    expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "2e12f0fa7f302b8e8b75643c4cf982ddb9c40abf9f2550f4e5a202aee8a274e3",
-    );
+    const frameControls: Array<{
+      readonly delayCentiseconds: number;
+      readonly disposal: number;
+    }> = [];
     let totalDelayCentiseconds = 0;
     for (let offset = 0; offset <= bytes.length - 8; offset += 1) {
       if (
         bytes[offset] === 0x21 && bytes[offset + 1] === 0xf9 &&
         bytes[offset + 2] === 0x04
       ) {
-        totalDelayCentiseconds += bytes.readUInt16LE(offset + 4);
+        const delayCentiseconds = bytes.readUInt16LE(offset + 4);
+        frameControls.push({
+          delayCentiseconds,
+          disposal: ((bytes[offset + 3] ?? 0) >> 2) & 0x07,
+        });
+        totalDelayCentiseconds += delayCentiseconds;
       }
     }
-    expect(totalDelayCentiseconds).toBe(1_340);
+    expect(frameControls).toHaveLength(15);
+    expect(frameControls.every(({ disposal }) => disposal === 1)).toBe(true);
+    expect(frameControls.every(({ delayCentiseconds }) =>
+      delayCentiseconds > 0 && delayCentiseconds <= 70
+    )).toBe(true);
+    expect(totalDelayCentiseconds).toBe(1_050);
     expect(bytes.toString("ascii")).toContain("NETSCAPE2.0");
+    expect(bytes.toString("ascii")).toContain(
+      "RULEBLAST_POSTER=A tiny instruction diff; complete held frames only",
+    );
+    expect(createHash("sha256").update(bytes).digest("hex")).toBe(
+      "c4a79cf8e53c47e2ab1c3fef69b4f83ebe56bcaf7644e6b9e1225fc23881b1eb",
+    );
 
     const descriptor = readJson<PackageDescriptor>("package.json");
     expect(descriptor.files).not.toContain("assets/ruleblast-causal-proof.gif");
