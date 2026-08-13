@@ -2,6 +2,18 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 1.0.2 — IN BUILD
+
+### Changed
+
+- Kept the complete one-command `npx --yes ruleblast@1.0.2 .` install path early and moved the packaged RuleBlast self-case below the new causal proof as secondary, reproducible CLI evidence.
+- Advanced package, contract, source-build, troubleshooting, and release-candidate identity to exact `1.0.2` while preserving the historical `1.0.0` receipt command and hidden v1 `demo` compatibility.
+- Added an evidence-shaped issue chooser, pull request checklist, security policy, and code of conduct, then replaced the oversized square mark with the selected horizontal RuleBlast hero while keeping presentation media outside the CLI package.
+- Extended the candidate install gate to Node.js 26, actual Command Prompt plus PowerShell execution on Windows, bash on Linux, and a tag-only exact-version registry upgrade path that cannot run in candidate mode.
+- Replaced the weak synthetic-first README framing with an evidence-locked causal proof from immutable `openai/codex` refs: 2 instruction-line edits changed projected stacks for 206 tracked paths, while 4,476 remained unchanged; the proof traces one path to its exact changed source without inferring model behavior.
+
+This section records verified branch work only. Tag, npm, GitHub Release, registry upgrade evidence, community settings, and adoption observations remain external facts and are not inferred from this source tree.
+
 ## 1.0.1
 
 ### Changed

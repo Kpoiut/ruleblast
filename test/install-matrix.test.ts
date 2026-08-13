@@ -3,6 +3,29 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { parse } from "yaml";
+
+interface WorkflowStep {
+  readonly name?: string;
+  readonly if?: string;
+  readonly env?: Readonly<Record<string, string>>;
+  readonly run?: string;
+}
+
+interface VerifyWorkflow {
+  readonly jobs: {
+    readonly verify: {
+      readonly "timeout-minutes": number;
+      readonly strategy: {
+        readonly matrix: {
+          readonly os: readonly string[];
+          readonly node: readonly number[];
+        };
+      };
+      readonly steps: readonly WorkflowStep[];
+    };
+  };
+}
 
 describe("candidate installation matrix", () => {
   it("runs every release gate in each supported OS and Node cell", async () => {
@@ -11,7 +34,8 @@ describe("candidate installation matrix", () => {
       "utf8",
     );
     expect(workflow).toContain("os: [ubuntu-latest, windows-latest]");
-    expect(workflow).toContain("node: [20, 22, 24]");
+    expect(workflow).toContain("node: [20, 22, 24, 26]");
+    expect(workflow).toContain("workflow_dispatch:");
     const jobs = workflow.slice(workflow.indexOf("jobs:"));
     expect(jobs.match(/^  [a-z][a-z-]+:$/gmu)).toHaveLength(1);
 
@@ -28,6 +52,31 @@ describe("candidate installation matrix", () => {
         .toBeGreaterThanOrEqual(cursor);
       cursor = position + command.length;
     }
+    expect(workflow).toContain("RULEBLAST_REGISTRY_SMOKE: ruleblast@1.0.2");
+    expect(workflow).toContain(
+      "RULEBLAST_REGISTRY_UPGRADE_FROM: ruleblast@1.0.1",
+    );
+    expect(workflow).toContain("npm run install:smoke -- --registry");
+    expect(workflow).toContain("github.event_name == 'workflow_dispatch'");
+    expect(workflow).toContain("github.ref == 'refs/tags/v1.0.2'");
+    const parsed = parse(workflow) as VerifyWorkflow;
+    const job = parsed.jobs.verify;
+    expect(job["timeout-minutes"]).toBe(20);
+    expect(job.strategy.matrix).toEqual({
+      os: ["ubuntu-latest", "windows-latest"],
+      node: [20, 22, 24, 26],
+    });
+    const registryStep = job.steps.find(
+      (step) => step.name === "Verify published registry upgrade",
+    );
+    expect(registryStep).toEqual(expect.objectContaining({
+      if: "github.event_name == 'workflow_dispatch' && github.ref == 'refs/tags/v1.0.2'",
+      env: {
+        RULEBLAST_REGISTRY_SMOKE: "ruleblast@1.0.2",
+        RULEBLAST_REGISTRY_UPGRADE_FROM: "ruleblast@1.0.1",
+      },
+      run: "npm run install:smoke -- --registry",
+    }));
   });
 
   it("exercises isolated local and global lifecycle flows from one packed tarball", async () => {
@@ -41,26 +90,36 @@ describe("candidate installation matrix", () => {
       cacheInitiallyEmpty: true,
       installScriptsIgnored: true,
       npmExecVerified: true,
-      hostShell: process.platform === "win32" ? "powershell" : "bash",
+      mode: "candidate",
+      hostShells: process.platform === "win32"
+        ? ["cmd.exe", "powershell"]
+        : ["bash"],
       lifecycleSentinelUntouched: true,
       fsmonitorUntouched: true,
+      registryUpgrade: null,
       local: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 1.0.1",
+        version: "ruleblast 1.0.2",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,
+        hostShells: process.platform === "win32"
+          ? ["cmd.exe", "powershell"]
+          : ["bash"],
         reinstalled: true,
         uninstalled: true,
       },
       global: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 1.0.1",
+        version: "ruleblast 1.0.2",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,
+        hostShells: process.platform === "win32"
+          ? ["cmd.exe", "powershell"]
+          : ["bash"],
         reinstalled: true,
         uninstalled: true,
       },
@@ -70,9 +129,9 @@ describe("candidate installation matrix", () => {
   it("documents exact, non-interactive and reversible install commands", async () => {
     const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
     for (const command of [
-      "npx --yes ruleblast@1.0.1 --help",
-      "npx --yes ruleblast@1.0.1 .",
-      "npm install --save-dev --save-exact ruleblast@1.0.1",
+      "npx --yes ruleblast@1.0.2 --help",
+      "npx --yes ruleblast@1.0.2 .",
+      "npm install --save-dev --save-exact ruleblast@1.0.2",
       "ruleblast --version",
       "npx ruleblast --version",
       "npm uninstall --global ruleblast",
@@ -82,17 +141,17 @@ describe("candidate installation matrix", () => {
       expect(readme).toContain(command);
     }
     expect(readme).toMatch(
-      /npm uninstall --global ruleblast[\s\S]+npm install --global ruleblast@1\.0\.1/u,
+      /npm uninstall --global ruleblast[\s\S]+npm install --global ruleblast@1\.0\.2/u,
     );
     expect(readme).toMatch(
-      /npm uninstall --save-dev ruleblast[\s\S]+npm install --save-dev --save-exact ruleblast@1\.0\.1/u,
+      /npm uninstall --save-dev ruleblast[\s\S]+npm install --save-dev --save-exact ruleblast@1\.0\.2/u,
     );
     expect(readme).toContain(
-      "git clone --branch v1.0.1 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v1.0.2 --depth 1 https://github.com/Kpoiut/ruleblast.git",
     );
     expect(readme).toMatch(/Windows.+Linux/isu);
     expect(readme).not.toMatch(/Windows.+macOS.+Linux/isu);
-    expect(readme).not.toMatch(/npx (?!--yes )ruleblast@1\.0\.1/gu);
+    expect(readme).not.toMatch(/npx (?!--yes )ruleblast@1\.0\.2/gu);
   });
 
   it("terminates timed-out process descendants before rejecting", async () => {
@@ -159,17 +218,70 @@ describe("candidate installation matrix", () => {
   it("keeps unpublished registry parity behind an exact-version guard", async () => {
     const moduleUrl = new URL("../scripts/install-smoke.mjs", import.meta.url).href;
     const runner = await import(moduleUrl) as Record<string, unknown>;
+    const lifecycle = await import(
+      new URL("../scripts/install-lifecycle-smoke.mjs", import.meta.url).href
+    ) as Record<string, unknown>;
     expect(runner.registryPackageSpecifier).toBeTypeOf("function");
     const registryPackageSpecifier = runner.registryPackageSpecifier as (
       version: string,
       environment: Record<string, string>,
     ) => string;
-    expect(() => registryPackageSpecifier("1.0.1", {})).toThrow(/guard/iu);
-    expect(registryPackageSpecifier("1.0.1", {
-      RULEBLAST_REGISTRY_SMOKE: "ruleblast@1.0.1",
-    })).toBe("ruleblast@1.0.1");
+    expect(() => registryPackageSpecifier("1.0.2", {})).toThrow(/guard/iu);
+    expect(registryPackageSpecifier("1.0.2", {
+      RULEBLAST_REGISTRY_SMOKE: "ruleblast@1.0.2",
+    })).toBe("ruleblast@1.0.2");
 
-    const installArguments = runner.installArguments as (
+    expect(runner.registryUpgradeSpecifiers).toBeTypeOf("function");
+    const registryUpgradeSpecifiers = runner.registryUpgradeSpecifiers as (
+      mode: "candidate" | "registry",
+      currentVersion: string,
+      environment: Record<string, string>,
+    ) => {
+      readonly from: { readonly specifier: string; readonly version: string };
+      readonly to: { readonly specifier: string; readonly version: string };
+    };
+    const guardedEnvironment = {
+      RULEBLAST_REGISTRY_SMOKE: "ruleblast@1.0.2",
+      RULEBLAST_REGISTRY_UPGRADE_FROM: "ruleblast@1.0.1",
+    };
+    expect(runner.parseInstallMode).toBeTypeOf("function");
+    const parseInstallMode = runner.parseInstallMode as (
+      value: unknown,
+    ) => "candidate" | "registry";
+    expect(parseInstallMode(undefined)).toBe("candidate");
+    expect(parseInstallMode("registry")).toBe("registry");
+    expect(() => parseInstallMode("preview")).toThrow(/install mode/iu);
+    expect(() => registryUpgradeSpecifiers(
+      "candidate", "1.0.2", guardedEnvironment,
+    )).toThrow(/candidate mode/iu);
+    expect(() => registryUpgradeSpecifiers(
+      "registry", "1.0.2", {},
+    )).toThrow(/RULEBLAST_REGISTRY_SMOKE/iu);
+    expect(() => registryUpgradeSpecifiers(
+      "registry", "1.0.2", {
+        RULEBLAST_REGISTRY_SMOKE: "ruleblast@1.0.2",
+      },
+    )).toThrow(/RULEBLAST_REGISTRY_UPGRADE_FROM/iu);
+    expect(() => registryUpgradeSpecifiers(
+      "registry", "1.0.2", {
+        ...guardedEnvironment,
+        RULEBLAST_REGISTRY_SMOKE: "ruleblast@1.0.1",
+      },
+    )).toThrow(/RULEBLAST_REGISTRY_SMOKE/iu);
+    expect(() => registryUpgradeSpecifiers(
+      "registry", "1.0.2", {
+        ...guardedEnvironment,
+        RULEBLAST_REGISTRY_UPGRADE_FROM: "ruleblast@1.0.0",
+      },
+    )).toThrow(/RULEBLAST_REGISTRY_UPGRADE_FROM/iu);
+    expect(registryUpgradeSpecifiers(
+      "registry", "1.0.2", guardedEnvironment,
+    )).toEqual({
+      from: { specifier: "ruleblast@1.0.1", version: "1.0.1" },
+      to: { specifier: "ruleblast@1.0.2", version: "1.0.2" },
+    });
+
+    const installArguments = lifecycle.installArguments as (
       scope: "local" | "global",
       target: string,
       source: string,
@@ -182,11 +294,11 @@ describe("candidate installation matrix", () => {
       offline: boolean,
     ) => string[];
     for (const args of [
-      installArguments("local", "repo", "ruleblast@1.0.1", [], false),
-      installArguments("global", "prefix", "ruleblast@1.0.1", [], false),
-      npmExecArguments("ruleblast@1.0.1", [], false),
+      installArguments("local", "repo", "ruleblast@1.0.2", [], false),
+      installArguments("global", "prefix", "ruleblast@1.0.2", [], false),
+      npmExecArguments("ruleblast@1.0.2", [], false),
     ]) {
-      expect(args).toContain("ruleblast@1.0.1");
+      expect(args).toContain("ruleblast@1.0.2");
       expect(args).not.toContain("--offline");
     }
   });
@@ -237,9 +349,18 @@ describe("candidate installation matrix", () => {
       new URL("../scripts/release-process.mjs", import.meta.url),
       "utf8",
     );
+    const installLifecycle = await readFile(
+      new URL("../scripts/install-lifecycle-smoke.mjs", import.meta.url),
+      "utf8",
+    );
     expect(installSmoke.split(/\r?\n/u).length).toBeLessThanOrEqual(400);
     expect(packageSmoke.split(/\r?\n/u).length).toBeLessThanOrEqual(400);
+    expect(installLifecycle.split(/\r?\n/u).length).toBeLessThanOrEqual(400);
     expect(installSmoke).not.toContain("function copyRuntimePackage");
+    expect(installLifecycle).toContain('"System32", "cmd.exe"');
+    expect(installLifecycle).toContain(
+      '"WindowsPowerShell", "v1.0", "powershell.exe"',
+    );
     expect(releaseProcess).toMatch(
       /const capture = \(target\) => \(chunk\) => \{\s+if \(settled\) return;\s+outputBytes \+= chunk\.length;/u,
     );

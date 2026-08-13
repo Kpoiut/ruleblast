@@ -85,15 +85,22 @@ describe("README story contract", () => {
   });
 
   it("leads with verified evidence, then gives the exact install interface early", () => {
-    expect(readme).toMatch(/^# RuleBlast\s/u);
+    expect(readme).toMatch(
+      /^<h1 align="center">RuleBlast — Git diff for invisible repository instructions<\/h1>\s/u,
+    );
     expectOrdered(readme, [
-      "33 instruction-line edits. 106 tracked paths changed stack.",
-      "Git shows the first diff. RuleBlast finds the second.",
+      "assets/ruleblast-hero.png",
+      "actions/workflows/verify.yml/badge.svg",
+      "img.shields.io/npm/v/ruleblast",
+      "assets/ruleblast-causal-proof.gif",
+      "2 instruction-line edits",
+      "206 tracked paths changed stack",
+      "codex-rs/tui/src/bottom_pane/action_required_title.rs",
       "## Install",
-      "npx --yes ruleblast@1.0.1",
-      "## Terminal transcript",
+      "npx --yes ruleblast@1.0.2",
+      "## Run the verified case",
+      "Exact packaged-case terminal transcript",
       "## Explain one path",
-      "<details>",
       "## Scope",
       "## How it works",
       "## Examples",
@@ -101,15 +108,15 @@ describe("README story contract", () => {
       "## Roadmap",
     ]);
 
-    const marker = readme.indexOf("# RuleBlast");
-    for (const metric of ["33", "106", "zero"]) {
+    const marker = readme.indexOf("RuleBlast</h1>");
+    for (const metric of ["2", "206", "4,476", "zero partial"]) {
       expect(readme.indexOf(metric)).toBeGreaterThan(marker);
     }
     expect(readme).not.toContain("DEMO FIXTURE");
   });
 
   it("embeds the checked golden verified-case transcript exactly", () => {
-    const transcript = /## Terminal transcript[^`]*```text\r?\n([\s\S]*?)\r?\n```/u
+    const transcript = /Exact packaged-case terminal transcript<\/strong><\/summary>[\s\S]*?```text\r?\n([\s\S]*?)\r?\n```/u
       .exec(readme)?.[1]?.replace(/\r\n/g, "\n");
     const golden = read("test/golden/diff-case.txt")
       .replace(/\r\n/g, "\n")
@@ -117,39 +124,44 @@ describe("README story contract", () => {
     expect(transcript).toBe(golden);
   });
 
-  it("ships the RuleBlast eye referenced by README", () => {
-    const asset = "assets/ruleblast-eye.webp";
-    expect(readme).toContain(`![RuleBlast eye](${asset})`);
+  it("renders the selected horizontal RuleBlast hero without packaging it", () => {
+    const asset = "assets/ruleblast-hero.png";
+    expect(readme).toContain(
+      `<img src="https://raw.githubusercontent.com/Kpoiut/ruleblast/main/${asset}" width="100%"`,
+    );
     const bytes = readFileSync(join(repositoryRoot, asset));
-    expect(bytes.subarray(8, 12).toString("ascii")).toBe("WEBP");
-    expect(bytes.byteLength).toBe(11_052);
+    expect(bytes.subarray(1, 4).toString("ascii")).toBe("PNG");
+    expect(bytes.readUInt32BE(16)).toBe(1_774);
+    expect(bytes.readUInt32BE(20)).toBe(887);
+    expect(bytes.byteLength).toBe(1_730_674);
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "8a95aa9e4f697a258200ddfd2180d728b73d4abcbf778b45e5f223094cfd85ed",
+      "97672cba5a0b740fdcb21f57fa63b0bf2884c1c6e8114247d15ab1db77593564",
     );
     const descriptor = JSON.parse(read("package.json")) as {
       readonly files?: readonly string[];
     };
-    expect(descriptor.files).toContain(asset);
+    expect(descriptor.files).not.toContain(asset);
+    expect(existsSync(join(repositoryRoot, "assets/ruleblast-eye.webp"))).toBe(false);
   });
 
   it("documents one-command, global, local, maintenance, and source installs", () => {
     for (const command of [
       "node --version",
-      "npm view ruleblast@1.0.1 version",
-      "npx --yes ruleblast@1.0.1",
-      "npx --yes ruleblast@1.0.1 --help",
+      "npm view ruleblast@1.0.2 version",
+      "npx --yes ruleblast@1.0.2",
+      "npx --yes ruleblast@1.0.2 --help",
       "cd <your-git-repository>",
-      "npm install --global ruleblast@1.0.1",
+      "npm install --global ruleblast@1.0.2",
       "ruleblast --version",
       "ruleblast --help",
       "ruleblast",
-      "npm install --save-dev --save-exact ruleblast@1.0.1",
+      "npm install --save-dev --save-exact ruleblast@1.0.2",
       "npx ruleblast --version",
       "npx ruleblast --help",
       "npm uninstall --global ruleblast",
       "npm uninstall --save-dev ruleblast",
       "npm cache verify",
-      "git clone --branch v1.0.1 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v1.0.2 --depth 1 https://github.com/Kpoiut/ruleblast.git",
       "npm ci --ignore-scripts",
       "npm run build",
       "node dist/cli.js --version",
@@ -158,10 +170,10 @@ describe("README story contract", () => {
       expect(readme).toContain(command);
     }
     for (const action of [
-      "npx --yes ruleblast@1.0.1 .",
-      "npx --yes ruleblast@1.0.1 diff HEAD~1",
-      "npx --yes ruleblast@1.0.1 explain packages/api/internal/refund.ts --from HEAD~1",
-      "npx --yes ruleblast@1.0.1 case",
+      "npx --yes ruleblast@1.0.2 .",
+      "npx --yes ruleblast@1.0.2 diff HEAD~1",
+      "npx --yes ruleblast@1.0.2 explain packages/api/internal/refund.ts --from HEAD~1",
+      "npx --yes ruleblast@1.0.2 case",
     ]) {
       expect(readme).toContain(action);
     }
@@ -175,13 +187,13 @@ describe("README story contract", () => {
     expect(readme).toContain("NOT_REPOSITORY");
     expect(readme).toContain("REF_NOT_FOUND");
     expect(readme).not.toContain("@latest");
-    expect(readme).not.toMatch(/npx (?!--yes )ruleblast@1\.0\.1/gu);
+    expect(readme).not.toMatch(/npx (?!--yes )ruleblast@1\.0\.2/gu);
     expect(`${readme}\n${read("CONTRACT.md")}`).not.toMatch(
       /release[- ]candidate|before package and tag publication/iu,
     );
     expect(readme).not.toMatch(/curl[^\r\n]*\|[^\r\n]*(?:sh|bash)/iu);
     expect(readme.slice(0, readme.indexOf("## Install"))).not.toMatch(
-      /table of contents|shields\.io|sponsor wall|architecture diagram/iu,
+      /table of contents|sponsor wall|architecture diagram/iu,
     );
     expect(readme).toContain(
       "npx ruleblast@1.0.0 diff 27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8 --to e420008a1c10c5c328e506247560117f4d40b855 --json",
@@ -215,6 +227,13 @@ How many rule realities are still hiding in it…?`);
     expect(roadmap).toContain("does not add an action, resolver surface, hosted component, or telemetry");
     expect(roadmap).toContain("public npm and GitHub APIs");
     expect(roadmap).toContain("No star, fork, or download count is a release guarantee");
+    expect(roadmap).toContain("2 instruction-line edits");
+    expect(roadmap).toContain("206 tracked paths");
+    expect(roadmap).toContain("4,476 unchanged paths");
+    expect(roadmap).toContain(
+      "zero tool-reported partial, unknown, or indeterminate paths for the modeled surfaces",
+    );
+    expect(roadmap).not.toContain("ruleblast demo [--explain <path>]");
   });
 });
 
@@ -411,7 +430,7 @@ describe("repository documentation integrity", () => {
       shippedStart,
       roadmap.indexOf("## **IN BUILD**", shippedStart),
     );
-    expect(shipped).toMatch(/packaged.+demo/isu);
+    expect(shipped).toMatch(/packaged.+verified case/isu);
     expect(roadmap).not.toContain("**Production-pipeline demo**");
   });
 });
@@ -428,7 +447,7 @@ describe("issue forms", () => {
     expect(form.name).toBeTruthy();
     expect(form.description).toBeTruthy();
     expect(form.title).toMatch(/^\[Blast Case\]/u);
-    expect(form.labels).toContain("blast-case");
+    expect(form.labels).toContain("bug");
 
     const requiredIds = (form.body ?? [])
       .filter((field) => field.validations?.required === true)
@@ -461,7 +480,7 @@ describe("issue forms", () => {
       .filter((field) => field.validations?.required === true)
       .map((field) => field.id);
     expect(form.title).toMatch(/^\[Profile evidence\]/u);
-    expect(form.labels).toContain("profile-evidence");
+    expect(form.labels).toContain("enhancement");
     expect(requiredIds).toEqual(expect.arrayContaining([
       "surface_id",
       "official_source_url",

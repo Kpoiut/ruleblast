@@ -8,6 +8,7 @@ RuleBlast grows by proving one product dimension at a time. This roadmap shows d
 |---|---|
 | **RELEASED** | A signed tag, npm version, and GitHub Release are public, and downloaded artifact bytes match the recorded manifest. |
 | **SHIPPED TO MAIN** | Merged and verified development behavior. This is not an npm release unless a tag and artifact are named. |
+| **RELEASE CANDIDATE** | Signed, reviewed source and exact package evidence exist on a release branch; merge, tag, npm, and GitHub Release remain separate authorized operations. |
 | **IN BUILD** | Work inside the active release boundary; incomplete until authorized publication and every external verification pass. |
 | **NEXT** | A selected, gated follow-up with no delivery date implied. |
 | **HORIZON** | Ordered product direction, not a guarantee or current support claim. |
@@ -21,10 +22,10 @@ The proof-bearing path from repository bytes to an explainable terminal result i
 - canonical result types with source disposition, completeness, ordering, and evidence provenance;
 - evidence-pinned Codex CLI and Claude Code CLI resolvers exercised by positive, negative, ordering, ambiguity, and unknown fixtures;
 - profile-neutral current, diff, transition, and impact analysis without vendor logic in the impact engine;
-- one parser and application seam for the four public actions: scan, diff, explain, and demo;
+- one parser and application seam for the four public actions: scan, diff, explain, and case;
 - semantic text rendering with golden views for aligned, split, changed, unchanged, unresolved, and no-source states;
 - deterministic JSON kept separate from presentation aliases and terminal wording;
-- a packaged, manifest-backed demo that expands deterministically and passes through the same snapshot, resolver, impact, explanation, and renderer path as repository analysis.
+- a packaged verified case backed by one immutable, source-content-free receipt and presented through the same explanation and renderer path as repository analysis;
 - packed-install verification for all four actions, deterministic JSON, side-effect boundaries, the published-file allowlist, and the measured performance budget;
 - a completed local-only field pilot and a promoted, source-content-free receipt for one immutable public-repository comparison;
 - a self-explaining README, maintained behavior contract, Blast Case contribution unit, changelog, and focused evidence forms whose claims are checked against behavior.
@@ -35,14 +36,7 @@ These capabilities are merged and verified as development behavior inside the `1
 
 ## **RELEASED** — `v1.0.0`: The Second Diff
 
-The first release is one local npm CLI:
-
-```text
-ruleblast [path]
-ruleblast diff [base]
-ruleblast explain <path> [--from <base>]
-ruleblast demo [--explain <path>]
-```
+The first release was designed around one local npm CLI: three repository-analysis operations plus a synthetic teaching action. The changelog preserves that historical interface accurately. Current public onboarding uses `scan`, `diff`, `explain`, and `case`; the old teaching name survives only as a hidden byte-identical v1 compatibility alias.
 
 The `v1.0.0` boundary completed four technical evidence gates and one independently verified publication gate:
 
@@ -68,7 +62,7 @@ Targeted work:
 - keep canonical result behavior stable while expanding fixtures, metamorphic invariants, packed-install evidence, and actionable error coverage;
 - reduce repeated boundary code instead of adding wrappers that merely rename the same operation;
 - tighten large-repository performance only where a reproducible case proves the need;
-- add the half-closed RuleBlast eye to repository presentation as a README asset, not a product UI;
+- present the selected horizontal RuleBlast hero at README scale as repository presentation, not product UI or packaged runtime media;
 - reframe the existing packaged teaching action around the promoted immutable real-repository case, preserve `demo` compatibility for v1 users, and keep canonical JSON stable without adding a fifth action;
 - retain complete one-command, global, project-local, maintenance, troubleshooting, and source-build installation guidance with exact `ruleblast@1.0.1` commands;
 - require every patch to carry at least one concrete correction, coverage, regression, or hardening delta.
@@ -85,12 +79,13 @@ Admission gates:
 
 ## **IN BUILD** — `v1.0.2`: Adoption and Operability
 
-This second patch closes the path from a technically sound tool to one that can be found, installed, trusted, and maintained. It does not add an action, resolver surface, hosted component, or telemetry.
+This active patch closes the path from a technically sound tool to one that can be found, installed, trusted, and maintained. It does not add an action, resolver surface, hosted component, or telemetry.
 
 Targeted work:
 
 - keep npm description, keywords, repository links, release checksums, and GitHub topics aligned with capabilities proven by tests;
 - put the promoted real receipt before synthetic teaching material and make the first useful command obvious from a fresh Git repository;
+- lead with an evidence-locked causal proof from immutable public `openai/codex` refs: 2 instruction-line edits, 206 tracked paths with changed projected stacks, 4,476 unchanged paths, and one exact source explanation; preserve the already-different profile relation and zero tool-reported partial, unknown, or indeterminate paths for the modeled surfaces instead of manufacturing a split;
 - verify fresh `npx`, global, and project-local install, upgrade, reinstall, and uninstall paths across supported Node.js versions and host shells;
 - provide a pull-request template, issue chooser, evidence checklist, and short contribution path that lead a report to one reproducible Blast Case;
 - turn only reproduced field failures into actionable diagnostics or maintenance guidance instead of guessing at user behavior;

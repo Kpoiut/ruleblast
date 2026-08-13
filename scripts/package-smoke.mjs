@@ -121,7 +121,6 @@ export async function runPackedPackageSmoke(packed, options = {}) {
     assertInstalledPackage(sourcePackage, installedPackage, packed.entry);
     const requiredFiles = [
       "CONTRACT.md",
-      "assets/ruleblast-eye.webp",
       "cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json",
     ];
     for (const required of requiredFiles) {

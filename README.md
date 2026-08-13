@@ -1,38 +1,82 @@
-# RuleBlast
+<h1 align="center">RuleBlast — Git diff for invisible repository instructions</h1>
 
-![RuleBlast eye](assets/ruleblast-eye.webp)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Kpoiut/ruleblast/main/assets/ruleblast-hero.png" width="100%" alt="RuleBlast — See the second diff. Local, read-only, evidence-first.">
+</p>
 
-## 33 instruction-line edits. 106 tracked paths changed stack.
+<p align="center">
+  <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
+  <a href="https://www.npmjs.com/package/ruleblast"><img src="https://img.shields.io/npm/v/ruleblast" alt="npm version"></a>
+  <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
+  <a href="LICENSE"><img src="https://img.shields.io/npm/l/ruleblast" alt="Apache-2.0 license"></a>
+</p>
 
-### One verified public repository. Both profiles changed. Zero uncertainty.
+<p align="center">
+  See where <code>AGENTS.md</code> and <code>CLAUDE.md</code> changes land—and where evidence-pinned Codex and Claude Code projections differ.<br>
+  <sub>Local · read-only · deterministic · zero telemetry · no network or model call during analysis</sub>
+</p>
 
-Git shows the first diff. RuleBlast finds the second.
+<p align="center">
+  <img src="assets/ruleblast-causal-proof.gif" width="1200" alt="A verified RuleBlast causal proof: two instruction-line edits change 206 projected path stacks, then one affected path is traced to its exact source">
+</p>
 
-That result comes from RuleBlast's own public repository across two immutable Git commits. The packaged receipt records every path transition for `AGENTS.md` and `CLAUDE.md`, binds the result to its core digest, and carries no copied source contents. Codex and Claude Code can share a repository without receiving the same repository instructions. RuleBlast makes that difference inspectable—locally, without calling a model, and with every counted path tied back to its sources.
+## Two lines. 206 path stacks. One exact cause.
+
+**2 instruction-line edits → 206 tracked paths changed stack.**
+
+This is an immutable comparison from the public Apache-2.0 [`openai/codex`](https://github.com/openai/codex) repository, not a synthetic fixture. The commit deletes six lines across three files. Two deleted lines belong to one nested [`AGENTS.md`](https://github.com/openai/codex/blob/8fcf2ad931b90589dd29a571f367e3185d26bbe0/codex-rs/tui/src/bottom_pane/AGENTS.md); RuleBlast traces the resulting projection change across the affected subtree.
+
+| Git records | RuleBlast reveals |
+|---|---|
+| 3 files, 6 deleted lines | 2 instruction-line edits |
+| 1 changed instruction source | 206 tracked paths changed stack |
+| — | 4,476 tracked paths remained unchanged |
+| — | Codex changed: 206 · Claude Code changed: 0 |
+
+Those counts are projected-stack transitions for `openai/codex-cli@1` and `anthropic/claude-code-cli@1`. The profiles already differed before this edit (`DIFFERENT → DIFFERENT`), so no path newly split across profiles.
+
+One affected path is [`codex-rs/tui/src/bottom_pane/action_required_title.rs`](https://github.com/openai/codex/blob/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c/codex-rs/tui/src/bottom_pane/action_required_title.rs). Its root `AGENTS.md` source stayed unchanged; its nested source moved from digest `eee0eae7…` (757 bytes) to `d6e6791a…` (564 bytes). The Codex projection changed, while Claude Code selected no source for that path.
+
+The [full comparison](https://github.com/openai/codex/compare/8fcf2ad931b90589dd29a571f367e3185d26bbe0...f0f483e8b2a2630bf8dfa5f8451e81eba20def6c) is pinned to [`8fcf2ad931b90589dd29a571f367e3185d26bbe0`](https://github.com/openai/codex/commit/8fcf2ad931b90589dd29a571f367e3185d26bbe0) → [`f0f483e8b2a2630bf8dfa5f8451e81eba20def6c`](https://github.com/openai/codex/commit/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c), with repository license evidence pinned at [`f73a072…/LICENSE`](https://github.com/openai/codex/blob/f73a07224653c2cc775b3f84f129b872b1e08f85/LICENSE). It was evaluated on 2026-08-13 using RuleBlast implementation [`517cc07af9d2d7dafb48b9f2b3cfaecd85444a1d`](https://github.com/Kpoiut/ruleblast/commit/517cc07af9d2d7dafb48b9f2b3cfaecd85444a1d), resolver revision 1, and the two profile IDs above. Repeated production runs produced the same 150,404,342 canonical bytes, SHA-256 `5659e4cb83051aeaa246c3b45fad75698754806db30f4e710849d220d12ee9d2`.
+
+Across 4,682 candidate paths, the tool reported exactly zero partial, zero unknown, and zero indeterminate results for the modeled surfaces. That is scoped projection evidence—not a claim about model compliance or response behavior.
+
+Run the same comparison from an `openai/codex` checkout containing both immutable commits:
+
+```bash
+ruleblast diff 8fcf2ad931b90589dd29a571f367e3185d26bbe0 --to f0f483e8b2a2630bf8dfa5f8451e81eba20def6c
+```
+
+Git shows the changed source. RuleBlast shows every path that inherits the second diff—and why.
 
 ## Install
 
-The commands below define the exact `1.0.1` install interface. First verify that npm exposes the pinned version; a source checkout never proves registry availability. RuleBlast requires Node.js 20 or newer:
+The commands below define the exact `1.0.2` install interface. First verify that npm exposes the pinned version; a source checkout never proves registry availability. RuleBlast requires Node.js 20 or newer:
 
 ```bash
 node --version
-npm view ruleblast@1.0.1 version
+npm view ruleblast@1.0.2 version
 ```
 
-When npm reports `1.0.1`, the shortest path needs no permanent global install. `npx` downloads and runs the complete pinned package through npm's cache:
+When npm reports `1.0.2`, start inside the Git repository whose tracked instruction projection you want to inspect. `npx` downloads and runs the complete pinned package through npm's cache without a permanent global install:
 
 ```bash
-npx --yes ruleblast@1.0.1 --help
 cd <your-git-repository>
-npx --yes ruleblast@1.0.1 .
+npx --yes ruleblast@1.0.2 .
 ```
 
-`--help` works from any directory. Analysis commands require a Git repository; `NOT_REPOSITORY` means to `cd` into one first. If a diff reports `REF_NOT_FOUND`, replace `HEAD~1` with an existing commit or ref from that repository.
+That single `npx` command downloads the full pinned CLI and immediately scans the repository. To inspect the interface before analysis, `--help` works from any directory:
+
+```bash
+npx --yes ruleblast@1.0.2 --help
+```
+
+Analysis commands require a Git repository; `NOT_REPOSITORY` means to `cd` into one first. If a diff reports `REF_NOT_FOUND`, replace `HEAD~1` with an existing commit or ref from that repository.
 
 A global install will download the full CLI once and expose `ruleblast` on your command path:
 
 ```bash
-npm install --global ruleblast@1.0.1
+npm install --global ruleblast@1.0.2
 ruleblast --version
 ruleblast --help
 ruleblast
@@ -41,26 +85,26 @@ ruleblast
 For a repository-owned tool version, install it locally and commit the resulting package lock:
 
 ```bash
-npm install --save-dev --save-exact ruleblast@1.0.1
+npm install --save-dev --save-exact ruleblast@1.0.2
 npx ruleblast --version
 npx ruleblast --help
 npx ruleblast
 ```
 
-These npm commands are verified in PowerShell or Command Prompt on Windows and in bash on Linux. The four v1 actions stay available through the one-command form:
+The release gate covers Node.js 20, 22, 24, and 26 on Windows and Linux. It executes the installed `.cmd` through both Command Prompt and PowerShell on Windows, and the POSIX shim through bash on Linux. A registry upgrade from exact `1.0.1` to `1.0.2` remains conditional until both versions exist publicly, each npm `dist.integrity` matches its authorized durable artifact, and the guarded `v1.0.2` tag workflow passes. That dispatched workflow proves the install lifecycle; it does not by itself prove publication or artifact parity. The four v1 actions stay available through the one-command form:
 
 ```bash
 # scan the current repository
-npx --yes ruleblast@1.0.1 .
+npx --yes ruleblast@1.0.2 .
 
 # compare a base commit with the tracked worktree
-npx --yes ruleblast@1.0.1 diff HEAD~1
+npx --yes ruleblast@1.0.2 diff HEAD~1
 
 # explain one tracked path across that transition
-npx --yes ruleblast@1.0.1 explain packages/api/internal/refund.ts --from HEAD~1
+npx --yes ruleblast@1.0.2 explain packages/api/internal/refund.ts --from HEAD~1
 
 # inspect the packaged verified public-repository case after installation
-npx --yes ruleblast@1.0.1 case
+npx --yes ruleblast@1.0.2 case
 ```
 
 Use an explicit uninstall before reinstalling the same scope. This makes the reversible boundary visible and avoids treating an in-place write as proof of cleanup:
@@ -70,26 +114,26 @@ Use an explicit uninstall before reinstalling the same scope. This makes the rev
 npm uninstall --global ruleblast
 
 # reinstall the global CLI at the pinned version
-npm install --global ruleblast@1.0.1
+npm install --global ruleblast@1.0.2
 
 # remove the project-local CLI
 npm uninstall --save-dev ruleblast
 
 # reinstall the project-local CLI at the pinned version
-npm install --save-dev --save-exact ruleblast@1.0.1
+npm install --save-dev --save-exact ruleblast@1.0.2
 ```
 
 If a global install reports a permission error, use the `npx` or project-local form instead of elevating the installer. If npm reports damaged cache metadata, verify the cache and retry the exact version:
 
 ```bash
 npm cache verify
-npx --yes ruleblast@1.0.1 --help
+npx --yes ruleblast@1.0.2 --help
 ```
 
-For a source build, use the `v1.0.1` release-source tag after it is visible on GitHub. This path still requires npm dependency access or a populated npm cache; it is not a workaround for a complete registry outage:
+For a source build, use the `v1.0.2` release-source tag after it is visible on GitHub. This path still requires npm dependency access or a populated npm cache; it is not a workaround for a complete registry outage:
 
 ```bash
-git clone --branch v1.0.1 --depth 1 https://github.com/Kpoiut/ruleblast.git
+git clone --branch v1.0.2 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
 npm ci --ignore-scripts
 npm run build
@@ -110,12 +154,13 @@ The checked-in [canonical receipt](cases/kpoiut__ruleblast/27d52e2cd6ee..e420008
 `case` reads and verifies that exact promoted receipt. It works outside a Git checkout, performs no network or model call, and does not rerun the analysis from unavailable source bytes:
 
 ```bash
-npx --yes ruleblast@1.0.1 case
-npx --yes ruleblast@1.0.1 case --json
-npx --yes ruleblast@1.0.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@1.0.2 case
+npx --yes ruleblast@1.0.2 case --json
+npx --yes ruleblast@1.0.2 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
-## Terminal transcript
+<details>
+<summary><strong>Exact packaged-case terminal transcript</strong></summary>
 
 This is production CLI output over the packaged, verified receipt:
 
@@ -137,12 +182,14 @@ Pick one path. See every source:
 Scope: 106 tracked paths · repository-only · resolver revision 1
 ```
 
+</details>
+
 ## Explain one path
 
 The overview is a doorway, not the proof. Drill into the same immutable case and inspect each recorded selected, empty, imported, applied, excluded, or unresolved source:
 
 ```bash
-npx --yes ruleblast@1.0.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@1.0.2 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 <details>
@@ -150,10 +197,10 @@ npx --yes ruleblast@1.0.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.ym
 
 The receipt was produced by the production Git snapshot, profile, impact, and canonicalization path. The packaged command verifies the full receipt SHA-256, canonical single-line encoding, repository and ref identity, resolver revision, and core digest before presenting its `resultCore` directly.
 
-Run the source proof from the `v1.0.1` release source after the tag is visible:
+Run the source proof from the `v1.0.2` release source after the tag is visible:
 
 ```bash
-git clone --branch v1.0.1 --depth 1 https://github.com/Kpoiut/ruleblast.git
+git clone --branch v1.0.2 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
 npm ci --ignore-scripts
 npm run build
@@ -201,19 +248,19 @@ The optional positional path is a filesystem starting point used to discover the
 
 ```bash
 # Inspect the current tracked repository
-npx --yes ruleblast@1.0.1 .
+npx --yes ruleblast@1.0.2 .
 
 # Discover the repository from a nested filesystem path, then scan it
-npx --yes ruleblast@1.0.1 packages/api/internal
+npx --yes ruleblast@1.0.2 packages/api/internal
 
 # Compare a commit with the tracked worktree
-npx --yes ruleblast@1.0.1 diff HEAD~1
+npx --yes ruleblast@1.0.2 diff HEAD~1
 
 # Inspect one path across that transition
-npx --yes ruleblast@1.0.1 explain packages/api/internal/refund.ts --from HEAD~1
+npx --yes ruleblast@1.0.2 explain packages/api/internal/refund.ts --from HEAD~1
 
 # Emit deterministic machine-readable output
-npx --yes ruleblast@1.0.1 diff HEAD~1 --json
+npx --yes ruleblast@1.0.2 diff HEAD~1 --json
 ```
 
 ## Contribute a Blast Case
@@ -224,9 +271,11 @@ Promoted public-repository evidence lives under [`cases/`](cases/README.md) as a
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for immutable-ref, publication-permission, rejection, and test requirements, or open a focused [wrong blast](.github/ISSUE_TEMPLATE/wrong-blast.yml), [missing blast](.github/ISSUE_TEMPLATE/missing-blast.yml), [weird blast](.github/ISSUE_TEMPLATE/weird-blast.yml), or [profile evidence](.github/ISSUE_TEMPLATE/profile-evidence.yml) form.
 
+The [pull request template](.github/PULL_REQUEST_TEMPLATE.md) keeps reviews test-first and inside the product boundary. Sensitive reports follow [SECURITY.md](SECURITY.md); project participation follows the [Code of Conduct](CODE_OF_CONDUCT.md). The selected [RuleBlast hero](assets/ruleblast-hero.png) and causal proof are repository presentation assets; neither is shipped in the CLI package.
+
 ## Roadmap
 
-The `1.0.1` release tree carries the hardened architecture, verified packaged case, exact install interface, packed-install proof, field pilot, and first real receipt. Registry, tag, and GitHub Release availability remain independently verifiable external facts rather than claims inferred from repository prose. Future stages are labeled by maturity and evidence gate rather than dates.
+The `1.0.2` build carries the hardened architecture, verified packaged case, exact install interface, packed-install proof, field pilot, first real receipt, and the adoption/operability work described in the roadmap. Registry, tag, and GitHub Release availability remain independently verifiable external facts rather than claims inferred from repository prose. Future stages are labeled by maturity and evidence gate rather than dates.
 
 Today: Codex + Claude Code.
 

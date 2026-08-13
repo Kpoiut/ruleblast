@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Confidential vulnerability report (conditional)
+    url: https://github.com/Kpoiut/ruleblast/security/advisories/new
+    about: Use only when GitHub confirms private reporting is enabled; otherwise do not post secrets publicly.
+  - name: Contribution and Blast Case guide
+    url: https://github.com/Kpoiut/ruleblast/blob/main/CONTRIBUTING.md
+    about: Reduce a projection problem to immutable refs, canonical output, and one surprise.

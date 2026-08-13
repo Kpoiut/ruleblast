@@ -2,8 +2,7 @@ name: Wrong blast
 description: Report a reproducible path, count, relation, or source decision that is wrong.
 title: "[Blast Case] wrong: "
 labels:
-  - blast-case
-  - wrong-blast
+  - bug
 body:
   - type: markdown
     attributes:
