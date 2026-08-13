@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -173,11 +173,89 @@ describe("v1.0.2 adoption contract", () => {
 
   it("preserves the original packaged eye without a generated derivative", () => {
     const readme = read("README.md");
-    expect(readme).toContain("![RuleBlast eye](assets/ruleblast-eye.webp)");
+    expect(readme).toContain('<img src="assets/ruleblast-eye.webp" width="520"');
     expect(createHash("sha256").update(
       readFileSync(join(repositoryRoot, "assets/ruleblast-eye.webp")),
     ).digest("hex")).toBe(
       "8a95aa9e4f697a258200ddfd2180d728b73d4abcbf778b45e5f223094cfd85ed",
     );
+  });
+
+  it("leads with an evidence-locked causal hero instead of a demo fixture", () => {
+    const readme = read("README.md");
+    const eye = readme.indexOf("assets/ruleblast-eye.webp");
+    const hero = readme.indexOf("assets/ruleblast-causal-proof.gif");
+    const cause = readme.indexOf("2 instruction-line edits");
+    const blast = readme.indexOf("206 tracked paths changed stack");
+    const explain = readme.indexOf(
+      "codex-rs/tui/src/bottom_pane/action_required_title.rs",
+    );
+    const install = readme.indexOf("## Install");
+    expect(eye).toBeGreaterThan(-1);
+    expect(hero).toBeGreaterThan(eye);
+    expect(cause).toBeGreaterThan(hero);
+    expect(blast).toBeGreaterThan(cause);
+    expect(explain).toBeGreaterThan(blast);
+    expect(install).toBeGreaterThan(explain);
+    expect(readme).toContain(
+      "8fcf2ad931b90589dd29a571f367e3185d26bbe0",
+    );
+    expect(readme).toContain(
+      "f0f483e8b2a2630bf8dfa5f8451e81eba20def6c",
+    );
+    expect(readme).toContain("4,476 tracked paths remained unchanged");
+    expect(readme).toContain("Codex changed: 206 · Claude Code changed: 0");
+    expect(readme).toContain("openai/codex-cli@1");
+    expect(readme).toContain("anthropic/claude-code-cli@1");
+    expect(readme).toContain("DIFFERENT → DIFFERENT");
+    expect(readme).toMatch(/no path newly split across profiles/iu);
+    expect(readme).toMatch(/zero partial, zero unknown, and zero indeterminate/iu);
+    expect(readme).toMatch(/not a claim about model compliance or response behavior/iu);
+    expect(readme).toContain(
+      "517cc07af9d2d7dafb48b9f2b3cfaecd85444a1d",
+    );
+    expect(readme).toContain(
+      "5659e4cb83051aeaa246c3b45fad75698754806db30f4e710849d220d12ee9d2",
+    );
+    expect(readme).toContain("resolver revision 1");
+    expect(readme).toContain(
+      "https://github.com/openai/codex/blob/f73a07224653c2cc775b3f84f129b872b1e08f85/LICENSE",
+    );
+    expect(readme).toContain(
+      "ruleblast diff 8fcf2ad931b90589dd29a571f367e3185d26bbe0 --to f0f483e8b2a2630bf8dfa5f8451e81eba20def6c",
+    );
+    expect(readme).not.toMatch(/AI behavior|AI brains|DEMO FIXTURE|ruleblast demo/iu);
+
+    const heroPath = join(repositoryRoot, "assets/ruleblast-causal-proof.gif");
+    const bytes = readFileSync(heroPath);
+    expect(bytes.subarray(0, 6).toString("ascii")).toBe("GIF89a");
+    expect(bytes.readUInt16LE(6)).toBe(1200);
+    expect(bytes.readUInt16LE(8)).toBe(675);
+    expect(statSync(heroPath).size).toBeLessThanOrEqual(5 * 1024 * 1024);
+    expect(bytes.toString("latin1").match(/\x21\xf9\x04/gu)?.length ?? 0)
+      .toBeGreaterThanOrEqual(12);
+    expect(createHash("sha256").update(bytes).digest("hex")).toBe(
+      "2e12f0fa7f302b8e8b75643c4cf982ddb9c40abf9f2550f4e5a202aee8a274e3",
+    );
+    let totalDelayCentiseconds = 0;
+    for (let offset = 0; offset <= bytes.length - 8; offset += 1) {
+      if (
+        bytes[offset] === 0x21 && bytes[offset + 1] === 0xf9 &&
+        bytes[offset + 2] === 0x04
+      ) {
+        totalDelayCentiseconds += bytes.readUInt16LE(offset + 4);
+      }
+    }
+    expect(totalDelayCentiseconds).toBe(1_340);
+    expect(bytes.toString("ascii")).toContain("NETSCAPE2.0");
+
+    const descriptor = readJson<PackageDescriptor>("package.json");
+    expect(descriptor.files).not.toContain("assets/ruleblast-causal-proof.gif");
+
+    const changelog = read("CHANGELOG.md");
+    const current = changelog.slice(0, changelog.indexOf("## 1.0.1"));
+    expect(current).toMatch(/causal proof/iu);
+    expect(current).toContain("2 instruction-line edits");
+    expect(current).toContain("206 tracked paths");
   });
 });

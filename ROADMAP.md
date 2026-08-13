@@ -35,14 +35,7 @@ These capabilities are merged and verified as development behavior inside the `1
 
 ## **RELEASE CANDIDATE** — `v1.0.0`: The Second Diff
 
-The first release is one local npm CLI:
-
-```text
-ruleblast [path]
-ruleblast diff [base]
-ruleblast explain <path> [--from <base>]
-ruleblast demo [--explain <path>]
-```
+The first release was designed around one local npm CLI: three repository-analysis operations plus a synthetic teaching action. The changelog preserves that historical interface accurately. Current public onboarding uses `scan`, `diff`, `explain`, and `case`; the old teaching name survives only as a hidden byte-identical v1 compatibility alias.
 
 The `v1.0.0` boundary carries four completed technical evidence gates and one remaining external gate:
 
@@ -89,6 +82,7 @@ Targeted work:
 
 - keep npm description, keywords, repository links, release checksums, and GitHub topics aligned with capabilities proven by tests;
 - put the promoted real receipt before synthetic teaching material and make the first useful command obvious from a fresh Git repository;
+- lead with an evidence-locked causal proof from immutable public `openai/codex` refs: 2 instruction-line edits, 206 tracked paths with changed projected stacks, 4,476 unchanged paths, and one exact source explanation; preserve the already-different profile relation and zero tool-reported partial, unknown, or indeterminate paths for the modeled surfaces instead of manufacturing a split;
 - verify fresh `npx`, global, and project-local install, upgrade, reinstall, and uninstall paths across supported Node.js versions and host shells;
 - provide a pull-request template, issue chooser, evidence checklist, and short contribution path that lead a report to one reproducible Blast Case;
 - turn only reproduced field failures into actionable diagnostics or maintenance guidance instead of guessing at user behavior;

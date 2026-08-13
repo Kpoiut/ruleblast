@@ -85,15 +85,18 @@ describe("README story contract", () => {
   });
 
   it("leads with verified evidence, then gives the exact install interface early", () => {
-    expect(readme).toMatch(/^# RuleBlast\s/u);
+    expect(readme).toMatch(/^<h1 align="center">RuleBlast<\/h1>\s/u);
     expectOrdered(readme, [
-      "33 instruction-line edits. 106 tracked paths changed stack.",
-      "Git shows the first diff. RuleBlast finds the second.",
+      "assets/ruleblast-eye.webp",
+      "assets/ruleblast-causal-proof.gif",
+      "2 instruction-line edits",
+      "206 tracked paths changed stack",
+      "codex-rs/tui/src/bottom_pane/action_required_title.rs",
       "## Install",
       "npx --yes ruleblast@1.0.2",
-      "## Terminal transcript",
+      "## Run the verified case",
+      "Exact packaged-case terminal transcript",
       "## Explain one path",
-      "<details>",
       "## Scope",
       "## How it works",
       "## Examples",
@@ -101,15 +104,15 @@ describe("README story contract", () => {
       "## Roadmap",
     ]);
 
-    const marker = readme.indexOf("# RuleBlast");
-    for (const metric of ["33", "106", "zero"]) {
+    const marker = readme.indexOf("RuleBlast</h1>");
+    for (const metric of ["2", "206", "4,476", "zero partial"]) {
       expect(readme.indexOf(metric)).toBeGreaterThan(marker);
     }
     expect(readme).not.toContain("DEMO FIXTURE");
   });
 
   it("embeds the checked golden verified-case transcript exactly", () => {
-    const transcript = /## Terminal transcript[^`]*```text\r?\n([\s\S]*?)\r?\n```/u
+    const transcript = /Exact packaged-case terminal transcript<\/strong><\/summary>[\s\S]*?```text\r?\n([\s\S]*?)\r?\n```/u
       .exec(readme)?.[1]?.replace(/\r\n/g, "\n");
     const golden = read("test/golden/diff-case.txt")
       .replace(/\r\n/g, "\n")
@@ -119,7 +122,7 @@ describe("README story contract", () => {
 
   it("ships the RuleBlast eye referenced by README", () => {
     const asset = "assets/ruleblast-eye.webp";
-    expect(readme).toContain(`![RuleBlast eye](${asset})`);
+    expect(readme).toContain(`<img src="${asset}" width="520"`);
     const bytes = readFileSync(join(repositoryRoot, asset));
     expect(bytes.subarray(8, 12).toString("ascii")).toBe("WEBP");
     expect(bytes.byteLength).toBe(11_052);
@@ -215,6 +218,13 @@ How many rule realities are still hiding in it…?`);
     expect(roadmap).toContain("does not add an action, resolver surface, hosted component, or telemetry");
     expect(roadmap).toContain("public npm and GitHub APIs");
     expect(roadmap).toContain("No star, fork, or download count is a release guarantee");
+    expect(roadmap).toContain("2 instruction-line edits");
+    expect(roadmap).toContain("206 tracked paths");
+    expect(roadmap).toContain("4,476 unchanged paths");
+    expect(roadmap).toContain(
+      "zero tool-reported partial, unknown, or indeterminate paths for the modeled surfaces",
+    );
+    expect(roadmap).not.toContain("ruleblast demo [--explain <path>]");
   });
 });
 

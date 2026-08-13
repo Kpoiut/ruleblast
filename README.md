@@ -1,14 +1,50 @@
-# RuleBlast
+<h1 align="center">RuleBlast</h1>
 
-![RuleBlast eye](assets/ruleblast-eye.webp)
+<p align="center">
+  <strong>Git diff for invisible repository instructions.</strong><br>
+  See where <code>AGENTS.md</code> and <code>CLAUDE.md</code> changes land—and where evidence-pinned Codex and Claude Code projections differ.
+</p>
 
-## 33 instruction-line edits. 106 tracked paths changed stack.
+<p align="center">
+  <img src="assets/ruleblast-eye.webp" width="520" alt="The original RuleBlast eye">
+</p>
 
-### One verified public repository. Both profiles changed. Zero uncertainty.
+<p align="center">
+  <sub>Local · read-only · deterministic · zero telemetry · no model call</sub>
+</p>
 
-Git shows the first diff. RuleBlast finds the second.
+<p align="center">
+  <img src="assets/ruleblast-causal-proof.gif" width="1200" alt="A verified RuleBlast causal proof: two instruction-line edits change 206 projected path stacks, then one affected path is traced to its exact source">
+</p>
 
-That result comes from RuleBlast's own public repository across two immutable Git commits. The packaged receipt records every path transition for `AGENTS.md` and `CLAUDE.md`, binds the result to its core digest, and carries no copied source contents. Codex and Claude Code can share a repository without receiving the same repository instructions. RuleBlast makes that difference inspectable—locally, without calling a model, and with every counted path tied back to its sources.
+## Two lines. 206 path stacks. One exact cause.
+
+**2 instruction-line edits → 206 tracked paths changed stack.**
+
+This is an immutable comparison from the public Apache-2.0 [`openai/codex`](https://github.com/openai/codex) repository, not a synthetic fixture. The commit deletes six lines across three files. Two deleted lines belong to one nested [`AGENTS.md`](https://github.com/openai/codex/blob/8fcf2ad931b90589dd29a571f367e3185d26bbe0/codex-rs/tui/src/bottom_pane/AGENTS.md); RuleBlast traces the resulting projection change across the affected subtree.
+
+| Git records | RuleBlast reveals |
+|---|---|
+| 3 files, 6 deleted lines | 2 instruction-line edits |
+| 1 changed instruction source | 206 tracked paths changed stack |
+| — | 4,476 tracked paths remained unchanged |
+| — | Codex changed: 206 · Claude Code changed: 0 |
+
+Those counts are projected-stack transitions for `openai/codex-cli@1` and `anthropic/claude-code-cli@1`. The profiles already differed before this edit (`DIFFERENT → DIFFERENT`), so no path newly split across profiles.
+
+One affected path is [`codex-rs/tui/src/bottom_pane/action_required_title.rs`](https://github.com/openai/codex/blob/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c/codex-rs/tui/src/bottom_pane/action_required_title.rs). Its root `AGENTS.md` source stayed unchanged; its nested source moved from digest `eee0eae7…` (757 bytes) to `d6e6791a…` (564 bytes). The Codex projection changed, while Claude Code selected no source for that path.
+
+The [full comparison](https://github.com/openai/codex/compare/8fcf2ad931b90589dd29a571f367e3185d26bbe0...f0f483e8b2a2630bf8dfa5f8451e81eba20def6c) is pinned to [`8fcf2ad931b90589dd29a571f367e3185d26bbe0`](https://github.com/openai/codex/commit/8fcf2ad931b90589dd29a571f367e3185d26bbe0) → [`f0f483e8b2a2630bf8dfa5f8451e81eba20def6c`](https://github.com/openai/codex/commit/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c), with repository license evidence pinned at [`f73a072…/LICENSE`](https://github.com/openai/codex/blob/f73a07224653c2cc775b3f84f129b872b1e08f85/LICENSE). It was evaluated on 2026-08-13 using RuleBlast implementation [`517cc07af9d2d7dafb48b9f2b3cfaecd85444a1d`](https://github.com/Kpoiut/ruleblast/commit/517cc07af9d2d7dafb48b9f2b3cfaecd85444a1d), resolver revision 1, and the two profile IDs above. Repeated production runs produced the same 150,404,342 canonical bytes, SHA-256 `5659e4cb83051aeaa246c3b45fad75698754806db30f4e710849d220d12ee9d2`.
+
+Across 4,682 candidate paths, the tool reported exactly zero partial, zero unknown, and zero indeterminate results for the modeled surfaces. That is scoped projection evidence—not a claim about model compliance or response behavior.
+
+Run the same comparison from an `openai/codex` checkout containing both immutable commits:
+
+```bash
+ruleblast diff 8fcf2ad931b90589dd29a571f367e3185d26bbe0 --to f0f483e8b2a2630bf8dfa5f8451e81eba20def6c
+```
+
+Git shows the changed source. RuleBlast shows every path that inherits the second diff—and why.
 
 ## Install
 
@@ -120,7 +156,8 @@ npx --yes ruleblast@1.0.2 case --json
 npx --yes ruleblast@1.0.2 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
-## Terminal transcript
+<details>
+<summary><strong>Exact packaged-case terminal transcript</strong></summary>
 
 This is production CLI output over the packaged, verified receipt:
 
@@ -141,6 +178,8 @@ Pick one path. See every source:
 
 Scope: 106 tracked paths · repository-only · resolver revision 1
 ```
+
+</details>
 
 ## Explain one path
 
