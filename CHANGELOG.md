@@ -2,7 +2,14 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 1.0.2 — IN BUILD
+## Unreleased — repository only
+
+- Put the exact `npx --yes ruleblast@1.0.2 case` command and direct proof, install, and contribution links immediately below the README tagline.
+- Added a low-friction documentation-correction form that does not require a Blast Case or canonical JSON.
+
+Post-tag repository changes are not part of the published v1.0.2 package bytes.
+
+## 1.0.2 — RELEASED
 
 ### Changed
 
@@ -12,7 +19,11 @@ All notable user-visible changes to RuleBlast are recorded here.
 - Extended the candidate install gate to Node.js 26, actual Command Prompt plus PowerShell execution on Windows, bash on Linux, and a tag-only exact-version registry upgrade path that cannot run in candidate mode.
 - Replaced the weak synthetic-first README framing with an evidence-locked causal proof from immutable `openai/codex` refs: 2 instruction-line edits changed projected stacks for 206 tracked paths, while 4,476 remained unchanged; the proof traces one path to its exact changed source without inferring model behavior.
 
-This section records verified branch work only. Tag, npm, GitHub Release, registry upgrade evidence, community settings, and adoption observations remain external facts and are not inferred from this source tree.
+### Release artifact
+
+- Signed tag object `136c56cb5f1ba2de0fcaf7ab899ebf4678bc824b` targets signed commit `18c250b2b58910c81e5d5d9cefb7c31ca54304a0`.
+- npm and the GitHub Release serve the same 89,244-byte tarball with SHA-256 `0d40d2297924e70c93bad51a9a84d7bd8af174ffa4cd008567f926adb0b941a2`; the release manifest SHA-256 is `59134fd306cdd34f92da145e3a6671d4099023acefe2add73874448c5f27fc64`.
+- The guarded eight-cell registry matrix verified exact `1.0.1 → 1.0.2` install lifecycles on Windows and Linux with Node.js 20, 22, 24, and 26.
 
 ## 1.0.1
 

@@ -97,15 +97,35 @@ describe("v1.0.2 adoption contract", () => {
     expect(readme).toContain("npx --yes ruleblast@1.0.2 case");
     expect(readme).not.toMatch(/ruleblast demo/iu);
     expect(readme).not.toContain("DEMO FIXTURE");
+    expect(readme).not.toContain("remains conditional");
+    expect(readme).not.toMatch(/after (the )?tag is visible|`1\.0\.2` build carries/iu);
+    expect(readme).toContain(
+      "https://github.com/Kpoiut/ruleblast/actions/runs/31722775046",
+    );
+    expect(readme).toMatch(/registry upgrade.+verified.+eight/isu);
     expect(readme).toMatch(/no network or model call/iu);
     expect(readme).toMatch(/mutation, sync, generation, scoring, or auto-fix/iu);
     expect(readme).toMatch(/network calls, model calls, telemetry, dashboard, or product UI/iu);
+
+    const tagline = readme.indexOf("See where <code>AGENTS.md</code>");
+    const quickStart = readme.indexOf("<code>npx --yes ruleblast@1.0.2 case</code>");
+    const proofLink = readme.indexOf('href="#two-lines-206-path-stacks-one-exact-cause"');
+    const installLink = readme.indexOf('href="#install"');
+    const contributeLink = readme.indexOf('href="#contribute-a-blast-case"');
+    const causalProof = readme.indexOf("assets/ruleblast-causal-proof.gif");
+    expect(tagline).toBeGreaterThan(-1);
+    expect(quickStart).toBeGreaterThan(tagline);
+    expect(proofLink).toBeGreaterThan(quickStart);
+    expect(installLink).toBeGreaterThan(proofLink);
+    expect(contributeLink).toBeGreaterThan(installLink);
+    expect(causalProof).toBeGreaterThan(contributeLink);
   });
 
   it("publishes a truthful community funnel without shipping repository-only assets", () => {
     const required = [
       ".github/ISSUE_TEMPLATE/config.yml",
       ".github/ISSUE_TEMPLATE/install-run.yml",
+      ".github/ISSUE_TEMPLATE/docs-correction.yml",
       ".github/PULL_REQUEST_TEMPLATE.md",
       "SECURITY.md",
       "CODE_OF_CONDUCT.md",
@@ -158,9 +178,20 @@ describe("v1.0.2 adoption contract", () => {
     }
     expect(installReport).toMatch(/labels:\s*\n\s+- bug/iu);
 
+    const docsCorrection = read(".github/ISSUE_TEMPLATE/docs-correction.yml");
+    expect(docsCorrection).toMatch(/labels:\s*\n\s+- documentation/iu);
+    for (const field of ["page_or_link", "problem", "suggested_correction"]) {
+      expect(docsCorrection).toContain(`id: ${field}`);
+    }
+    expect(docsCorrection.match(/required:\s*true/gu)).toHaveLength(3);
+
     const contributing = read("CONTRIBUTING.md");
     expect(contributing).toContain("## Pull requests");
     expect(contributing).toContain(".github/PULL_REQUEST_TEMPLATE.md");
+    expect(contributing).toContain(
+      "https://github.com/Kpoiut/ruleblast/issues/new?template=docs-correction.yml",
+    );
+    expect(contributing).toMatch(/no Blast Case or canonical JSON is required/iu);
 
     const descriptor = readJson<PackageDescriptor>("package.json");
     expect(descriptor.files).not.toContain(".github");

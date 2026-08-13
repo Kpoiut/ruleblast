@@ -17,6 +17,16 @@
 </p>
 
 <p align="center">
+  <code>npx --yes ruleblast@1.0.2 case</code>
+</p>
+
+<p align="center">
+  <a href="#two-lines-206-path-stacks-one-exact-cause">Verified proof</a> ·
+  <a href="#install">Install</a> ·
+  <a href="#contribute-a-blast-case">Contribute</a>
+</p>
+
+<p align="center">
   <img src="assets/ruleblast-causal-proof.gif" width="1200" alt="A verified RuleBlast causal proof: two instruction-line edits change 206 projected path stacks, then one affected path is traced to its exact source">
 </p>
 
@@ -91,7 +101,7 @@ npx ruleblast --help
 npx ruleblast
 ```
 
-The release gate covers Node.js 20, 22, 24, and 26 on Windows and Linux. It executes the installed `.cmd` through both Command Prompt and PowerShell on Windows, and the POSIX shim through bash on Linux. A registry upgrade from exact `1.0.1` to `1.0.2` remains conditional until both versions exist publicly, each npm `dist.integrity` matches its authorized durable artifact, and the guarded `v1.0.2` tag workflow passes. That dispatched workflow proves the install lifecycle; it does not by itself prove publication or artifact parity. The four v1 actions stay available through the one-command form:
+The release gate covers Node.js 20, 22, 24, and 26 on Windows and Linux. It executes the installed `.cmd` through both Command Prompt and PowerShell on Windows, and the POSIX shim through bash on Linux. The registry upgrade from exact `1.0.1` to `1.0.2` was verified by the guarded [eight-cell release workflow](https://github.com/Kpoiut/ruleblast/actions/runs/31722775046) after both versions were public and their npm integrity values matched the authorized artifacts. That workflow proves the installed lifecycle; separate byte-parity checks bind npm and the GitHub Release to the durable tarball. The four v1 actions stay available through the one-command form:
 
 ```bash
 # scan the current repository
@@ -130,7 +140,7 @@ npm cache verify
 npx --yes ruleblast@1.0.2 --help
 ```
 
-For a source build, use the `v1.0.2` release-source tag after it is visible on GitHub. This path still requires npm dependency access or a populated npm cache; it is not a workaround for a complete registry outage:
+For a source build, use the published `v1.0.2` release-source tag. This path still requires npm dependency access or a populated npm cache; it is not a workaround for a complete registry outage:
 
 ```bash
 git clone --branch v1.0.2 --depth 1 https://github.com/Kpoiut/ruleblast.git
@@ -197,7 +207,7 @@ npx --yes ruleblast@1.0.2 case --explain .github/ISSUE_TEMPLATE/missing-blast.ym
 
 The receipt was produced by the production Git snapshot, profile, impact, and canonicalization path. The packaged command verifies the full receipt SHA-256, canonical single-line encoding, repository and ref identity, resolver revision, and core digest before presenting its `resultCore` directly.
 
-Run the source proof from the `v1.0.2` release source after the tag is visible:
+Run the source proof from the published `v1.0.2` release source:
 
 ```bash
 git clone --branch v1.0.2 --depth 1 https://github.com/Kpoiut/ruleblast.git
@@ -275,7 +285,7 @@ The [pull request template](.github/PULL_REQUEST_TEMPLATE.md) keeps reviews test
 
 ## Roadmap
 
-The `1.0.2` build carries the hardened architecture, verified packaged case, exact install interface, packed-install proof, field pilot, first real receipt, and the adoption/operability work described in the roadmap. Registry, tag, and GitHub Release availability remain independently verifiable external facts rather than claims inferred from repository prose. Future stages are labeled by maturity and evidence gate rather than dates.
+The released `1.0.2` boundary carries the hardened architecture, verified packaged case, exact install interface, packed-install proof, field pilot, first real receipt, and the adoption/operability work described in the roadmap. Its signed tag, npm package, GitHub Release, and byte-parity evidence are linked from the verified roadmap receipt. Future stages are labeled by maturity and evidence gate rather than dates.
 
 Today: Codex + Claude Code.
 

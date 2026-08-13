@@ -1,0 +1,27 @@
+name: Documentation correction
+description: Report a typo, broken link, stale command, or unclear sentence.
+title: "docs: "
+labels:
+  - documentation
+body:
+  - type: input
+    id: page_or_link
+    attributes:
+      label: Page or link
+      description: Which page, heading, or URL needs correction?
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Current problem
+      description: What is wrong, stale, broken, or unclear?
+    validations:
+      required: true
+  - type: textarea
+    id: suggested_correction
+    attributes:
+      label: Suggested correction
+      description: What should the documentation say instead?
+    validations:
+      required: true

@@ -46,7 +46,7 @@ describe("public release maturity", () => {
     const releasedHeading =
       "## **RELEASED** — `v1.0.1`: Ground-Truth Hardening";
     const activeHeading =
-      "## **IN BUILD** — `v1.0.2`: Adoption and Operability";
+      "## **RELEASED** — `v1.0.2`: Adoption and Operability";
     const releasedStart = roadmap.indexOf(releasedHeading);
     const activeStart = roadmap.indexOf(activeHeading);
 
@@ -73,6 +73,44 @@ describe("public release maturity", () => {
 
     expect(released).not.toMatch(
       /\bREMAINING\b|remain incomplete until|becomes the immutable source interface only when/iu,
+    );
+  });
+
+  it("records the independently verified v1.0.2 release receipt", () => {
+    const roadmap = read("ROADMAP.md");
+    const releasedHeading =
+      "## **RELEASED** — `v1.0.2`: Adoption and Operability";
+    const nextHeading = "## **NEXT** — `v1.1.0`: Blast Receipts";
+    const releasedStart = roadmap.indexOf(releasedHeading);
+    const nextStart = roadmap.indexOf(nextHeading);
+
+    expect(releasedStart).toBeGreaterThanOrEqual(0);
+    expect(nextStart).toBeGreaterThan(releasedStart);
+
+    const released = roadmap.slice(releasedStart, nextStart);
+    for (const evidence of [
+      "136c56cb5f1ba2de0fcaf7ab899ebf4678bc824b",
+      "18c250b2b58910c81e5d5d9cefb7c31ca54304a0",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v1.0.2",
+      "https://www.npmjs.com/package/ruleblast/v/1.0.2",
+      "89,244",
+      "0d40d2297924e70c93bad51a9a84d7bd8af174ffa4cd008567f926adb0b941a2",
+      "59134fd306cdd34f92da145e3a6671d4099023acefe2add73874448c5f27fc64",
+      "sha512-YNJp217L6g3PaEapgwcxmHRMxi/9aFwA1kNRp9HdlWOKv96ptWwLzLjjYkrGsh4fOD9ZGJ528oqlpoPbUVWMwA==",
+      "gitHead is absent",
+      "registry download and GitHub Release asset both match",
+      "https://github.com/Kpoiut/ruleblast/actions/runs/31722775046",
+      "not facts inferred from this checkout",
+    ]) {
+      expect(released).toContain(evidence);
+    }
+    expect(released).not.toMatch(/\bIN BUILD\b|remain conditional|publication.+incomplete/iu);
+
+    const changelog = read("CHANGELOG.md");
+    expect(changelog).toContain("## Unreleased — repository only");
+    expect(changelog).toContain("## 1.0.2 — RELEASED");
+    expect(changelog).toContain(
+      "Post-tag repository changes are not part of the published v1.0.2 package bytes.",
     );
   });
 

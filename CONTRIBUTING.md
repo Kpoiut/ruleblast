@@ -1,10 +1,12 @@
 # Contributing to RuleBlast
 
-RuleBlast is in its `v1.0.2` build. The highest-value contribution is a small, reproducible challenge to the [public contract](CONTRACT.md), not a broad feature pitch.
+RuleBlast `v1.0.2` is released. The highest-value contribution is a small, reproducible challenge to the [public contract](CONTRACT.md), not a broad feature pitch.
 
 ## Pull requests
 
 Start from the repository [pull request template](.github/PULL_REQUEST_TEMPLATE.md). Keep one change atomic, link the failing behavior test or documentation gap, cite immutable refs and official resolver evidence when behavior changes, and report the focused plus full verification actually run. Documentation-only pull requests may mark behavior-specific checks not applicable with a short explanation; they must not invent a Blast Case.
+
+For a typo, broken link, stale command, or unclear sentence, use the [documentation correction form](https://github.com/Kpoiut/ruleblast/issues/new?template=docs-correction.yml). It asks only for the page or link, the problem, and a suggested correction; no Blast Case or canonical JSON is required.
 
 ## One atomic contribution: a Blast Case
 

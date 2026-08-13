@@ -84,7 +84,7 @@ describe("README story contract", () => {
     }
   });
 
-  it("leads with verified evidence, then gives the exact install interface early", () => {
+  it("leads with the exact first command, then verified evidence and install detail", () => {
     expect(readme).toMatch(
       /^<h1 align="center">RuleBlast — Git diff for invisible repository instructions<\/h1>\s/u,
     );
@@ -92,12 +92,12 @@ describe("README story contract", () => {
       "assets/ruleblast-hero.png",
       "actions/workflows/verify.yml/badge.svg",
       "img.shields.io/npm/v/ruleblast",
+      "<code>npx --yes ruleblast@1.0.2 case</code>",
       "assets/ruleblast-causal-proof.gif",
       "2 instruction-line edits",
       "206 tracked paths changed stack",
       "codex-rs/tui/src/bottom_pane/action_required_title.rs",
       "## Install",
-      "npx --yes ruleblast@1.0.2",
       "## Run the verified case",
       "Exact packaged-case terminal transcript",
       "## Explain one path",
@@ -221,10 +221,10 @@ How many rule realities are still hiding in it…?`);
     expect(roadmap).not.toMatch(/private repository (was|has been) analyzed/iu);
   });
 
-  it("keeps v1.0.2 as a gated adoption and operability patch", () => {
+  it("records v1.0.2 as the bounded adoption and operability release", () => {
     const roadmap = read("ROADMAP.md");
     expect(roadmap).toContain("`v1.0.2`: Adoption and Operability");
-    expect(roadmap).toContain("does not add an action, resolver surface, hosted component, or telemetry");
+    expect(roadmap).toContain("did not add an action, resolver surface, hosted component, or telemetry");
     expect(roadmap).toContain("public npm and GitHub APIs");
     expect(roadmap).toContain("No star, fork, or download count is a release guarantee");
     expect(roadmap).toContain("2 instruction-line edits");

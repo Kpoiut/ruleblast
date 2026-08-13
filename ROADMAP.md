@@ -77,9 +77,9 @@ Admission gates:
 
 **Verified publication receipt.** Signed tag [`v1.0.1`](https://github.com/Kpoiut/ruleblast/releases/tag/v1.0.1) targets signed integration commit `02fcc41de50a32f31a1da96095fe72f8ca2e2b8d`. A clean rebuild at that integration commit proved a byte-identical package projection from reviewed candidate `7d643408eda5f7f435528e42dd187873ab792147`. [npm `ruleblast@1.0.1`](https://www.npmjs.com/package/ruleblast/v/1.0.1) reports integrity `sha512-PvJ6gKFMmB/cz6O+X22qQWmN9EPryZ3X8TMCP+/VGzuooB9yWc5AjVZPxY0wffw//vIDHGc+aiyX1+OcDnHQfg==`; direct tarball publication means registry `gitHead is absent` rather than invented. The registry download and GitHub Release asset both match the reviewed 99,047-byte tarball with SHA-256 `de9bc3db1ea209b48fd3a9108a40651f495b6ee4c2fd8dbbd0d9b88832283840`. These are independently verified external records, not facts inferred from this checkout.
 
-## **IN BUILD** — `v1.0.2`: Adoption and Operability
+## **RELEASED** — `v1.0.2`: Adoption and Operability
 
-This active patch closes the path from a technically sound tool to one that can be found, installed, trusted, and maintained. It does not add an action, resolver surface, hosted component, or telemetry.
+This release closed the path from a technically sound tool to one that can be found, installed, trusted, and maintained. It did not add an action, resolver surface, hosted component, or telemetry.
 
 Targeted work:
 
@@ -99,6 +99,8 @@ Admission gates:
 - growth work may improve the evidence and contribution funnel, but cannot weaken read-only analysis, uncertainty, determinism, or offline behavior.
 
 No star, fork, or download count is a release guarantee; the patch succeeds by making a useful result easier to discover and reproduce, then reporting observed public evidence honestly.
+
+**Verified publication receipt.** Signed tag object `136c56cb5f1ba2de0fcaf7ab899ebf4678bc824b` for [`v1.0.2`](https://github.com/Kpoiut/ruleblast/releases/tag/v1.0.2) targets signed commit `18c250b2b58910c81e5d5d9cefb7c31ca54304a0`. [npm `ruleblast@1.0.2`](https://www.npmjs.com/package/ruleblast/v/1.0.2) reports integrity `sha512-YNJp217L6g3PaEapgwcxmHRMxi/9aFwA1kNRp9HdlWOKv96ptWwLzLjjYkrGsh4fOD9ZGJ528oqlpoPbUVWMwA==`; exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download and GitHub Release asset both match the reviewed 89,244-byte tarball with SHA-256 `0d40d2297924e70c93bad51a9a84d7bd8af174ffa4cd008567f926adb0b941a2`; the canonical manifest has SHA-256 `59134fd306cdd34f92da145e3a6671d4099023acefe2add73874448c5f27fc64`. The dispatched [eight-cell registry upgrade matrix](https://github.com/Kpoiut/ruleblast/actions/runs/31722775046) completed successfully across Windows and Linux on Node.js 20, 22, 24, and 26. These are independently verified external records, not facts inferred from this checkout.
 
 ## **NEXT** — `v1.1.0`: Blast Receipts
 
