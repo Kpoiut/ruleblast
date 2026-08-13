@@ -7,6 +7,7 @@ RuleBlast grows by proving one product dimension at a time. This roadmap shows d
 | Label | Meaning |
 |---|---|
 | **SHIPPED TO MAIN** | Merged and verified development behavior. This is not an npm release unless a tag and artifact are named. |
+| **RELEASE CANDIDATE** | Signed, reviewed source and exact package evidence exist on a release branch; merge, tag, npm, and GitHub Release remain separate authorized operations. |
 | **IN BUILD** | Work inside the active release boundary; incomplete until authorized publication and every external verification pass. |
 | **NEXT** | A selected, gated follow-up with no delivery date implied. |
 | **HORIZON** | Ordered product direction, not a guarantee or current support claim. |
@@ -32,7 +33,7 @@ These capabilities are merged and verified as development behavior inside the `1
 
 > Git shows the first diff. How large is the second?
 
-## **IN BUILD** — `v1.0.0`: The Second Diff
+## **RELEASE CANDIDATE** — `v1.0.0`: The Second Diff
 
 The first release is one local npm CLI:
 
@@ -57,9 +58,9 @@ Earlier roadmap copy called this a “private-repository pilot.” The implement
 
 > The blast can now be explained. Can it travel without losing the receipt?
 
-## **NEXT** — `v1.0.1`: Ground-Truth Hardening
+## **RELEASE CANDIDATE** — `v1.0.1`: Ground-Truth Hardening
 
-This patch target deepens the existing product; it does not add a fifth action or a new product dimension.
+This patch deepens the existing product without adding a fifth action or a new product dimension. Its signed branch, exact package artifact, Windows/Linux install matrix, and review gates are complete; merge, tag, npm publication, GitHub Release, and registry re-verification remain independently authorized external operations.
 
 Targeted work:
 
@@ -80,9 +81,9 @@ Admission gates:
 - the early Install section and packed-install test must prove the complete pinned package still downloads and runs through one command on Node.js 20 or newer;
 - no behavior that cannot be expressed through the existing canonical result.
 
-## **NEXT** — `v1.0.2`: Adoption and Operability
+## **IN BUILD** — `v1.0.2`: Adoption and Operability
 
-This second patch closes the path from a technically sound tool to one that can be found, installed, trusted, and maintained. It does not add an action, resolver surface, hosted component, or telemetry.
+This second patch closes the path from a technically sound tool to one that can be found, installed, trusted, and maintained. It is being prepared on an isolated branch and cannot be called released until the exact `v1.0.0` and `v1.0.1` publication records exist. It does not add an action, resolver surface, hosted component, or telemetry.
 
 Targeted work:
 

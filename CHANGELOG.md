@@ -2,6 +2,15 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 1.0.2 — IN BUILD
+
+### Changed
+
+- Made the promoted immutable public-repository case and the one-command `npx --yes ruleblast@1.0.2 .` path the primary onboarding flow.
+- Advanced package, contract, source-build, troubleshooting, and release-candidate identity to exact `1.0.2` while preserving the historical `1.0.0` receipt command and hidden v1 `demo` compatibility.
+
+This section records verified branch work only. Tag, npm, GitHub Release, registry upgrade evidence, community settings, and adoption observations remain external facts and are not inferred from this source tree.
+
 ## 1.0.1
 
 ### Changed

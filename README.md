@@ -12,27 +12,32 @@ That result comes from RuleBlast's own public repository across two immutable Gi
 
 ## Install
 
-The commands below define the exact `1.0.1` install interface. First verify that npm exposes the pinned version; a source checkout never proves registry availability. RuleBlast requires Node.js 20 or newer:
+The commands below define the exact `1.0.2` install interface. First verify that npm exposes the pinned version; a source checkout never proves registry availability. RuleBlast requires Node.js 20 or newer:
 
 ```bash
 node --version
-npm view ruleblast@1.0.1 version
+npm view ruleblast@1.0.2 version
 ```
 
-When npm reports `1.0.1`, the shortest path needs no permanent global install. `npx` downloads and runs the complete pinned package through npm's cache:
+When npm reports `1.0.2`, start inside the Git repository whose tracked instruction projection you want to inspect. `npx` downloads and runs the complete pinned package through npm's cache without a permanent global install:
 
 ```bash
-npx --yes ruleblast@1.0.1 --help
 cd <your-git-repository>
-npx --yes ruleblast@1.0.1 .
+npx --yes ruleblast@1.0.2 .
 ```
 
-`--help` works from any directory. Analysis commands require a Git repository; `NOT_REPOSITORY` means to `cd` into one first. If a diff reports `REF_NOT_FOUND`, replace `HEAD~1` with an existing commit or ref from that repository.
+That single `npx` command downloads the full pinned CLI and immediately scans the repository. To inspect the interface before analysis, `--help` works from any directory:
+
+```bash
+npx --yes ruleblast@1.0.2 --help
+```
+
+Analysis commands require a Git repository; `NOT_REPOSITORY` means to `cd` into one first. If a diff reports `REF_NOT_FOUND`, replace `HEAD~1` with an existing commit or ref from that repository.
 
 A global install will download the full CLI once and expose `ruleblast` on your command path:
 
 ```bash
-npm install --global ruleblast@1.0.1
+npm install --global ruleblast@1.0.2
 ruleblast --version
 ruleblast --help
 ruleblast
@@ -41,7 +46,7 @@ ruleblast
 For a repository-owned tool version, install it locally and commit the resulting package lock:
 
 ```bash
-npm install --save-dev --save-exact ruleblast@1.0.1
+npm install --save-dev --save-exact ruleblast@1.0.2
 npx ruleblast --version
 npx ruleblast --help
 npx ruleblast
@@ -51,16 +56,16 @@ These npm commands are verified in PowerShell or Command Prompt on Windows and i
 
 ```bash
 # scan the current repository
-npx --yes ruleblast@1.0.1 .
+npx --yes ruleblast@1.0.2 .
 
 # compare a base commit with the tracked worktree
-npx --yes ruleblast@1.0.1 diff HEAD~1
+npx --yes ruleblast@1.0.2 diff HEAD~1
 
 # explain one tracked path across that transition
-npx --yes ruleblast@1.0.1 explain packages/api/internal/refund.ts --from HEAD~1
+npx --yes ruleblast@1.0.2 explain packages/api/internal/refund.ts --from HEAD~1
 
 # inspect the packaged verified public-repository case after installation
-npx --yes ruleblast@1.0.1 case
+npx --yes ruleblast@1.0.2 case
 ```
 
 Use an explicit uninstall before reinstalling the same scope. This makes the reversible boundary visible and avoids treating an in-place write as proof of cleanup:
@@ -70,26 +75,26 @@ Use an explicit uninstall before reinstalling the same scope. This makes the rev
 npm uninstall --global ruleblast
 
 # reinstall the global CLI at the pinned version
-npm install --global ruleblast@1.0.1
+npm install --global ruleblast@1.0.2
 
 # remove the project-local CLI
 npm uninstall --save-dev ruleblast
 
 # reinstall the project-local CLI at the pinned version
-npm install --save-dev --save-exact ruleblast@1.0.1
+npm install --save-dev --save-exact ruleblast@1.0.2
 ```
 
 If a global install reports a permission error, use the `npx` or project-local form instead of elevating the installer. If npm reports damaged cache metadata, verify the cache and retry the exact version:
 
 ```bash
 npm cache verify
-npx --yes ruleblast@1.0.1 --help
+npx --yes ruleblast@1.0.2 --help
 ```
 
-For a source build, use the `v1.0.1` release-source tag after it is visible on GitHub. This path still requires npm dependency access or a populated npm cache; it is not a workaround for a complete registry outage:
+For a source build, use the `v1.0.2` release-source tag after it is visible on GitHub. This path still requires npm dependency access or a populated npm cache; it is not a workaround for a complete registry outage:
 
 ```bash
-git clone --branch v1.0.1 --depth 1 https://github.com/Kpoiut/ruleblast.git
+git clone --branch v1.0.2 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
 npm ci --ignore-scripts
 npm run build
@@ -110,9 +115,9 @@ The checked-in [canonical receipt](cases/kpoiut__ruleblast/27d52e2cd6ee..e420008
 `case` reads and verifies that exact promoted receipt. It works outside a Git checkout, performs no network or model call, and does not rerun the analysis from unavailable source bytes:
 
 ```bash
-npx --yes ruleblast@1.0.1 case
-npx --yes ruleblast@1.0.1 case --json
-npx --yes ruleblast@1.0.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@1.0.2 case
+npx --yes ruleblast@1.0.2 case --json
+npx --yes ruleblast@1.0.2 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 ## Terminal transcript
@@ -142,7 +147,7 @@ Scope: 106 tracked paths · repository-only · resolver revision 1
 The overview is a doorway, not the proof. Drill into the same immutable case and inspect each recorded selected, empty, imported, applied, excluded, or unresolved source:
 
 ```bash
-npx --yes ruleblast@1.0.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@1.0.2 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 <details>
@@ -150,10 +155,10 @@ npx --yes ruleblast@1.0.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.ym
 
 The receipt was produced by the production Git snapshot, profile, impact, and canonicalization path. The packaged command verifies the full receipt SHA-256, canonical single-line encoding, repository and ref identity, resolver revision, and core digest before presenting its `resultCore` directly.
 
-Run the source proof from the `v1.0.1` release source after the tag is visible:
+Run the source proof from the `v1.0.2` release source after the tag is visible:
 
 ```bash
-git clone --branch v1.0.1 --depth 1 https://github.com/Kpoiut/ruleblast.git
+git clone --branch v1.0.2 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
 npm ci --ignore-scripts
 npm run build
@@ -201,19 +206,19 @@ The optional positional path is a filesystem starting point used to discover the
 
 ```bash
 # Inspect the current tracked repository
-npx --yes ruleblast@1.0.1 .
+npx --yes ruleblast@1.0.2 .
 
 # Discover the repository from a nested filesystem path, then scan it
-npx --yes ruleblast@1.0.1 packages/api/internal
+npx --yes ruleblast@1.0.2 packages/api/internal
 
 # Compare a commit with the tracked worktree
-npx --yes ruleblast@1.0.1 diff HEAD~1
+npx --yes ruleblast@1.0.2 diff HEAD~1
 
 # Inspect one path across that transition
-npx --yes ruleblast@1.0.1 explain packages/api/internal/refund.ts --from HEAD~1
+npx --yes ruleblast@1.0.2 explain packages/api/internal/refund.ts --from HEAD~1
 
 # Emit deterministic machine-readable output
-npx --yes ruleblast@1.0.1 diff HEAD~1 --json
+npx --yes ruleblast@1.0.2 diff HEAD~1 --json
 ```
 
 ## Contribute a Blast Case
@@ -226,7 +231,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for immutable-ref, publication-permission
 
 ## Roadmap
 
-The `1.0.1` release tree carries the hardened architecture, verified packaged case, exact install interface, packed-install proof, field pilot, and first real receipt. Registry, tag, and GitHub Release availability remain independently verifiable external facts rather than claims inferred from repository prose. Future stages are labeled by maturity and evidence gate rather than dates.
+The `1.0.2` build carries the hardened architecture, verified packaged case, exact install interface, packed-install proof, field pilot, first real receipt, and the adoption/operability work described in the roadmap. Registry, tag, and GitHub Release availability remain independently verifiable external facts rather than claims inferred from repository prose. Future stages are labeled by maturity and evidence gate rather than dates.
 
 Today: Codex + Claude Code.
 

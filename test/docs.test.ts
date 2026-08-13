@@ -90,7 +90,7 @@ describe("README story contract", () => {
       "33 instruction-line edits. 106 tracked paths changed stack.",
       "Git shows the first diff. RuleBlast finds the second.",
       "## Install",
-      "npx --yes ruleblast@1.0.1",
+      "npx --yes ruleblast@1.0.2",
       "## Terminal transcript",
       "## Explain one path",
       "<details>",
@@ -135,21 +135,21 @@ describe("README story contract", () => {
   it("documents one-command, global, local, maintenance, and source installs", () => {
     for (const command of [
       "node --version",
-      "npm view ruleblast@1.0.1 version",
-      "npx --yes ruleblast@1.0.1",
-      "npx --yes ruleblast@1.0.1 --help",
+      "npm view ruleblast@1.0.2 version",
+      "npx --yes ruleblast@1.0.2",
+      "npx --yes ruleblast@1.0.2 --help",
       "cd <your-git-repository>",
-      "npm install --global ruleblast@1.0.1",
+      "npm install --global ruleblast@1.0.2",
       "ruleblast --version",
       "ruleblast --help",
       "ruleblast",
-      "npm install --save-dev --save-exact ruleblast@1.0.1",
+      "npm install --save-dev --save-exact ruleblast@1.0.2",
       "npx ruleblast --version",
       "npx ruleblast --help",
       "npm uninstall --global ruleblast",
       "npm uninstall --save-dev ruleblast",
       "npm cache verify",
-      "git clone --branch v1.0.1 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v1.0.2 --depth 1 https://github.com/Kpoiut/ruleblast.git",
       "npm ci --ignore-scripts",
       "npm run build",
       "node dist/cli.js --version",
@@ -158,10 +158,10 @@ describe("README story contract", () => {
       expect(readme).toContain(command);
     }
     for (const action of [
-      "npx --yes ruleblast@1.0.1 .",
-      "npx --yes ruleblast@1.0.1 diff HEAD~1",
-      "npx --yes ruleblast@1.0.1 explain packages/api/internal/refund.ts --from HEAD~1",
-      "npx --yes ruleblast@1.0.1 case",
+      "npx --yes ruleblast@1.0.2 .",
+      "npx --yes ruleblast@1.0.2 diff HEAD~1",
+      "npx --yes ruleblast@1.0.2 explain packages/api/internal/refund.ts --from HEAD~1",
+      "npx --yes ruleblast@1.0.2 case",
     ]) {
       expect(readme).toContain(action);
     }
@@ -175,7 +175,7 @@ describe("README story contract", () => {
     expect(readme).toContain("NOT_REPOSITORY");
     expect(readme).toContain("REF_NOT_FOUND");
     expect(readme).not.toContain("@latest");
-    expect(readme).not.toMatch(/npx (?!--yes )ruleblast@1\.0\.1/gu);
+    expect(readme).not.toMatch(/npx (?!--yes )ruleblast@1\.0\.2/gu);
     expect(`${readme}\n${read("CONTRACT.md")}`).not.toMatch(
       /release[- ]candidate|before package and tag publication/iu,
     );

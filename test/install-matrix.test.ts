@@ -47,7 +47,7 @@ describe("candidate installation matrix", () => {
       local: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 1.0.1",
+        version: "ruleblast 1.0.2",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,
@@ -57,7 +57,7 @@ describe("candidate installation matrix", () => {
       global: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 1.0.1",
+        version: "ruleblast 1.0.2",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,
@@ -70,9 +70,9 @@ describe("candidate installation matrix", () => {
   it("documents exact, non-interactive and reversible install commands", async () => {
     const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
     for (const command of [
-      "npx --yes ruleblast@1.0.1 --help",
-      "npx --yes ruleblast@1.0.1 .",
-      "npm install --save-dev --save-exact ruleblast@1.0.1",
+      "npx --yes ruleblast@1.0.2 --help",
+      "npx --yes ruleblast@1.0.2 .",
+      "npm install --save-dev --save-exact ruleblast@1.0.2",
       "ruleblast --version",
       "npx ruleblast --version",
       "npm uninstall --global ruleblast",
@@ -82,17 +82,17 @@ describe("candidate installation matrix", () => {
       expect(readme).toContain(command);
     }
     expect(readme).toMatch(
-      /npm uninstall --global ruleblast[\s\S]+npm install --global ruleblast@1\.0\.1/u,
+      /npm uninstall --global ruleblast[\s\S]+npm install --global ruleblast@1\.0\.2/u,
     );
     expect(readme).toMatch(
-      /npm uninstall --save-dev ruleblast[\s\S]+npm install --save-dev --save-exact ruleblast@1\.0\.1/u,
+      /npm uninstall --save-dev ruleblast[\s\S]+npm install --save-dev --save-exact ruleblast@1\.0\.2/u,
     );
     expect(readme).toContain(
-      "git clone --branch v1.0.1 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v1.0.2 --depth 1 https://github.com/Kpoiut/ruleblast.git",
     );
     expect(readme).toMatch(/Windows.+Linux/isu);
     expect(readme).not.toMatch(/Windows.+macOS.+Linux/isu);
-    expect(readme).not.toMatch(/npx (?!--yes )ruleblast@1\.0\.1/gu);
+    expect(readme).not.toMatch(/npx (?!--yes )ruleblast@1\.0\.2/gu);
   });
 
   it("terminates timed-out process descendants before rejecting", async () => {
@@ -164,10 +164,10 @@ describe("candidate installation matrix", () => {
       version: string,
       environment: Record<string, string>,
     ) => string;
-    expect(() => registryPackageSpecifier("1.0.1", {})).toThrow(/guard/iu);
-    expect(registryPackageSpecifier("1.0.1", {
-      RULEBLAST_REGISTRY_SMOKE: "ruleblast@1.0.1",
-    })).toBe("ruleblast@1.0.1");
+    expect(() => registryPackageSpecifier("1.0.2", {})).toThrow(/guard/iu);
+    expect(registryPackageSpecifier("1.0.2", {
+      RULEBLAST_REGISTRY_SMOKE: "ruleblast@1.0.2",
+    })).toBe("ruleblast@1.0.2");
 
     const installArguments = runner.installArguments as (
       scope: "local" | "global",
@@ -182,11 +182,11 @@ describe("candidate installation matrix", () => {
       offline: boolean,
     ) => string[];
     for (const args of [
-      installArguments("local", "repo", "ruleblast@1.0.1", [], false),
-      installArguments("global", "prefix", "ruleblast@1.0.1", [], false),
-      npmExecArguments("ruleblast@1.0.1", [], false),
+      installArguments("local", "repo", "ruleblast@1.0.2", [], false),
+      installArguments("global", "prefix", "ruleblast@1.0.2", [], false),
+      npmExecArguments("ruleblast@1.0.2", [], false),
     ]) {
-      expect(args).toContain("ruleblast@1.0.1");
+      expect(args).toContain("ruleblast@1.0.2");
       expect(args).not.toContain("--offline");
     }
   });

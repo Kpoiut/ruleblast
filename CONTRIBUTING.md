@@ -1,6 +1,6 @@
 # Contributing to RuleBlast
 
-RuleBlast is in its `v1.0.1` build. The highest-value contribution is a small, reproducible challenge to the [public contract](CONTRACT.md), not a broad feature pitch.
+RuleBlast is in its `v1.0.2` build. The highest-value contribution is a small, reproducible challenge to the [public contract](CONTRACT.md), not a broad feature pitch.
 
 ## One atomic contribution: a Blast Case
 
