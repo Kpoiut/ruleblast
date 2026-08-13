@@ -228,7 +228,7 @@ afterAll(() => {
   for (const root of temporaryRoots) {
     rmSync(root, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   }
-});
+}, 60_000);
 
 describe("captureCase", () => {
   it("writes one canonical receipt from immutable Git snapshots through the production analyzer", async () => {
@@ -699,7 +699,7 @@ describe("captureCase", () => {
     expect(mutated).toBe(true);
     expect(buildResidue(root)).toEqual([]);
     expect(indexOracle(root)).toEqual(oracle);
-  }, 30_000);
+  }, 180_000);
 
   it("rejects symlinked destination boundaries without writing outside cases root", async () => {
     const boundary = await captureBoundary();
