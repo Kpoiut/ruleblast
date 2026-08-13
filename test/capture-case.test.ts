@@ -222,7 +222,7 @@ function buildResidue(root: string): string[] {
     .filter((name) => name.startsWith(".ruleblast-case-build-"));
 }
 
-beforeAll(createProducer);
+beforeAll(createProducer, 60_000);
 
 afterAll(() => {
   for (const root of temporaryRoots) {

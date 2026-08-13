@@ -3,6 +3,7 @@ description: Propose evidence for one precisely identified future agent surface.
 title: "[Profile evidence] "
 labels:
   - enhancement
+  - profile-evidence
 body:
   - type: markdown
     attributes:

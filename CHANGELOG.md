@@ -6,6 +6,7 @@ All notable user-visible changes to RuleBlast are recorded here.
 
 - Put the exact `npx --yes ruleblast@1.0.2 case` command and direct proof, install, and contribution links immediately below the README tagline.
 - Added a low-friction documentation-correction form that does not require a Blast Case or canonical JSON.
+- Enabled GitHub private vulnerability reporting and aligned focused issue forms with the repository's evidence and install labels.
 
 Post-tag repository changes are not part of the published v1.0.2 package bytes.
 

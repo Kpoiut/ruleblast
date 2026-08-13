@@ -143,7 +143,8 @@ describe("v1.0.2 adoption contract", () => {
     expect(chooser).toContain(
       "https://github.com/Kpoiut/ruleblast/blob/main/CONTRIBUTING.md",
     );
-    expect(chooser).toMatch(/only when.+private reporting.+enabled/iu);
+    expect(chooser).toMatch(/private reporting is enabled/iu);
+    expect(chooser).not.toMatch(/conditional|only when/iu);
 
     const pullRequest = read(".github/PULL_REQUEST_TEMPLATE.md");
     expect(pullRequest).toMatch(/immutable (commit )?refs/iu);
@@ -157,8 +158,9 @@ describe("v1.0.2 adoption contract", () => {
     expect(security).toMatch(/do not include exploit details in a public issue/iu);
     expect(security).toMatch(/no response-time or remediation-time guarantee/iu);
     expect(security).toMatch(/latest published `1\.0\.x`/iu);
-    expect(security).toMatch(/security\/advisories\/new.+UNAVAILABLE/isu);
-    expect(security).not.toMatch(/private vulnerability reporting is enabled/iu);
+    expect(security).toMatch(/private vulnerability reporting is enabled/iu);
+    expect(security).toMatch(/security\/advisories\/new/iu);
+    expect(security).not.toContain("UNAVAILABLE");
 
     const conduct = read("CODE_OF_CONDUCT.md");
     expect(conduct).toMatch(/harassment/iu);
@@ -177,6 +179,20 @@ describe("v1.0.2 adoption contract", () => {
       expect(installReport).toContain(`id: ${field}`);
     }
     expect(installReport).toMatch(/labels:\s*\n\s+- bug/iu);
+    expect(installReport).toMatch(/labels:[\s\S]*?- install/iu);
+
+    for (const blastForm of [
+      "wrong-blast.yml",
+      "missing-blast.yml",
+      "weird-blast.yml",
+    ]) {
+      expect(read(`.github/ISSUE_TEMPLATE/${blastForm}`)).toMatch(
+        /labels:[\s\S]*?- blast-case/iu,
+      );
+    }
+    expect(read(".github/ISSUE_TEMPLATE/profile-evidence.yml")).toMatch(
+      /labels:[\s\S]*?- profile-evidence/iu,
+    );
 
     const docsCorrection = read(".github/ISSUE_TEMPLATE/docs-correction.yml");
     expect(docsCorrection).toMatch(/labels:\s*\n\s+- documentation/iu);

@@ -3,6 +3,7 @@ description: Report a reproducible explanation, uncertainty, or grouping that mi
 title: "[Blast Case] weird: "
 labels:
   - bug
+  - blast-case
 body:
   - type: markdown
     attributes:

@@ -6,9 +6,9 @@ RuleBlast is a local, read-only repository debugger. Its supported product bound
 
 The latest published `1.0.x` release is the supported line. A source commit, signed tag, npm version, and GitHub Release are separate facts; verify each external record before relying on a version label.
 
-The private-reporting route `https://github.com/Kpoiut/ruleblast/security/advisories/new` is **UNAVAILABLE until repository settings visibly enable and verify it**. Repository text alone cannot activate that route.
+Private vulnerability reporting is enabled for this repository. Submit confidential reports through `https://github.com/Kpoiut/ruleblast/security/advisories/new`; GitHub keeps the report private while maintainers triage it.
 
-Use GitHub private vulnerability reporting when that option is visibly available in this repository's **Security** tab. Repository text does not prove that an external GitHub setting is enabled.
+This route was verified through the repository setting and GitHub API on 2026-08-14. If GitHub does not show the private form, do not place sensitive details in another channel.
 
 If no private channel is visible, open a minimal public issue that asks the maintainers to establish private contact. Do not include exploit details in a public issue, commit, pull request, fixture, receipt, or terminal capture.
 

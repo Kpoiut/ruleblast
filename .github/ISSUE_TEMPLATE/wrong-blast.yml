@@ -3,6 +3,7 @@ description: Report a reproducible path, count, relation, or source decision tha
 title: "[Blast Case] wrong: "
 labels:
   - bug
+  - blast-case
 body:
   - type: markdown
     attributes:

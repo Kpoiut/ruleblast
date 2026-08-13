@@ -3,6 +3,7 @@ description: Report one documented affected path that RuleBlast omitted.
 title: "[Blast Case] missing: "
 labels:
   - bug
+  - blast-case
 body:
   - type: markdown
     attributes:

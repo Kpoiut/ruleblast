@@ -3,6 +3,7 @@ description: Report a reproducible failure to install or start the pinned RuleBl
 title: "[Install] "
 labels:
   - bug
+  - install
 body:
   - type: markdown
     attributes:
