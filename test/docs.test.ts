@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -83,13 +84,13 @@ describe("README story contract", () => {
     }
   });
 
-  it("reveals the labeled demo, then gives the exact install interface early", () => {
+  it("leads with verified evidence, then gives the exact install interface early", () => {
     expect(readme).toMatch(/^# RuleBlast\s/u);
     expectOrdered(readme, [
-      "DEMO FIXTURE",
+      "33 instruction-line edits. 106 tracked paths changed stack.",
       "Git shows the first diff. RuleBlast finds the second.",
       "## Install",
-      "npx ruleblast@1.0.0",
+      "npx ruleblast@1.0.1",
       "## Terminal transcript",
       "## Explain one path",
       "<details>",
@@ -100,28 +101,31 @@ describe("README story contract", () => {
       "## Roadmap",
     ]);
 
-    const marker = readme.indexOf("DEMO FIXTURE");
-    for (const metric of ["9", "1,842", "1,229", "3,906"]) {
+    const marker = readme.indexOf("# RuleBlast");
+    for (const metric of ["33", "106", "zero"]) {
       expect(readme.indexOf(metric)).toBeGreaterThan(marker);
     }
+    expect(readme).not.toContain("DEMO FIXTURE");
   });
 
-  it("embeds the checked golden demo transcript exactly", () => {
+  it("embeds the checked golden verified-case transcript exactly", () => {
     const transcript = /## Terminal transcript[^`]*```text\r?\n([\s\S]*?)\r?\n```/u
       .exec(readme)?.[1]?.replace(/\r\n/g, "\n");
-    const golden = read("test/golden/diff-demo.txt")
+    const golden = read("test/golden/diff-case.txt")
       .replace(/\r\n/g, "\n")
       .replace(/\n$/u, "");
     expect(transcript).toBe(golden);
   });
 
-  it("ships the packed-output terminal recording referenced by README", () => {
-    const asset = "assets/ruleblast-demo-terminal.gif";
-    expect(readme).toContain(`![RuleBlast packed terminal recording](${asset})`);
+  it("ships the RuleBlast eye referenced by README", () => {
+    const asset = "assets/ruleblast-eye.webp";
+    expect(readme).toContain(`![RuleBlast eye](${asset})`);
     const bytes = readFileSync(join(repositoryRoot, asset));
-    expect(bytes.subarray(0, 6).toString("ascii")).toBe("GIF89a");
-    expect(bytes.byteLength).toBeGreaterThan(10_000);
-    expect(bytes.byteLength).toBeLessThan(150_000);
+    expect(bytes.subarray(8, 12).toString("ascii")).toBe("WEBP");
+    expect(bytes.byteLength).toBe(11_052);
+    expect(createHash("sha256").update(bytes).digest("hex")).toBe(
+      "8a95aa9e4f697a258200ddfd2180d728b73d4abcbf778b45e5f223094cfd85ed",
+    );
     const descriptor = JSON.parse(read("package.json")) as {
       readonly files?: readonly string[];
     };
@@ -131,19 +135,19 @@ describe("README story contract", () => {
   it("documents one-command, global, local, maintenance, and source installs", () => {
     for (const command of [
       "node --version",
-      "npm view ruleblast@1.0.0 version",
-      "npx ruleblast@1.0.0",
-      "npx ruleblast@1.0.0 --help",
+      "npm view ruleblast@1.0.1 version",
+      "npx ruleblast@1.0.1",
+      "npx ruleblast@1.0.1 --help",
       "cd <your-git-repository>",
-      "npm install --global ruleblast@1.0.0",
+      "npm install --global ruleblast@1.0.1",
       "ruleblast --help",
       "ruleblast",
-      "npm install --save-dev ruleblast@1.0.0",
+      "npm install --save-dev ruleblast@1.0.1",
       "npx ruleblast --help",
       "npm uninstall --global ruleblast",
       "npm uninstall --save-dev ruleblast",
       "npm cache verify",
-      "git clone --branch v1.0.0 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v1.0.1 --depth 1 https://github.com/Kpoiut/ruleblast.git",
       "npm ci",
       "npm run build",
       "node dist/cli.js --help",
@@ -151,10 +155,10 @@ describe("README story contract", () => {
       expect(readme).toContain(command);
     }
     for (const action of [
-      "npx ruleblast@1.0.0 .",
-      "npx ruleblast@1.0.0 diff HEAD~1",
-      "npx ruleblast@1.0.0 explain packages/api/internal/refund.ts --from HEAD~1",
-      "npx ruleblast@1.0.0 demo",
+      "npx ruleblast@1.0.1 .",
+      "npx ruleblast@1.0.1 diff HEAD~1",
+      "npx ruleblast@1.0.1 explain packages/api/internal/refund.ts --from HEAD~1",
+      "npx ruleblast@1.0.1 case",
     ]) {
       expect(readme).toContain(action);
     }
@@ -175,7 +179,7 @@ describe("README story contract", () => {
       /table of contents|shields\.io|sponsor wall|architecture diagram/iu,
     );
     expect(readme).toContain(
-      "git checkout --detach 27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8",
+      "npx ruleblast@1.0.0 diff 27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8 --to e420008a1c10c5c328e506247560117f4d40b855 --json",
     );
     expect(readme).not.toMatch(/demo --json\s*>\s*demo\.json/iu);
     expect(readme).not.toContain("Limit the current view to one tracked path");

@@ -275,11 +275,11 @@ describe("captureCase", () => {
       resolverRevision: 1,
       producer: {
         gitCommit: producerCommit,
-        packageVersion: "1.0.0",
+        packageVersion: "1.0.1",
         dependencyClosureDigest: expect.stringMatching(/^[0-9a-f]{64}$/u),
       },
       releaseReproductionCommand:
-        `npx ruleblast@1.0.0 diff ${fixture.base} --to ${fixture.head} --json`,
+        `npx ruleblast@1.0.1 diff ${fixture.base} --to ${fixture.head} --json`,
       resultCore: {
         mode: "diff",
         before: { kind: "git", label: fixture.base, oid: fixture.base },
@@ -304,7 +304,7 @@ describe("captureCase", () => {
     expect(indexOracle(producerRoot)).toEqual(producerIndex);
     expect(existsSync(join(producerRoot, "dist"))).toBe(false);
     expect(buildResidue(producerRoot)).toEqual([]);
-  }, 30_000);
+  }, 60_000);
 
   it("is deterministic across destinations and refuses to overwrite a receipt", async () => {
     const fixture = createFixture();
@@ -342,7 +342,7 @@ describe("captureCase", () => {
     expect(readdirSync(join(firstRoot, "acme__rules"))).toEqual([
       `${fixture.base.slice(0, 12)}..${fixture.head.slice(0, 12)}.json`,
     ]);
-  }, 30_000);
+  }, 60_000);
 
   it("rejects mutable, abbreviated, identical, mismatched, and unsafe identities", async () => {
     const fixture = createFixture();

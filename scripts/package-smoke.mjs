@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { createHash } from "node:crypto";
 import {
   chmodSync,
   copyFileSync,
@@ -292,12 +293,27 @@ export async function runPackedPackageSmoke(packed, options = {}) {
     const installedPackage = JSON.parse(readFileSync(join(installedRoot, "package.json"), "utf8"));
     const sourcePackage = JSON.parse(readFileSync(join(repositoryRoot, "package.json"), "utf8"));
     assertInstalledPackage(sourcePackage, installedPackage, packed.entry);
-    for (const required of ["CONTRACT.md", "fixtures/demo/case.json"]) {
+    const requiredFiles = [
+      "CONTRACT.md",
+      "assets/ruleblast-eye.webp",
+      "cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json",
+    ];
+    for (const required of requiredFiles) {
       const installed = join(installedRoot, ...required.split("/"));
       const source = join(repositoryRoot, ...required.split("/"));
       if (!existsSync(installed) || !readFileSync(installed).equals(readFileSync(source))) {
         fail(`Packed file missing or changed: ${required}`);
       }
+    }
+    const receipt = readFileSync(join(
+      installedRoot,
+      "cases",
+      "kpoiut__ruleblast",
+      "27d52e2cd6ee..e420008a1c10.json",
+    ));
+    if (createHash("sha256").update(receipt).digest("hex") !==
+        "5735038d47cae7b538e113d51214dbbc6ecd29cbca815912813abaa900ecfc89") {
+      fail("Packed case receipt SHA-256 changed");
     }
     const binTarget = installedBin(installDirectory, installedRoot);
     const preload = join(temporaryRoot, "deny-network.cjs");
@@ -317,9 +333,11 @@ export async function runPackedPackageSmoke(packed, options = {}) {
     const before = await captureRepository(fixture, baseEnvironment);
     const outputs = new Map();
     const commands = [
-      ["demo-text", ["demo"]],
-      ["demo-json-1", ["demo", "--json"]],
-      ["demo-json-2", ["demo", "--json"]],
+      ["case-text", ["case"]],
+      ["case-json-1", ["case", "--json"]],
+      ["case-json-2", ["case", "--json"]],
+      ["legacy-text", ["demo"]],
+      ["legacy-json", ["demo", "--json"]],
       ["current-text", ["."]],
       ["current-json", [".", "--json"]],
       ["diff-text", ["diff", "HEAD"]],
@@ -330,12 +348,16 @@ export async function runPackedPackageSmoke(packed, options = {}) {
     for (const [label, args] of commands) {
       outputs.set(label, await runInstalled(binTarget, args, fixture, env));
     }
-    const golden = readFileSync(join(repositoryRoot, "test", "golden", "diff-demo.txt"));
-    if (!outputs.get("demo-text").equals(golden)) fail("Packed demo text differs from its golden");
-    if (!outputs.get("demo-json-1").equals(outputs.get("demo-json-2"))) {
-      fail("Packed demo JSON is not byte-identical across runs");
+    const golden = readFileSync(join(repositoryRoot, "test", "golden", "diff-case.txt"));
+    if (!outputs.get("case-text").equals(golden)) fail("Packed case text differs from its golden");
+    if (!outputs.get("case-text").equals(outputs.get("legacy-text")) ||
+        !outputs.get("case-json-1").equals(outputs.get("legacy-json"))) {
+      fail("Packed legacy alias is not byte-identical to case");
     }
-    assertJsonContract("demo JSON", outputs.get("demo-json-1"), "diff");
+    if (!outputs.get("case-json-1").equals(outputs.get("case-json-2"))) {
+      fail("Packed case JSON is not byte-identical across runs");
+    }
+    assertJsonContract("case JSON", outputs.get("case-json-1"), "diff");
     assertJsonContract("current JSON", outputs.get("current-json"), "current");
     assertJsonContract("diff JSON", outputs.get("diff-json"), "diff");
     assertJsonContract("explain JSON", outputs.get("explain-json"), "explain", "current");

@@ -21,8 +21,10 @@ function explainHeading(
   context: TextPresentationContext,
   color: boolean,
 ): string {
-  const suffix = context.demoFixture
-    ? "DEMO FIXTURE"
+  const suffix = context.caseLabel !== null
+    ? "beforeLabel" in context
+      ? `VERIFIED CASE · ${displayText(context.caseLabel)} · ${displayText(context.beforeLabel)} → ${displayText(context.afterLabel)}`
+      : `VERIFIED CASE · ${displayText(context.caseLabel)}`
     : "currentLabel" in context
       ? displayText(context.currentLabel)
       : `${displayText(context.beforeLabel)} → ${displayText(context.afterLabel)}`;

@@ -94,6 +94,8 @@ describe("promoted Blast Case receipt", () => {
         `npx ruleblast@1.0.0 diff ${BASE} --to ${HEAD} --json`,
     });
     expect(receipt.resolverRevision).toBe(receipt.resultCore.resolverRevision);
+    expect(readFileSync(resolve(import.meta.dirname, "..", "cases", "README.md"), "utf8"))
+      .toContain("historical intended `1.0.0` release command");
     expect(receipt.coreDigest).toBe(sha256(canonicalJson(receipt.resultCore)));
     expect(receipt.producer.artifactDigest).toMatch(/^[0-9a-f]{64}$/u);
     expect(receipt.producer.dependencyClosureDigest).toMatch(/^[0-9a-f]{64}$/u);

@@ -38,8 +38,8 @@ function currentHeading(
   context: CurrentTextPresentationContext,
   color: boolean,
 ): string {
-  const suffix = context.demoFixture
-    ? "DEMO FIXTURE"
+  const suffix = context.caseLabel !== null
+    ? `VERIFIED CASE · ${displayText(context.caseLabel)}`
     : displayText(context.currentLabel);
   return heading(`RULEBLAST · ${suffix}`, color);
 }
@@ -48,8 +48,8 @@ function diffHeading(
   context: DiffTextPresentationContext,
   color: boolean,
 ): string {
-  const suffix = context.demoFixture
-    ? "DEMO FIXTURE"
+  const suffix = context.caseLabel !== null
+    ? `VERIFIED CASE · ${displayText(context.caseLabel)} · ${displayText(context.beforeLabel)} → ${displayText(context.afterLabel)}`
     : `${displayText(context.beforeLabel)} → ${displayText(context.afterLabel)}`;
   return heading(`RULEBLAST · ${suffix}`, color);
 }
@@ -177,7 +177,7 @@ function renderCurrent(
       "No repo instructions yet.",
       "",
       "Want the 10-second reveal?",
-      "  npx ruleblast@1.0.0 demo",
+      "  npx ruleblast@1.0.1 case",
     );
   } else {
     const count = result.counts.currentSplitPathCount;
@@ -220,8 +220,8 @@ function diffExplainCommand(
   context: DiffTextPresentationContext,
 ): string {
   const path = repositoryPathToken(sample, context.shellDialect);
-  if (context.demoFixture) {
-    return `ruleblast demo --explain ${path}`;
+  if (context.caseLabel !== null) {
+    return `ruleblast case --explain ${path}`;
   }
   const source = shellToken(context.beforeLabel, context.shellDialect);
   const target = context.afterLabel === "WORKTREE"
@@ -266,9 +266,12 @@ function renderDiff(
 
   const group = largestGroup(result.groups);
   if (group !== null) {
+    const impactName = result.counts.newlySplitPathCount > 0
+      ? "fracture"
+      : "blast";
     lines.push(
       "",
-      `The largest fracture starts at ${groupRoot(group.root)}.`,
+      `The largest ${impactName} starts at ${groupRoot(group.root)}.`,
     );
   }
   const sample = stableDiffSample(result, group);

@@ -1,6 +1,6 @@
 {
   "name": "ruleblast",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Map where AGENTS.md and CLAUDE.md changes land across a repo—and where Codex and Claude Code split.",
   "keywords": [
     "agents.md",
@@ -20,9 +20,9 @@
     "ruleblast": "dist/cli.js"
   },
   "files": [
-    "assets/ruleblast-demo-terminal.gif",
+    "assets/ruleblast-eye.webp",
+    "cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json",
     "dist",
-    "fixtures/demo",
     "README.md",
     "CONTRACT.md",
     "LICENSE"

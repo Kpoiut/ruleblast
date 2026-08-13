@@ -2,7 +2,7 @@
 
 This document is the public behavior and result contract for RuleBlast v1. It defines what a result means, which bytes are in scope, how uncertainty survives analysis, and what the product may claim. Implementation details may change while this contract and the canonical JSON remain compatible.
 
-The v1 package version is `1.0.0`. An authorized distribution binds it to signed source tag `v1.0.0`; registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
+The v1 package version is `1.0.1`. An authorized distribution binds it to signed source tag `v1.0.1`; registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
 
 ## Product claims
 
@@ -13,7 +13,7 @@ It answers four bounded questions:
 1. `ruleblast [path]` — starting repository discovery from the optional filesystem path, what repository instruction payload does each bundled profile project now?
 2. `ruleblast diff [base]` — which tracked paths changed instruction stack between two snapshots?
 3. `ruleblast explain <path> [--from <base>]` — which sources and boundaries produced one path result?
-4. `ruleblast demo [--explain <path>]` — what does that loop look like on a packaged deterministic fixture?
+4. `ruleblast case [--explain <path>]` — what did a verified immutable public-repository comparison produce?
 
 “Two AI realities” is presentation language for a path whose normalized repository payload relation is proven `DIFFERENT`. It is not a prediction about model output.
 
@@ -60,7 +60,7 @@ interface SnapshotRef {
 
 - `git` is an immutable commit tree. `oid` is its full object id.
 - `worktree` is one consistent capture of tracked worktree state. It is not an ongoing live view, so `oid` is `null`.
-- `fixture` is an immutable manifest-backed snapshot used by tests or the packaged demo. It has a stable label and no Git oid.
+- `fixture` is an immutable manifest-backed snapshot used by tests. It has a stable label and no Git oid.
 
 Current analysis has one `snapshot`. Diff analysis has `before` and `after`. Equal endpoints are rejected because they cannot describe a transition.
 
@@ -287,11 +287,13 @@ Text color, shell quoting, terminal labels, and explanatory metaphors are presen
 
 `schemaVersion: 1` identifies the public result shape. `resolverRevision: 1` identifies the bundled interpretation boundary. Profile ids carry their own surface revision. A semantic correction that changes defensible canonical results requires tests, evidence, and an explicit revision decision; it cannot be hidden as copy-only drift.
 
-## Demo contract
+## Packaged case contract
 
-The packaged demo is a compact recipe expanded to two fixture snapshots and processed by the production pipeline. Its values are synthetic and must be labeled `DEMO FIXTURE` before their first public appearance.
+The packaged `case` action presents one promoted real-public-repository receipt. It verifies the complete receipt SHA-256, canonical single-line JSON plus trailing LF, repository identity, immutable full base and head commit ids, resolver revision, and the SHA-256 of `resultCore` before emitting output. A failed verification is an internal integrity failure and emits no result.
 
-The recipe owns source bytes and path groups. Tests derive the candidate inventory, source line stats, transitions, relations, explanations, and canonical JSON. Renderers do not keep an independent copy of demo metrics.
+The action presents the verified `resultCore` directly. It does not reconstruct unavailable repository source bytes, rerun profile resolution or impact analysis, require a Git checkout, or access the network. `case --json` is exactly the canonical `resultCore` plus one LF. Text identifies the public repository and abbreviated immutable refs before its first metric; `case --explain <path>` selects only a path already recorded in that core.
+
+For v1 command compatibility, the legacy token `demo` is a hidden alias parsed into the same semantic `case` action before dispatch. It is omitted from help and README, does not create a fifth action, and must remain byte-identical to the corresponding `case` invocation.
 
 ## Stability and change
 

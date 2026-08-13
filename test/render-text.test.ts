@@ -200,7 +200,7 @@ function diffContext() {
   return {
     beforeLabel: "HEAD",
     afterLabel: "WORKTREE",
-    demoFixture: false,
+    caseLabel: null,
     shellDialect: "posix",
   } as const;
 }
@@ -208,7 +208,7 @@ function diffContext() {
 function currentContext() {
   return {
     currentLabel: "WORKTREE",
-    demoFixture: false,
+    caseLabel: null,
     shellDialect: "posix",
   } as const;
 }
@@ -493,15 +493,25 @@ describe("renderText", () => {
     expect(renderText(explained, currentContext())).toBe(golden("explain-current"));
   });
 
-  it("marks demo evidence before its first number and uses the demo explain CTA", () => {
+  it("uses a case CTA when presenting verified-case context", () => {
     const text = renderText(diffResult(), {
       beforeLabel: "BEFORE",
       afterLabel: "AFTER",
-      demoFixture: true,
+      caseLabel: "test-only/verified-case",
       shellDialect: "posix",
     });
-    expect(text).toBe(golden("diff-demo"));
-    expect(text.indexOf("DEMO FIXTURE")).toBeLessThan(text.search(/\d/));
+    expect(text).toContain("RULEBLAST · VERIFIED CASE · test-only/verified-case · BEFORE → AFTER");
+    expect(text).toContain("ruleblast case --explain packages/api/internal/refund.ts");
+    expect(text.indexOf("VERIFIED CASE")).toBeLessThan(text.search(/\d/));
+  });
+
+  it("calls a zero-split impact a blast rather than a fracture", () => {
+    const result = diffResult();
+    result.counts.newlySplitPathCount = 0;
+    result.groups[0]!.newlySplitPathCount = 0;
+    const text = renderText(result, diffContext());
+    expect(text).toContain("The largest blast starts at packages/api/internal/.");
+    expect(text).not.toContain("largest fracture");
   });
 
   it("renders arbitrary result counts instead of independent marketing literals", () => {
@@ -664,7 +674,7 @@ describe("renderText", () => {
     const text = renderText(value, {
       beforeLabel: control,
       afterLabel: "WORKTREE",
-      demoFixture: false,
+      caseLabel: null,
       shellDialect: "posix",
     });
     for (const character of ["\n\u001b", "\u001b", "\u202e"]) {
@@ -676,7 +686,7 @@ describe("renderText", () => {
     const shellText = renderText(value, {
       beforeLabel: "$(touch ref)",
       afterLabel: "`touch target`",
-      demoFixture: false,
+      caseLabel: null,
       shellDialect: "posix",
     });
     expect(shellText).toContain("--from '$(touch ref)' --to '`touch target`'");
@@ -710,7 +720,7 @@ describe("renderText", () => {
     expect(renderText(base, {
       beforeLabel: "HEAD~1",
       afterLabel: "WORKTREE",
-      demoFixture: false,
+      caseLabel: null,
       shellDialect: "posix",
     })).toContain("--from HEAD~1");
   });
@@ -750,7 +760,7 @@ describe("renderText", () => {
       const command = explainCta(renderText(result, {
         beforeLabel,
         afterLabel,
-        demoFixture: false,
+        caseLabel: null,
         shellDialect,
       }));
 
@@ -789,7 +799,7 @@ describe("renderText", () => {
       const command = explainCta(renderText(result, {
         beforeLabel: "@base",
         afterLabel: "@target",
-        demoFixture: false,
+        caseLabel: null,
         shellDialect,
       }));
 
@@ -833,7 +843,7 @@ describe("renderText", () => {
     let calls = 0;
     const hostile = Object.defineProperty({
       afterLabel: "WORKTREE",
-      demoFixture: false,
+      caseLabel: null,
       shellDialect: "posix",
     }, "beforeLabel", {
       enumerable: true,
@@ -881,7 +891,7 @@ describe("renderText", () => {
     }, {
       beforeLabel: "IGNORED",
       afterLabel: "IGNORED",
-      demoFixture: true,
+      caseLabel: "ignored/case",
       shellDialect: "powershell",
     });
     expect(secondJson).toEqual(firstJson);

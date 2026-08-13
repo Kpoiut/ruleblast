@@ -3,14 +3,14 @@ import { referenceLabel, type ShellDialect } from "./render-format.js";
 
 export interface CurrentTextPresentationContext {
   readonly currentLabel: string;
-  readonly demoFixture: boolean;
+  readonly caseLabel: string | null;
   readonly shellDialect: ShellDialect;
 }
 
 export interface DiffTextPresentationContext {
   readonly beforeLabel: string;
   readonly afterLabel: string;
-  readonly demoFixture: boolean;
+  readonly caseLabel: string | null;
   readonly shellDialect: ShellDialect;
 }
 
@@ -39,13 +39,13 @@ type TextPresentationSubject =
 
 const CURRENT_CONTEXT_FIELDS = [
   "currentLabel",
-  "demoFixture",
+  "caseLabel",
   "shellDialect",
 ] as const;
 const DIFF_CONTEXT_FIELDS = [
   "beforeLabel",
   "afterLabel",
-  "demoFixture",
+  "caseLabel",
   "shellDialect",
 ] as const;
 
@@ -60,7 +60,7 @@ function defaultContext(
   if (value.mode === "current") {
     return {
       currentLabel: referenceLabel(value.snapshot),
-      demoFixture: false,
+      caseLabel: null,
       shellDialect: "posix",
     };
   }
@@ -68,20 +68,20 @@ function defaultContext(
     return {
       beforeLabel: referenceLabel(value.before),
       afterLabel: referenceLabel(value.after),
-      demoFixture: false,
+      caseLabel: null,
       shellDialect: "posix",
     };
   }
   return value.analysisMode === "current"
     ? {
         currentLabel: referenceLabel(value.snapshot),
-        demoFixture: false,
+        caseLabel: null,
         shellDialect: "posix",
       }
     : {
         beforeLabel: referenceLabel(value.before),
         afterLabel: referenceLabel(value.after),
-        demoFixture: false,
+        caseLabel: null,
         shellDialect: "posix",
       };
 }
@@ -116,8 +116,9 @@ export function captureTextPresentationContext(
     }
     captured[field] = descriptor.value;
   }
-  if (typeof captured.demoFixture !== "boolean") {
-    throw new TypeError("TextPresentationContext.demoFixture must be boolean");
+  if (captured.caseLabel !== null &&
+      (typeof captured.caseLabel !== "string" || captured.caseLabel === "")) {
+    throw new TypeError("TextPresentationContext.caseLabel must be null or non-empty");
   }
   if (captured.shellDialect !== "posix" &&
       captured.shellDialect !== "powershell") {
@@ -131,7 +132,7 @@ export function captureTextPresentationContext(
     }
     return {
       currentLabel: captured.currentLabel,
-      demoFixture: captured.demoFixture,
+      caseLabel: captured.caseLabel as string | null,
       shellDialect: captured.shellDialect,
     };
   }
@@ -142,7 +143,7 @@ export function captureTextPresentationContext(
   return {
     beforeLabel: captured.beforeLabel,
     afterLabel: captured.afterLabel,
-    demoFixture: captured.demoFixture,
+    caseLabel: captured.caseLabel as string | null,
     shellDialect: captured.shellDialect,
   };
 }

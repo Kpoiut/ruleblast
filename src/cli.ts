@@ -4,9 +4,9 @@ import { readFileSync, realpathSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { CliUsageError, parseArgs } from "./args.js";
+import { openPackagedCase } from "./case.js";
 import { displayText, writeLine } from "./cli-output.js";
 import { runAnalysisAction } from "./cli-actions.js";
-import { openDemo } from "./demo.js";
 import {
   captureInvocation,
   CliRuntimeError,
@@ -40,7 +40,7 @@ const USAGE = `Usage:
   ruleblast [path] [--json] ${COLOR_OPTION}
   ruleblast diff [base] [--to <ref|WORKTREE>] [--json] ${COLOR_OPTION}
   ruleblast explain <path> [--from <ref>] [--to <ref|WORKTREE>] [--json] ${COLOR_OPTION}
-  ruleblast demo [--explain <path>] [--json] ${COLOR_OPTION}
+  ruleblast case [--explain <path>] [--json] ${COLOR_OPTION}
   ruleblast --help
   ruleblast --version
 `;
@@ -71,7 +71,7 @@ const DEFAULT_DEPENDENCIES: CliDependencies = Object.freeze({
   openTrackedWorktree,
   analyzeCurrent,
   analyzeDiff,
-  openDemo,
+  openCase: openPackagedCase,
 });
 
 const GIT_ERROR_MESSAGES: Readonly<Record<GitSnapshotErrorCode, string>> = {
@@ -93,7 +93,6 @@ const RUNTIME_RECOVERY: Readonly<Record<CliRuntimeError["code"], string>> = {
   INVALID_PATH: "Choose a valid repository-relative path and retry.",
   TARGET_PATH_NOT_TRACKED: "Choose a Git-tracked repository-relative path and retry.",
   IDENTICAL_ENDPOINTS: "Choose two different Git endpoints and retry.",
-  DEMO_NOT_AVAILABLE: "Run ruleblast from a Git repository instead.",
 };
 
 const GIT_RECOVERY: Readonly<Record<GitSnapshotErrorCode, string>> = {

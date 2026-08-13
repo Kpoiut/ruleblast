@@ -74,8 +74,9 @@ export function expectedPackedFiles(repositoryRoot = REPOSITORY_ROOT) {
     "README.md",
     "CONTRACT.md",
     "LICENSE",
-    "assets/ruleblast-demo-terminal.gif",
-    "fixtures/demo/case.json",
+    "assets/ruleblast-eye.webp",
+    "cases/README.md",
+    "cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json",
   ];
   const dist = filesBelow(join(repositoryRoot, "src"))
     .filter((path) => path.endsWith(".ts"))
