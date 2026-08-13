@@ -27,6 +27,36 @@ interface VerifyWorkflow {
   };
 }
 
+async function waitForFile(path: string, timeoutMs: number): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (!existsSync(path)) {
+    if (Date.now() >= deadline) {
+      throw new Error(`Timed out waiting for fixture file: ${path}`);
+    }
+    await new Promise((resolveWait) => setTimeout(resolveWait, 25));
+  }
+}
+
+function processIsAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ESRCH") return false;
+    throw error;
+  }
+}
+
+async function waitForProcessExit(pid: number, timeoutMs: number): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (processIsAlive(pid)) {
+    if (Date.now() >= deadline) {
+      throw new Error(`Timed-out descendant is still alive: ${pid}`);
+    }
+    await new Promise((resolveWait) => setTimeout(resolveWait, 25));
+  }
+}
+
 describe("candidate installation matrix", () => {
   it("runs every release gate in each supported OS and Node cell", async () => {
     const workflow = await readFile(
@@ -156,7 +186,8 @@ describe("candidate installation matrix", () => {
 
   it("terminates timed-out process descendants before rejecting", async () => {
     const root = await mkdtemp(join(tmpdir(), "ruleblast-process-tree-"));
-    const sentinel = join(root, "orphan.txt");
+    const heartbeat = join(root, "descendant-heartbeat.txt");
+    const pidFile = join(root, "descendant-pid.txt");
     try {
       const moduleUrl = new URL("../scripts/release-process.mjs", import.meta.url).href;
       const processModule = await import(moduleUrl) as {
@@ -169,21 +200,41 @@ describe("candidate installation matrix", () => {
       const descendant = [
         "const { spawn } = require('node:child_process');",
         `spawn(process.execPath, ['-e', ${JSON.stringify(
-          `setTimeout(() => require('node:fs').writeFileSync(${JSON.stringify(sentinel)}, 'orphan'), 1200)`,
+          [
+            "const { writeFileSync } = require('node:fs');",
+            `writeFileSync(${JSON.stringify(pidFile)}, String(process.pid));`,
+            "let sequence = 0;",
+            `const beat = () => writeFileSync(${JSON.stringify(heartbeat)}, String(++sequence));`,
+            "beat();",
+            "setInterval(beat, 50);",
+          ].join("\n"),
         )}], { stdio: 'ignore' });`,
         "setInterval(() => {}, 1000);",
       ].join("\n");
-      await expect(processModule.runProcess(
+      const outcome = processModule.runProcess(
         process.execPath,
         ["-e", descendant],
-        { timeoutMs: 300 },
-      )).rejects.toThrow(/timed out/iu);
-      await new Promise((resolveWait) => setTimeout(resolveWait, 1_500));
-      expect(existsSync(sentinel)).toBe(false);
+        { timeoutMs: 2_000 },
+      ).then(
+        () => new Error("Timed-out fixture unexpectedly completed"),
+        (error: unknown) => error,
+      );
+      await waitForFile(pidFile, 1_500);
+      await waitForFile(heartbeat, 1_500);
+      const error = await outcome;
+      expect(error).toBeInstanceOf(Error);
+      expect((error as Error).message).toMatch(/timed out/iu);
+
+      const descendantPid = Number.parseInt(await readFile(pidFile, "utf8"), 10);
+      expect(Number.isSafeInteger(descendantPid)).toBe(true);
+      await waitForProcessExit(descendantPid, 500);
+      const stoppedHeartbeat = await readFile(heartbeat, "utf8");
+      await new Promise((resolveWait) => setTimeout(resolveWait, 250));
+      expect(await readFile(heartbeat, "utf8")).toBe(stoppedHeartbeat);
     } finally {
       await rm(root, { recursive: true, force: true });
     }
-  }, 10_000);
+  }, 15_000);
 
   it("bounds npm pack before the install fixture can be left behind", async () => {
     const root = await mkdtemp(join(tmpdir(), "ruleblast-pack-timeout-"));
