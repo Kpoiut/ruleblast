@@ -6,6 +6,7 @@ RuleBlast grows by proving one product dimension at a time. This roadmap shows d
 
 | Label | Meaning |
 |---|---|
+| **RELEASED** | A signed tag, npm version, and GitHub Release are public, and downloaded artifact bytes match the recorded manifest. |
 | **SHIPPED TO MAIN** | Merged and verified development behavior. This is not an npm release unless a tag and artifact are named. |
 | **IN BUILD** | Work inside the active release boundary; incomplete until authorized publication and every external verification pass. |
 | **NEXT** | A selected, gated follow-up with no delivery date implied. |
@@ -32,7 +33,7 @@ These capabilities are merged and verified as development behavior inside the `1
 
 > Git shows the first diff. How large is the second?
 
-## **IN BUILD** — `v1.0.0`: The Second Diff
+## **RELEASED** — `v1.0.0`: The Second Diff
 
 The first release is one local npm CLI:
 
@@ -43,13 +44,13 @@ ruleblast explain <path> [--from <base>]
 ruleblast demo [--explain <path>]
 ```
 
-The `v1.0.0` boundary carries four completed technical evidence gates and one remaining external gate:
+The `v1.0.0` boundary completed four technical evidence gates and one independently verified publication gate:
 
 1. **Packed-install and performance proof.** The packed artifact passes clean-location verification for the four actions, JSON determinism, read-only behavior, side-effect boundaries, file allowlist, and performance budget.
 2. **Field pilot and canonical receipt.** The local-only pilot covered 25 immutable, real instruction-changing commits from the public Apache-2.0 `openai/codex` repository; its ledger was not published. It produced 24 useful non-obvious results and no unresolved count-changing P0/P1 defect. The promoted public case separately pins RuleBlast commits `27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8` → `e420008a1c10c5c328e506247560117f4d40b855`: 33 instruction-line edits changed 106 of 106 candidate stacks for each profile, with zero current split, partial, unknown, or indeterminate paths.
-3. **Exact package identity.** Package and lock metadata carry `1.0.0`, every installation example pins `ruleblast@1.0.0`, and tag `v1.0.0` becomes the immutable source interface only when the authorized publication step creates it.
+3. **Exact package identity.** Package and lock metadata carry `1.0.0`, every installation example pins `ruleblast@1.0.0`, and signed tag `v1.0.0` is the immutable source interface.
 4. **Pack-once artifact proof.** One durable builder creates one contained tarball, records its SHA-512, SHA-256, byte size, and sorted inventory, then validates and smoke-tests those exact bytes offline without repacking. A source tree never substitutes for independent verification of npm or GitHub Release records.
-5. **REMAINING — Authorized publication.** Create the signed immutable tag, publish the already-reviewed tarball without repacking, create the GitHub Release from those exact bytes, and verify the registry integrity and documented one-command installs before calling `1.0.0` released.
+5. **Verified publication receipt.** Signed tag [`v1.0.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v1.0.0) targets `327cea48343b4018a0dca1d4c9dfae9a2b6b1bcb`. [npm `ruleblast@1.0.0`](https://www.npmjs.com/package/ruleblast/v/1.0.0) reports integrity `sha512-kXIWZtwFwtUVSQun3HcV0FN65fkojbhaODIxYvggOPeNSqsl8VxZK3ST5jkfMPYDVcuWPVYlX8V4iTC0cla+hA==`. The GitHub Release carries the reviewed 146,553-byte `ruleblast-1.0.0.tgz` and canonical manifest; the downloaded tarball SHA-256 is `8c552b0e749277376010a929c1f1c444db7f7fc02c9f5099e2f902d29e0ec136`. These are independently verified external records, not facts inferred from this checkout.
 
 The `v1.0.0` boundary does not admit another agent surface, command, output product, hosted component, model call, or repository mutation. An attractive idea that crosses that line waits outside the release.
 
@@ -57,9 +58,9 @@ Earlier roadmap copy called this a “private-repository pilot.” The implement
 
 > The blast can now be explained. Can it travel without losing the receipt?
 
-## **NEXT** — `v1.0.1`: Ground-Truth Hardening
+## **IN BUILD** — `v1.0.1`: Ground-Truth Hardening
 
-This patch target deepens the existing product; it does not add a fifth action or a new product dimension.
+This active patch boundary deepens the existing product; it does not add a fifth action or a new product dimension. Its source and candidate artifact remain incomplete until their own signed tag, npm artifact, and GitHub Release are independently verified.
 
 Targeted work:
 
