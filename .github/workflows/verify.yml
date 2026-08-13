@@ -3,15 +3,17 @@ name: Verify
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   verify:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        node: [20, 22, 24]
+        node: [20, 22, 24, 26]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,3 +25,9 @@ jobs:
       - run: npm run build
       - run: npm run package:smoke
       - run: npm run install:smoke
+      - name: Verify published registry upgrade
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/tags/v1.0.2'
+        env:
+          RULEBLAST_REGISTRY_SMOKE: ruleblast@1.0.2
+          RULEBLAST_REGISTRY_UPGRADE_FROM: ruleblast@1.0.1
+        run: npm run install:smoke -- --registry

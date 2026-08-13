@@ -13,19 +13,19 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { assertJsonContract, writeNetworkDenyPreload } from "./package-smoke-contract.mjs";
 import { installedRuntimeDependencyDirectories } from "./capture-case-dependencies.mjs";
 import {
+  exerciseInstallLifecycle,
+  exerciseRegistryUpgrade,
+} from "./install-lifecycle-smoke.mjs";
+import {
   armFsmonitor,
-  captureRepository,
   cleanupTempRoot,
   createFixture,
   createTempRoot,
-  installedBin,
   networkDenyEnvironment,
-  runInstalled,
-  sameCapture,
 } from "./package-smoke-runtime.mjs";
 import { materializeOfflineRuntimeDependencies } from "./package-smoke.mjs";
-import { assertContained, packPackage } from "./package-pack.mjs";
-import { runNpm, runStrict } from "./release-process.mjs";
+import { packPackage } from "./package-pack.mjs";
+import { runNpm } from "./release-process.mjs";
 
 const SCRIPT_DIRECTORY = dirname(fileURLToPath(import.meta.url));
 const REPOSITORY_ROOT = resolve(SCRIPT_DIRECTORY, "..");
@@ -80,36 +80,6 @@ function assertFsmonitorUntouched(sentinel) {
   }
 }
 
-function localLayout(root) {
-  const installedRoot = assertContained(
-    root,
-    join(root, "node_modules", "ruleblast"),
-    "Local installation",
-  );
-  return { installedRoot, bin: installedBin(root, installedRoot) };
-}
-
-function globalLayout(prefix) {
-  const installedRoot = assertContained(
-    prefix,
-    process.platform === "win32"
-      ? join(prefix, "node_modules", "ruleblast")
-      : join(prefix, "lib", "node_modules", "ruleblast"),
-    "Global installation",
-  );
-  const bin = assertContained(
-    prefix,
-    process.platform === "win32"
-      ? join(prefix, "ruleblast.cmd")
-      : join(prefix, "bin", "ruleblast"),
-    "Global executable",
-  );
-  if (!existsSync(installedRoot) || !existsSync(bin)) {
-    fail("Global install omitted its package or executable");
-  }
-  return { installedRoot, bin };
-}
-
 export function registryPackageSpecifier(version, environment = process.env) {
   const specifier = `ruleblast@${version}`;
   if (environment.RULEBLAST_REGISTRY_SMOKE !== specifier) {
@@ -118,96 +88,26 @@ export function registryPackageSpecifier(version, environment = process.env) {
   return specifier;
 }
 
-export function installArguments(scope, target, source, dependencies, offline) {
-  return [
-    "install",
-    ...(scope === "global" ? ["--global"] : ["--save-dev", "--save-exact"]),
-    "--prefix", target,
-    "--ignore-scripts",
-    "--no-audit",
-    "--no-fund",
-    ...(offline ? ["--offline"] : []),
-    "--install-links",
-    source,
-    ...dependencies,
-  ];
+export function parseInstallMode(value) {
+  if (value === undefined || value === "candidate") return "candidate";
+  if (value === "registry") return "registry";
+  fail(`Unsupported install mode: ${String(value)}`);
 }
 
-async function install(scope, target, source, dependencies, env, offline) {
-  await runNpm(installArguments(
-    scope, target, source, dependencies, offline,
-  ), target, {
-    env,
-    timeoutMs: COMMAND_TIMEOUT_MS,
-  });
-}
-
-async function uninstall(scope, target, env, offline) {
-  await runNpm([
-    "uninstall",
-    ...(scope === "global" ? ["--global"] : ["--save-dev"]),
-    "--prefix", target,
-    "--ignore-scripts",
-    "--no-audit",
-    "--no-fund",
-    ...(offline ? ["--offline"] : []),
-    "ruleblast",
-  ], target, { env, timeoutMs: COMMAND_TIMEOUT_MS });
-}
-
-function assertRemoved(layout) {
-  if (existsSync(layout.installedRoot) || existsSync(layout.bin)) {
-    fail("npm uninstall left the RuleBlast package or executable behind");
+export function registryUpgradeSpecifiers(mode, currentVersion, environment = process.env) {
+  if (mode !== "registry") {
+    fail("Registry upgrade evidence is unavailable in candidate mode");
   }
-}
-
-async function verifyInstalled(layout, fixture, env, version) {
-  const manifest = JSON.parse(readFileSync(join(layout.installedRoot, "package.json"), "utf8"));
-  if (manifest.name !== "ruleblast" || manifest.version !== version) {
-    fail("Installed package identity changed");
+  const to = registryPackageSpecifier(currentVersion, environment);
+  const predecessorVersion = "1.0.1";
+  const from = `ruleblast@${predecessorVersion}`;
+  if (environment.RULEBLAST_REGISTRY_UPGRADE_FROM !== from) {
+    fail(`Registry upgrade guard requires RULEBLAST_REGISTRY_UPGRADE_FROM=${from}`);
   }
-  const versionBytes = await runInstalled(layout.bin, ["--version"], fixture, env);
-  const versionLine = versionBytes.toString("utf8").trimEnd();
-  if (versionLine !== `ruleblast ${version}`) fail("Installed CLI version changed");
-  const caseBytes = await runInstalled(layout.bin, ["case", "--json"], dirname(fixture), env);
-  assertJsonContract("case JSON", caseBytes, "diff");
-  const before = await captureRepository(fixture, process.env);
-  const analysisBytes = await runInstalled(layout.bin, [".", "--json"], fixture, env);
-  assertJsonContract("current JSON", analysisBytes, "current");
-  const after = await captureRepository(fixture, process.env);
-  if (!sameCapture(before, after)) fail("Installed analysis changed its repository");
-  return { version: versionLine, repositoryUnchanged: true };
-}
-
-async function verifyHostShell(layout, fixture, env, version) {
-  const shellEnvironment = { ...env, RULEBLAST_INSTALL_BIN: layout.bin };
-  const invocation = process.platform === "win32"
-    ? {
-        command: join(
-          process.env.SystemRoot ?? "C:\\Windows",
-          "System32", "WindowsPowerShell", "v1.0", "powershell.exe",
-        ),
-        args: [
-          "-NoLogo", "-NoProfile", "-NonInteractive", "-Command",
-          "& $env:RULEBLAST_INSTALL_BIN --version",
-        ],
-        name: "powershell",
-      }
-    : {
-        command: "bash",
-        args: ["--noprofile", "--norc", "-c", '"$RULEBLAST_INSTALL_BIN" --version'],
-        name: "bash",
-      };
-  const result = await runStrict(invocation.command, invocation.args, {
-    cwd: fixture,
-    env: shellEnvironment,
-    timeoutMs: 30_000,
-  });
-  if (result.stderr.length !== 0 ||
-      result.stdout.toString("utf8") !== `ruleblast ${version}\n`) {
-    fail(`${invocation.name} did not execute the installed RuleBlast shim`);
-  }
-  return invocation.name;
+  return {
+    from: { specifier: from, version: predecessorVersion },
+    to: { specifier: to, version: currentVersion },
+  };
 }
 
 export function npmExecArguments(source, dependencies, offline) {
@@ -231,42 +131,8 @@ async function verifyNpmExec(source, dependencies, cwd, env, offline) {
   assertJsonContract("case JSON", output.stdout, "diff");
 }
 
-async function exercise(
-  scope,
-  target,
-  source,
-  version,
-  dependencies,
-  fixture,
-  installEnv,
-  analysisEnv,
-  offline,
-) {
-  await install(scope, target, source, dependencies, installEnv, offline);
-  const first = scope === "global" ? globalLayout(target) : localLayout(target);
-  const verified = await verifyInstalled(first, fixture, analysisEnv, version);
-  const hostShell = await verifyHostShell(first, fixture, analysisEnv, version);
-  await uninstall(scope, target, installEnv, offline);
-  assertRemoved(first);
-  await install(scope, target, source, dependencies, installEnv, offline);
-  const second = scope === "global" ? globalLayout(target) : localLayout(target);
-  await verifyInstalled(second, fixture, analysisEnv, version);
-  await uninstall(scope, target, installEnv, offline);
-  assertRemoved(second);
-  return {
-    installed: true,
-    shim: process.platform === "win32" ? "cmd" : "posix",
-    version: verified.version,
-    caseVerified: true,
-    analysisVerified: true,
-    repositoryUnchanged: verified.repositoryUnchanged,
-    hostShell,
-    reinstalled: true,
-    uninstalled: true,
-  };
-}
-
 export async function runInstallSmoke(options = {}) {
+  const mode = parseInstallMode(options.mode);
   const root = createTempRoot();
   try {
     const inheritedEnvironment = options.env ?? process.env;
@@ -286,13 +152,15 @@ export async function runInstallSmoke(options = {}) {
     }
     const cacheInitiallyEmpty = readdirSync(installCache).length === 0;
     const descriptor = JSON.parse(readFileSync(join(REPOSITORY_ROOT, "package.json"), "utf8"));
-    const registryMode = options.mode === "registry";
+    const registryMode = mode === "registry";
     let source;
+    let upgrade;
     let version = descriptor.version;
     let artifactCount;
     let dependencies;
     if (registryMode) {
-      source = registryPackageSpecifier(version, inheritedEnvironment);
+      upgrade = registryUpgradeSpecifiers("registry", version, inheritedEnvironment);
+      source = upgrade.to.specifier;
       artifactCount = 0;
       dependencies = [];
     } else {
@@ -335,14 +203,30 @@ export async function runInstallSmoke(options = {}) {
       : baseInstallEnv;
     const analysisEnv = networkDenyEnvironment(preload, baseInstallEnv);
     await verifyNpmExec(source, dependencies, dirname(fixture), installEnv, offline);
-    const localReport = await exercise(
-      "local", local, source, version, dependencies, fixture,
+    const lifecycleOptions = (scope, target) => ({
+      scope, target, source, version, dependencies, fixture,
       installEnv, analysisEnv, offline,
+    });
+    const localReport = await exerciseInstallLifecycle(
+      lifecycleOptions("local", local),
     );
-    const globalReport = await exercise(
-      "global", global, source, version, dependencies, fixture,
-      installEnv, analysisEnv, offline,
+    const globalReport = await exerciseInstallLifecycle(
+      lifecycleOptions("global", global),
     );
+    const upgradeReport = registryMode
+      ? {
+          local: await exerciseRegistryUpgrade({
+            ...lifecycleOptions("local", local),
+            from: upgrade.from,
+            to: upgrade.to,
+          }),
+          global: await exerciseRegistryUpgrade({
+            ...lifecycleOptions("global", global),
+            from: upgrade.from,
+            to: upgrade.to,
+          }),
+        }
+      : null;
     if (existsSync(lifecycleSentinel)) {
       fail("npm executed an install lifecycle script despite --ignore-scripts");
     }
@@ -353,7 +237,9 @@ export async function runInstallSmoke(options = {}) {
       cacheInitiallyEmpty,
       installScriptsIgnored: true,
       npmExecVerified: true,
-      hostShell: localReport.hostShell,
+      mode: registryMode ? "registry" : "candidate",
+      hostShells: localReport.hostShells,
+      registryUpgrade: upgradeReport,
       lifecycleSentinelUntouched: true,
       fsmonitorUntouched: true,
       local: localReport,

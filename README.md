@@ -52,7 +52,7 @@ npx ruleblast --help
 npx ruleblast
 ```
 
-These npm commands are verified in PowerShell or Command Prompt on Windows and in bash on Linux. The four v1 actions stay available through the one-command form:
+The release gate covers Node.js 20, 22, 24, and 26 on Windows and Linux. It executes the installed `.cmd` through both Command Prompt and PowerShell on Windows, and the POSIX shim through bash on Linux. A registry upgrade from exact `1.0.1` to `1.0.2` remains conditional until both versions exist publicly, each npm `dist.integrity` matches its authorized durable artifact, and the guarded `v1.0.2` tag workflow passes. That dispatched workflow proves the install lifecycle; it does not by itself prove publication or artifact parity. The four v1 actions stay available through the one-command form:
 
 ```bash
 # scan the current repository
