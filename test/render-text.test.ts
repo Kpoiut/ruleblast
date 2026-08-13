@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
@@ -221,18 +221,58 @@ function explainCta(text: string): string {
   return line.trimStart();
 }
 
+function discoverExecutable(
+  candidates: readonly string[],
+  probeArguments: readonly string[],
+): string | null {
+  for (const candidate of candidates) {
+    const probe = spawnSync(candidate, probeArguments, {
+      stdio: "ignore",
+      windowsHide: true,
+    });
+    if (probe.error === undefined) {
+      if (probe.status !== 0) {
+        throw new Error(
+          `${candidate} was found but its shell probe exited with ${String(probe.status)}`,
+        );
+      }
+      return candidate;
+    }
+    if ((probe.error as NodeJS.ErrnoException).code !== "ENOENT") {
+      throw probe.error;
+    }
+  }
+  return null;
+}
+
+const shellExecutables: Readonly<Record<ShellDialect, string | null>> =
+  Object.freeze({
+    posix: discoverExecutable(["sh"], ["-c", ":"]),
+    powershell: discoverExecutable(
+      ["pwsh", "powershell"],
+      ["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "exit 0"],
+    ),
+  });
+const executableShellDialects = (["posix", "powershell"] as const).filter(
+  (shellDialect) => shellExecutables[shellDialect] !== null,
+);
+
 function executeCta(
   shellDialect: ShellDialect,
   command: string,
 ): string[] {
+  const executable = shellExecutables[shellDialect];
+  if (executable === null) {
+    throw new Error(`No ${shellDialect} executable is available on this host`);
+  }
   if (shellDialect === "posix") {
-    const output = execFileSync("sh", [
+    const output = execFileSync(executable, [
       "-c",
       `ruleblast() { printf '%s\\n' "$@"; }\n${command}`,
     ], { encoding: "utf8" });
     return output.trimEnd().split("\n");
   }
-  const output = execFileSync("powershell", [
+  const output = execFileSync(executable, [
     "-NoLogo",
     "-NoProfile",
     "-NonInteractive",
@@ -249,6 +289,13 @@ function deepFreeze<T>(value: T): T {
 }
 
 describe("renderText", () => {
+  it("treats an absent optional shell as unavailable", () => {
+    expect(discoverExecutable(
+      ["ruleblast-shell-that-does-not-exist"],
+      ["--version"],
+    )).toBeNull();
+  });
+
   it("reveals a diff in the locked curiosity order", () => {
     expect(renderText(diffResult(), diffContext())).toBe(golden("diff-blast"));
   });
@@ -685,7 +732,7 @@ describe("renderText", () => {
       .toContain(`ruleblast explain ${token} --from HEAD`);
   });
 
-  it.each(["posix", "powershell"] as const)(
+  it.each(executableShellDialects)(
     "round-trips hostile explain CTA arguments through %s",
     (shellDialect) => {
       const path = "-it's $(not-run) `tick` file.ts";
@@ -717,13 +764,16 @@ describe("renderText", () => {
     },
   );
 
-  it.each([
+  const leadingAtCases = [
     ["posix", "ruleblast explain @foo --from @base --to @target"],
     [
       "powershell",
       "ruleblast explain '@foo' --from '@base' --to '@target'",
     ],
-  ] as const)(
+  ] as const;
+  it.each(leadingAtCases.filter(
+    ([shellDialect]) => shellExecutables[shellDialect] !== null,
+  ))(
     "round-trips leading-at CTA arguments through %s",
     (shellDialect, expectedCommand) => {
       const result = diffResult({
