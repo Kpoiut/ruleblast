@@ -1,7 +1,20 @@
 {
   "name": "ruleblast",
-  "version": "0.0.0-development",
+  "version": "1.0.0",
   "description": "Map where AGENTS.md and CLAUDE.md changes land across a repo—and where Codex and Claude Code split.",
+  "keywords": [
+    "agents.md",
+    "claude.md",
+    "codex",
+    "claude-code",
+    "ai-coding-agents",
+    "repository-instructions",
+    "instruction-scope",
+    "blast-radius",
+    "git",
+    "cli",
+    "developer-tools"
+  ],
   "type": "module",
   "bin": {
     "ruleblast": "dist/cli.js"
@@ -25,7 +38,8 @@
     "pack:check": "npm run build && npm pack --dry-run",
     "package:smoke": "node scripts/package-smoke.mjs",
     "benchmark": "npm run build && node scripts/benchmark.mjs",
-    "release:check": "node scripts/release-check.mjs"
+    "release:check": "node scripts/release-check.mjs",
+    "release:artifact": "node scripts/release-artifact.mjs"
   },
   "dependencies": {
     "diff": "9.0.0",
@@ -37,5 +51,13 @@
     "typescript": "7.0.2",
     "vitest": "4.1.10"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kpoiut/ruleblast.git"
+  },
+  "homepage": "https://github.com/Kpoiut/ruleblast#readme",
+  "bugs": {
+    "url": "https://github.com/Kpoiut/ruleblast/issues"
+  }
 }

@@ -1,8 +1,8 @@
 # Changelog
 
-All notable user-visible changes to RuleBlast are recorded here. The project has not published an npm release yet.
+All notable user-visible changes to RuleBlast are recorded here.
 
-## Unreleased
+## 1.0.0
 
 ### Added
 
@@ -15,8 +15,8 @@ All notable user-visible changes to RuleBlast are recorded here. The project has
 - A no-overwrite Blast Case capture path for canonical, source-content-free receipts from immutable public Git commits; promotion is protected by the field-evidence gate.
 - The first promoted real-repository receipt, covering RuleBlast commits `27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8` through `e420008a1c10c5c328e506247560117f4d40b855`: 33 instruction-line edits changed all 106 candidate stacks for both profiles, with zero split, partial, unknown, or indeterminate paths.
 
-### Release state
+### Release artifact
 
-- The ground-truth core is merged to main as development code.
-- Packed-install, package allowlist, side-effect, performance, field-pilot, and first-receipt gates are complete on main.
-- `v1.0.0` remains `IN BUILD`: explicit release authority, the `1.0.0` package version, an immutable tag, npm publication, and verification of the receipt's release reproduction command are still pending.
+- Package and lock metadata carry version `1.0.0` and the canonical repository, homepage, and issue tracker.
+- A reusable pack-once builder records SHA-512, SHA-256, size, and sorted inventory before validating and smoke-testing that exact tarball offline.
+- Package specifier `ruleblast@1.0.0`, signed source tag `v1.0.0`, npm distribution, and the GitHub Release are independently verified publication records; none is inferred from a source checkout.

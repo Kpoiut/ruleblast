@@ -3,6 +3,7 @@ node_modules/
 dist/
 coverage/
 *.tgz
+/artifacts/release/
 
 # Local development state
 .worktrees/

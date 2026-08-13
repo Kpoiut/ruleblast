@@ -2,25 +2,29 @@
 
 import {
   chmodSync,
+  copyFileSync,
   existsSync,
   lstatSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  readdirSync,
   readlinkSync,
   rmSync,
-  statSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { basename, dirname, join, relative, resolve, sep } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import {
+  assertInstalledPackage,
   assertJsonContract,
   assertNoPathLeak,
   assertTextContracts,
   writeNetworkDenyPreload,
 } from "./package-smoke-contract.mjs";
+import { installedRuntimeDependencyDirectories } from "./capture-case-dependencies.mjs";
+import { assertContained, packPackage } from "./package-pack.mjs";
 import { runNpm, runProcess, runStrict } from "./release-process.mjs";
 
 const SCRIPT_DIRECTORY = dirname(fileURLToPath(import.meta.url));
@@ -31,15 +35,47 @@ function fail(message) {
   throw new Error(message);
 }
 
-function assertContained(root, candidate, description) {
-  const resolvedRoot = resolve(root);
-  const resolvedCandidate = resolve(candidate);
-  const pathFromRoot = relative(resolvedRoot, resolvedCandidate);
-  if (pathFromRoot === "" || pathFromRoot === ".." ||
-      pathFromRoot.startsWith(`..${sep}`) || resolve(resolvedRoot, pathFromRoot) !== resolvedCandidate) {
-    fail(`${description} escaped its temporary root`);
+function copyRuntimePackage(source, destination, packageRoot = source) {
+  const sourceStats = lstatSync(source);
+  if (sourceStats.isSymbolicLink() || !sourceStats.isDirectory()) {
+    fail("Runtime dependency root is a symlink or non-directory");
   }
-  return resolvedCandidate;
+  mkdirSync(destination);
+  const entries = readdirSync(source, { withFileTypes: true }).sort((left, right) =>
+    left.name < right.name ? -1 : left.name > right.name ? 1 : 0
+  );
+  for (const entry of entries) {
+    const sourcePath = join(source, entry.name);
+    const destinationPath = join(destination, entry.name);
+    if (entry.isSymbolicLink()) fail("Runtime dependency contains a symlink");
+    if (entry.isDirectory()) {
+      if (entry.name === "node_modules") continue;
+      copyRuntimePackage(sourcePath, destinationPath, packageRoot);
+      continue;
+    }
+    if (!entry.isFile()) fail("Runtime dependency contains a special filesystem node");
+    if (source === packageRoot && entry.name === "package.json") {
+      const descriptor = JSON.parse(readFileSync(sourcePath, "utf8"));
+      if (typeof descriptor !== "object" || descriptor === null || Array.isArray(descriptor) ||
+          typeof descriptor.name !== "string" || descriptor.name === "" ||
+          typeof descriptor.version !== "string" || descriptor.version === "") {
+        fail("Runtime dependency package.json is invalid");
+      }
+      const { scripts: _scripts, ...installDescriptor } = descriptor;
+      writeFileSync(destinationPath, `${JSON.stringify(installDescriptor)}\n`);
+      continue;
+    }
+    copyFileSync(sourcePath, destinationPath);
+    chmodSync(destinationPath, lstatSync(sourcePath).mode);
+  }
+}
+
+export function materializeOfflineRuntimeDependencies(directories, destinationRoot) {
+  return Object.freeze(directories.map((directory, index) => {
+    const destination = join(destinationRoot, String(index));
+    copyRuntimePackage(directory, destination);
+    return destination;
+  }));
 }
 
 function createTempRoot() {
@@ -51,27 +87,12 @@ function createTempRoot() {
   return root;
 }
 
-function parsePack(stdout, packDirectory) {
-  let value;
-  try {
-    value = JSON.parse(stdout.toString("utf8"));
-  } catch {
-    fail("npm pack did not emit one JSON document");
+function cleanupTempRoot(root) {
+  const parent = resolve(tmpdir());
+  if (dirname(root) !== parent || !basename(root).startsWith(TEMP_PREFIX)) {
+    fail("Refusing unsafe package-smoke cleanup");
   }
-  if (!Array.isArray(value) || value.length !== 1 ||
-      typeof value[0] !== "object" || value[0] === null) {
-    fail("npm pack must report exactly one package");
-  }
-  const entry = value[0];
-  if (typeof entry.filename !== "string" || entry.filename !== basename(entry.filename) ||
-      !Array.isArray(entry.files) || typeof entry.size !== "number") {
-    fail("npm pack returned an invalid package record");
-  }
-  const tarball = assertContained(packDirectory, join(packDirectory, entry.filename), "Tarball");
-  if (!existsSync(tarball) || statSync(tarball).size !== entry.size) {
-    fail("npm pack size does not match the produced tarball");
-  }
-  return { entry, tarball };
+  rmSync(root, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
 }
 
 async function git(root, args, suppressFsmonitor = true, environment = process.env) {
@@ -237,26 +258,31 @@ function installedBin(installDirectory, installedRoot) {
   return shim;
 }
 
-export async function runPackageSmoke(options = {}) {
+export async function runPackedPackageSmoke(packed, options = {}) {
+  const repositoryRoot = resolve(options.repositoryRoot ?? REPOSITORY_ROOT);
+  const dependencyRoot = resolve(options.dependencyRoot ?? repositoryRoot);
   const baseEnvironment = options.env ?? process.env;
+  const runtimeDependencies = await installedRuntimeDependencyDirectories(
+    dependencyRoot,
+    readFileSync(join(repositoryRoot, "package-lock.json")),
+  );
   const temporaryRoot = createTempRoot();
   try {
-    const packDirectory = join(temporaryRoot, "pack");
+    const dependencyDirectory = join(temporaryRoot, "dependencies");
     const installDirectory = join(temporaryRoot, "install");
     const fixture = join(temporaryRoot, "fixture");
-    mkdirSync(packDirectory);
+    mkdirSync(dependencyDirectory);
     mkdirSync(installDirectory);
     mkdirSync(fixture);
-    await runNpm(["run", "build"], REPOSITORY_ROOT, { env: baseEnvironment });
-    const packed = parsePack(
-      (await runNpm([
-        "pack", "--json", "--ignore-scripts", "--pack-destination", packDirectory,
-      ], REPOSITORY_ROOT, { env: baseEnvironment })).stdout,
-      packDirectory,
+    const dependencies = materializeOfflineRuntimeDependencies(
+      runtimeDependencies,
+      dependencyDirectory,
     );
     await runNpm([
       "install", "--prefix", installDirectory, "--ignore-scripts", "--no-audit",
-      "--no-fund", "--prefer-offline", "--package-lock=false", packed.tarball,
+      "--no-fund", "--offline", "--package-lock=false", "--install-links",
+      packed.tarball,
+      ...dependencies,
     ], installDirectory, { env: baseEnvironment });
     const installedRoot = assertContained(
       installDirectory,
@@ -264,21 +290,31 @@ export async function runPackageSmoke(options = {}) {
       "Installed package",
     );
     const installedPackage = JSON.parse(readFileSync(join(installedRoot, "package.json"), "utf8"));
-    if (installedPackage.bin?.ruleblast !== "dist/cli.js") fail("Packed bin target changed");
+    const sourcePackage = JSON.parse(readFileSync(join(repositoryRoot, "package.json"), "utf8"));
+    assertInstalledPackage(sourcePackage, installedPackage, packed.entry);
     for (const required of ["CONTRACT.md", "fixtures/demo/case.json"]) {
       const installed = join(installedRoot, ...required.split("/"));
-      const source = join(REPOSITORY_ROOT, ...required.split("/"));
+      const source = join(repositoryRoot, ...required.split("/"));
       if (!existsSync(installed) || !readFileSync(installed).equals(readFileSync(source))) {
         fail(`Packed file missing or changed: ${required}`);
       }
     }
     const binTarget = installedBin(installDirectory, installedRoot);
-    await createFixture(fixture, baseEnvironment);
-    const sentinel = await armFsmonitor(fixture, baseEnvironment);
-    const before = await captureRepository(fixture, baseEnvironment);
     const preload = join(temporaryRoot, "deny-network.cjs");
     writeNetworkDenyPreload(preload);
     const env = networkDenyEnvironment(preload, baseEnvironment);
+    const help = await runInstalled(binTarget, ["--help"], temporaryRoot, env);
+    const version = await runInstalled(binTarget, ["--version"], temporaryRoot, env);
+    if (!help.toString("utf8").startsWith("Usage:\n  ruleblast")) {
+      fail("Packed ruleblast --help did not expose the CLI usage");
+    }
+    const expectedVersion = `ruleblast ${installedPackage.version}\n`;
+    if (version.toString("utf8") !== expectedVersion) {
+      fail("Packed ruleblast --version does not match package.json");
+    }
+    await createFixture(fixture, baseEnvironment);
+    const sentinel = await armFsmonitor(fixture, baseEnvironment);
+    const before = await captureRepository(fixture, baseEnvironment);
     const outputs = new Map();
     const commands = [
       ["demo-text", ["demo"]],
@@ -294,7 +330,7 @@ export async function runPackageSmoke(options = {}) {
     for (const [label, args] of commands) {
       outputs.set(label, await runInstalled(binTarget, args, fixture, env));
     }
-    const golden = readFileSync(join(REPOSITORY_ROOT, "test", "golden", "diff-demo.txt"));
+    const golden = readFileSync(join(repositoryRoot, "test", "golden", "diff-demo.txt"));
     if (!outputs.get("demo-text").equals(golden)) fail("Packed demo text differs from its golden");
     if (!outputs.get("demo-json-1").equals(outputs.get("demo-json-2"))) {
       fail("Packed demo JSON is not byte-identical across runs");
@@ -304,7 +340,7 @@ export async function runPackageSmoke(options = {}) {
     assertJsonContract("diff JSON", outputs.get("diff-json"), "diff");
     assertJsonContract("explain JSON", outputs.get("explain-json"), "explain", "current");
     assertTextContracts(outputs);
-    assertNoPathLeak(outputs, [temporaryRoot, REPOSITORY_ROOT]);
+    assertNoPathLeak(outputs, [temporaryRoot, repositoryRoot]);
     const after = await captureRepository(fixture, baseEnvironment);
     if (!sameCapture(before, after)) fail("Packed analysis changed the Git fixture");
     if (!existsSync(sentinel.path)) fail("Packed analysis removed the fsmonitor sentinel");
@@ -317,16 +353,33 @@ export async function runPackageSmoke(options = {}) {
       ok: true,
       fixtureUnchanged: true,
       fsmonitorUntouched: true,
+      helpVerified: true,
       jsonDeterministic: true,
-      tarballBytes: statSync(packed.tarball).size,
+      metadataVerified: true,
+      version: expectedVersion.trimEnd(),
+      tarballBytes: packed.entry.size,
       packedFiles: packed.entry.files.map((file) => file.path).sort(),
     };
   } finally {
-    const parent = resolve(tmpdir());
-    if (dirname(temporaryRoot) !== parent || !basename(temporaryRoot).startsWith(TEMP_PREFIX)) {
-      fail("Refusing unsafe package-smoke cleanup");
-    }
-    rmSync(temporaryRoot, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+    cleanupTempRoot(temporaryRoot);
+  }
+}
+
+export async function runPackageSmoke(options = {}) {
+  const repositoryRoot = resolve(options.repositoryRoot ?? REPOSITORY_ROOT);
+  const baseEnvironment = options.env ?? process.env;
+  const packRoot = createTempRoot();
+  try {
+    const packDirectory = join(packRoot, "pack");
+    mkdirSync(packDirectory);
+    await runNpm(["run", "build"], repositoryRoot, { env: baseEnvironment });
+    const packed = await packPackage(repositoryRoot, packDirectory, baseEnvironment);
+    return await runPackedPackageSmoke(packed, {
+      env: baseEnvironment,
+      repositoryRoot,
+    });
+  } finally {
+    cleanupTempRoot(packRoot);
   }
 }
 

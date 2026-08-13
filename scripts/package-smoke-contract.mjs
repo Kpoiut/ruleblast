@@ -4,6 +4,18 @@ function fail(message) {
   throw new Error(message);
 }
 
+export function assertInstalledPackage(source, installed, packedEntry) {
+  if (installed.name !== packedEntry.name || installed.version !== packedEntry.version ||
+      installed.bin?.ruleblast !== "dist/cli.js") {
+    fail("Installed package identity or bin target changed");
+  }
+  for (const field of ["description", "keywords", "repository", "homepage", "bugs"]) {
+    if (JSON.stringify(installed[field]) !== JSON.stringify(source[field])) {
+      fail(`Installed package metadata changed: ${field}`);
+    }
+  }
+}
+
 export function assertJsonContract(label, bytes, mode, analysisMode) {
   let value;
   try {

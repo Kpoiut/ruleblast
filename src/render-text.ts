@@ -177,7 +177,7 @@ function renderCurrent(
       "No repo instructions yet.",
       "",
       "Want the 10-second reveal?",
-      "  npx ruleblast@latest demo",
+      "  npx ruleblast@1.0.0 demo",
     );
   } else {
     const count = result.counts.currentSplitPathCount;

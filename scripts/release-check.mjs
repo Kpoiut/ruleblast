@@ -16,10 +16,18 @@ const INSTALL_LIFECYCLE_SCRIPTS = [
   "preinstall",
   "install",
   "postinstall",
+  "prepack",
+  "postpack",
   "prepublish",
+  "prepublishOnly",
+  "publish",
+  "postpublish",
   "preprepare",
   "prepare",
   "postprepare",
+  "preversion",
+  "version",
+  "postversion",
 ];
 
 function fail(message) {
@@ -60,7 +68,7 @@ function filesBelow(directory) {
   return result;
 }
 
-export function expectedPackedFiles() {
+export function expectedPackedFiles(repositoryRoot = REPOSITORY_ROOT) {
   const fixed = [
     "package.json",
     "README.md",
@@ -69,18 +77,18 @@ export function expectedPackedFiles() {
     "assets/ruleblast-demo-terminal.gif",
     "fixtures/demo/case.json",
   ];
-  const dist = filesBelow(join(REPOSITORY_ROOT, "src"))
+  const dist = filesBelow(join(repositoryRoot, "src"))
     .filter((path) => path.endsWith(".ts"))
     .flatMap((path) => {
-      const sourceRelative = slashPath(relative(join(REPOSITORY_ROOT, "src"), path));
+      const sourceRelative = slashPath(relative(join(repositoryRoot, "src"), path));
       const base = sourceRelative.slice(0, -3);
       return [`dist/${base}.js`, `dist/${base}.d.ts`];
     });
   return [...fixed, ...dist].sort();
 }
 
-export function validatePackage(report) {
-  const descriptor = readJson(join(REPOSITORY_ROOT, "package.json"));
+export function validatePackage(report, repositoryRoot = REPOSITORY_ROOT) {
+  const descriptor = readJson(join(repositoryRoot, "package.json"));
   const dependencies = sortedKeys(descriptor.dependencies ?? {});
   if (dependencies.length > MAX_RUNTIME_DEPENDENCIES) {
     fail(`Runtime dependency count ${dependencies.length} exceeds ${MAX_RUNTIME_DEPENDENCIES}`);
@@ -94,7 +102,7 @@ export function validatePackage(report) {
     fail(`Packed tarball ${report.tarballBytes} bytes exceeds ${MAX_TARBALL_BYTES}`);
   }
   const actualFiles = [...report.packedFiles].sort();
-  const expectedFiles = expectedPackedFiles();
+  const expectedFiles = expectedPackedFiles(repositoryRoot);
   for (const path of actualFiles) {
     if (path.startsWith("/") || /^[A-Za-z]:/.test(path) ||
         path.split("/").some((part) => part === "" || part === "." || part === "..")) {

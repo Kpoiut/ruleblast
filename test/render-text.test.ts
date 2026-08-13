@@ -256,6 +256,7 @@ const shellExecutables: Readonly<Record<ShellDialect, string | null>> =
 const executableShellDialects = (["posix", "powershell"] as const).filter(
   (shellDialect) => shellExecutables[shellDialect] !== null,
 );
+const SHELL_ROUND_TRIP_TIMEOUT_MS = 15_000;
 
 function executeCta(
   shellDialect: ShellDialect,
@@ -762,6 +763,7 @@ describe("renderText", () => {
         afterLabel,
       ]);
     },
+    SHELL_ROUND_TRIP_TIMEOUT_MS,
   );
 
   const leadingAtCases = [
@@ -801,6 +803,7 @@ describe("renderText", () => {
         "@target",
       ]);
     },
+    SHELL_ROUND_TRIP_TIMEOUT_MS,
   );
 
   it("explains an unchanged selected path without claiming it counted", () => {

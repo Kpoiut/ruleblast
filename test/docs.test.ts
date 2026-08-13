@@ -83,13 +83,14 @@ describe("README story contract", () => {
     }
   });
 
-  it("reveals the labeled demo before the second diff and quick start", () => {
+  it("reveals the labeled demo, then gives the exact install interface early", () => {
     expect(readme).toMatch(/^# RuleBlast\s/u);
     expectOrdered(readme, [
       "DEMO FIXTURE",
       "Git shows the first diff. RuleBlast finds the second.",
+      "## Install",
+      "npx ruleblast@1.0.0",
       "## Terminal transcript",
-      "npx ruleblast@latest",
       "## Explain one path",
       "<details>",
       "## Scope",
@@ -127,21 +128,52 @@ describe("README story contract", () => {
     expect(descriptor.files).toContain(asset);
   });
 
-  it("keeps release commands exact without claiming the package exists", () => {
-    const commands = [...readme.matchAll(/^npx ruleblast[^\r\n]*$/gmu)]
-      .map((match) => match[0]);
-    expect(commands.slice(0, 2)).toEqual([
-      "npx ruleblast@latest",
-      "npx ruleblast@latest diff HEAD~1",
-    ]);
-
-    const beforeFirstCommand = readme.slice(0, readme.indexOf(commands[0] ?? ""));
-    expect(beforeFirstCommand).toMatch(/not published yet/iu);
-    expect(beforeFirstCommand).not.toMatch(
+  it("documents one-command, global, local, maintenance, and source installs", () => {
+    for (const command of [
+      "node --version",
+      "npm view ruleblast@1.0.0 version",
+      "npx ruleblast@1.0.0",
+      "npx ruleblast@1.0.0 --help",
+      "cd <your-git-repository>",
+      "npm install --global ruleblast@1.0.0",
+      "ruleblast --help",
+      "ruleblast",
+      "npm install --save-dev ruleblast@1.0.0",
+      "npx ruleblast --help",
+      "npm uninstall --global ruleblast",
+      "npm uninstall --save-dev ruleblast",
+      "npm cache verify",
+      "git clone --branch v1.0.0 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "npm ci",
+      "npm run build",
+      "node dist/cli.js --help",
+    ]) {
+      expect(readme).toContain(command);
+    }
+    for (const action of [
+      "npx ruleblast@1.0.0 .",
+      "npx ruleblast@1.0.0 diff HEAD~1",
+      "npx ruleblast@1.0.0 explain packages/api/internal/refund.ts --from HEAD~1",
+      "npx ruleblast@1.0.0 demo",
+    ]) {
+      expect(readme).toContain(action);
+    }
+    expect(readme).toMatch(/Windows.+macOS.+Linux/isu);
+    expect(readme).toMatch(/npx.+downloads.+runs/isu);
+    expect(readme).toMatch(/global.+full CLI/isu);
+    expect(readme).toContain("Node.js 20");
+    expect(readme).toMatch(/permission/iu);
+    expect(readme).toMatch(/cache/iu);
+    expect(readme).toContain("NOT_REPOSITORY");
+    expect(readme).toContain("REF_NOT_FOUND");
+    expect(readme).not.toContain("@latest");
+    expect(`${readme}\n${read("CONTRACT.md")}`).not.toMatch(
+      /release[- ]candidate|before package and tag publication/iu,
+    );
+    expect(readme).not.toMatch(/curl[^\r\n]*\|[^\r\n]*(?:sh|bash)/iu);
+    expect(readme.slice(0, readme.indexOf("## Install"))).not.toMatch(
       /table of contents|shields\.io|sponsor wall|architecture diagram/iu,
     );
-    expect(readme).toContain("npx ruleblast@1.0.0");
-    expect(readme).toContain("node dist/cli.js demo");
     expect(readme).toContain(
       "git checkout --detach 27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8",
     );
@@ -166,6 +198,14 @@ How many rule realities are still hiding in it…?`);
     expect(roadmap).toContain("24 useful non-obvious results");
     expect(roadmap).toContain("Earlier roadmap copy called this a “private-repository pilot.”");
     expect(roadmap).not.toMatch(/private repository (was|has been) analyzed/iu);
+  });
+
+  it("keeps v1.0.2 as a gated adoption and operability patch", () => {
+    const roadmap = read("ROADMAP.md");
+    expect(roadmap).toContain("`v1.0.2`: Adoption and Operability");
+    expect(roadmap).toContain("does not add an action, resolver surface, hosted component, or telemetry");
+    expect(roadmap).toContain("public npm and GitHub APIs");
+    expect(roadmap).toContain("No star, fork, or download count is a release guarantee");
   });
 });
 
@@ -273,6 +313,9 @@ describe("repository documentation integrity", () => {
     }
     expect(body).not.toContain("docs/superpowers/plans/");
     expect(body).not.toContain("ruleblast-v1-implementation");
+    expect(body).not.toMatch(
+      /npm (?:release )?(?:is )?not published|npm release does not exist|pending release command/iu,
+    );
   });
 
   it("resolves every local Markdown link", () => {

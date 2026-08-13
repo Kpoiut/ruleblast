@@ -6,15 +6,15 @@ RuleBlast grows by proving one product dimension at a time. This roadmap shows d
 
 | Label | Meaning |
 |---|---|
-| **SHIPPED TO MAIN** | Merged and verified development code. This does not mean an npm release exists unless a tag and artifact are named. |
-| **IN BUILD** | Work inside the active release boundary; incomplete until every release gate passes. |
+| **SHIPPED TO MAIN** | Merged and verified development behavior. This is not an npm release unless a tag and artifact are named. |
+| **IN BUILD** | Work inside the active release boundary; incomplete until authorized publication and every external verification pass. |
 | **NEXT** | A selected, gated follow-up with no delivery date implied. |
 | **HORIZON** | Ordered product direction, not a guarantee or current support claim. |
 | **EXPLORING** | An open question or candidate that has not passed admission. |
 
 ## **SHIPPED TO MAIN** — Ground-truth core
 
-The development build now has the proof-bearing path from repository bytes to an explainable terminal result:
+The proof-bearing path from repository bytes to an explainable terminal result includes:
 
 - deterministic, read-only snapshots from a tracked manifest, Git commit, or current worktree;
 - canonical result types with source disposition, completeness, ordering, and evidence provenance;
@@ -28,13 +28,13 @@ The development build now has the proof-bearing path from repository bytes to an
 - a completed local-only field pilot and a promoted, source-content-free receipt for one immutable public-repository comparison;
 - a self-explaining README, maintained behavior contract, Blast Case contribution unit, changelog, and focused evidence forms whose claims are checked against behavior.
 
-These capabilities are merged to main and verified as development code. They are not yet an installable public release.
+These capabilities are merged and verified as development behavior inside the `1.0.0` package boundary.
 
 > Git shows the first diff. How large is the second?
 
 ## **IN BUILD** — `v1.0.0`: The Second Diff
 
-The first release remains one local npm CLI:
+The first release is one local npm CLI:
 
 ```text
 ruleblast [path]
@@ -43,11 +43,13 @@ ruleblast explain <path> [--from <base>]
 ruleblast demo [--explain <path>]
 ```
 
-The production-pipeline demo and self-explaining documentation set are merged to main. Release maturity is now explicit:
+The `v1.0.0` boundary carries four completed technical evidence gates and one remaining external gate:
 
-1. **COMPLETE ON MAIN — Packed-install and performance proof.** The packed artifact has passed clean-location verification for the four actions, JSON determinism, read-only behavior, side-effect boundaries, file allowlist, and performance budget.
-2. **COMPLETE ON MAIN — Field pilot and canonical receipt.** The local-only pilot covered 25 immutable, real instruction-changing commits from the public Apache-2.0 `openai/codex` repository; its ledger was not published. It produced 24 useful non-obvious results and no unresolved count-changing P0/P1 defect. The promoted public case separately pins RuleBlast commits `27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8` → `e420008a1c10c5c328e506247560117f4d40b855`: 33 instruction-line edits changed 106 of 106 candidate stacks for each profile, with zero current split, partial, unknown, or indeterminate paths.
-3. **REMAINING — Release authority and publication.** Change the development package version to `1.0.0`, create the immutable release tag, publish to npm, and verify the receipt's versioned reproduction command only after the evidence packet is reviewable and release is explicitly authorized.
+1. **Packed-install and performance proof.** The packed artifact passes clean-location verification for the four actions, JSON determinism, read-only behavior, side-effect boundaries, file allowlist, and performance budget.
+2. **Field pilot and canonical receipt.** The local-only pilot covered 25 immutable, real instruction-changing commits from the public Apache-2.0 `openai/codex` repository; its ledger was not published. It produced 24 useful non-obvious results and no unresolved count-changing P0/P1 defect. The promoted public case separately pins RuleBlast commits `27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8` → `e420008a1c10c5c328e506247560117f4d40b855`: 33 instruction-line edits changed 106 of 106 candidate stacks for each profile, with zero current split, partial, unknown, or indeterminate paths.
+3. **Exact package identity.** Package and lock metadata carry `1.0.0`, every installation example pins `ruleblast@1.0.0`, and tag `v1.0.0` becomes the immutable source interface only when the authorized publication step creates it.
+4. **Pack-once artifact proof.** One durable builder creates one contained tarball, records its SHA-512, SHA-256, byte size, and sorted inventory, then validates and smoke-tests those exact bytes offline without repacking. A source tree never substitutes for independent verification of npm or GitHub Release records.
+5. **REMAINING — Authorized publication.** Create the signed immutable tag, publish the already-reviewed tarball without repacking, create the GitHub Release from those exact bytes, and verify the registry integrity and documented one-command installs before calling `1.0.0` released.
 
 The `v1.0.0` boundary does not admit another agent surface, command, output product, hosted component, model call, or repository mutation. An attractive idea that crosses that line waits outside the release.
 
@@ -66,6 +68,8 @@ Targeted work:
 - reduce repeated boundary code instead of adding wrappers that merely rename the same operation;
 - tighten large-repository performance only where a reproducible case proves the need;
 - add the half-closed RuleBlast eye to repository presentation as a README asset, not a product UI;
+- reframe the existing packaged teaching action around the promoted immutable real-repository case, preserve `demo` compatibility for v1 users, and keep canonical JSON stable without adding a fifth action;
+- retain complete one-command, global, project-local, maintenance, troubleshooting, and source-build installation guidance with exact `ruleblast@1.0.1` commands;
 - require every patch to carry at least one concrete correction, coverage, regression, or hardening delta.
 
 Admission gates:
@@ -73,7 +77,30 @@ Admission gates:
 - no duplicate snapshot, resolver, impact, or render abstraction;
 - no unexplained golden-output drift;
 - no new runtime dependency without measured value and a smaller rejected alternative;
+- the early Install section and packed-install test must prove the complete pinned package still downloads and runs through one command on Node.js 20 or newer;
 - no behavior that cannot be expressed through the existing canonical result.
+
+## **NEXT** — `v1.0.2`: Adoption and Operability
+
+This second patch closes the path from a technically sound tool to one that can be found, installed, trusted, and maintained. It does not add an action, resolver surface, hosted component, or telemetry.
+
+Targeted work:
+
+- keep npm description, keywords, repository links, release checksums, and GitHub topics aligned with capabilities proven by tests;
+- put the promoted real receipt before synthetic teaching material and make the first useful command obvious from a fresh Git repository;
+- verify fresh `npx`, global, and project-local install, upgrade, reinstall, and uninstall paths across supported Node.js versions and host shells;
+- provide a pull-request template, issue chooser, evidence checklist, and short contribution path that lead a report to one reproducible Blast Case;
+- turn only reproduced field failures into actionable diagnostics or maintenance guidance instead of guessing at user behavior;
+- measure downloads, traffic, referrers, stars, and forks through public npm and GitHub APIs, outside the product and without repository telemetry.
+
+Admission gates:
+
+- no star, fork, or download count is a release guarantee, and no synthetic number is presented as adoption evidence;
+- discovery metadata contains no unsupported agent name, capability, or comparison claim;
+- release assets and documented commands resolve to the exact tested package bytes;
+- growth work may improve the evidence and contribution funnel, but cannot weaken read-only analysis, uncertainty, determinism, or offline behavior.
+
+No star, fork, or download count is a release guarantee; the patch succeeds by making a useful result easier to discover and reproduce, then reporting observed public evidence honestly.
 
 ## **NEXT** — `v1.1.0`: Blast Receipts
 

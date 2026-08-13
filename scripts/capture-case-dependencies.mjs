@@ -117,16 +117,18 @@ function installedName(path) {
   return name;
 }
 
-async function collectClosure(projectRoot, packages) {
+async function collectClosure(projectRoot, packages, includeBuildDependencies) {
   const root = packages[""];
   const runtime = dependencyMap(root.dependencies, "Root dependencies");
   const development = dependencyMap(root.devDependencies, "Root devDependencies");
   const pending = Object.keys(runtime).map((name) => ({ from: "", name, optional: false }));
-  for (const name of BUILD_DEPENDENCIES) {
-    if (!Object.prototype.hasOwnProperty.call(development, name)) {
-      fail(`Build dependency is not locked at the root: ${name}`);
+  if (includeBuildDependencies) {
+    for (const name of BUILD_DEPENDENCIES) {
+      if (!Object.prototype.hasOwnProperty.call(development, name)) {
+        fail(`Build dependency is not locked at the root: ${name}`);
+      }
+      pending.push({ from: "", name, optional: false });
     }
-    pending.push({ from: "", name, optional: false });
   }
 
   const selected = new Map();
@@ -201,13 +203,27 @@ async function packageFiles(root, directory = root) {
   ));
 }
 
-export async function digestDependencyClosure(projectRoot, lockBytes) {
+async function installedDependencyClosure(projectRoot, lockBytes, includeBuildDependencies) {
   if (!(lockBytes instanceof Uint8Array)) {
     throw new TypeError("Dependency lock bytes must be a Uint8Array");
   }
   const exactLockBytes = Buffer.from(lockBytes);
   const packages = parseLock(exactLockBytes);
-  const closure = await collectClosure(projectRoot, packages);
+  const closure = await collectClosure(projectRoot, packages, includeBuildDependencies);
+  return { closure, exactLockBytes };
+}
+
+export async function installedRuntimeDependencyDirectories(projectRoot, lockBytes) {
+  const { closure } = await installedDependencyClosure(projectRoot, lockBytes, false);
+  return Object.freeze(closure.map(([, captured]) => captured.directory));
+}
+
+export async function digestDependencyClosure(projectRoot, lockBytes) {
+  const { closure, exactLockBytes } = await installedDependencyClosure(
+    projectRoot,
+    lockBytes,
+    true,
+  );
   const hash = createHash("sha256");
   record(hash, "package-lock.json", exactLockBytes);
   for (const [path, captured] of closure) {
