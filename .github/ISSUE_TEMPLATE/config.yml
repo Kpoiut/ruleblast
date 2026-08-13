@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: https://github.com/Kpoiut/ruleblast/blob/main/SECURITY.md
+    about: Read the private-reporting guidance before sharing any sensitive detail.
+  - name: Blast Case guide
+    url: https://github.com/Kpoiut/ruleblast/blob/main/cases/README.md
+    about: Reduce a projection problem to immutable refs, canonical output, and one surprise.
+  - name: Product contract
+    url: https://github.com/Kpoiut/ruleblast/blob/main/CONTRACT.md
+    about: Check the public behavior and uncertainty boundary before proposing a feature.

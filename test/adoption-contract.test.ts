@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -17,6 +17,7 @@ interface PackageDescriptor {
   readonly homepage: string;
   readonly bugs: { readonly url: string };
   readonly engines: { readonly node: string };
+  readonly files: readonly string[];
 }
 
 interface PackageLock {
@@ -99,5 +100,57 @@ describe("v1.0.2 adoption contract", () => {
     expect(readme).toMatch(/no network or model call/iu);
     expect(readme).toMatch(/mutation, sync, generation, scoring, or auto-fix/iu);
     expect(readme).toMatch(/network calls, model calls, telemetry, dashboard, or product UI/iu);
+  });
+
+  it("publishes a truthful community funnel without shipping repository-only assets", () => {
+    const required = [
+      ".github/ISSUE_TEMPLATE/config.yml",
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      "SECURITY.md",
+      "CODE_OF_CONDUCT.md",
+    ] as const;
+    for (const path of required) {
+      expect(existsSync(join(repositoryRoot, path)), path).toBe(true);
+    }
+
+    const chooser = read(".github/ISSUE_TEMPLATE/config.yml");
+    expect(chooser).toContain("blank_issues_enabled: false");
+    expect(chooser).toContain("SECURITY.md");
+    expect(chooser).toContain("cases/README.md");
+
+    const pullRequest = read(".github/PULL_REQUEST_TEMPLATE.md");
+    expect(pullRequest).toMatch(/immutable (commit )?refs/iu);
+    expect(pullRequest).toMatch(/uncertainty/iu);
+    expect(pullRequest).toContain("npm run check");
+    expect(pullRequest).toContain("npm run build");
+    expect(pullRequest).toContain("git diff --check");
+
+    const security = read("SECURITY.md");
+    expect(security).toMatch(/do not include exploit details in a public issue/iu);
+    expect(security).toMatch(/no response-time or remediation-time guarantee/iu);
+    expect(security).not.toMatch(/private vulnerability reporting is enabled/iu);
+
+    const conduct = read("CODE_OF_CONDUCT.md");
+    expect(conduct).toMatch(/harassment/iu);
+    expect(conduct).toMatch(/privacy/iu);
+    expect(conduct).toMatch(/maintainers/iu);
+
+    const descriptor = readJson<PackageDescriptor>("package.json");
+    expect(descriptor.files).not.toContain(".github");
+    expect(descriptor.files).not.toContain("SECURITY.md");
+    expect(existsSync(join(
+      repositoryRoot,
+      "assets/ruleblast-social-preview.png",
+    ))).toBe(false);
+  });
+
+  it("preserves the original packaged eye without a generated derivative", () => {
+    const readme = read("README.md");
+    expect(readme).toContain("![RuleBlast eye](assets/ruleblast-eye.webp)");
+    expect(createHash("sha256").update(
+      readFileSync(join(repositoryRoot, "assets/ruleblast-eye.webp")),
+    ).digest("hex")).toBe(
+      "8a95aa9e4f697a258200ddfd2180d728b73d4abcbf778b45e5f223094cfd85ed",
+    );
   });
 });

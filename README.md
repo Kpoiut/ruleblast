@@ -229,6 +229,8 @@ Promoted public-repository evidence lives under [`cases/`](cases/README.md) as a
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for immutable-ref, publication-permission, rejection, and test requirements, or open a focused [wrong blast](.github/ISSUE_TEMPLATE/wrong-blast.yml), [missing blast](.github/ISSUE_TEMPLATE/missing-blast.yml), [weird blast](.github/ISSUE_TEMPLATE/weird-blast.yml), or [profile evidence](.github/ISSUE_TEMPLATE/profile-evidence.yml) form.
 
+The [pull request template](.github/PULL_REQUEST_TEMPLATE.md) keeps reviews test-first and inside the product boundary. Sensitive reports follow [SECURITY.md](SECURITY.md); project participation follows the [Code of Conduct](CODE_OF_CONDUCT.md). The original [RuleBlast eye](assets/ruleblast-eye.webp) remains the single repository and packaged mark shown above.
+
 ## Roadmap
 
 The `1.0.2` build carries the hardened architecture, verified packaged case, exact install interface, packed-install proof, field pilot, first real receipt, and the adoption/operability work described in the roadmap. Registry, tag, and GitHub Release availability remain independently verifiable external facts rather than claims inferred from repository prose. Future stages are labeled by maturity and evidence gate rather than dates.
