@@ -21,10 +21,10 @@ The proof-bearing path from repository bytes to an explainable terminal result i
 - canonical result types with source disposition, completeness, ordering, and evidence provenance;
 - evidence-pinned Codex CLI and Claude Code CLI resolvers exercised by positive, negative, ordering, ambiguity, and unknown fixtures;
 - profile-neutral current, diff, transition, and impact analysis without vendor logic in the impact engine;
-- one parser and application seam for the four public actions: scan, diff, explain, and demo;
+- one parser and application seam for the four public actions: scan, diff, explain, and case;
 - semantic text rendering with golden views for aligned, split, changed, unchanged, unresolved, and no-source states;
 - deterministic JSON kept separate from presentation aliases and terminal wording;
-- a packaged, manifest-backed demo that expands deterministically and passes through the same snapshot, resolver, impact, explanation, and renderer path as repository analysis.
+- a packaged verified case backed by one immutable, source-content-free receipt and presented through the same explanation and renderer path as repository analysis;
 - packed-install verification for all four actions, deterministic JSON, side-effect boundaries, the published-file allowlist, and the measured performance budget;
 - a completed local-only field pilot and a promoted, source-content-free receipt for one immutable public-repository comparison;
 - a self-explaining README, maintained behavior contract, Blast Case contribution unit, changelog, and focused evidence forms whose claims are checked against behavior.

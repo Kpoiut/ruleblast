@@ -2,8 +2,7 @@ name: Missing blast
 description: Report one documented affected path that RuleBlast omitted.
 title: "[Blast Case] missing: "
 labels:
-  - blast-case
-  - missing-blast
+  - bug
 body:
   - type: markdown
     attributes:

@@ -1,0 +1,69 @@
+name: Install or run failure
+description: Report a reproducible failure to install or start the pinned RuleBlast CLI.
+title: "[Install] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not paste credentials, private repository contents, usernames, or absolute local paths. Reduce output before submitting.
+  - type: input
+    id: package_or_commit
+    attributes:
+      label: Exact package version or signed commit
+      placeholder: ruleblast@1.0.2 or full commit object id
+    validations:
+      required: true
+  - type: input
+    id: npm_view
+    attributes:
+      label: Result of npm view for that exact version
+      description: Write NOT_PUBLISHED when npm returns 404; do not call that zero downloads.
+    validations:
+      required: true
+  - type: input
+    id: node_npm
+    attributes:
+      label: Node.js and npm versions
+      placeholder: node 24.x; npm 11.x
+    validations:
+      required: true
+  - type: input
+    id: operating_system_shell
+    attributes:
+      label: Operating system and shell
+      placeholder: Windows 11 PowerShell; Ubuntu bash
+    validations:
+      required: true
+  - type: textarea
+    id: redacted_command
+    attributes:
+      label: Exact redacted command
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: redacted_output
+    attributes:
+      label: Exact redacted stdout and stderr
+      render: text
+    validations:
+      required: true
+  - type: dropdown
+    id: repository_status
+    attributes:
+      label: Repository context
+      options:
+        - The command was run inside a Git repository
+        - The command was --help or --version outside a repository
+        - The failure happened before RuleBlast started
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy_check
+    attributes:
+      label: Redaction check
+      options:
+        - label: I removed credentials, private source contents, usernames, and absolute local paths.
+          required: true

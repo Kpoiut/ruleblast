@@ -105,6 +105,7 @@ describe("v1.0.2 adoption contract", () => {
   it("publishes a truthful community funnel without shipping repository-only assets", () => {
     const required = [
       ".github/ISSUE_TEMPLATE/config.yml",
+      ".github/ISSUE_TEMPLATE/install-run.yml",
       ".github/PULL_REQUEST_TEMPLATE.md",
       "SECURITY.md",
       "CODE_OF_CONDUCT.md",
@@ -115,11 +116,18 @@ describe("v1.0.2 adoption contract", () => {
 
     const chooser = read(".github/ISSUE_TEMPLATE/config.yml");
     expect(chooser).toContain("blank_issues_enabled: false");
-    expect(chooser).toContain("SECURITY.md");
-    expect(chooser).toContain("cases/README.md");
+    expect(chooser.match(/^\s+url:/gmu)).toHaveLength(2);
+    expect(chooser).toContain(
+      "https://github.com/Kpoiut/ruleblast/security/advisories/new",
+    );
+    expect(chooser).toContain(
+      "https://github.com/Kpoiut/ruleblast/blob/main/CONTRIBUTING.md",
+    );
+    expect(chooser).toMatch(/only when.+private reporting.+enabled/iu);
 
     const pullRequest = read(".github/PULL_REQUEST_TEMPLATE.md");
     expect(pullRequest).toMatch(/immutable (commit )?refs/iu);
+    expect(pullRequest).toMatch(/official evidence URL.+revision/iu);
     expect(pullRequest).toMatch(/uncertainty/iu);
     expect(pullRequest).toContain("npm run check");
     expect(pullRequest).toContain("npm run build");
@@ -128,12 +136,31 @@ describe("v1.0.2 adoption contract", () => {
     const security = read("SECURITY.md");
     expect(security).toMatch(/do not include exploit details in a public issue/iu);
     expect(security).toMatch(/no response-time or remediation-time guarantee/iu);
+    expect(security).toMatch(/latest published `1\.0\.x`/iu);
+    expect(security).toMatch(/security\/advisories\/new.+UNAVAILABLE/isu);
     expect(security).not.toMatch(/private vulnerability reporting is enabled/iu);
 
     const conduct = read("CODE_OF_CONDUCT.md");
     expect(conduct).toMatch(/harassment/iu);
     expect(conduct).toMatch(/privacy/iu);
     expect(conduct).toMatch(/maintainers/iu);
+
+    const installReport = read(".github/ISSUE_TEMPLATE/install-run.yml");
+    for (const field of [
+      "package_or_commit",
+      "npm_view",
+      "node_npm",
+      "operating_system_shell",
+      "redacted_command",
+      "redacted_output",
+    ]) {
+      expect(installReport).toContain(`id: ${field}`);
+    }
+    expect(installReport).toMatch(/labels:\s*\n\s+- bug/iu);
+
+    const contributing = read("CONTRIBUTING.md");
+    expect(contributing).toContain("## Pull requests");
+    expect(contributing).toContain(".github/PULL_REQUEST_TEMPLATE.md");
 
     const descriptor = readJson<PackageDescriptor>("package.json");
     expect(descriptor.files).not.toContain(".github");

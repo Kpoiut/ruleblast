@@ -2,8 +2,7 @@ name: Weird blast
 description: Report a reproducible explanation, uncertainty, or grouping that misleads without being simply absent.
 title: "[Blast Case] weird: "
 labels:
-  - blast-case
-  - weird-blast
+  - bug
 body:
   - type: markdown
     attributes:

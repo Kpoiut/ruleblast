@@ -411,7 +411,7 @@ describe("repository documentation integrity", () => {
       shippedStart,
       roadmap.indexOf("## **IN BUILD**", shippedStart),
     );
-    expect(shipped).toMatch(/packaged.+demo/isu);
+    expect(shipped).toMatch(/packaged.+verified case/isu);
     expect(roadmap).not.toContain("**Production-pipeline demo**");
   });
 });
@@ -428,7 +428,7 @@ describe("issue forms", () => {
     expect(form.name).toBeTruthy();
     expect(form.description).toBeTruthy();
     expect(form.title).toMatch(/^\[Blast Case\]/u);
-    expect(form.labels).toContain("blast-case");
+    expect(form.labels).toContain("bug");
 
     const requiredIds = (form.body ?? [])
       .filter((field) => field.validations?.required === true)
@@ -461,7 +461,7 @@ describe("issue forms", () => {
       .filter((field) => field.validations?.required === true)
       .map((field) => field.id);
     expect(form.title).toMatch(/^\[Profile evidence\]/u);
-    expect(form.labels).toContain("profile-evidence");
+    expect(form.labels).toContain("enhancement");
     expect(requiredIds).toEqual(expect.arrayContaining([
       "surface_id",
       "official_source_url",
