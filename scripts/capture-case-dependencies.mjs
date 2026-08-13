@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import { lstat, readFile, readdir, realpath } from "node:fs/promises";
-import { join, relative, resolve, sep } from "node:path";
+import { lstat, readFile, readdir } from "node:fs/promises";
+import { join, parse, relative, resolve, sep } from "node:path";
 
 const BUILD_DEPENDENCIES = ["@types/node", "typescript"];
 const PACKAGE_NAME = /^(?:@[a-z0-9._-]+\/)?[a-z0-9._-]+$/iu;
@@ -74,21 +74,26 @@ function lockedCandidates(packages, fromPath, name) {
   }
 }
 
-function samePath(left, right) {
-  const normalizedLeft = resolve(left);
-  const normalizedRight = resolve(right);
-  return process.platform === "win32"
-    ? normalizedLeft.toLowerCase() === normalizedRight.toLowerCase()
-    : normalizedLeft === normalizedRight;
+async function assertDirectoryChain(path, label) {
+  const resolvedPath = resolve(path);
+  const root = parse(resolvedPath).root;
+  let directory = root;
+  const rootStats = await lstat(directory);
+  if (rootStats.isSymbolicLink() || !rootStats.isDirectory()) {
+    fail(`${label} is a symlink, junction, or non-directory`);
+  }
+  for (const part of relative(root, resolvedPath).split(sep).filter(Boolean)) {
+    directory = join(directory, part);
+    const stats = await lstat(directory);
+    if (stats.isSymbolicLink() || !stats.isDirectory()) {
+      fail(`${label} is a symlink, junction, or non-directory`);
+    }
+  }
+  return resolvedPath;
 }
 
 async function installedPackageDirectory(projectRoot, path) {
-  let directory = resolve(projectRoot);
-  const rootStats = await lstat(directory);
-  if (rootStats.isSymbolicLink() || !rootStats.isDirectory() ||
-      !samePath(await realpath(directory), directory)) {
-    fail("Dependency project root is a symlink, junction, or non-directory");
-  }
+  let directory = await assertDirectoryChain(projectRoot, "Dependency project root");
   for (const part of path.split("/")) {
     directory = join(directory, part);
     let stats;
@@ -103,9 +108,6 @@ async function installedPackageDirectory(projectRoot, path) {
     if (stats.isSymbolicLink() || !stats.isDirectory()) {
       fail(`Installed dependency ancestor is a symlink or non-directory: ${path}`);
     }
-  }
-  if (!samePath(await realpath(directory), directory)) {
-    fail(`Installed dependency ancestor escapes through a junction: ${path}`);
   }
   return directory;
 }

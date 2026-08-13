@@ -90,7 +90,7 @@ describe("README story contract", () => {
       "33 instruction-line edits. 106 tracked paths changed stack.",
       "Git shows the first diff. RuleBlast finds the second.",
       "## Install",
-      "npx ruleblast@1.0.1",
+      "npx --yes ruleblast@1.0.1",
       "## Terminal transcript",
       "## Explain one path",
       "<details>",
@@ -136,33 +136,37 @@ describe("README story contract", () => {
     for (const command of [
       "node --version",
       "npm view ruleblast@1.0.1 version",
-      "npx ruleblast@1.0.1",
-      "npx ruleblast@1.0.1 --help",
+      "npx --yes ruleblast@1.0.1",
+      "npx --yes ruleblast@1.0.1 --help",
       "cd <your-git-repository>",
       "npm install --global ruleblast@1.0.1",
+      "ruleblast --version",
       "ruleblast --help",
       "ruleblast",
-      "npm install --save-dev ruleblast@1.0.1",
+      "npm install --save-dev --save-exact ruleblast@1.0.1",
+      "npx ruleblast --version",
       "npx ruleblast --help",
       "npm uninstall --global ruleblast",
       "npm uninstall --save-dev ruleblast",
       "npm cache verify",
       "git clone --branch v1.0.1 --depth 1 https://github.com/Kpoiut/ruleblast.git",
-      "npm ci",
+      "npm ci --ignore-scripts",
       "npm run build",
+      "node dist/cli.js --version",
       "node dist/cli.js --help",
     ]) {
       expect(readme).toContain(command);
     }
     for (const action of [
-      "npx ruleblast@1.0.1 .",
-      "npx ruleblast@1.0.1 diff HEAD~1",
-      "npx ruleblast@1.0.1 explain packages/api/internal/refund.ts --from HEAD~1",
-      "npx ruleblast@1.0.1 case",
+      "npx --yes ruleblast@1.0.1 .",
+      "npx --yes ruleblast@1.0.1 diff HEAD~1",
+      "npx --yes ruleblast@1.0.1 explain packages/api/internal/refund.ts --from HEAD~1",
+      "npx --yes ruleblast@1.0.1 case",
     ]) {
       expect(readme).toContain(action);
     }
-    expect(readme).toMatch(/Windows.+macOS.+Linux/isu);
+    expect(readme).toMatch(/Windows.+Linux/isu);
+    expect(readme).not.toMatch(/Windows.+macOS.+Linux/isu);
     expect(readme).toMatch(/npx.+downloads.+runs/isu);
     expect(readme).toMatch(/global.+full CLI/isu);
     expect(readme).toContain("Node.js 20");
@@ -171,6 +175,7 @@ describe("README story contract", () => {
     expect(readme).toContain("NOT_REPOSITORY");
     expect(readme).toContain("REF_NOT_FOUND");
     expect(readme).not.toContain("@latest");
+    expect(readme).not.toMatch(/npx (?!--yes )ruleblast@1\.0\.1/gu);
     expect(`${readme}\n${read("CONTRACT.md")}`).not.toMatch(
       /release[- ]candidate|before package and tag publication/iu,
     );
@@ -210,6 +215,23 @@ How many rule realities are still hiding in it…?`);
     expect(roadmap).toContain("does not add an action, resolver surface, hosted component, or telemetry");
     expect(roadmap).toContain("public npm and GitHub APIs");
     expect(roadmap).toContain("No star, fork, or download count is a release guarantee");
+  });
+});
+
+describe("cross-platform checkout integrity", () => {
+  it("pins canonical text, receipts, and goldens to LF bytes", () => {
+    const attributes = read(".gitattributes");
+    expect(attributes).toContain("* text=auto eol=lf");
+    expect(attributes).toContain("*.webp -text");
+    for (const path of [
+      "AGENTS.md",
+      "CLAUDE.md",
+      "README.md",
+      "cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json",
+      "test/golden/diff-blast.txt",
+    ]) {
+      expect(readFileSync(join(repositoryRoot, path)).includes(13), path).toBe(false);
+    }
   });
 });
 

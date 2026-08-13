@@ -2,6 +2,8 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { basename, relative, resolve, sep } from "node:path";
 import { runNpm } from "./release-process.mjs";
 
+const DEFAULT_PACK_TIMEOUT_MS = 60_000;
+
 function fail(message) {
   throw new Error(message);
 }
@@ -54,14 +56,22 @@ export function parsePack(stdout, packDirectory) {
   return { entry, tarball };
 }
 
-export async function packPackage(repositoryRoot, packDirectory, environment = process.env) {
+export async function packPackage(
+  repositoryRoot,
+  packDirectory,
+  environment = process.env,
+  options = {},
+) {
   const result = await runNpm([
     "pack",
     "--json",
     "--ignore-scripts",
     "--pack-destination",
     packDirectory,
-  ], repositoryRoot, { env: environment });
+  ], repositoryRoot, {
+    env: environment,
+    timeoutMs: options.timeoutMs ?? DEFAULT_PACK_TIMEOUT_MS,
+  });
   return parsePack(result.stdout, packDirectory);
 }
 

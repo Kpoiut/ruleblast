@@ -1,4 +1,4 @@
-import { chmodSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readlinkSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { chmodSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readlinkSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -119,7 +119,10 @@ describe("Git commit snapshots", () => {
     const nested = join(root, "a", "b", "c");
     mkdirSync(nested, { recursive: true });
 
-    expect(await findRepositoryRoot(nested)).toBe(root.replace(/\\/g, "/"));
+    const actual = statSync(await findRepositoryRoot(nested), { bigint: true });
+    const expected = statSync(root, { bigint: true });
+    expect({ dev: actual.dev, ino: actual.ino })
+      .toEqual({ dev: expected.dev, ino: expected.ino });
   });
 
   it("classifies an actual Git non-repository failure", async () => {

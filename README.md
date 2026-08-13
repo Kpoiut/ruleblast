@@ -22,9 +22,9 @@ npm view ruleblast@1.0.1 version
 When npm reports `1.0.1`, the shortest path needs no permanent global install. `npx` downloads and runs the complete pinned package through npm's cache:
 
 ```bash
-npx ruleblast@1.0.1 --help
+npx --yes ruleblast@1.0.1 --help
 cd <your-git-repository>
-npx ruleblast@1.0.1
+npx --yes ruleblast@1.0.1 .
 ```
 
 `--help` works from any directory. Analysis commands require a Git repository; `NOT_REPOSITORY` means to `cd` into one first. If a diff reports `REF_NOT_FOUND`, replace `HEAD~1` with an existing commit or ref from that repository.
@@ -33,6 +33,7 @@ A global install will download the full CLI once and expose `ruleblast` on your 
 
 ```bash
 npm install --global ruleblast@1.0.1
+ruleblast --version
 ruleblast --help
 ruleblast
 ```
@@ -40,48 +41,49 @@ ruleblast
 For a repository-owned tool version, install it locally and commit the resulting package lock:
 
 ```bash
-npm install --save-dev ruleblast@1.0.1
+npm install --save-dev --save-exact ruleblast@1.0.1
+npx ruleblast --version
 npx ruleblast --help
 npx ruleblast
 ```
 
-These npm commands work in PowerShell or Command Prompt on Windows and in bash or zsh on macOS and Linux. The four v1 actions stay available through the one-command form:
+These npm commands are verified in PowerShell or Command Prompt on Windows and in bash on Linux. The four v1 actions stay available through the one-command form:
 
 ```bash
 # scan the current repository
-npx ruleblast@1.0.1 .
+npx --yes ruleblast@1.0.1 .
 
 # compare a base commit with the tracked worktree
-npx ruleblast@1.0.1 diff HEAD~1
+npx --yes ruleblast@1.0.1 diff HEAD~1
 
 # explain one tracked path across that transition
-npx ruleblast@1.0.1 explain packages/api/internal/refund.ts --from HEAD~1
+npx --yes ruleblast@1.0.1 explain packages/api/internal/refund.ts --from HEAD~1
 
 # inspect the packaged verified public-repository case after installation
-npx ruleblast@1.0.1 case
+npx --yes ruleblast@1.0.1 case
 ```
 
-`npm install` is also the exact-version upgrade or reinstall operation. Remove the selected installation scope explicitly:
+Use an explicit uninstall before reinstalling the same scope. This makes the reversible boundary visible and avoids treating an in-place write as proof of cleanup:
 
 ```bash
-# upgrade or reinstall the global CLI at the pinned version
-npm install --global ruleblast@1.0.1
-
 # remove the global CLI
 npm uninstall --global ruleblast
 
-# upgrade or reinstall the project-local CLI at the pinned version
-npm install --save-dev ruleblast@1.0.1
+# reinstall the global CLI at the pinned version
+npm install --global ruleblast@1.0.1
 
 # remove the project-local CLI
 npm uninstall --save-dev ruleblast
+
+# reinstall the project-local CLI at the pinned version
+npm install --save-dev --save-exact ruleblast@1.0.1
 ```
 
 If a global install reports a permission error, use the `npx` or project-local form instead of elevating the installer. If npm reports damaged cache metadata, verify the cache and retry the exact version:
 
 ```bash
 npm cache verify
-npx ruleblast@1.0.1 --help
+npx --yes ruleblast@1.0.1 --help
 ```
 
 For a source build, use the `v1.0.1` release-source tag after it is visible on GitHub. This path still requires npm dependency access or a populated npm cache; it is not a workaround for a complete registry outage:
@@ -89,10 +91,12 @@ For a source build, use the `v1.0.1` release-source tag after it is visible on G
 ```bash
 git clone --branch v1.0.1 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
-npm ci
+npm ci --ignore-scripts
 npm run build
+node dist/cli.js --version
 node dist/cli.js --help
 node dist/cli.js .
+node dist/cli.js case --json
 ```
 
 ## Run the verified case
@@ -106,9 +110,9 @@ The checked-in [canonical receipt](cases/kpoiut__ruleblast/27d52e2cd6ee..e420008
 `case` reads and verifies that exact promoted receipt. It works outside a Git checkout, performs no network or model call, and does not rerun the analysis from unavailable source bytes:
 
 ```bash
-npx ruleblast@1.0.1 case
-npx ruleblast@1.0.1 case --json
-npx ruleblast@1.0.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@1.0.1 case
+npx --yes ruleblast@1.0.1 case --json
+npx --yes ruleblast@1.0.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 ## Terminal transcript
@@ -138,7 +142,7 @@ Scope: 106 tracked paths · repository-only · resolver revision 1
 The overview is a doorway, not the proof. Drill into the same immutable case and inspect each recorded selected, empty, imported, applied, excluded, or unresolved source:
 
 ```bash
-npx ruleblast@1.0.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@1.0.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 <details>
@@ -151,8 +155,9 @@ Run the source proof from the `v1.0.1` release source after the tag is visible:
 ```bash
 git clone --branch v1.0.1 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
-npm ci
+npm ci --ignore-scripts
 npm run build
+node dist/cli.js --version
 node dist/cli.js case --json
 ```
 
@@ -196,19 +201,19 @@ The optional positional path is a filesystem starting point used to discover the
 
 ```bash
 # Inspect the current tracked repository
-npx ruleblast@1.0.1 .
+npx --yes ruleblast@1.0.1 .
 
 # Discover the repository from a nested filesystem path, then scan it
-npx ruleblast@1.0.1 packages/api/internal
+npx --yes ruleblast@1.0.1 packages/api/internal
 
 # Compare a commit with the tracked worktree
-npx ruleblast@1.0.1 diff HEAD~1
+npx --yes ruleblast@1.0.1 diff HEAD~1
 
 # Inspect one path across that transition
-npx ruleblast@1.0.1 explain packages/api/internal/refund.ts --from HEAD~1
+npx --yes ruleblast@1.0.1 explain packages/api/internal/refund.ts --from HEAD~1
 
 # Emit deterministic machine-readable output
-npx ruleblast@1.0.1 diff HEAD~1 --json
+npx --yes ruleblast@1.0.1 diff HEAD~1 --json
 ```
 
 ## Contribute a Blast Case

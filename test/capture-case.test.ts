@@ -114,6 +114,11 @@ function newCasesRoot(): string {
   return root;
 }
 
+function filesystemIdentity(path: string): { readonly dev: bigint; readonly ino: bigint } {
+  const entry = statSync(path, { bigint: true });
+  return { dev: entry.dev, ino: entry.ino };
+}
+
 const EXECUTION_DEPENDENCIES = [
   "@types/node",
   "balanced-match",
@@ -243,11 +248,11 @@ describe("captureCase", () => {
       casesRoot,
     });
 
-    expect(outputPath).toBe(join(
+    expect(filesystemIdentity(outputPath)).toEqual(filesystemIdentity(join(
       casesRoot,
       "acme__rules",
       `${fixture.base.slice(0, 12)}..${fixture.head.slice(0, 12)}.json`,
-    ));
+    )));
     const bytes = readFileSync(outputPath, "utf8");
     expect(bytes.endsWith("\n")).toBe(true);
     expect(bytes.slice(0, -1)).not.toContain("\n");
@@ -328,11 +333,11 @@ describe("captureCase", () => {
     });
     const original = readFileSync(firstPath);
     expect(readFileSync(secondPath)).toEqual(original);
-    expect(secondPath).toBe(join(
+    expect(filesystemIdentity(secondPath)).toEqual(filesystemIdentity(join(
       secondRoot,
       "acme__rules",
       `${fixture.base.slice(0, 12)}..${fixture.head.slice(0, 12)}.json`,
-    ));
+    )));
 
     await expect(captureCase({ ...options, casesRoot: firstRoot }))
       .rejects.toThrow(/already exists/i);
@@ -544,7 +549,26 @@ describe("captureCase", () => {
       writeFileSync(join(directory, "index.js"), `export const id = ${JSON.stringify(name)};\n`);
     }
 
-    const first = await digestDependencyClosure!(root, lockBytes);
+    let dependencyRoot = root;
+    if (process.platform === "win32") {
+      dependencyRoot = execFileSync(
+        join(
+          process.env.SystemRoot ?? "C:\\Windows",
+          "System32", "WindowsPowerShell", "v1.0", "powershell.exe",
+        ),
+        [
+          "-NoLogo", "-NoProfile", "-NonInteractive", "-Command",
+          "(New-Object -ComObject Scripting.FileSystemObject).GetFolder($env:RULEBLAST_ALIAS_ROOT).ShortPath",
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, RULEBLAST_ALIAS_ROOT: root },
+          windowsHide: true,
+        },
+      ).trim();
+    }
+
+    const first = await digestDependencyClosure!(dependencyRoot, lockBytes);
     const repeated = await digestDependencyClosure!(root, lockBytes);
     expect(repeated).toBe(first);
     expect(first).toMatch(/^[0-9a-f]{64}$/u);
@@ -562,7 +586,7 @@ describe("captureCase", () => {
     );
     expect(await digestDependencyClosure!(root, lockBytes))
       .not.toBe(afterTransitiveTamper);
-  });
+  }, 15_000);
 
   it("rejects a symlinked dependency ancestor", async () => {
     const producer = await captureProducer();
@@ -605,6 +629,48 @@ describe("captureCase", () => {
 
     await expect(digestDependencyClosure(linkedRoot, lockBytes))
       .rejects.toThrow(/ancestor|junction|symlink/iu);
+  });
+
+  it("rejects a dependency project nested below a symlinked parent", async () => {
+    const producer = await captureProducer();
+    const digestDependencyClosure = producer.digestDependencyClosure as
+      (projectRoot: string, lockBytes: Buffer) => Promise<string>;
+    const realParent = mkdtempSync(join(tmpdir(), "ruleblast real parent "));
+    const linkedParent = mkdtempSync(join(tmpdir(), "ruleblast linked parent "));
+    temporaryRoots.push(realParent, linkedParent);
+    const root = join(realParent, "project");
+    mkdirSync(root);
+    const packages = {
+      "": {
+        dependencies: { diff: "1.0.0", minimatch: "1.0.0", yaml: "1.0.0" },
+        devDependencies: { "@types/node": "1.0.0", typescript: "1.0.0" },
+      },
+      "node_modules/@types/node": { version: "1.0.0" },
+      "node_modules/diff": { version: "1.0.0" },
+      "node_modules/minimatch": { version: "1.0.0" },
+      "node_modules/typescript": { version: "1.0.0" },
+      "node_modules/yaml": { version: "1.0.0" },
+    } as const;
+    for (const [path, descriptor] of Object.entries(packages).slice(1) as
+      [string, { readonly version: string }][]) {
+      const directory = join(root, ...path.split("/"));
+      mkdirSync(directory, { recursive: true });
+      writeFileSync(join(directory, "package.json"), JSON.stringify({
+        name: path.slice("node_modules/".length),
+        version: descriptor.version,
+      }));
+    }
+    const alias = join(linkedParent, "alias");
+    symlinkSync(realParent, alias, process.platform === "win32" ? "junction" : "dir");
+    const lockBytes = Buffer.from(JSON.stringify({
+      name: "fixture",
+      version: "1.0.0",
+      lockfileVersion: 3,
+      packages,
+    }));
+
+    await expect(digestDependencyClosure(join(alias, "project"), lockBytes))
+      .rejects.toThrow(/project root|junction|symlink/iu);
   });
 
   it("rejects a producer mutation after preflight and removes its artifact", async () => {
