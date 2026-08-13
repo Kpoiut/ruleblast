@@ -38,8 +38,8 @@ export interface ExplainArgs extends CommonArgs {
   readonly target: SnapshotSelector;
 }
 
-export interface DemoArgs extends CommonArgs {
-  readonly action: "demo";
+export interface CaseArgs extends CommonArgs {
+  readonly action: "case";
   readonly explainPath: string | null;
 }
 
@@ -50,7 +50,7 @@ export type CliArgs =
   | ScanArgs
   | DiffArgs
   | ExplainArgs
-  | DemoArgs
+  | CaseArgs
   | HelpArgs
   | VersionArgs;
 
@@ -283,12 +283,12 @@ function parseExplain(tokens: readonly string[]): ExplainArgs {
   });
 }
 
-function parseDemo(tokens: readonly string[]): DemoArgs {
+function parseCase(tokens: readonly string[]): CaseArgs {
   const parsed = parseTokens(tokens, new Set(["--explain"]));
   onlyPositionals(parsed, 0);
   const explainValue = parsed.options.get("--explain");
   return Object.freeze({
-    action: "demo",
+    action: "case",
     explainPath: explainValue === undefined ? null : repositoryPath(explainValue),
     output: parsed.output,
   });
@@ -305,6 +305,6 @@ export function parseArgs(argv: readonly string[]): CliArgs {
   }
   if (first === "diff") return parseDiff(tokens.slice(1));
   if (first === "explain") return parseExplain(tokens.slice(1));
-  if (first === "demo") return parseDemo(tokens.slice(1));
+  if (first === "case" || first === "demo") return parseCase(tokens.slice(1));
   return parseScan(tokens);
 }

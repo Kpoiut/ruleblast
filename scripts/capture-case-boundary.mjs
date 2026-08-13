@@ -121,9 +121,6 @@ async function verifiedOwnerDirectory(casesRoot, ownerDirectory) {
   await mkdir(casesRoot, { recursive: true });
   await assertDirectoryChain(casesRoot);
   const rootReal = await realpath(casesRoot);
-  if (!sameFilesystemPath(rootReal, resolve(casesRoot))) {
-    throw new Error("Cases root resolves through a symlink or reparse boundary");
-  }
   const directory = join(casesRoot, ownerDirectory);
   await mkdir(directory).catch((error) => {
     if (error?.code !== "EEXIST") throw error;

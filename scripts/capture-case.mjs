@@ -162,7 +162,7 @@ export async function captureCase(optionsValue) {
       coreDigest: production.sha256(coreJson),
       producer: artifact.producer,
       releaseReproductionCommand:
-        `npx ruleblast@1.0.0 diff ${options.base} --to ${options.head} --json`,
+        `npx ruleblast@${artifact.producer.packageVersion} diff ${options.base} --to ${options.head} --json`,
     };
     bytes = Buffer.from(`${production.canonicalJson(receipt)}\n`, "utf8");
   } finally {

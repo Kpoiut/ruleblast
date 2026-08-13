@@ -8,6 +8,57 @@ function fail(message) {
   throw new Error(message);
 }
 
+function waitForClose(child, timeoutMs = 5_000) {
+  if (child.exitCode !== null || child.signalCode !== null) return Promise.resolve();
+  return new Promise((resolveClose, rejectClose) => {
+    const timer = setTimeout(
+      () => rejectClose(new Error("Timed-out process did not close after termination")),
+      timeoutMs,
+    );
+    child.once("close", () => {
+      clearTimeout(timer);
+      resolveClose();
+    });
+  });
+}
+
+function runTreeKiller(pid) {
+  return new Promise((resolveKill) => {
+    const killer = spawn(
+      "taskkill",
+      ["/pid", String(pid), "/t", "/f"],
+      { windowsHide: true, stdio: "ignore" },
+    );
+    const timer = setTimeout(() => {
+      killer.kill("SIGKILL");
+      resolveKill(false);
+    }, 5_000);
+    killer.once("error", () => {
+      clearTimeout(timer);
+      resolveKill(false);
+    });
+    killer.once("close", (code) => {
+      clearTimeout(timer);
+      resolveKill(code === 0);
+    });
+  });
+}
+
+async function terminateProcessTree(child) {
+  if (child.pid === undefined) return;
+  if (process.platform === "win32") {
+    const killedTree = await runTreeKiller(child.pid);
+    if (!killedTree) child.kill("SIGKILL");
+  } else {
+    try {
+      process.kill(-child.pid, "SIGKILL");
+    } catch {
+      child.kill("SIGKILL");
+    }
+  }
+  await waitForClose(child);
+}
+
 export function npmInvocation(args, environment = process.env) {
   const configured = environment.npm_execpath;
   if (configured && existsSync(configured)) {
@@ -29,29 +80,59 @@ export function runProcess(command, args, options = {}) {
       shell: false,
       windowsHide: true,
       windowsVerbatimArguments: options.windowsVerbatimArguments === true,
+      detached: process.platform !== "win32",
       stdio: ["ignore", "pipe", "pipe"],
     });
     const stdout = [];
     const stderr = [];
     let outputBytes = 0;
+    let settled = false;
+    const timer = options.timeoutMs === undefined
+      ? null
+      : setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          void terminateProcessTree(child).then(
+            () => reject(new Error(`Command timed out after ${options.timeoutMs}ms: ${command}`)),
+            reject,
+          );
+        }, options.timeoutMs);
+    const clearTimer = () => {
+      if (timer !== null) clearTimeout(timer);
+    };
     const capture = (target) => (chunk) => {
+      if (settled) return;
       outputBytes += chunk.length;
       if (outputBytes > MAX_OUTPUT_BYTES) {
-        child.kill();
-        reject(new Error(`Output limit exceeded: ${command}`));
+        settled = true;
+        clearTimer();
+        void terminateProcessTree(child).then(
+          () => reject(new Error(`Output limit exceeded: ${command}`)),
+          reject,
+        );
         return;
       }
       target.push(Buffer.from(chunk));
     };
     child.stdout.on("data", capture(stdout));
     child.stderr.on("data", capture(stderr));
-    child.once("error", reject);
-    child.once("close", (code, signal) => resolveRun({
-      code,
-      signal,
-      stdout: Buffer.concat(stdout),
-      stderr: Buffer.concat(stderr),
-    }));
+    child.once("error", (error) => {
+      if (settled) return;
+      settled = true;
+      clearTimer();
+      reject(error);
+    });
+    child.once("close", (code, signal) => {
+      if (settled) return;
+      settled = true;
+      clearTimer();
+      resolveRun({
+        code,
+        signal,
+        stdout: Buffer.concat(stdout),
+        stderr: Buffer.concat(stderr),
+      });
+    });
   });
 }
 
@@ -70,5 +151,9 @@ export async function runStrict(command, args, options = {}) {
 
 export async function runNpm(args, cwd, options = {}) {
   const invocation = npmInvocation(args, options.env);
-  return runStrict(invocation.command, invocation.args, { cwd, env: options.env });
+  return runStrict(invocation.command, invocation.args, {
+    cwd,
+    env: options.env,
+    timeoutMs: options.timeoutMs,
+  });
 }

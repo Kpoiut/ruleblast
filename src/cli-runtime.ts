@@ -1,5 +1,4 @@
 import type { OutputIo } from "./cli-output.js";
-import type { DemoSnapshots } from "./demo.js";
 import type {
   AnalysisInput,
   DiffAnalysisInput,
@@ -20,8 +19,6 @@ export interface CliIo {
   readonly stdoutIsTTY: boolean;
 }
 
-export type { DemoSnapshots } from "./demo.js";
-
 export interface CliDependencies {
   readonly version: string;
   readonly shellDialect: ShellDialect;
@@ -39,7 +36,7 @@ export interface CliDependencies {
   readonly analyzeDiff: (
     input: DiffAnalysisInput,
   ) => Promise<DiffRuleBlastResult>;
-  readonly openDemo: () => Promise<DemoSnapshots>;
+  readonly openCase: () => Promise<DiffRuleBlastResult>;
 }
 
 export type CliRuntimeErrorCode =
@@ -47,8 +44,7 @@ export type CliRuntimeErrorCode =
   | "REF_NOT_FOUND"
   | "INVALID_PATH"
   | "TARGET_PATH_NOT_TRACKED"
-  | "IDENTICAL_ENDPOINTS"
-  | "DEMO_NOT_AVAILABLE";
+  | "IDENTICAL_ENDPOINTS";
 
 export class CliRuntimeError extends Error {
   public constructor(
@@ -72,7 +68,7 @@ export interface CapturedInvocation {
 const DEPENDENCY_FIELDS = [
   "version", "shellDialect", "profiles", "resolvePath", "findRepositoryRoot",
   "openGitSnapshot", "openTrackedWorktree", "analyzeCurrent", "analyzeDiff",
-  "openDemo",
+  "openCase",
 ] as const;
 
 function captureDataRecord(
@@ -196,13 +192,13 @@ function captureDependencies(value: CliDependencies): CliDependencies {
   const openWorktree = dataValue(descriptors, "openTrackedWorktree");
   const current = dataValue(descriptors, "analyzeCurrent");
   const diff = dataValue(descriptors, "analyzeDiff");
-  const demo = dataValue(descriptors, "openDemo");
+  const openCase = dataValue(descriptors, "openCase");
   if (typeof version !== "string" ||
       (shellDialect !== "posix" && shellDialect !== "powershell") ||
       typeof resolvePath !== "function" ||
       typeof findRoot !== "function" || typeof openGit !== "function" ||
       typeof openWorktree !== "function" || typeof current !== "function" ||
-      typeof diff !== "function" || typeof demo !== "function") {
+      typeof diff !== "function" || typeof openCase !== "function") {
     throw new TypeError("CliDependencies fields have invalid types");
   }
   const profiles = denseProfiles(dataValue(descriptors, "profiles"));
@@ -222,7 +218,7 @@ function captureDependencies(value: CliDependencies): CliDependencies {
       current.call(value, input) as Promise<CurrentRuleBlastResult>,
     analyzeDiff: (input: DiffAnalysisInput) =>
       diff.call(value, input) as Promise<DiffRuleBlastResult>,
-    openDemo: () => demo.call(value) as Promise<DemoSnapshots>,
+    openCase: () => openCase.call(value) as Promise<DiffRuleBlastResult>,
   });
 }
 

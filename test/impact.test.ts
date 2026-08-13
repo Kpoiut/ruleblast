@@ -13,12 +13,14 @@ import {
 } from "../src/model.js";
 import {
   aggregatePayloadRelation,
-  compareCodePoints,
   comparePayloadRelation,
-  projectPreparedProfiles,
   splitState,
+} from "../src/domain/payload-relation.js";
+import { compareCodePoints } from "../src/domain/repository-path.js";
+import {
   cacheRepositorySnapshot,
-} from "../src/project.js";
+  projectPreparedProfiles,
+} from "../src/application/projection-boundary.js";
 import { analyzeCurrent, analyzeDiff } from "../src/impact.js";
 import { unitizePayloadContributions } from "../src/profiles/profile.js";
 import type {

@@ -1,5 +1,9 @@
 import type { CliArgs, SnapshotSelector } from "./args.js";
 import {
+  captureCaseResult,
+  PACKAGED_CASE_PRESENTATION,
+} from "./case.js";
+import {
   currentExplain,
   diffExplain,
   present,
@@ -8,7 +12,6 @@ import {
   CliRuntimeError,
   type CapturedCliIo,
   type CliDependencies,
-  type DemoSnapshots,
 } from "./cli-runtime.js";
 import type {
   CurrentRuleBlastResult,
@@ -19,30 +22,6 @@ import type {
   ShellDialect,
 } from "./render-text.js";
 import type { RepositorySnapshot } from "./snapshot.js";
-
-function captureDemoSnapshots(value: unknown): DemoSnapshots {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    throw new TypeError("DemoSnapshots must be a plain object");
-  }
-  const prototype = Object.getPrototypeOf(value);
-  const keys = Reflect.ownKeys(value);
-  const descriptors = Object.getOwnPropertyDescriptors(value);
-  if ((prototype !== Object.prototype && prototype !== null) ||
-      keys.length !== 2 || !keys.includes("before") || !keys.includes("after") ||
-      !("value" in descriptors.before!) || !("value" in descriptors.after!)) {
-    throw new TypeError("DemoSnapshots must contain only before/after data");
-  }
-  const before = descriptors.before!.value as unknown;
-  const after = descriptors.after!.value as unknown;
-  if (typeof before !== "object" || before === null ||
-      typeof after !== "object" || after === null) {
-    throw new TypeError("DemoSnapshots endpoints must be snapshot objects");
-  }
-  return Object.freeze({
-    before: before as RepositorySnapshot,
-    after: after as RepositorySnapshot,
-  });
-}
 
 function noDefensibleResult(
   result: CurrentRuleBlastResult | DiffRuleBlastResult,
@@ -92,7 +71,7 @@ function diffTextContext(
   return Object.freeze({
     beforeLabel,
     afterLabel: selectorLabel(target),
-    demoFixture: false,
+    caseLabel: null,
     shellDialect,
   });
 }
@@ -138,31 +117,28 @@ export async function runAnalysisAction(
   io: CapturedCliIo,
   dependencies: CliDependencies,
 ): Promise<number> {
-  if (args.action === "demo") {
-    const pair = captureDemoSnapshots(await dependencies.openDemo());
-    assertDistinct(pair.before, pair.after);
-    if (args.explainPath !== null) {
-      await requireTrackedPath(pair.after, args.explainPath);
-    }
-    const result = await dependencies.analyzeDiff({
-      before: pair.before,
-      after: pair.after,
-      profiles: dependencies.profiles,
-    });
+  if (args.action === "case") {
+    const result = captureCaseResult(await dependencies.openCase());
     if (args.explainPath === null) {
       present(result, args.output, io, {
-        beforeLabel: "BEFORE",
-        afterLabel: "AFTER",
-        demoFixture: true,
+        beforeLabel: PACKAGED_CASE_PRESENTATION.beforeLabel,
+        afterLabel: PACKAGED_CASE_PRESENTATION.afterLabel,
+        caseLabel: PACKAGED_CASE_PRESENTATION.label,
         shellDialect: dependencies.shellDialect,
       });
       return noDefensibleResult(result) ? 2 : 0;
     }
-    const selected = selectedPath(result.paths, args.explainPath);
+    const selected = result.paths.find((path) => path.path === args.explainPath);
+    if (selected === undefined) {
+      throw new CliRuntimeError(
+        "TARGET_PATH_NOT_TRACKED",
+        `Recorded case target path not found: ${JSON.stringify(args.explainPath)}`,
+      );
+    }
     present(diffExplain(result, args.explainPath), args.output, io, {
-      beforeLabel: "BEFORE",
-      afterLabel: "AFTER",
-      demoFixture: true,
+      beforeLabel: PACKAGED_CASE_PRESENTATION.beforeLabel,
+      afterLabel: PACKAGED_CASE_PRESENTATION.afterLabel,
+      caseLabel: PACKAGED_CASE_PRESENTATION.label,
       shellDialect: dependencies.shellDialect,
     });
     return noDefensibleDiffPath(selected) ? 2 : 0;
@@ -180,7 +156,7 @@ export async function runAnalysisAction(
     });
     present(result, args.output, io, {
       currentLabel: "WORKTREE",
-      demoFixture: false,
+      caseLabel: null,
       shellDialect: dependencies.shellDialect,
     });
     return noDefensibleResult(result) ? 2 : 0;
@@ -213,7 +189,7 @@ export async function runAnalysisAction(
     const selected = selectedPath(result.paths, args.path);
     present(currentExplain(result, args.path), args.output, io, {
       currentLabel: selectorLabel(args.target),
-      demoFixture: false,
+      caseLabel: null,
       shellDialect: dependencies.shellDialect,
     });
     return noDefensibleCurrentPath(selected) ? 2 : 0;

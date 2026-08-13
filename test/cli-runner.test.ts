@@ -24,6 +24,7 @@ import {
   type CliDependencies,
   type CliIo,
 } from "../src/cli.js";
+import { openPackagedCase } from "../src/case.js";
 import { analyzeCurrent, analyzeDiff } from "../src/impact.js";
 import {
   findRepositoryRoot,
@@ -161,7 +162,7 @@ function harness(overrides: Partial<CliDependencies> = {}) {
     openTrackedWorktree: vi.fn(async () => worktree),
     analyzeCurrent: vi.fn(async ({ snapshot: selected }) => currentResult(selected.ref)),
     analyzeDiff: vi.fn(async ({ before: left, after: right }) => diffResult(left.ref, right.ref)),
-    openDemo: vi.fn(async () => ({ before, after })),
+    openCase: vi.fn(openPackagedCase),
     ...overrides,
   };
   return { io, dependencies, stdout, stderr };
@@ -305,58 +306,54 @@ describe("runCli", () => {
     ]);
   });
 
-  it("routes demo through its injected fixture seam", async () => {
+  it("routes case outside Git through its verified-result seam", async () => {
     const h = harness();
-    expect(await runCli(["demo", "--json"], h.io, h.dependencies)).toBe(0);
-    expect(h.dependencies.openDemo).toHaveBeenCalledOnce();
-    expect(h.dependencies.analyzeDiff).toHaveBeenCalledOnce();
+    expect(await runCli(["case", "--json"], h.io, h.dependencies)).toBe(0);
+    expect(h.dependencies.openCase).toHaveBeenCalledOnce();
+    expect(h.dependencies.findRepositoryRoot).not.toHaveBeenCalled();
+    expect(h.dependencies.openGitSnapshot).not.toHaveBeenCalled();
+    expect(h.dependencies.openTrackedWorktree).not.toHaveBeenCalled();
+    expect(h.dependencies.analyzeDiff).not.toHaveBeenCalled();
   });
 
-  it("captures the demo pair as a closed data record before analysis", async () => {
+  it("captures a case result as closed data before presentation", async () => {
+    let getterCalls = 0;
     const getter = harness({
-      openDemo: vi.fn(async () => Object.defineProperties({}, {
-        before: { enumerable: true, get: () => { throw new Error("before getter"); } },
-        after: { enumerable: true, value: snapshot(gitRef("b".repeat(40))) },
-      }) as unknown as ReturnType<CliDependencies["openDemo"]> extends Promise<infer T> ? T : never),
+      openCase: vi.fn(async () => Object.defineProperties({}, {
+        mode: {
+          enumerable: true,
+          get: () => { getterCalls += 1; throw new Error("mode getter"); },
+        },
+      }) as unknown as DiffRuleBlastResult),
     });
-    expect(await runCli(["demo"], getter.io, getter.dependencies)).toBe(70);
+    expect(await runCli(["case"], getter.io, getter.dependencies)).toBe(70);
+    expect(getterCalls).toBe(0);
     expect(getter.dependencies.analyzeDiff).not.toHaveBeenCalled();
 
     const extra = harness({
-      openDemo: vi.fn(async () => ({
-        before: snapshot(gitRef("a".repeat(40))),
-        after: snapshot(gitRef("b".repeat(40))),
+      openCase: vi.fn(async () => ({
+        ...diffResult(),
         extra: true,
-      } as unknown as Awaited<ReturnType<CliDependencies["openDemo"]>>)),
+      } as unknown as DiffRuleBlastResult)),
     });
-    expect(await runCli(["demo"], extra.io, extra.dependencies)).toBe(70);
+    expect(await runCli(["case"], extra.io, extra.dependencies)).toBe(70);
     expect(extra.dependencies.analyzeDiff).not.toHaveBeenCalled();
   });
 
-  it("renders demo explain as a compact ExplainResult and validates its target", async () => {
+  it("renders case explain as a compact ExplainResult and validates its target", async () => {
     const h = harness();
+    const casePath = ".github/ISSUE_TEMPLATE/missing-blast.yml";
     expect(await runCli(
-      ["demo", "--explain", "src/index.ts", "--json"], h.io, h.dependencies,
+      ["case", "--explain", casePath, "--json"], h.io, h.dependencies,
     )).toBe(0);
     expect(JSON.parse(h.stdout[0]!)).toMatchObject({
-      mode: "explain", analysisMode: "diff", path: { path: "src/index.ts" },
+      mode: "explain", analysisMode: "diff", path: { path: casePath },
     });
     const missing = harness();
     expect(await runCli(
-      ["demo", "--explain", "missing.ts"], missing.io, missing.dependencies,
+      ["case", "--explain", "missing.ts"], missing.io, missing.dependencies,
     )).toBe(1);
     expect(missing.dependencies.analyzeDiff).not.toHaveBeenCalled();
-  });
-
-  it("returns 2 when the selected demo explain path alone is unresolved", async () => {
-    const result = addCompleteUnrelatedDiff(diffResult(
-      gitRef("a".repeat(40)), gitRef("b".repeat(40)), "UNKNOWN",
-    ));
-    const h = harness({ analyzeDiff: vi.fn(async () => result) });
-    expect(await runCli(
-      ["demo", "--explain", "src/index.ts", "--json"], h.io, h.dependencies,
-    )).toBe(2);
-    expect(JSON.parse(h.stdout[0]!).analysisMode).toBe("diff");
   });
 
   it("returns 2 only when candidates exist and no complete projection is defensible", async () => {
@@ -659,7 +656,7 @@ describe("runCli", () => {
       shellDialect: "posix",
       findRepositoryRoot, openGitSnapshot, openTrackedWorktree,
       analyzeCurrent, analyzeDiff,
-      openDemo: async () => { throw new Error("not used"); },
+      openCase: async () => { throw new Error("not used"); },
     };
     expect(await runCli([".", "--json"], io, dependencies)).toBe(0);
     expect(JSON.parse(output[0]!)).toMatchObject({

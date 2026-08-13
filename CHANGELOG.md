@@ -2,6 +2,15 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 1.0.1
+
+### Changed
+
+- Replaced the synthetic teaching surface with `case`, a packaged inspection flow backed by the promoted immutable RuleBlast receipt: 33 instruction-line edits changed all 106 candidate stacks with zero split, partial, unknown, or indeterminate paths.
+- The packaged command verifies the receipt bytes, canonical encoding, repository and commit identity, resolver revision, and core digest, then presents the recorded result without a repository checkout, network access, or reconstruction from absent source bytes.
+- Kept `demo` as a hidden v1 compatibility alias that maps to the same semantic `case` action and produces byte-identical output; it is no longer advertised as a public action.
+- Replaced the generated terminal animation with the RuleBlast eye and packaged the exact promoted receipt as the practical first-run experience.
+
 ## 1.0.0
 
 ### Added
@@ -9,7 +18,7 @@ All notable user-visible changes to RuleBlast are recorded here.
 - Deterministic Git commit, tracked-worktree, and manifest fixture snapshots.
 - Evidence-pinned `openai/codex-cli@1` and `anthropic/claude-code-cli@1` repository profiles.
 - Profile-neutral current and diff impact analysis with complete, partial, unknown, and indeterminate states preserved.
-- Four CLI actions: scan, diff, explain, and demo, with deterministic text and canonical JSON output.
+- Four CLI actions at release: scan, diff, explain, and demo, with deterministic text and canonical JSON output.
 - A packaged `DEMO FIXTURE` that exercises the production pipeline and offers a one-path explanation.
 - A stable public behavior contract, contribution unit, long-horizon roadmap, and focused issue forms.
 - A no-overwrite Blast Case capture path for canonical, source-content-free receipts from immutable public Git commits; promotion is protected by the field-evidence gate.

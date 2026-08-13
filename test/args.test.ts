@@ -51,12 +51,16 @@ describe("parseArgs", () => {
       target: { kind: "worktree" },
       output: text,
     }],
-    [["demo"], { action: "demo", explainPath: null, output: text }],
+    [["case"], { action: "case", explainPath: null, output: text }],
+    [["case", "--explain", "packages\\api//./refund.ts", "--json"], {
+      action: "case", explainPath: "packages/api/refund.ts", output: json,
+    }],
+    [["demo"], { action: "case", explainPath: null, output: text }],
     [["demo", "--explain", "packages\\api//./refund.ts", "--json"], {
-      action: "demo", explainPath: "packages/api/refund.ts", output: json,
+      action: "case", explainPath: "packages/api/refund.ts", output: json,
     }],
     [["demo", "--explain", "-file.ts"], {
-      action: "demo", explainPath: "-file.ts", output: text,
+      action: "case", explainPath: "-file.ts", output: text,
     }],
     [["--help"], { action: "help" }],
     [["--version"], { action: "version" }],

@@ -39,16 +39,26 @@ export function assertJsonContract(label, bytes, mode, analysisMode) {
   }
   if (mode === "diff") {
     const selected = value.paths?.find((path) => path?.path === "src/index.ts");
-    const demo = label === "demo JSON";
-    const endpointKinds = demo
-      ? value.before?.kind === "fixture" && value.after?.kind === "fixture"
-      : value.before?.kind === "git" && value.after?.kind === "worktree";
-    const fixturePath = demo
-      ? value.paths?.some((path) => path?.path === "packages/api/internal/refund.ts")
-      : Array.isArray(selected?.changedProfiles) && selected.changedProfiles.length > 0;
-    if (!endpointKinds || !fixturePath || !Array.isArray(value.groups) ||
-        value.counts?.changedStackPathCount <= 0 || value.counts?.newlySplitPathCount <= 0) {
-      fail(`${label} omitted the real fixture diff`);
+    const packagedCase = label === "case JSON";
+    const valid = packagedCase
+      ? value.before?.kind === "git" && value.after?.kind === "git" &&
+        value.before?.oid === "27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8" &&
+        value.after?.oid === "e420008a1c10c5c328e506247560117f4d40b855" &&
+        value.diffStats?.editedLineCount === 33 &&
+        value.counts?.candidatePathCount === 106 &&
+        value.counts?.changedStackPathCount === 106 &&
+        value.counts?.newlySplitPathCount === 0 &&
+        value.counts?.currentSplitPathCount === 0 &&
+        value.counts?.partialPathCount === 0 &&
+        value.counts?.unknownPathCount === 0 &&
+        value.counts?.indeterminatePathCount === 0 &&
+        Array.isArray(value.findings) && value.findings.length === 0
+      : value.before?.kind === "git" && value.after?.kind === "worktree" &&
+        Array.isArray(selected?.changedProfiles) && selected.changedProfiles.length > 0 &&
+        value.counts?.changedStackPathCount > 0 &&
+        value.counts?.newlySplitPathCount > 0;
+    if (!valid || !Array.isArray(value.groups)) {
+      fail(`${label} omitted its verified diff`);
     }
   }
   if (mode === "explain") {
