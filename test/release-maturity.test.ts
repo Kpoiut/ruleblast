@@ -12,7 +12,7 @@ describe("public release maturity", () => {
     const roadmap = read("ROADMAP.md");
     const releasedHeading = "## **RELEASED** — `v1.0.0`: The Second Diff";
     const activeHeading =
-      "## **IN BUILD** — `v1.0.1`: Ground-Truth Hardening";
+      "## **RELEASED** — `v1.0.1`: Ground-Truth Hardening";
     const releasedStart = roadmap.indexOf(releasedHeading);
     const activeStart = roadmap.indexOf(activeHeading);
 
@@ -41,19 +41,54 @@ describe("public release maturity", () => {
     );
   });
 
+  it("records the independently verified v1.0.1 release receipt", () => {
+    const roadmap = read("ROADMAP.md");
+    const releasedHeading =
+      "## **RELEASED** — `v1.0.1`: Ground-Truth Hardening";
+    const activeHeading =
+      "## **IN BUILD** — `v1.0.2`: Adoption and Operability";
+    const releasedStart = roadmap.indexOf(releasedHeading);
+    const activeStart = roadmap.indexOf(activeHeading);
+
+    expect(releasedStart).toBeGreaterThanOrEqual(0);
+    expect(activeStart).toBeGreaterThan(releasedStart);
+
+    const released = roadmap.slice(releasedStart, activeStart);
+    for (const evidence of [
+      "02fcc41de50a32f31a1da96095fe72f8ca2e2b8d",
+      "7d643408eda5f7f435528e42dd187873ab792147",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v1.0.1",
+      "https://www.npmjs.com/package/ruleblast/v/1.0.1",
+      "99,047",
+      "de9bc3db1ea209b48fd3a9108a40651f495b6ee4c2fd8dbbd0d9b88832283840",
+      "sha512-PvJ6gKFMmB/cz6O+X22qQWmN9EPryZ3X8TMCP+/VGzuooB9yWc5AjVZPxY0wffw//vIDHGc+aiyX1+OcDnHQfg==",
+      "Signed tag",
+      "byte-identical package projection",
+      "gitHead is absent",
+      "registry download and GitHub Release asset both match",
+      "not facts inferred from this checkout",
+    ]) {
+      expect(released).toContain(evidence);
+    }
+
+    expect(released).not.toMatch(
+      /\bREMAINING\b|remain incomplete until|becomes the immutable source interface only when/iu,
+    );
+  });
+
   it("keeps release-state records outside the current package boundary", () => {
     const descriptor = JSON.parse(read("package.json")) as {
       readonly files?: readonly string[];
     };
 
     expect(descriptor.files).toBeDefined();
-    expect(descriptor.files).not.toEqual(
-      expect.arrayContaining([
-        "ROADMAP.md",
-        "CHANGELOG.md",
-        "test",
-        "test/release-maturity.test.ts",
-      ]),
-    );
+    for (const excluded of [
+      "ROADMAP.md",
+      "CHANGELOG.md",
+      "test",
+      "test/release-maturity.test.ts",
+    ]) {
+      expect(descriptor.files).not.toContain(excluded);
+    }
   });
 });

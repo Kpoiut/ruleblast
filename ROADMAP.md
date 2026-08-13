@@ -58,9 +58,9 @@ Earlier roadmap copy called this a “private-repository pilot.” The implement
 
 > The blast can now be explained. Can it travel without losing the receipt?
 
-## **IN BUILD** — `v1.0.1`: Ground-Truth Hardening
+## **RELEASED** — `v1.0.1`: Ground-Truth Hardening
 
-This active patch boundary deepens the existing product; it does not add a fifth action or a new product dimension. Its source and candidate artifact remain incomplete until their own signed tag, npm artifact, and GitHub Release are independently verified.
+This patch deepens the existing product without adding a fifth action or a new product dimension. Its technical gates and external publication records are complete.
 
 Targeted work:
 
@@ -81,7 +81,9 @@ Admission gates:
 - the early Install section and packed-install test must prove the complete pinned package still downloads and runs through one command on Node.js 20 or newer;
 - no behavior that cannot be expressed through the existing canonical result.
 
-## **NEXT** — `v1.0.2`: Adoption and Operability
+**Verified publication receipt.** Signed tag [`v1.0.1`](https://github.com/Kpoiut/ruleblast/releases/tag/v1.0.1) targets signed integration commit `02fcc41de50a32f31a1da96095fe72f8ca2e2b8d`. A clean rebuild at that integration commit proved a byte-identical package projection from reviewed candidate `7d643408eda5f7f435528e42dd187873ab792147`. [npm `ruleblast@1.0.1`](https://www.npmjs.com/package/ruleblast/v/1.0.1) reports integrity `sha512-PvJ6gKFMmB/cz6O+X22qQWmN9EPryZ3X8TMCP+/VGzuooB9yWc5AjVZPxY0wffw//vIDHGc+aiyX1+OcDnHQfg==`; direct tarball publication means registry `gitHead is absent` rather than invented. The registry download and GitHub Release asset both match the reviewed 99,047-byte tarball with SHA-256 `de9bc3db1ea209b48fd3a9108a40651f495b6ee4c2fd8dbbd0d9b88832283840`. These are independently verified external records, not facts inferred from this checkout.
+
+## **IN BUILD** — `v1.0.2`: Adoption and Operability
 
 This second patch closes the path from a technically sound tool to one that can be found, installed, trusted, and maintained. It does not add an action, resolver surface, hosted component, or telemetry.
 
