@@ -256,6 +256,10 @@ describe("public contract", () => {
 });
 
 describe("repository documentation integrity", () => {
+  it("keeps superseded design records outside the public repository tree", () => {
+    expect(existsSync(join(repositoryRoot, "docs"))).toBe(false);
+  });
+
   it("keeps public claims restrained", () => {
     const body = publicDocs.map(read).join("\n");
     for (const phrase of [
