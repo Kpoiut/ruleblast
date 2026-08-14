@@ -1,14 +1,16 @@
 {
   "name": "ruleblast",
-  "version": "1.0.2",
-  "description": "Map where AGENTS.md and CLAUDE.md changes land across a repo—and where Codex and Claude Code split.",
+  "version": "1.0.3",
+  "description": "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex and Claude Code projections already differ.",
   "keywords": [
     "agents.md",
     "claude.md",
     "codex",
     "claude-code",
     "ai-coding-agents",
+    "coding-agents",
     "repository-instructions",
+    "repository-rules",
     "instruction-scope",
     "blast-radius",
     "git",
@@ -21,10 +23,12 @@
   },
   "files": [
     "cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json",
+    "cases/README.md",
     "dist",
     "README.md",
     "CONTRACT.md",
-    "LICENSE"
+    "LICENSE",
+    "AGENT_USAGE.md"
   ],
   "engines": {
     "node": ">=20"

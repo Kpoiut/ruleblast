@@ -21,6 +21,7 @@ import {
   type GitSnapshotErrorCode,
 } from "./git.js";
 import { analyzeCurrent, analyzeDiff } from "./impact.js";
+import { renderCliHelp } from "./cli-help.js";
 import { claudeProfile } from "./profiles/claude.js";
 import { codexProfile } from "./profiles/codex.js";
 
@@ -35,15 +36,7 @@ export type {
   ExplainResult,
 } from "./cli-output.js";
 
-const COLOR_OPTION = "[--color=auto|always|never]";
-const USAGE = `Usage:
-  ruleblast [path] [--json] ${COLOR_OPTION}
-  ruleblast diff [base] [--to <ref|WORKTREE>] [--json] ${COLOR_OPTION}
-  ruleblast explain <path> [--from <ref>] [--to <ref|WORKTREE>] [--json] ${COLOR_OPTION}
-  ruleblast case [--explain <path>] [--json] ${COLOR_OPTION}
-  ruleblast --help
-  ruleblast --version
-`;
+const USAGE = renderCliHelp();
 
 function packageVersion(): string {
   const value = JSON.parse(

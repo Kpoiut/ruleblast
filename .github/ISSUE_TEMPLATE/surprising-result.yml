@@ -1,0 +1,29 @@
+name: Surprising result
+description: You ran RuleBlast and the blast looked wrong, empty, or too interesting. No canonical JSON required.
+title: "result: "
+labels:
+  - blast-case
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fast lane. Official evidence URLs and expected canonical JSON belong on the promotion Blast Case forms.
+  - type: input
+    id: command
+    attributes:
+      label: Exact command and version
+      placeholder: npx --yes ruleblast@1.0.2 diff HEAD~1 --color=never
+    validations:
+      required: true
+  - type: textarea
+    id: observed_text
+    attributes:
+      label: Observed text output
+    validations:
+      required: true
+  - type: input
+    id: surprise
+    attributes:
+      label: One-sentence surprise
+    validations:
+      required: true

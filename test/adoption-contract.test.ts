@@ -25,15 +25,15 @@ interface PackageLock {
   readonly packages: Readonly<Record<string, { readonly version?: string }>>;
 }
 
-describe("v1.0.2 adoption contract", () => {
+describe("v1.0.3 adoption contract", () => {
   it("locks the exact package identity and supported discovery metadata", () => {
     const descriptor = readJson<PackageDescriptor>("package.json");
     const lock = readJson<PackageLock>("package-lock.json");
 
     expect(descriptor).toMatchObject({
-      version: "1.0.2",
+      version: "1.0.3",
       description:
-        "Map where AGENTS.md and CLAUDE.md changes land across a repo—and where Codex and Claude Code split.",
+        "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex and Claude Code projections already differ.",
       repository: {
         type: "git",
         url: "git+https://github.com/Kpoiut/ruleblast.git",
@@ -48,19 +48,21 @@ describe("v1.0.2 adoption contract", () => {
       "codex",
       "claude-code",
       "ai-coding-agents",
+      "coding-agents",
       "repository-instructions",
+      "repository-rules",
       "instruction-scope",
       "blast-radius",
       "git",
       "cli",
       "developer-tools",
     ]);
-    expect(lock.version).toBe("1.0.2");
-    expect(lock.packages[""]?.version).toBe("1.0.2");
+    expect(lock.version).toBe("1.0.3");
+    expect(lock.packages[""]?.version).toBe("1.0.3");
 
     const discovery = `${descriptor.description}\n${descriptor.keywords.join("\n")}`;
     expect(discovery).not.toMatch(
-      /copilot|cursor|gemini|all agents|model quality|model compliance/iu,
+      /all agents|model quality|model compliance/iu,
     );
   });
 
@@ -107,18 +109,16 @@ describe("v1.0.2 adoption contract", () => {
     expect(readme).toMatch(/mutation, sync, generation, scoring, or auto-fix/iu);
     expect(readme).toMatch(/network calls, model calls, telemetry, dashboard, or product UI/iu);
 
-    const tagline = readme.indexOf("See where <code>AGENTS.md</code>");
-    const quickStart = readme.indexOf("<code>npx --yes ruleblast@1.0.2 case</code>");
-    const proofLink = readme.indexOf('href="#two-lines-206-path-stacks-one-exact-cause"');
-    const installLink = readme.indexOf('href="#install"');
-    const contributeLink = readme.indexOf('href="#contribute-a-blast-case"');
+    const tagline = readme.indexOf("Git shows the <code>AGENTS.md</code>");
     const causalProof = readme.indexOf("assets/ruleblast-causal-proof.gif");
+    const blast = readme.indexOf("206 tracked paths changed stack");
+    const teachingCase = readme.indexOf("npx --yes ruleblast@1.0.2 case");
+    const install = readme.indexOf("## Install");
     expect(tagline).toBeGreaterThan(-1);
-    expect(quickStart).toBeGreaterThan(tagline);
-    expect(proofLink).toBeGreaterThan(quickStart);
-    expect(installLink).toBeGreaterThan(proofLink);
-    expect(contributeLink).toBeGreaterThan(installLink);
-    expect(causalProof).toBeGreaterThan(contributeLink);
+    expect(causalProof).toBeGreaterThan(tagline);
+    expect(blast).toBeGreaterThan(causalProof);
+    expect(teachingCase).toBeGreaterThan(blast);
+    expect(install).toBeGreaterThan(teachingCase);
   });
 
   it("publishes a truthful community funnel without shipping repository-only assets", () => {
@@ -212,10 +212,12 @@ describe("v1.0.2 adoption contract", () => {
     const descriptor = readJson<PackageDescriptor>("package.json");
     expect(descriptor.files).not.toContain(".github");
     expect(descriptor.files).not.toContain("SECURITY.md");
-    expect(existsSync(join(
-      repositoryRoot,
-      "assets/ruleblast-social-preview.png",
-    ))).toBe(false);
+    const social = join(repositoryRoot, "assets/ruleblast-social-preview.png");
+    expect(existsSync(social)).toBe(true);
+    const socialBytes = readFileSync(social);
+    expect(socialBytes.subarray(1, 4).toString("ascii")).toBe("PNG");
+    expect(socialBytes.readUInt32BE(16)).toBe(1_280);
+    expect(socialBytes.readUInt32BE(20)).toBe(640);
   });
 
   it("uses the selected horizontal hero without shipping presentation media", () => {

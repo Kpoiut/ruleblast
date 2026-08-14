@@ -80,7 +80,7 @@ describe("public release maturity", () => {
     const roadmap = read("ROADMAP.md");
     const releasedHeading =
       "## **RELEASED** — `v1.0.2`: Adoption and Operability";
-    const nextHeading = "## **NEXT** — `v1.1.0`: Blast Receipts";
+    const nextHeading = "## **IN BUILD** — `v1.0.3`: Agent Route Proof";
     const releasedStart = roadmap.indexOf(releasedHeading);
     const nextStart = roadmap.indexOf(nextHeading);
 

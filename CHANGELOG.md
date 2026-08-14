@@ -2,6 +2,12 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## Unreleased — 1.0.3 candidate
+
+- Semantic `--help` and packaged `AGENT_USAGE.md`.
+- README leads with the 206-stack GIF proof. `case` is labeled the 33→106 teaching receipt.
+- Light surprising-result issue form.
+
 ## Unreleased — repository only
 
 - Put the exact `npx --yes ruleblast@1.0.2 case` command and direct proof, install, and contribution links immediately below the README tagline.

@@ -92,11 +92,11 @@ describe("README story contract", () => {
       "assets/ruleblast-hero.png",
       "actions/workflows/verify.yml/badge.svg",
       "img.shields.io/npm/v/ruleblast",
-      "<code>npx --yes ruleblast@1.0.2 case</code>",
       "assets/ruleblast-causal-proof.gif",
       "2 instruction-line edits",
       "206 tracked paths changed stack",
       "codex-rs/tui/src/bottom_pane/action_required_title.rs",
+      "npx --yes ruleblast@1.0.2 case",
       "## Install",
       "## Run the verified case",
       "Exact packaged-case terminal transcript",
@@ -108,7 +108,7 @@ describe("README story contract", () => {
       "## Roadmap",
     ]);
 
-    const marker = readme.indexOf("RuleBlast</h1>");
+    const marker = readme.indexOf("invisible repository instructions</h1>");
     for (const metric of ["2", "206", "4,476", "zero partial"]) {
       expect(readme.indexOf(metric)).toBeGreaterThan(marker);
     }
@@ -172,7 +172,7 @@ describe("README story contract", () => {
     for (const action of [
       "npx --yes ruleblast@1.0.2 .",
       "npx --yes ruleblast@1.0.2 diff HEAD~1",
-      "npx --yes ruleblast@1.0.2 explain packages/api/internal/refund.ts --from HEAD~1",
+      "npx --yes ruleblast@1.0.2 explain src/args.ts --from HEAD~1",
       "npx --yes ruleblast@1.0.2 case",
     ]) {
       expect(readme).toContain(action);

@@ -1,6 +1,6 @@
 # Contributing to RuleBlast
 
-RuleBlast `v1.0.2` is released. The highest-value contribution is a small, reproducible challenge to the [public contract](CONTRACT.md), not a broad feature pitch.
+RuleBlast `v1.0.2` is the latest verified public release. This tree is `1.0.3`. Fastest contribution: [surprising result](https://github.com/Kpoiut/ruleblast/issues/new?template=surprising-result.yml).
 
 ## Pull requests
 

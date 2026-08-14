@@ -74,6 +74,7 @@ export function expectedPackedFiles(repositoryRoot = REPOSITORY_ROOT) {
     "README.md",
     "CONTRACT.md",
     "LICENSE",
+    "AGENT_USAGE.md",
     "cases/README.md",
     "cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json",
   ];

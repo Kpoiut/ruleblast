@@ -16,7 +16,7 @@ Each file is canonical single-line JSON with one trailing LF. It records the can
 
 ## Promotion gate
 
-A JSON receipt enters this directory only after a local-only pilot covers at least 25 real instruction-changing commits, produces at least five useful non-obvious results, and leaves no unresolved count-changing P0/P1 defect. The chosen repository must be public, and its license or explicit permission must allow publication of the derived receipt.
+A JSON receipt enters this directory only after a local-only pilot covers at least 25 real instruction-changing commits, produces at least five useful non-obvious results, and leaves no unresolved count-changing P0/P1 defect. That gate is for packaging `case`. A first issue or `test/fixtures` PR does not need that pilot. The chosen repository must be public, and its license or explicit permission must allow publication of the derived receipt.
 
 No synthetic fixture, mutable branch, handwritten metric, or unverified pilot entry can satisfy that gate.
 
