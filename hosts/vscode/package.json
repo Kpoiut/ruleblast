@@ -1,0 +1,46 @@
+{
+  "name": "ruleblast",
+  "displayName": "RuleBlast",
+  "description": "Read-only companion for the RuleBlast analysis engine. Same four actions, same canonical result.",
+  "version": "1.6.1",
+  "publisher": "kpoiut",
+  "private": true,
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onView:ruleblast.scoreboard",
+    "onCommand:ruleblast.scanWorkspace",
+    "onCommand:ruleblast.diffFrom",
+    "onCommand:ruleblast.explainActiveFile",
+    "onCommand:ruleblast.openVerifiedCase"
+  ],
+  "main": "./out/extension.js",
+  "type": "module",
+  "contributes": {
+    "commands": [
+      { "command": "ruleblast.scanWorkspace", "title": "RuleBlast: Scan Workspace" },
+      { "command": "ruleblast.diffFrom", "title": "RuleBlast: Diff From…" },
+      { "command": "ruleblast.explainActiveFile", "title": "RuleBlast: Explain Active File" },
+      { "command": "ruleblast.openVerifiedCase", "title": "RuleBlast: Open Verified Case" }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ruleblast",
+          "title": "RuleBlast",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "ruleblast": [
+        {
+          "id": "ruleblast.scoreboard",
+          "name": "Scoreboard"
+        }
+      ]
+    }
+  }
+}

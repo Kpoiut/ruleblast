@@ -1,6 +1,6 @@
 {
   "name": "ruleblast",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex, Claude Code, Copilot CLI, and Gemini CLI projections already differ.",
   "keywords": [
     "agents.md",
@@ -37,6 +37,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "host:build": "tsc -p tsconfig.build.json && tsc -p hosts/vscode/tsconfig.json",
     "check": "tsc -p tsconfig.json && vitest run",
     "test": "vitest run",
     "test:watch": "vitest",

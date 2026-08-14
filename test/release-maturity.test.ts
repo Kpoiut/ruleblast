@@ -311,7 +311,7 @@ describe("public release maturity", () => {
   it("records v1.5.3 as receipt binding without inventing publication", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v1.5.3`: Receipt Binding";
-    const next = roadmap.indexOf("## **IN BUILD** — `v1.6.0`: Fourth Documented Reality");
+    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v1.6.0`: Fourth Documented Reality");
     expect(roadmap.indexOf(heading)).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(roadmap.indexOf(heading));
     const shipped = roadmap.slice(roadmap.indexOf(heading), next);

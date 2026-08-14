@@ -12,6 +12,7 @@ import {
 } from "../cli-output.js";
 import { explainViewFromResult, type ExplainView } from "./explain-view.js";
 import { profilesForReality } from "./profile-catalog.js";
+import { renderExplainView } from "../render-explain.js";
 
 export interface AuthorityScanInput {
   readonly snapshot: RepositorySnapshot;
@@ -77,6 +78,12 @@ export async function explainRepository(
   return { explain, view: explainViewFromResult(explain) };
 }
 
+export function presentExplain(
+  explain: CurrentExplainResult | DiffExplainResult,
+): string {
+  return renderExplainView(explain);
+}
+
 export type { ExplainView } from "./explain-view.js";
 export {
   defaultProfileDefinitions,
@@ -87,3 +94,24 @@ export {
 } from "./profile-catalog.js";
 export { analysisState, formatAnalysisState } from "./analysis-state.js";
 export type { AnalysisLifecycle, AnalysisState } from "./analysis-state.js";
+export {
+  companionBegin,
+  companionExplain,
+  companionFail,
+  companionMarkStale,
+  companionNoteDirty,
+  companionScoreboard,
+  companionStatusLine,
+  companionSucceed,
+  gateWorkspace,
+  initialCompanionState,
+  toRepositoryRelativePath,
+} from "./host-session.js";
+export type { CompanionState, HostCommand, HostWorkspace } from "./host-session.js";
+export { renderScoreboard, scoreboardView } from "./scoreboard-view.js";
+export {
+  findRepositoryRoot,
+  openGitSnapshot,
+  openPackagedCase,
+  openTrackedWorktree,
+} from "./repository.js";

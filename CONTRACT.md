@@ -2,11 +2,11 @@
 
 This document is the public behavior and result contract for RuleBlast v1. It defines what a result means, which bytes are in scope, how uncertainty survives analysis, and what the product may claim. Implementation details may change while this contract and the canonical JSON remain compatible.
 
-The v1 package version is `1.6.0`. An authorized distribution binds it to signed source tag `v1.6.0`; registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
+The v1 package version is `1.6.1`. An authorized distribution binds it to signed source tag `v1.6.1`; registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
 
 ## Product claims
 
-RuleBlast is a local, read-only, Git-native debugger for repository instruction projection. The canonical analysis engine is the authority. The CLI is the reference host. A later VS Code-compatible companion may only render and invoke the same four actions. Given the same supported snapshot bytes, selected profiles, projection context, and resolver revision, every host produces the same canonical core result.
+RuleBlast is a local, read-only, Git-native debugger for repository instruction projection. The canonical analysis engine is the authority. The CLI is the reference host. The VS Code-compatible companion in `hosts/vscode` may only render and invoke the same four actions. Given the same supported snapshot bytes, selected profiles, projection context, and resolver revision, every host produces the same canonical core result.
 
 It answers four bounded questions:
 
@@ -36,7 +36,7 @@ Exit status is part of the CLI contract:
 
 RuleBlast does not observe or predict private model state, compliance, response quality, or downstream behavior. It does not model user, global, organization, managed, session, auto-memory, conversation, skill, plugin, MCP, hook, tool, or network state.
 
-V1 does not mutate repositories, call a model or vendor API, access a network during analysis, score prompts, synchronize instruction files, generate fixes, run as a service, or provide a hosted dashboard. A host companion, if shipped later in the 1.6 line, is a renderer of the canonical result and may not add analysis semantics. It models only documented repository-loading semantics for the named profile revision.
+V1 does not mutate repositories, call a model or vendor API, access a network during analysis, score prompts, synchronize instruction files, generate fixes, run as a service, or provide a hosted dashboard. The VS Code-compatible companion is a renderer of the canonical result and may not add analysis semantics. It does not write the repository, does not auto-analyze on file change, and does not treat an unsaved editor buffer as the tracked worktree. It models only documented repository-loading semantics for the named profile revision.
 
 ### Reality, host, and discovery
 

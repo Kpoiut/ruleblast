@@ -213,19 +213,19 @@ The packaged `case` command discovers the single promoted receipt, binds `{owner
 
 This tree is `1.5.3`. Latest independently verified public npm distribution remains `1.5.1`.
 
-## **IN BUILD** — `v1.6.0`: Fourth Documented Reality
+## **SHIPPED TO MAIN** — `v1.6.0`: Fourth Documented Reality
 
 The last v1 engine dimension. `--reality google/gemini-cli@1` adds one evidence-pinned Gemini CLI repository surface. Default Codex + Claude canonical bytes stay put. Gemini Code Assist and hosted Gemini remain distinct unsupported surfaces.
 
-This release also introduces the compile-time profile catalog, the analysis-authority facade, a shared explain presentation model, and semantic conformance bytes for the default two profiles. It does not add a fifth action, a host companion, `--reality all`, or a fifth bundled reality.
+This release also introduces the compile-time profile catalog, the analysis-authority facade, a shared explain presentation model, and semantic conformance bytes for the default two profiles. It does not add a fifth action, `--reality all`, or a fifth bundled reality.
 
 Technical admission is evidence + fixtures + conformance. A public featured Blast Case is a marketing gate, not a semantics gate.
 
-This tree is `1.6.0`. Latest independently verified public npm distribution remains `1.5.1`.
+## **IN BUILD** — `v1.6.1`: Canonical Companion
 
-## **NEXT** — `v1.6.1`: Canonical Companion
+One host class: a read-only VS Code-compatible companion under `hosts/vscode`. It imports the application facade, renders the shared explain model, and must produce byte-identical canonical JSON. It is not a second engine. File changes mark `STALE` and do not restart analysis. Cursor and Windsurf are compatible hosts only after acceptance tests. They are not modeled realities.
 
-One host class: a read-only VS Code-compatible companion that imports the application facade, renders the shared explain model, and must produce byte-identical canonical JSON. It is not a second engine. Cursor and Windsurf are compatible hosts only after acceptance tests. They are not modeled realities.
+This tree is `1.6.1`. Latest independently verified public npm distribution remains `1.5.1`.
 
 ## **NEXT** — `v2.0.0`: Reality Packs
 

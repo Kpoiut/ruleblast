@@ -2,11 +2,16 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 1.6.0 — IN BUILD
+## 1.6.1 — IN BUILD
+
+- Read-only VS Code-compatible companion under `hosts/vscode`. Four commands map to scan, diff, explain, and case. File changes mark the last result stale. Unsaved buffers are not worktree snapshots.
+- Companion imports the application facade only. Cross-host tests require CLI engine bytes and companion session bytes to match.
+
+## 1.6.0 — SHIPPED TO MAIN
 
 - Fourth documented reality: opt-in `--reality google/gemini-cli@1` models repository-only Gemini CLI JIT context from `google-gemini/gemini-cli@v0.55.1`. Default Codex + Claude JSON bytes are unchanged.
 - Compile-time profile catalog and analysis-authority facade. Hosts must not import snapshot, impact, or renderer internals.
-- Shared explain presentation model and split analysis lifecycle from completeness. No fifth action, no `--reality all`, no companion host in this release.
+- Shared explain presentation model and split analysis lifecycle from completeness. No fifth action, no `--reality all`.
 
 ## 1.5.3 — SHIPPED TO MAIN
 
