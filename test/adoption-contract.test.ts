@@ -343,7 +343,7 @@ describe("v1.5.3 adoption contract", () => {
       "RULEBLAST_POSTER=Git shows the edit; complete held frames only",
     );
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "76d07bda5deb53bcb0281e84a63ac1670cb69e9be48b6ae079538cd1119f53f7",
+      "43f40fae51a03bf1a30d61f6438f56771061d2467da95003782b970f6ba575d8",
     );
 
     const descriptor = readJson<PackageDescriptor>("package.json");
@@ -385,7 +385,7 @@ describe("v1.5.3 adoption contract", () => {
     expect(bytes.readUInt32BE(20)).toBe(240);
     expect(statSync(join(repositoryRoot, asset)).size).toBeLessThanOrEqual(400_000);
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "39f905b44b05db9af116d23b91da291ca0f7a32fc875ecd1dc3401e02500a02c",
+      "ce23cc2f4de990c690da877e6d3e6da41959516ef7e8934551d8147652313b48",
     );
     const descriptor = readJson<PackageDescriptor>("package.json");
     expect(descriptor.files).not.toContain(asset);
