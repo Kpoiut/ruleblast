@@ -113,10 +113,13 @@ describe("pasteable receipt", () => {
     expect(first.version).toBe("RBREC1");
     expect(first.rbctx).toMatch(/^RBCTX1:[0-9a-f]{12}$/u);
     expect(first.markdown).toContain("RULEBLAST PROOF");
+    expect(first.markdown).toContain("+-- scoreboard");
     expect(first.markdown).toContain("WORKTREE");
     expect(first.markdown).toContain("openai/codex-cli@1");
+    expect(first.markdown).toContain("agent-allow ask");
     expect(first.markdown).toContain("Not a claim about model compliance.");
     expect(first.markdown).not.toContain("Copilot");
+    expect(receiptForCurrent(result, "yes").markdown).toContain("agent-allow yes");
   });
 
   it("keeps default JSON free of receipt or context envelopes", () => {

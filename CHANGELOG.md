@@ -2,6 +2,10 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 1.4.2 — SHIPPED TO MAIN
+
+- Compact `--receipt` scoreboard box. User-owned on/off via `RULEBLAST_AGENT_ALLOW` or `.ruleblast-allow`. Agents default to ask. No fifth action, no product UI, no live agent telemetry, and RuleBlast never writes the allow file.
+
 ## 1.4.1 — SHIPPED TO MAIN
 
 - Compact 1,200×360 visual scoreboard with Git/Codex/Claude/unchanged/uncertainty/budget dials and the commands that reproduce them.

@@ -192,7 +192,7 @@ describe("public release maturity", () => {
   it("records v1.4.1 as a compact scoreboard patch without a Marketplace root action", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v1.4.1`: Compact Scoreboard";
-    const nextHeading = "## **NEXT** — `v2.0.0`: Reality Packs";
+    const nextHeading = "## **SHIPPED TO MAIN** — `v1.4.2`: User-Owned Scoreboard Gate";
     const start = roadmap.indexOf(heading);
     const next = roadmap.indexOf(nextHeading);
     expect(start).toBeGreaterThan(-1);
@@ -206,6 +206,20 @@ describe("public release maturity", () => {
     expect(changelog).toContain("## 1.4.1 — SHIPPED TO MAIN");
     expect(changelog).toMatch(/compact/iu);
     expect(changelog).not.toMatch(/## 1\.4\.1 — RELEASED/u);
+  });
+
+  it("records v1.4.2 as a user-owned scoreboard gate without inventing publication", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v1.4.2`: User-Owned Scoreboard Gate";
+    const nextHeading = "## **NEXT** — `v2.0.0`: Reality Packs";
+    const start = roadmap.indexOf(heading);
+    const next = roadmap.indexOf(nextHeading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    expect(roadmap.slice(start, next)).toMatch(/\.ruleblast-allow/u);
+    expect(roadmap.slice(start, next)).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 1.4.2 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 1\.4\.2 — RELEASED/u);
   });
 
   it("keeps release-state records outside the current package boundary", () => {

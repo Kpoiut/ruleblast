@@ -25,13 +25,13 @@ interface PackageLock {
   readonly packages: Readonly<Record<string, { readonly version?: string }>>;
 }
 
-describe("v1.4.1 adoption contract", () => {
+describe("v1.4.2 adoption contract", () => {
   it("locks the exact package identity and supported discovery metadata", () => {
     const descriptor = readJson<PackageDescriptor>("package.json");
     const lock = readJson<PackageLock>("package-lock.json");
 
     expect(descriptor).toMatchObject({
-      version: "1.4.1",
+      version: "1.4.2",
       description:
         "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex and Claude Code projections already differ.",
       repository: {
@@ -57,8 +57,8 @@ describe("v1.4.1 adoption contract", () => {
       "cli",
       "developer-tools",
     ]);
-    expect(lock.version).toBe("1.4.1");
-    expect(lock.packages[""]?.version).toBe("1.4.1");
+    expect(lock.version).toBe("1.4.2");
+    expect(lock.packages[""]?.version).toBe("1.4.2");
 
     const discovery = `${descriptor.description}\n${descriptor.keywords.join("\n")}`;
     expect(discovery).not.toMatch(
@@ -178,7 +178,7 @@ describe("v1.4.1 adoption contract", () => {
 
     const contributingLead = read("CONTRIBUTING.md").slice(0, 700);
     expect(contributingLead).toContain("v1.3.0");
-    expect(contributingLead).toContain("1.4.1");
+    expect(contributingLead).toContain("1.4.2");
     expect(contributingLead).toMatch(/you do not need a 25-commit/iu);
     expect(contributingLead).toMatch(/surprising result/iu);
 
@@ -361,6 +361,9 @@ describe("v1.4.1 adoption contract", () => {
     expect(readme).toContain("p95 < 2,000 ms");
     expect(readme).toContain("npm run benchmark");
     expect(readme).toMatch(/does not measure model quality/iu);
+    expect(readme).toContain("<details>");
+    expect(readme).toContain(".ruleblast-allow");
+    expect(readme).toContain("RULEBLAST_AGENT_ALLOW");
     expect(readme).toContain("4.40%");
     expect(readme).toContain("4,682");
     expect(readme).toContain("3 files, 6 deleted lines");

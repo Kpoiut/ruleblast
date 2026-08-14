@@ -89,7 +89,8 @@ One Git tree. Two documented instruction realities.
              Teaching receipt 33→106, not the 206 Codex proof.
 
   --witness  Why-edges for the selected resolution. Opt-in envelope only.
-  --receipt  Pasteable proof card plus RBCTX1 identity. Opt-in only.
+  --receipt  Opt-in scoreboard box plus RBCTX1. Off unless passed.
+             User toggle: RULEBLAST_AGENT_ALLOW or .ruleblast-allow.
   --reality  github/copilot-cli@1 only. Default JSON stays two-profile.
 
 Exits

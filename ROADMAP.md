@@ -159,6 +159,12 @@ A presentation patch. The visual benchmark is a 1,200×360 instrument strip, not
 
 This tree is `1.4.1`. Latest independently verified public npm distribution remains `1.3.0`.
 
+## **SHIPPED TO MAIN** — `v1.4.2`: User-Owned Scoreboard Gate
+
+The visual scoreboard is a closable README box plus the opt-in `--receipt` card. Humans toggle agent use with `RULEBLAST_AGENT_ALLOW` or a user-created `.ruleblast-allow`. Default is ask. This is not live agent telemetry and not a product UI.
+
+This tree is `1.4.2`. Latest independently verified public npm distribution remains `1.3.0`.
+
 ## **NEXT** — `v2.0.0`: Reality Packs
 
 The target is a finite, reviewed, declarative profile format—not an executable plugin system.

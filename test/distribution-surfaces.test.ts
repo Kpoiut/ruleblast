@@ -16,8 +16,11 @@ describe("distribution surfaces", () => {
     expect(skill).toContain("Use when");
     expect(skill).toContain("npx --yes ruleblast@1.3.0");
     expect(skill).toContain("There is no `ruleblast scan` subcommand");
+    expect(skill).toMatch(/RULEBLAST_AGENT_ALLOW|\.ruleblast-allow/u);
+    expect(skill).toMatch(/ask/iu);
     expect(skill).not.toMatch(/npx --yes ruleblast@1\.3\.0 scan\b/u);
     expect(read("AGENT_USAGE.md")).toContain("not discovered from `node_modules`");
+    expect(read("AGENT_USAGE.md")).toContain(".ruleblast-allow");
   });
 
   it("wraps the published CLI in a nested composite action without a Marketplace root action", () => {

@@ -12,38 +12,60 @@ export interface ReceiptCard {
   readonly markdown: string;
 }
 
-export function receiptForCurrent(result: CurrentRuleBlastResult): ReceiptCard {
+function box(lines: readonly string[]): string {
+  const width = Math.max(28, ...lines.map((line) => line.length));
+  const pad = (line: string): string => `| ${line.padEnd(width, " ")} |`;
+  return [
+    `+-- scoreboard ${"-".repeat(Math.max(0, width - 11))}--+`,
+    ...lines.map(pad),
+    `+${"-".repeat(width + 2)}+`,
+  ].join("\n");
+}
+
+export function receiptForCurrent(
+  result: CurrentRuleBlastResult,
+  agentAllow: "yes" | "ask" = "ask",
+): ReceiptCard {
   const rbctx = rbctxForCurrent(result);
   const markdown = [
     "RULEBLAST PROOF",
-    result.snapshot.label,
-    `${formatCount(result.counts.candidatePathCount)} candidate paths`,
-    `${formatCount(result.counts.currentSplitPathCount)} path stacks already split`,
-    ...result.counts.byProfile.map((profile) =>
-      `${profile.profile}  ${formatCount(profile.completePathCount)} complete`
-    ),
-    `Unknown        ${formatCount(result.counts.unknownPathCount)}`,
-    `rbctx: ${rbctx}`,
+    box([
+      result.snapshot.label,
+      `${formatCount(result.counts.candidatePathCount)} candidate paths`,
+      `${formatCount(result.counts.currentSplitPathCount)} path stacks already split`,
+      ...result.counts.byProfile.map((profile) =>
+        `${profile.profile}  ${formatCount(profile.completePathCount)} complete`
+      ),
+      `unknown ${formatCount(result.counts.unknownPathCount)}`,
+      `agent-allow ${agentAllow}`,
+      `rbctx ${rbctx}`,
+    ]),
     "",
     "Not a claim about model compliance.",
   ].join("\n");
   return { version: "RBREC1", title: "current", rbctx, markdown };
 }
 
-export function receiptForDiff(result: DiffRuleBlastResult): ReceiptCard {
+export function receiptForDiff(
+  result: DiffRuleBlastResult,
+  agentAllow: "yes" | "ask" = "ask",
+): ReceiptCard {
   const rbctx = rbctxForDiff(result);
   const instructionLines = result.diffStats.deletedLineCount +
     result.diffStats.addedLineCount + result.diffStats.editedLineCount;
   const markdown = [
     "RULEBLAST PROOF",
-    `${result.before.label} → ${result.after.label}`,
-    `${formatCount(instructionLines)} instruction lines`,
-    `${formatCount(result.counts.changedStackPathCount)} path stacks moved`,
-    ...result.counts.byProfile.map((profile) =>
-      `${profile.profile}  ${formatCount(profile.changedStackPathCount)} changed`
-    ),
-    `Unknown        ${formatCount(result.counts.unknownPathCount)}`,
-    `rbctx: ${rbctx}`,
+    box([
+      `${result.before.label} → ${result.after.label}`,
+      `${formatCount(instructionLines)} instruction lines`,
+      `${formatCount(result.counts.changedStackPathCount)} path stacks moved`,
+      ...result.counts.byProfile.map((profile) =>
+        `${profile.profile}  ${formatCount(profile.changedStackPathCount)} changed`
+      ),
+      `unknown ${formatCount(result.counts.unknownPathCount)}`,
+      `agent-allow ${agentAllow}`,
+      `rbctx ${rbctx}`,
+    ]),
     "",
     "Not a claim about model compliance.",
   ].join("\n");

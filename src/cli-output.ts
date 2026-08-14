@@ -2,6 +2,7 @@ import type { CliOutput } from "./args.js";
 import { canonicalJson } from "./canonical.js";
 import { renderWitness, witnessForProjection, type WitnessGraph } from "./domain/witness.js";
 import type { Projection } from "./model.js";
+import { resolveAgentAllow } from "./domain/agent-allow.js";
 import { receiptForCurrent, receiptForDiff } from "./render-receipt.js";
 import {
   displayText,
@@ -19,6 +20,7 @@ export interface OutputIo {
   readonly stderr: (text: string) => void;
   readonly env: Readonly<Record<string, string | undefined>>;
   readonly stdoutIsTTY: boolean;
+  readonly cwd?: () => string;
 }
 
 export interface CurrentExplainResult {
@@ -87,7 +89,13 @@ export function present(
   extras: PresentationExtras = {},
 ): void {
   if (extras.receipt === true && (value.mode === "current" || value.mode === "diff")) {
-    const card = value.mode === "diff" ? receiptForDiff(value) : receiptForCurrent(value);
+    const allow = resolveAgentAllow({
+      env: io.env,
+      cwd: io.cwd?.() ?? "",
+    });
+    const card = value.mode === "diff"
+      ? receiptForDiff(value, allow)
+      : receiptForCurrent(value, allow);
     writeLine(io.stdout, output.kind === "json" ? canonicalJson(card) : card.markdown);
     return;
   }

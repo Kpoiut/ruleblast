@@ -47,11 +47,26 @@ npx --yes ruleblast@1.3.0 .
 
 ## Visual benchmark
 
+<details>
+<summary><strong>Scoreboard</strong> — click to open or close. Opt-in. Agents need your allow.</summary>
+
 <p align="center">
   <img src="assets/ruleblast-visual-benchmark.png" width="100%" alt="Compact RuleBlast scoreboard: Git 2 lines / 3 files / 6 deletions; Codex 206; Claude 0; 4,476 unchanged; 4.40% hit; 0/0/0 uncertainty; 10,000-path p95 under 2,000 ms">
 </p>
 
-Read left to right. Git’s first diff is tiny. The second diff is 206 Codex stacks and 0 Claude Code stacks. It does not measure model quality.
+Read left to right. Git’s first diff is tiny. The second diff is 206 Codex stacks and 0 Claude Code stacks. The box tracks inherited profile stacks, not live agent tool calls. It does not measure model quality.
+
+Setup — RuleBlast never writes these. You own the toggle:
+
+```bash
+echo yes > .ruleblast-allow
+# or:  set RULEBLAST_AGENT_ALLOW=yes
+npx --yes ruleblast@1.3.0 . --receipt
+```
+
+Off: `RULEBLAST_AGENT_ALLOW=off` or put `off` in `.ruleblast-allow`. Without allow, an agent must ask before running RuleBlast.
+
+</details>
 
 | Dial | Number | Why it matters |
 |---|---:|---|
