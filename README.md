@@ -44,30 +44,30 @@ Sealed on implementation [`517cc07…`](https://github.com/Kpoiut/ruleblast/comm
 Ten-second teaching receipt — different artifact (33→106 on this repo), not the 206 proof:
 
 ```bash
-npx --yes ruleblast@1.0.2 case
+npx --yes ruleblast@1.3.0 case
 ```
 
 ## Install
 
-Published CLI is `ruleblast@1.0.2`. Node.js 20+. `npx` downloads and runs the pinned package. A global install downloads the full CLI.
+Published CLI is `ruleblast@1.3.0`. Node.js 20+. `npx` downloads and runs the pinned package. A global install downloads the full CLI.
 
 ```bash
 node --version
-npm view ruleblast@1.0.2 version
+npm view ruleblast@1.3.0 version
 cd <your-git-repository>
-npx --yes ruleblast@1.0.2 .
-npx --yes ruleblast@1.0.2 --help
+npx --yes ruleblast@1.3.0 .
+npx --yes ruleblast@1.3.0 --help
 ```
 
 ```bash
-npm install --global ruleblast@1.0.2
+npm install --global ruleblast@1.3.0
 ruleblast --version
 ruleblast --help
 ruleblast
 ```
 
 ```bash
-npm install --save-dev --save-exact ruleblast@1.0.2
+npm install --save-dev --save-exact ruleblast@1.3.0
 npx ruleblast --version
 npx ruleblast --help
 npx ruleblast
@@ -76,9 +76,9 @@ npx ruleblast
 `NOT_REPOSITORY` means `cd` into a Git repo first. `REF_NOT_FOUND` means pick a real ref. On a permission error, use `npx` instead of elevating. Release CI is Windows and Linux.
 
 ```bash
-npx --yes ruleblast@1.0.2 diff HEAD~1
-npx --yes ruleblast@1.0.2 explain src/args.ts --from HEAD~1
-npx --yes ruleblast@1.0.2 case
+npx --yes ruleblast@1.3.0 diff HEAD~1
+npx --yes ruleblast@1.3.0 explain src/args.ts --from HEAD~1
+npx --yes ruleblast@1.3.0 case
 ```
 
 <details>
@@ -86,12 +86,12 @@ npx --yes ruleblast@1.0.2 case
 
 ```bash
 npm uninstall --global ruleblast
-npm install --global ruleblast@1.0.2
+npm install --global ruleblast@1.3.0
 npm uninstall --save-dev ruleblast
-npm install --save-dev --save-exact ruleblast@1.0.2
+npm install --save-dev --save-exact ruleblast@1.3.0
 npm cache verify
-npx --yes ruleblast@1.0.2 --help
-git clone --branch v1.0.2 --depth 1 https://github.com/Kpoiut/ruleblast.git
+npx --yes ruleblast@1.3.0 --help
+git clone --branch v1.3.0 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
 npm ci --ignore-scripts
 npm run build
@@ -110,9 +110,9 @@ The `1.0.1 → 1.0.2` registry upgrade was verified by the guarded [eight-cell r
 Packaged teaching receipt: [`27d52e2…`](https://github.com/Kpoiut/ruleblast/commit/27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8) → [`e420008…`](https://github.com/Kpoiut/ruleblast/commit/e420008a1c10c5c328e506247560117f4d40b855). 33 instruction-line edits. 106 of 106 stacks moved. Zero current split, partial, unknown, or indeterminate paths. [Canonical receipt](cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json) core digest `1e907a88ed648ebbd68b4f588c3bd09058ab7714e8f85a3f2d4a1c60e5a40938`.
 
 ```bash
-npx --yes ruleblast@1.0.2 case
-npx --yes ruleblast@1.0.2 case --json
-npx --yes ruleblast@1.0.2 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@1.3.0 case
+npx --yes ruleblast@1.3.0 case --json
+npx --yes ruleblast@1.3.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 <details>
@@ -141,7 +141,7 @@ Scope: 106 tracked paths · repository-only · resolver revision 1
 ## Explain one path
 
 ```bash
-npx --yes ruleblast@1.0.2 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@1.3.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 Historical reproduction (needs both commits checked out):
@@ -155,7 +155,7 @@ npx ruleblast@1.0.0 diff 27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8 --to e420008a1
 | In | Out |
 |---|---|
 | Git commit and tracked-worktree snapshots | untracked, ignored, user, managed, or session instructions |
-| Codex CLI and Claude Code CLI repository projections | editor, hosted, or similarly branded surfaces |
+| Codex CLI, Claude Code CLI, and opt-in Copilot CLI repository projections | editor, hosted, or similarly branded surfaces |
 | `scan`, `diff`, `explain`, and `case` | mutation, sync, generation, scoring, or auto-fix |
 | deterministic text and canonical JSON | network calls, model calls, telemetry, dashboard, or product UI |
 
@@ -170,11 +170,11 @@ Snapshot → evidence-pinned Codex/Claude projection → compare payloads → re
 The optional path is only a filesystem starting point for repository discovery. Add `--witness` when you need why-edges. Add `--receipt` when you need a pasteable card. Add `--reality github/copilot-cli@1` when you need that third documented surface. Default `--json` stays the two-profile canonical result.
 
 ```bash
-npx --yes ruleblast@1.0.2 .
-npx --yes ruleblast@1.0.2 packages/api/internal
-npx --yes ruleblast@1.0.2 diff HEAD~1
-npx --yes ruleblast@1.0.2 explain src/args.ts --from HEAD~1
-npx --yes ruleblast@1.0.2 diff HEAD~1 --json
+npx --yes ruleblast@1.3.0 .
+npx --yes ruleblast@1.3.0 packages/api/internal
+npx --yes ruleblast@1.3.0 diff HEAD~1
+npx --yes ruleblast@1.3.0 explain src/args.ts --from HEAD~1
+npx --yes ruleblast@1.3.0 diff HEAD~1 --json
 ```
 
 ## Contribute a Blast Case

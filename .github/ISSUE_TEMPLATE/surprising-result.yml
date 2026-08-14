@@ -12,7 +12,7 @@ body:
     id: command
     attributes:
       label: Exact command and version
-      placeholder: npx --yes ruleblast@1.0.2 diff HEAD~1 --color=never
+      placeholder: npx --yes ruleblast@1.3.0 diff HEAD~1 --color=never
     validations:
       required: true
   - type: textarea

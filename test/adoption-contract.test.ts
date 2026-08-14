@@ -96,7 +96,7 @@ describe("v1.3.0 adoption contract", () => {
   it("keeps the public onboarding on the verified case and product boundary", () => {
     const readme = read("README.md");
     expect(readme).toContain("## Run the verified case");
-    expect(readme).toContain("npx --yes ruleblast@1.0.2 case");
+    expect(readme).toContain("npx --yes ruleblast@1.3.0 case");
     expect(readme).not.toMatch(/ruleblast demo/iu);
     expect(readme).not.toContain("DEMO FIXTURE");
     expect(readme).not.toContain("remains conditional");
@@ -112,7 +112,7 @@ describe("v1.3.0 adoption contract", () => {
     const tagline = readme.indexOf("Git shows the <code>AGENTS.md</code>");
     const causalProof = readme.indexOf("assets/ruleblast-causal-proof.gif");
     const blast = readme.indexOf("206 tracked paths changed stack");
-    const teachingCase = readme.indexOf("npx --yes ruleblast@1.0.2 case");
+    const teachingCase = readme.indexOf("npx --yes ruleblast@1.3.0 case");
     const install = readme.indexOf("## Install");
     expect(tagline).toBeGreaterThan(-1);
     expect(causalProof).toBeGreaterThan(tagline);
