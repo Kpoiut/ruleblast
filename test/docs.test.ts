@@ -90,10 +90,10 @@ describe("README story contract", () => {
       /^<h1 align="center">RuleBlast — Git diff for invisible repository instructions<\/h1>\s/u,
     );
     expectOrdered(readme, [
+      "assets/ruleblast-hero.png",
       "actions/workflows/verify.yml/badge.svg",
       "img.shields.io/github/package-json/v/Kpoiut/ruleblast",
       "Git shows the <code>AGENTS.md</code>",
-      "assets/ruleblast-hero.png",
       "assets/ruleblast-causal-proof.gif",
       "npx --yes ruleblast@1.5.3 .",
       "## What Git missed",
@@ -162,10 +162,10 @@ describe("README story contract", () => {
   it("embeds the branding hero in the first fold without packaging it", () => {
     const asset = "assets/ruleblast-hero.png";
     expect(readme.indexOf(asset)).toBeGreaterThan(
-      readme.indexOf("Git shows the <code>AGENTS.md</code>"),
+      readme.indexOf("invisible repository instructions</h1>"),
     );
     expect(readme.indexOf(asset)).toBeLessThan(
-      readme.indexOf("assets/ruleblast-causal-proof.gif"),
+      readme.indexOf("actions/workflows/verify.yml/badge.svg"),
     );
     const bytes = readFileSync(join(repositoryRoot, asset));
     expect(bytes.subarray(1, 4).toString("ascii")).toBe("PNG");

@@ -1,6 +1,10 @@
 <h1 align="center">RuleBlast — Git diff for invisible repository instructions</h1>
 
 <p align="center">
+  <img src="assets/ruleblast-hero.png" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
+</p>
+
+<p align="center">
   <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
   <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v1.5.3"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="package version 1.5.3"></a>
   <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
@@ -10,10 +14,6 @@
 <p align="center">
   Git shows the <code>AGENTS.md</code> and <code>CLAUDE.md</code> edit. RuleBlast shows where that change lands.
 </p>
-
-<div align="center">
-  <img src="assets/ruleblast-hero.png" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
-</div>
 
 <p align="center">
   You changed 2 instruction lines.<br>

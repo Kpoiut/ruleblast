@@ -109,17 +109,19 @@ describe("v1.5.3 adoption contract", () => {
     expect(readme).toMatch(/mutation, sync, generation, scoring, or auto-fix/iu);
     expect(readme).toMatch(/network calls, model calls, telemetry, dashboard, or product UI/iu);
 
-    const tagline = readme.indexOf("Git shows the <code>AGENTS.md</code>");
+    const title = readme.indexOf("invisible repository instructions</h1>");
     const eyeHero = readme.indexOf("assets/ruleblast-hero.png");
+    const tagline = readme.indexOf("Git shows the <code>AGENTS.md</code>");
     const causalProof = readme.indexOf("assets/ruleblast-causal-proof.gif");
     const yourRepo = readme.indexOf("npx --yes ruleblast@1.5.3 .");
     const missed = readme.indexOf("## What Git missed");
     const proof = readme.indexOf("PROOF.md");
     const teachingCase = readme.indexOf("npx --yes ruleblast@1.5.3 case");
     const install = readme.indexOf("## Install");
-    expect(tagline).toBeGreaterThan(-1);
-    expect(eyeHero).toBeGreaterThan(tagline);
-    expect(causalProof).toBeGreaterThan(eyeHero);
+    expect(title).toBeGreaterThan(-1);
+    expect(eyeHero).toBeGreaterThan(title);
+    expect(tagline).toBeGreaterThan(eyeHero);
+    expect(causalProof).toBeGreaterThan(tagline);
     expect(yourRepo).toBeGreaterThan(causalProof);
     expect(missed).toBeGreaterThan(yourRepo);
     expect(proof).toBeGreaterThan(missed);
@@ -266,6 +268,7 @@ describe("v1.5.3 adoption contract", () => {
     );
     const install = readme.indexOf("## Install");
     expect(eye).toBeGreaterThan(-1);
+    expect(eye).toBeLessThan(readme.indexOf("actions/workflows/verify.yml/badge.svg"));
     expect(hero).toBeGreaterThan(eye);
     expect(cause).toBeGreaterThan(hero);
     expect(blast).toBeGreaterThan(cause);
@@ -340,7 +343,7 @@ describe("v1.5.3 adoption contract", () => {
       "RULEBLAST_POSTER=Git shows the edit; complete held frames only",
     );
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "55bcfcd318421d2c1cc032d29e9c0ec75fe56f0c77c05b2a3fa3343e94d13b8a",
+      "76d07bda5deb53bcb0281e84a63ac1670cb69e9be48b6ae079538cd1119f53f7",
     );
 
     const descriptor = readJson<PackageDescriptor>("package.json");
