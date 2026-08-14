@@ -2,6 +2,11 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 1.4.0 — SHIPPED TO MAIN
+
+- Visual benchmark on the README: the sealed 2→206 Codex/Claude split next to the packed 10,000-path, p95 < 2,000 ms budget. It does not measure model quality.
+- GitHub community tabs keep a human first sentence so Code of conduct, Contributing, and Security read as a product, not a form dump.
+
 ## 1.3.1 — SHIPPED TO MAIN
 
 - Longer causal-proof README loop: 28 held frames, 1,960 centiseconds, consequence opener, and a your-repo close. Same 2→206 evidence. No fifth action and no new surface.

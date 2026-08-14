@@ -25,13 +25,13 @@ interface PackageLock {
   readonly packages: Readonly<Record<string, { readonly version?: string }>>;
 }
 
-describe("v1.3.1 adoption contract", () => {
+describe("v1.4.0 adoption contract", () => {
   it("locks the exact package identity and supported discovery metadata", () => {
     const descriptor = readJson<PackageDescriptor>("package.json");
     const lock = readJson<PackageLock>("package-lock.json");
 
     expect(descriptor).toMatchObject({
-      version: "1.3.1",
+      version: "1.4.0",
       description:
         "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex and Claude Code projections already differ.",
       repository: {
@@ -57,8 +57,8 @@ describe("v1.3.1 adoption contract", () => {
       "cli",
       "developer-tools",
     ]);
-    expect(lock.version).toBe("1.3.1");
-    expect(lock.packages[""]?.version).toBe("1.3.1");
+    expect(lock.version).toBe("1.4.0");
+    expect(lock.packages[""]?.version).toBe("1.4.0");
 
     const discovery = `${descriptor.description}\n${descriptor.keywords.join("\n")}`;
     expect(discovery).not.toMatch(
@@ -176,9 +176,9 @@ describe("v1.3.1 adoption contract", () => {
     expect(conduct).toMatch(/hard evidence/iu);
     expect(conduct).toMatch(/protect/iu);
 
-    const contributingLead = read("CONTRIBUTING.md").slice(0, 600);
+    const contributingLead = read("CONTRIBUTING.md").slice(0, 700);
     expect(contributingLead).toContain("v1.3.0");
-    expect(contributingLead).toContain("1.3.1");
+    expect(contributingLead).toContain("1.4.0");
     expect(contributingLead).toMatch(/you do not need a 25-commit/iu);
     expect(contributingLead).toMatch(/surprising result/iu);
 
@@ -346,5 +346,31 @@ describe("v1.3.1 adoption contract", () => {
     expect(current).toMatch(/causal proof/iu);
     expect(current).toContain("2 instruction-line edits");
     expect(current).toContain("206 tracked paths");
+  });
+
+  it("embeds an explainable visual benchmark without packaging it", () => {
+    const readme = read("README.md");
+    const heading = readme.indexOf("## Visual benchmark");
+    const asset = "assets/ruleblast-visual-benchmark.png";
+    const image = readme.indexOf(asset);
+    const install = readme.indexOf("## Install");
+    expect(heading).toBeGreaterThan(readme.indexOf("npx --yes ruleblast@1.3.0 ."));
+    expect(image).toBeGreaterThan(heading);
+    expect(install).toBeGreaterThan(image);
+    expect(readme).toContain("10,000 nested paths");
+    expect(readme).toContain("p95 < 2,000 ms");
+    expect(readme).toContain("npm run benchmark");
+    expect(readme).toMatch(/does not measure model quality/iu);
+
+    const bytes = readFileSync(join(repositoryRoot, asset));
+    expect(bytes.subarray(1, 4).toString("ascii")).toBe("PNG");
+    expect(bytes.readUInt32BE(16)).toBe(1_200);
+    expect(bytes.readUInt32BE(20)).toBe(675);
+    expect(statSync(join(repositoryRoot, asset)).size).toBeLessThanOrEqual(1_200_000);
+    expect(createHash("sha256").update(bytes).digest("hex")).toBe(
+      "9d1e7ac511f751ec4620c8f5fe781b0ac50e364b9a5210f051101d4c2fa12fbb",
+    );
+    const descriptor = readJson<PackageDescriptor>("package.json");
+    expect(descriptor.files).not.toContain(asset);
   });
 });

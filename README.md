@@ -45,6 +45,22 @@ See that second diff on your repository first:
 npx --yes ruleblast@1.3.0 .
 ```
 
+## Visual benchmark
+
+<p align="center">
+  <img src="assets/ruleblast-visual-benchmark.png" width="1200" alt="RuleBlast visual benchmark: Codex 206 path stacks moved, Claude Code 0, 4,476 unchanged, 10,000-path budget under 2,000 ms">
+</p>
+
+Same sealed `openai/codex` proof. Same packed 10,000-path budget. It does not measure model quality.
+
+| What to look at | Number | How to explain it |
+|---|---:|---|
+| Instruction-line edits Git can see | 2 | The first diff |
+| Codex path stacks moved | 206 | The documented Codex projection changed |
+| Claude Code path stacks moved | 0 | The same commit, the other reality |
+| Unchanged tracked paths | 4,476 | The blast was local, not the whole tree |
+| Packed performance budget | 10,000 nested paths, p95 < 2,000 ms | `npm run benchmark` |
+
 Pinned public [`openai/codex`](https://github.com/openai/codex/compare/8fcf2ad931b90589dd29a571f367e3185d26bbe0...f0f483e8b2a2630bf8dfa5f8451e81eba20def6c) refs [`8fcf2ad…`](https://github.com/openai/codex/commit/8fcf2ad931b90589dd29a571f367e3185d26bbe0) → [`f0f483e…`](https://github.com/openai/codex/commit/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c). Profiles `openai/codex-cli@1` and `anthropic/claude-code-cli@1` were already `DIFFERENT → DIFFERENT`; no path newly split across profiles. One exact cause: [`codex-rs/tui/src/bottom_pane/action_required_title.rs`](https://github.com/openai/codex/blob/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c/codex-rs/tui/src/bottom_pane/action_required_title.rs) under nested [`AGENTS.md`](https://github.com/openai/codex/blob/8fcf2ad931b90589dd29a571f367e3185d26bbe0/codex-rs/tui/src/bottom_pane/AGENTS.md). zero partial, zero unknown, and zero indeterminate. Not a claim about model compliance or response behavior.
 
 ```bash
@@ -222,3 +238,5 @@ Two agents share this repo.
 How many rule realities are still hiding in it…?
 
 Read [ROADMAP.md](ROADMAP.md). Apache-2.0. [CHANGELOG.md](CHANGELOG.md).
+
+[Code of conduct](CODE_OF_CONDUCT.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)

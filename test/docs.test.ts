@@ -97,6 +97,8 @@ describe("README story contract", () => {
       "2 instruction-line edits",
       "206 tracked paths changed stack",
       "npx --yes ruleblast@1.3.0 .",
+      "## Visual benchmark",
+      "assets/ruleblast-visual-benchmark.png",
       "codex-rs/tui/src/bottom_pane/action_required_title.rs",
       "npx --yes ruleblast@1.3.0 case",
       "## Install",

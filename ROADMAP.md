@@ -147,6 +147,12 @@ A presentation patch on the released `v1.3.0` CLI. The README causal-proof loop 
 
 This tree is `1.3.1`. Latest independently verified public npm distribution remains `1.3.0`.
 
+## **SHIPPED TO MAIN** — `v1.4.0`: Visual Benchmark
+
+One explainable scoreboard on the README. It restates the sealed 2→206 public proof beside the packed 10,000-path budget (p95 < 2,000 ms). It does not measure model quality, invent a SAME→DIFFERENT split, or add a fifth action.
+
+This tree is `1.4.0`. Latest independently verified public npm distribution remains `1.3.0`.
+
 ## **NEXT** — `v2.0.0`: Reality Packs
 
 The target is a finite, reviewed, declarative profile format—not an executable plugin system.
