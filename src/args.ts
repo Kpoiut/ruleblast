@@ -16,10 +16,13 @@ export interface WorktreeSelector {
 
 export type SnapshotSelector = GitSelector | WorktreeSelector;
 
+export const COPILOT_REALITY = "github/copilot-cli@1";
+
 interface CommonArgs {
   readonly output: CliOutput;
   readonly witness: boolean;
   readonly receipt: boolean;
+  readonly reality: string | null;
 }
 
 export interface ScanArgs extends CommonArgs {
@@ -265,8 +268,29 @@ function onlyPositionals(parsed: ParsedTokens, maximum: number): void {
   }
 }
 
+function parsedReality(
+  parsed: ParsedTokens,
+  allow: boolean,
+): string | null {
+  const value = parsed.options.get("--reality") ?? null;
+  if (value === null) return null;
+  if (!allow) {
+    return usage(
+      "OPTION_CONFLICT",
+      "--reality cannot be used with the packaged case; that receipt remains two-profile",
+    );
+  }
+  if (value !== COPILOT_REALITY) {
+    return usage(
+      "OPTION_CONFLICT",
+      `--reality must be ${COPILOT_REALITY}; Copilot VS Code and hosted Copilot are distinct unsupported surfaces`,
+    );
+  }
+  return value;
+}
+
 function parseScan(tokens: readonly string[]): ScanArgs {
-  const parsed = parseTokens(tokens, new Set());
+  const parsed = parseTokens(tokens, new Set(["--reality"]));
   onlyPositionals(parsed, 1);
   return Object.freeze({
     action: "scan",
@@ -274,11 +298,12 @@ function parseScan(tokens: readonly string[]): ScanArgs {
     output: parsed.output,
     witness: parsed.witness,
     receipt: parsed.receipt,
+    reality: parsedReality(parsed, true),
   });
 }
 
 function parseDiff(tokens: readonly string[]): DiffArgs {
-  const parsed = parseTokens(tokens, new Set(["--to"]));
+  const parsed = parseTokens(tokens, new Set(["--to", "--reality"]));
   onlyPositionals(parsed, 1);
   const base = gitSelector(parsed.positionals[0] ?? "HEAD", "Base ref");
   const target = targetSelector(parsed.options.get("--to") ?? "WORKTREE");
@@ -288,11 +313,12 @@ function parseDiff(tokens: readonly string[]): DiffArgs {
   return Object.freeze({
     action: "diff", base, target, output: parsed.output,
     witness: parsed.witness, receipt: parsed.receipt,
+    reality: parsedReality(parsed, true),
   });
 }
 
 function parseExplain(tokens: readonly string[]): ExplainArgs {
-  const parsed = parseTokens(tokens, new Set(["--from", "--to"]));
+  const parsed = parseTokens(tokens, new Set(["--from", "--to", "--reality"]));
   onlyPositionals(parsed, 1);
   const path = repositoryPath(parsed.positionals[0]);
   const fromValue = parsed.options.get("--from");
@@ -304,11 +330,12 @@ function parseExplain(tokens: readonly string[]): ExplainArgs {
   return Object.freeze({
     action: "explain", path, from, target, output: parsed.output,
     witness: parsed.witness, receipt: parsed.receipt,
+    reality: parsedReality(parsed, true),
   });
 }
 
 function parseCase(tokens: readonly string[]): CaseArgs {
-  const parsed = parseTokens(tokens, new Set(["--explain"]));
+  const parsed = parseTokens(tokens, new Set(["--explain", "--reality"]));
   onlyPositionals(parsed, 0);
   const explainValue = parsed.options.get("--explain");
   return Object.freeze({
@@ -317,6 +344,7 @@ function parseCase(tokens: readonly string[]): CaseArgs {
     output: parsed.output,
     witness: parsed.witness,
     receipt: parsed.receipt,
+    reality: parsedReality(parsed, false),
   });
 }
 

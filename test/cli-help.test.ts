@@ -27,7 +27,8 @@ describe("route catalog", () => {
     expect(help).toContain("not \"every path COMPLETE\"");
     expect(help).toContain("--witness");
     expect(help).toContain("--receipt");
-    expect(help).not.toContain("--reality");
+    expect(help).toContain("--reality");
+    expect(help).toContain("github/copilot-cli@1");
   });
 });
 

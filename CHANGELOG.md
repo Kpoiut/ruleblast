@@ -2,7 +2,11 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## Unreleased — 1.2.0 candidate
+## Unreleased — 1.3.0 candidate
+
+- Opt-in `--reality github/copilot-cli@1` adds one evidence-pinned Copilot CLI surface. Default `--json` remains the two-profile schema-1 result. Copilot VS Code and hosted Copilot stay unsupported.
+
+## 1.2.0 — SHIPPED TO MAIN
 
 - Opt-in `--receipt` prints a pasteable proof card and an `RBCTX1` identity derived from existing projection bytes. Default `--json` remains the canonical schema-1 result.
 

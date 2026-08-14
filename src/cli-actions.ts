@@ -22,6 +22,8 @@ import type {
   ShellDialect,
 } from "./render-text.js";
 import type { RepositorySnapshot } from "./snapshot.js";
+import { copilotProfile, GITHUB_COPILOT_CLI_PROFILE_ID } from "./profiles/copilot.js";
+import type { ProfileDefinition } from "./profiles/profile.js";
 
 function noDefensibleResult(
   result: CurrentRuleBlastResult | DiffRuleBlastResult,
@@ -68,6 +70,17 @@ function presentationExtras(args: {
   readonly receipt: boolean;
 }): { witness: boolean; receipt: boolean } {
   return { witness: args.witness, receipt: args.receipt };
+}
+
+function analysisProfiles(
+  args: { readonly reality: string | null },
+  dependencies: CliDependencies,
+): readonly ProfileDefinition[] {
+  if (args.reality === null) return dependencies.profiles;
+  if (dependencies.profiles.some((profile) => profile.id === GITHUB_COPILOT_CLI_PROFILE_ID)) {
+    return dependencies.profiles;
+  }
+  return Object.freeze([...dependencies.profiles, copilotProfile]);
 }
 
 function diffTextContext(
@@ -159,7 +172,7 @@ export async function runAnalysisAction(
     const snapshot = await dependencies.openTrackedWorktree(root);
     const result = await dependencies.analyzeCurrent({
       snapshot,
-      profiles: dependencies.profiles,
+      profiles: analysisProfiles(args, dependencies),
     });
     present(result, args.output, io, {
       currentLabel: "WORKTREE",
@@ -175,7 +188,7 @@ export async function runAnalysisAction(
     const result = await dependencies.analyzeDiff({
       before,
       after,
-      profiles: dependencies.profiles,
+      profiles: analysisProfiles(args, dependencies),
     });
     present(
       result,
@@ -192,7 +205,7 @@ export async function runAnalysisAction(
   if (args.from === null) {
     const result = await dependencies.analyzeCurrent({
       snapshot: after,
-      profiles: dependencies.profiles,
+      profiles: analysisProfiles(args, dependencies),
     });
     const selected = selectedPath(result.paths, args.path);
     present(currentExplain(result, args.path), args.output, io, {
@@ -207,7 +220,7 @@ export async function runAnalysisAction(
   const result = await dependencies.analyzeDiff({
     before,
     after,
-    profiles: dependencies.profiles,
+    profiles: analysisProfiles(args, dependencies),
   });
   const selected = selectedPath(result.paths, args.path);
   present(

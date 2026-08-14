@@ -3,7 +3,7 @@ import { CliUsageError, parseArgs } from "../src/args.js";
 
 const text = { kind: "text", color: "auto" } as const;
 const json = { kind: "json", color: "auto" } as const;
-const flags = { witness: false, receipt: false } as const;
+const flags = { witness: false, receipt: false, reality: null } as const;
 
 describe("parseArgs", () => {
   it.each([
@@ -71,6 +71,7 @@ describe("parseArgs", () => {
     }],
     [[".", "--witness"], {
       action: "scan", startPath: ".", output: text, witness: true, receipt: false,
+      reality: null,
     }],
     [["diff", "--witness", "--json"], {
       action: "diff",
@@ -79,9 +80,14 @@ describe("parseArgs", () => {
       output: json,
       witness: true,
       receipt: false,
+      reality: null,
     }],
     [["case", "--receipt"], {
       action: "case", explainPath: null, output: text, witness: false, receipt: true,
+      reality: null,
+    }],
+    [[".", "--reality", "github/copilot-cli@1"], {
+      action: "scan", startPath: ".", output: text, ...flags, reality: "github/copilot-cli@1",
     }],
     [["--help"], { action: "help" }],
     [["--version"], { action: "version" }],
@@ -118,6 +124,8 @@ describe("parseArgs", () => {
     [["diff", "--json", "--json"], "DUPLICATE_OPTION"],
     [[".", "--witness", "--witness"], "DUPLICATE_OPTION"],
     [[".", "--receipt", "--receipt"], "DUPLICATE_OPTION"],
+    [[".", "--reality", "github/copilot-vscode@1"], "OPTION_CONFLICT"],
+    [["case", "--reality", "github/copilot-cli@1"], "OPTION_CONFLICT"],
     [["diff", "--to", "one", "--to", "two"], "DUPLICATE_OPTION"],
     [["diff", "--json", "--color=always"], "OPTION_CONFLICT"],
     [["scan", "--color=rainbow"], "OPTION_CONFLICT"],

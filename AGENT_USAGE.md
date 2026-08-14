@@ -13,7 +13,7 @@ OpenAI’s documented Codex skill locations do not include `node_modules`; repos
 | Why this path | `ruleblast explain src/args.ts --json` |
 | Zero-clone teaching receipt | `ruleblast case --color=never` |
 
-`[path]` only starts Git discovery. There is no `ruleblast scan` subcommand. `diff` has no `--from`. `--witness` prints why-edges. `--receipt` prints a pasteable proof card. Default `--json` remains the canonical result.
+`[path]` only starts Git discovery. There is no `ruleblast scan` subcommand. `diff` has no `--from`. `--witness` prints why-edges. `--receipt` prints a pasteable proof card. `--reality github/copilot-cli@1` adds that one documented surface. Default `--json` remains the two-profile canonical result.
 
 `case` is the 33→106 `kpoiut/ruleblast` teaching receipt. It is not the openai/codex 2→206 proof.
 

@@ -110,7 +110,7 @@ Semantic `--help`, packaged `AGENT_USAGE.md`, and a shorter GitHub-first README.
 
 Opt-in `--witness` prints why-edges derived from existing projection sources. Default canonical JSON is unchanged.
 
-## **IN BUILD** — `v1.2.0`: Blast Receipts
+## **SHIPPED TO MAIN** — `v1.2.0`: Blast Receipts
 
 The current canonical JSON Blast Case is an evidence record for one immutable comparison. The `v1.2.0` target is a portable, user-facing Markdown receipt derived only from `RuleBlastResult`.
 
@@ -125,9 +125,11 @@ It must not recalculate impact, fetch a web page, embed a generated image, intro
 
 > The result can travel. What happens when a third agent reads the same repo?
 
-## **NEXT** — `v1.3.0`: Third Documented Reality
+## **IN BUILD** — `v1.3.0`: Third Documented Reality
 
-The target is exactly one additional surface, not a generic integration wave. Admission requires all of the following:
+`--reality github/copilot-cli@1` adds one evidence-pinned Copilot CLI surface. Default two-profile bytes stay put. Copilot VS Code and hosted Copilot remain distinct unsupported surfaces.
+
+The target remains exactly one additional surface, not a generic integration wave. Admission required all of the following:
 
 - official, versionable evidence for discovery, precedence, applicability, and limits;
 - positive, negative, ordering, ambiguity, and unknown fixtures;
@@ -137,7 +139,7 @@ The target is exactly one additional surface, not a generic integration wave. Ad
 
 A vendor's CLI, editor extension, and hosted agent count as distinct surfaces whenever their loading semantics differ. Similar branding is not evidence of equivalent reality.
 
-## **HORIZON** — `v2.0.0`: Reality Packs
+## **NEXT** — `v2.0.0`: Reality Packs
 
 The target is a finite, reviewed, declarative profile format—not an executable plugin system.
 
@@ -173,7 +175,7 @@ These are unresolved questions, not current support or promised work:
 - Can a licensed corpus of Blast Cases cover monorepos, nested instructions, imports, exclusions, and uncertain order without publishing sensitive content?
 - How many documented rule realities are genuinely distinct once equivalent projections are clustered by evidence rather than brand?
 
-Candidate examples for investigation include Copilot CLI, Copilot VS Code, Gemini CLI, and Cursor. These names are examples only; RuleBlast does not currently support them, and none enters the roadmap without passing the same evidence gate. CLI, editor, and hosted modes remain distinct surfaces whenever their documented loading semantics differ.
+`--reality github/copilot-cli@1` is the one admitted third surface. Copilot VS Code, hosted Copilot, Gemini CLI, and Cursor remain examples only. CLI, editor, and hosted modes remain distinct surfaces whenever their documented loading semantics differ.
 
 ## Permanent scope firewall
 

@@ -150,8 +150,8 @@ describe("--receipt parser", () => {
       action: "diff", receipt: true, witness: true,
     });
     expect(() => parseArgs([".", "--receipt", "--receipt"])).toThrow(CliUsageError);
-    expect(() => parseArgs([".", "--reality", "github/copilot-cli@1"])).toThrow(
-      /Unknown option/u,
+    expect(() => parseArgs([".", "--reality", "github/copilot-vscode@1"])).toThrow(
+      CliUsageError,
     );
   });
 });

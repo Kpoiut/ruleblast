@@ -2,7 +2,7 @@
 
 This document is the public behavior and result contract for RuleBlast v1. It defines what a result means, which bytes are in scope, how uncertainty survives analysis, and what the product may claim. Implementation details may change while this contract and the canonical JSON remain compatible.
 
-The v1 package version is `1.2.0`. Latest verified public npm remains `1.0.2` until a later version is published. Registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
+The v1 package version is `1.3.0`. Latest verified public npm remains `1.0.2` until a later version is published. Registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
 
 ## Product claims
 
@@ -21,7 +21,7 @@ It answers four bounded questions:
 
 The optional scan `[path]` is a filesystem starting point for finding the repository; it does not select or filter one tracked result path. `diff` defaults to `HEAD` versus the tracked `WORKTREE`; `--to <ref|WORKTREE>` selects its after endpoint. `explain --from <ref>` selects diff explanation, while `--to <ref|WORKTREE>` selects the target endpoint. The `explain` target is a repository-relative Git-tracked path.
 
-All four actions accept `--json` or deterministic text. Text accepts `--color=auto|always|never`; `NO_COLOR` disables color even when color is requested. `--witness` is opt-in: text appends why-edges derived from existing projection sources, and `--json --witness` wraps the unchanged canonical result in a `ruleblast.witness.v1` envelope. `--receipt` is opt-in: text prints a pasteable proof card derived only from the existing result, and `--json --receipt` emits an `RBREC1` card with an `RBCTX1` identity. Default `--json` remains schema-1 two-profile result bytes with no envelope. `--help` prints usage and `--version` prints package metadata. JSON contains canonical field names and no color or presentation aliases.
+All four actions accept `--json` or deterministic text. Text accepts `--color=auto|always|never`; `NO_COLOR` disables color even when color is requested. `--witness` is opt-in: text appends why-edges derived from existing projection sources, and `--json --witness` wraps the unchanged canonical result in a `ruleblast.witness.v1` envelope. `--receipt` is opt-in: text prints a pasteable proof card derived only from the existing result, and `--json --receipt` emits an `RBREC1` card with an `RBCTX1` identity. `--reality github/copilot-cli@1` is opt-in and adds that one documented Copilot CLI surface; Copilot VS Code and hosted Copilot remain distinct unsupported surfaces. Default `--json` remains schema-1 two-profile result bytes with no envelope. `--help` prints usage and `--version` prints package metadata. JSON contains canonical field names and no color or presentation aliases.
 
 Exit status is part of the CLI contract:
 
