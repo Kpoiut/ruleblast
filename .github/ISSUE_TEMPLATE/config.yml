@@ -5,4 +5,4 @@ contact_links:
     about: Private reporting is enabled; use this route instead of posting sensitive details publicly.
   - name: Contribution and Blast Case guide
     url: https://github.com/Kpoiut/ruleblast/blob/main/CONTRIBUTING.md
-    about: Reduce a projection problem to immutable refs, canonical output, and one surprise.
+    about: Start with a surprising result. Canonical JSON is only for promoting a Blast Case.

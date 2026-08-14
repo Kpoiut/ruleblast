@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  Git shows the <code>AGENTS.md</code> and <code>CLAUDE.md</code> edit. RuleBlast shows every path that inherits it—and where pinned Codex and Claude Code projections already differ.<br>
+  Git shows the <code>AGENTS.md</code> and <code>CLAUDE.md</code> edit. RuleBlast shows the second diff: every tracked path that inherits it.<br>
   <sub>Local · read-only · deterministic · no network or model call</sub>
 </p>
 
@@ -20,11 +20,11 @@
   <img src="assets/ruleblast-causal-proof.gif" width="1200" alt="A verified RuleBlast causal proof: two instruction-line edits change 206 projected path stacks, then one affected path is traced to its exact source">
 </p>
 
-<p align="center"><strong>2 instruction-line edits → 206 tracked paths changed stack.</strong></p>
+<p align="center"><strong>2 instruction-line edits. Codex: 206 path stacks moved. Claude Code: 0.</strong></p>
 
 ## Two lines. 206 path stacks. One exact cause.
 
-One Git tree. Two documented instruction realities. Delete two instruction lines. 206 Codex path stacks move. Claude Code: zero.
+One Git tree. Two documented instruction realities. Delete two instruction lines. **Codex changed: 206 · Claude Code changed: 0.** 206 tracked paths changed stack. That is the shock. Profiles were already `DIFFERENT → DIFFERENT`; no path newly split. We do not invent a split.
 
 | Git records | RuleBlast reveals |
 |---|---|
@@ -177,9 +177,26 @@ npx --yes ruleblast@1.3.0 explain src/args.ts --from HEAD~1
 npx --yes ruleblast@1.3.0 diff HEAD~1 --json
 ```
 
+## Give your agent RuleBlast
+
+Codex discovers repository skills from `.agents/skills`, not from `node_modules`. Copy [`.agents/skills/ruleblast/SKILL.md`](.agents/skills/ruleblast/SKILL.md) into your repo. Then an agent that hits an `AGENTS.md` / `CLAUDE.md` blast can run `npx --yes ruleblast@1.3.0` without you re-explaining the four routes.
+
+## Show a blast on a pull request
+
+Optional. Not a hosted product. The runner only executes the published CLI.
+
+```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+- uses: Kpoiut/ruleblast@main
+```
+
+The action posts a `--receipt` comment for `base.sha → head.sha`. Pin a commit instead of `@main` after you trust the workflow.
+
 ## Contribute a Blast Case
 
-Fast lane: [surprising result](.github/ISSUE_TEMPLATE/surprising-result.yml) — command, observed text, one sentence.
+Fast lane: [surprising result](https://github.com/Kpoiut/ruleblast/issues/new?template=surprising-result.yml) — command, observed text, one sentence. No canonical JSON.
 
 Promoted Blast Case: official evidence, retrieval date, manifests, expected JSON. The 25-commit pilot is only for packaging `case`, not for a first PR. [CONTRIBUTING.md](CONTRIBUTING.md).
 

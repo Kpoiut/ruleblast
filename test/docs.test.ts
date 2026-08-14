@@ -104,6 +104,8 @@ describe("README story contract", () => {
       "## Scope",
       "## How it works",
       "## Examples",
+      "## Give your agent RuleBlast",
+      "## Show a blast on a pull request",
       "## Contribute a Blast Case",
       "## Roadmap",
     ]);

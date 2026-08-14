@@ -1,6 +1,6 @@
 # RuleBlast repository instructions
 
-RuleBlast is a small, local, read-only debugger for repository instruction projection. Keep every change inside the public boundary in [CONTRACT.md](CONTRACT.md) and the active maturity gate in [ROADMAP.md](ROADMAP.md).
+RuleBlast is a small, local, read-only debugger for repository instruction projection. Keep every change inside the public boundary in [CONTRACT.md](CONTRACT.md) and the active maturity gate in [ROADMAP.md](ROADMAP.md). Agents working in this checkout: [`.agents/skills/ruleblast/SKILL.md`](.agents/skills/ruleblast/SKILL.md).
 
 ## Evidence before confidence
 

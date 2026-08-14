@@ -2,6 +2,10 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## Unreleased — repository only after v1.3.0
+
+- Repository skill at `.agents/skills/ruleblast` and an optional composite Action that comments a published-CLI `--receipt` on pull requests. Not a fifth CLI action and not a hosted product.
+
 ## 1.3.0 — RELEASED
 
 ### Changed
