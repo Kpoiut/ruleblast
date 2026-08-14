@@ -22,7 +22,7 @@ A new feature may merge only when it answers YES to at least one question and st
 2. Does it make the blast radius easier to explain or prove?
 3. Does it make the blast radius more useful in a Git workflow without creating a second product?
 
-Gemini CLI, Cursor, dashboards, linters, fixers, MCP servers, and generic plugin APIs currently fail this test. Source-centric attribution passed (2 and 3).
+Cursor editor semantics, dashboards, linters, fixers, MCP servers, and generic plugin APIs currently fail this test. `google/gemini-cli@1` passed (1) as the final bundled reality. A VS Code-compatible companion may pass (2) later in this 1.6 line only as a renderer of the same canonical result.
 
 ## **SHIPPED TO MAIN** — Ground-truth core
 
@@ -213,6 +213,20 @@ The packaged `case` command discovers the single promoted receipt, binds `{owner
 
 This tree is `1.5.3`. Latest independently verified public npm distribution remains `1.5.1`.
 
+## **IN BUILD** — `v1.6.0`: Fourth Documented Reality
+
+The last v1 engine dimension. `--reality google/gemini-cli@1` adds one evidence-pinned Gemini CLI repository surface. Default Codex + Claude canonical bytes stay put. Gemini Code Assist and hosted Gemini remain distinct unsupported surfaces.
+
+This release also introduces the compile-time profile catalog, the analysis-authority facade, a shared explain presentation model, and semantic conformance bytes for the default two profiles. It does not add a fifth action, a host companion, `--reality all`, or a fifth bundled reality.
+
+Technical admission is evidence + fixtures + conformance. A public featured Blast Case is a marketing gate, not a semantics gate.
+
+This tree is `1.6.0`. Latest independently verified public npm distribution remains `1.5.1`.
+
+## **NEXT** — `v1.6.1`: Canonical Companion
+
+One host class: a read-only VS Code-compatible companion that imports the application facade, renders the shared explain model, and must produce byte-identical canonical JSON. It is not a second engine. Cursor and Windsurf are compatible hosts only after acceptance tests. They are not modeled realities.
+
 ## **NEXT** — `v2.0.0`: Reality Packs
 
 The target is a finite, reviewed, declarative profile format—not an executable plugin system.
@@ -249,20 +263,21 @@ These are unresolved questions, not current support or promised work:
 - Can a licensed corpus of Blast Cases cover monorepos, nested instructions, imports, exclusions, and uncertain order without publishing sensitive content?
 - How many documented rule realities are genuinely distinct once equivalent projections are clustered by evidence rather than brand?
 
-`--reality github/copilot-cli@1` is the one admitted third surface. Copilot VS Code, hosted Copilot, Gemini CLI, and Cursor remain examples only. CLI, editor, and hosted modes remain distinct surfaces whenever their documented loading semantics differ.
+`--reality github/copilot-cli@1` and `--reality google/gemini-cli@1` are the admitted opt-in surfaces. Copilot VS Code, hosted Copilot, Gemini Code Assist, and Cursor editor semantics remain examples only. CLI, editor, and hosted modes remain distinct surfaces whenever their documented loading semantics differ. A host that can run RuleBlast is not thereby MODELED.
 
 ## Permanent scope firewall
 
 Across every stage, RuleBlast remains:
 
-- one npm package and four public actions;
+- one analysis npm package and four public actions;
 - local, read-only, deterministic, and text-first;
-- free of a hosted service, dashboard, product UI, model call, telemetry, auto-fix, and repository mutation;
+- free of a hosted service, dashboard, second analysis engine, model call, telemetry, auto-fix, and repository mutation;
 - free of a CI/CD product, security scanner, agent framework, and universal configuration registry;
 - capped at three runtime dependencies unless removing the cap is supported by measured, reviewable evidence;
-- capped at three bundled profiles before the Reality Pack boundary is proven.
+- capped at four bundled realities; no fifth before Reality Packs;
+- at most two host classes: the terminal reference host and one VS Code-compatible companion renderer.
 
-Each minor release may add exactly one product dimension. A proposal that needs a fifth action, arbitrary executable extension, hidden network access, or unrelated platform is a different project.
+The 1.6 line admits one product dimension per release: 1.6.0 is the fourth reality, 1.6.1 is the companion host. A proposal that needs a fifth action, arbitrary executable extension, hidden network access, or host-specific resolver is a different project.
 
 ## Admission gate for a new reality
 

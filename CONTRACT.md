@@ -2,11 +2,11 @@
 
 This document is the public behavior and result contract for RuleBlast v1. It defines what a result means, which bytes are in scope, how uncertainty survives analysis, and what the product may claim. Implementation details may change while this contract and the canonical JSON remain compatible.
 
-The v1 package version is `1.5.3`. An authorized distribution binds it to signed source tag `v1.5.3`; registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
+The v1 package version is `1.6.0`. An authorized distribution binds it to signed source tag `v1.6.0`; registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
 
 ## Product claims
 
-RuleBlast is a local, read-only, Git-native debugger for repository instruction projection. Given the same supported snapshot bytes, selected profiles, projection context, and resolver revision, it produces the same canonical core result.
+RuleBlast is a local, read-only, Git-native debugger for repository instruction projection. The canonical analysis engine is the authority. The CLI is the reference host. A later VS Code-compatible companion may only render and invoke the same four actions. Given the same supported snapshot bytes, selected profiles, projection context, and resolver revision, every host produces the same canonical core result.
 
 It answers four bounded questions:
 
@@ -21,7 +21,7 @@ It answers four bounded questions:
 
 The optional scan `[path]` is a filesystem starting point for finding the repository; it does not select or filter one tracked result path. `diff` defaults to `HEAD` versus the tracked `WORKTREE`; `--to <ref|WORKTREE>` selects its after endpoint. `explain --from <ref>` selects diff explanation, while `--to <ref|WORKTREE>` selects the target endpoint. The `explain` target is a repository-relative Git-tracked path.
 
-All four actions accept `--json` or deterministic text. Text accepts `--color=auto|always|never`; `NO_COLOR` disables color even when color is requested. `--witness` is opt-in: text appends why-edges derived from existing projection sources, and `--json --witness` wraps the unchanged canonical result in a `ruleblast.witness.v1` envelope. `--receipt` is opt-in: text prints a compact scoreboard box derived from the existing result plus the user-owned agent-allow state, and `--json --receipt` emits an `RBREC1` card with an `RBCTX1` identity. Agent-allow is `yes` only when the user set `RULEBLAST_AGENT_ALLOW` or created `.ruleblast-allow`; RuleBlast never writes that file and does not record live agent tool calls. `--reality github/copilot-cli@1` is opt-in and adds that one documented Copilot CLI surface; Copilot VS Code and hosted Copilot remain distinct unsupported surfaces. Default `--json` remains schema-1 two-profile result bytes with no envelope. `--help` prints usage and `--version` prints package metadata. JSON contains canonical field names and no color or presentation aliases.
+All four actions accept `--json` or deterministic text. Text accepts `--color=auto|always|never`; `NO_COLOR` disables color even when color is requested. `--witness` is opt-in: text appends why-edges derived from existing projection sources, and `--json --witness` wraps the unchanged canonical result in a `ruleblast.witness.v1` envelope. `--receipt` is opt-in: text prints a compact scoreboard box derived from the existing result plus the user-owned agent-allow state, and `--json --receipt` emits an `RBREC1` card with an `RBCTX1` identity. Agent-allow is `yes` only when the user set `RULEBLAST_AGENT_ALLOW` or created `.ruleblast-allow`; RuleBlast never writes that file and does not record live agent tool calls. `--reality github/copilot-cli@1` or `--reality google/gemini-cli@1` is opt-in and adds that one documented surface. At most one extra reality is selected per invocation. Copilot VS Code, hosted Copilot, Gemini Code Assist, and Cursor editor semantics remain distinct unsupported surfaces. Default `--json` remains schema-1 two-profile result bytes with no envelope. A host is not a reality: running RuleBlast inside VS Code or Cursor does not model `cursor/editor@1`. `--help` prints usage and `--version` prints package metadata. JSON contains canonical field names and no color or presentation aliases.
 
 Exit status is part of the CLI contract:
 
@@ -36,7 +36,17 @@ Exit status is part of the CLI contract:
 
 RuleBlast does not observe or predict private model state, compliance, response quality, or downstream behavior. It does not model user, global, organization, managed, session, auto-memory, conversation, skill, plugin, MCP, hook, tool, or network state.
 
-V1 does not mutate repositories, call a model or vendor API, access a network during analysis, score prompts, synchronize instruction files, generate fixes, run as a service, or provide a product UI. It models only documented repository-loading semantics for the named profile revision.
+V1 does not mutate repositories, call a model or vendor API, access a network during analysis, score prompts, synchronize instruction files, generate fixes, run as a service, or provide a hosted dashboard. A host companion, if shipped later in the 1.6 line, is a renderer of the canonical result and may not add analysis semantics. It models only documented repository-loading semantics for the named profile revision.
+
+### Reality, host, and discovery
+
+These words are not synonyms of “supported”:
+
+- **MODELED** — a `ProfileDefinition` with pinned evidence, fixtures, and semantic conformance exists.
+- **HOSTED** — a RuleBlast companion has passed acceptance tests on that editor host.
+- **DISCOVERABLE** — the agent has an official repository skill path and RuleBlast ships a compatible artifact.
+
+A surface may be MODELED without being HOSTED. A host may be HOSTED without being MODELED.
 
 ## Analysis boundary
 
@@ -95,12 +105,17 @@ A profile id names one product surface and resolver revision:
 vendor/product-surface@positive-integer-revision
 ```
 
-V1 bundles exactly:
+V1 defaults to exactly:
 
 - `openai/codex-cli@1`
 - `anthropic/claude-code-cli@1`
 
-Profile ids are validated data, sorted before analysis, and unique. The schema can carry more than two profiles; that does not make another product, editor, or hosted mode supported.
+V1 may opt in exactly one additional bundled reality per invocation:
+
+- `github/copilot-cli@1`
+- `google/gemini-cli@1`
+
+No fifth bundled reality is admitted before Reality Packs. Profile ids are validated data, sorted before analysis, and unique. The schema can carry more than two profiles; that does not make another product, editor, or hosted mode supported.
 
 Each profile definition carries evidence records with an official URL or pinned implementation URL, retrieval date, revision, and the narrow claim implemented from that source. Code may model only those claims. Missing discovery, precedence, applicability, composition, or boundary evidence becomes `PARTIAL`, `UNKNOWN`, `UNSPECIFIED`, or `RUNTIME_DECIDED`; an adapter may not invent a cleaner rule.
 
@@ -120,6 +135,21 @@ An existing empty override still shadows same-directory `AGENTS.md`. Non-empty s
 The profile models tracked project memory (`CLAUDE.md`, `.claude/CLAUDE.md`, and tracked ancestor/local memory), `.claude/rules/**/*.md`, bounded relative `@path` imports, supported path applicability, repository settings exclusions, and documented comment handling.
 
 Ambiguous root alternatives, unsupported absolute exclusion semantics, malformed rules, unresolved imports, and instruction symlinks preserve uncertainty. Multiple applicable rules, or project memory plus an applicable rule, use `UNSPECIFIED` composition until evidence establishes total order.
+
+### Gemini CLI revision 1
+
+The profile models repository-only JIT context from `google-gemini/gemini-cli@v0.55.1` (`41327e407da58aa01c409ef6685b7b5d379f295e`):
+
+1. Projection context is repository-root `cwd` with `READ_TARGET`.
+2. From `dirname(targetPath)` the resolver walks upward to the repository root.
+3. In each directory it selects tracked files whose names are in the effective context filename list, then concatenates them root-to-leaf.
+4. The default filename is `GEMINI.md`. A tracked `.gemini/settings.json` `context.fileName` is unioned with that default, matching `setGeminiMdFilename`. User, system, and runtime filename settings stay outside the repository boundary.
+5. Relative `@path` imports expand to depth 5. Absolute, missing, cyclic, and escaped imports are unresolved and make the projection `PARTIAL`.
+6. Vendor `Context from` wrappers and absolute checkout paths never enter payload units.
+7. `.geminiignore` is not modeled as a hierarchical-memory filter; that interaction stays unspecified.
+8. Global `~/.gemini/GEMINI.md`, extensions, and session memory are outside the boundary.
+
+Configuration prose that still describes downward subdirectory discovery is recorded as evidence drift. Implementation v0.55.1 wins for resolver semantics.
 
 ## Projection result
 
@@ -282,6 +312,10 @@ Findings are sorted and deduplicated. They do not silently remove a path from un
 Canonical result construction defines deterministic order for profile ids, paths, source changes, groups, samples, causes, and findings. Each profile preserves its deterministic resolver order for sources and evidence instead of alphabetizing away precedence or encounter meaning. The core contains no timestamp, hostname, username, process id, or absolute repository path.
 
 Text color, shell quoting, terminal labels, and explanatory metaphors are presentation context. They cannot change canonical JSON bytes.
+
+Hosts consume a shared explain presentation model derived from the canonical result. A host may not infer explanation semantics by parsing terminal text or by walking `CanonicalResult` with its own rules.
+
+Analysis lifecycle (`READY`, `ANALYZING`, `CURRENT`, `STALE`, `ERROR`) is a host observation. Completeness (`COMPLETE`, `PARTIAL`, `UNKNOWN`) is a projection fact. The two axes are not a single enum: a result may be `CURRENT · PARTIAL` or `STALE · UNKNOWN`.
 
 ## Schema and resolver revisions
 

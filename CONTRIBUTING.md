@@ -2,7 +2,7 @@
 
 You do not need a 25-commit pilot to help.
 
-This tree is RuleBlast `1.5.3`. Latest independently verified public npm release remains `v1.5.1` until `1.5.3` is published. Fastest contribution: [surprising result](https://github.com/Kpoiut/ruleblast/issues/new?template=surprising-result.yml) — command, observed text, one sentence. No canonical JSON. Promoted Blast Cases stay the evidence gate.
+This tree is RuleBlast `1.6.0`. Latest independently verified public npm release remains `v1.5.1` until `1.6.0` is published. Fastest contribution: [surprising result](https://github.com/Kpoiut/ruleblast/issues/new?template=surprising-result.yml) — command, observed text, one sentence. No canonical JSON. Promoted Blast Cases stay the evidence gate.
 
 ## Pull requests
 

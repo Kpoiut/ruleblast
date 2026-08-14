@@ -1,12 +1,14 @@
 {
   "name": "ruleblast",
-  "version": "1.5.3",
-  "description": "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex and Claude Code projections already differ.",
+  "version": "1.6.0",
+  "description": "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex, Claude Code, Copilot CLI, and Gemini CLI projections already differ.",
   "keywords": [
     "agents.md",
     "claude.md",
+    "gemini.md",
     "codex",
     "claude-code",
+    "gemini-cli",
     "ai-coding-agents",
     "coding-agents",
     "repository-instructions",

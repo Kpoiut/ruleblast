@@ -2,6 +2,12 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 1.6.0 — IN BUILD
+
+- Fourth documented reality: opt-in `--reality google/gemini-cli@1` models repository-only Gemini CLI JIT context from `google-gemini/gemini-cli@v0.55.1`. Default Codex + Claude JSON bytes are unchanged.
+- Compile-time profile catalog and analysis-authority facade. Hosts must not import snapshot, impact, or renderer internals.
+- Shared explain presentation model and split analysis lifecycle from completeness. No fifth action, no `--reality all`, no companion host in this release.
+
 ## 1.5.3 — SHIPPED TO MAIN
 
 - Packaged `case` binds the single promoted receipt by path convention and internal digest. Receipt SHA, core digest, and commit ids are no longer duplicated as source literals. Advertised pin is `ruleblast@1.5.3`. Public preview images name `v1.5.3`. No fifth action.

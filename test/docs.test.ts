@@ -95,14 +95,14 @@ describe("README story contract", () => {
       "img.shields.io/github/package-json/v/Kpoiut/ruleblast",
       "Git shows the <code>AGENTS.md</code>",
       "assets/ruleblast-causal-proof.gif",
-      "npx --yes ruleblast@1.5.3 .",
+      "npx --yes ruleblast@1.6.0 .",
       "## What Git missed",
       "assets/ruleblast-visual-benchmark.png",
       "codex-rs/tui/src/bottom_pane/action_required_title.rs",
       "PROOF.md",
       "## Install",
       "## Run the verified case",
-      "npx --yes ruleblast@1.5.3 case --json",
+      "npx --yes ruleblast@1.6.0 case --json",
       "Exact packaged-case terminal transcript",
       "## Explain one path",
       "## Scope",
@@ -185,21 +185,21 @@ describe("README story contract", () => {
   it("documents one-command, global, local, maintenance, and source installs", () => {
     for (const command of [
       "node --version",
-      "npm view ruleblast@1.5.3 version",
-      "npx --yes ruleblast@1.5.3",
-      "npx --yes ruleblast@1.5.3 --help",
+      "npm view ruleblast@1.6.0 version",
+      "npx --yes ruleblast@1.6.0",
+      "npx --yes ruleblast@1.6.0 --help",
       "cd <your-git-repository>",
-      "npm install --global ruleblast@1.5.3",
+      "npm install --global ruleblast@1.6.0",
       "ruleblast --version",
       "ruleblast --help",
       "ruleblast",
-      "npm install --save-dev --save-exact ruleblast@1.5.3",
+      "npm install --save-dev --save-exact ruleblast@1.6.0",
       "npx ruleblast --version",
       "npx ruleblast --help",
       "npm uninstall --global ruleblast",
       "npm uninstall --save-dev ruleblast",
       "npm cache verify",
-      "git clone --branch v1.5.3 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v1.6.0 --depth 1 https://github.com/Kpoiut/ruleblast.git",
       "npm ci --ignore-scripts",
       "npm run build",
       "node dist/cli.js --version",
@@ -208,10 +208,10 @@ describe("README story contract", () => {
       expect(readme).toContain(command);
     }
     for (const action of [
-      "npx --yes ruleblast@1.5.3 .",
-      "npx --yes ruleblast@1.5.3 diff HEAD~1",
-      "npx --yes ruleblast@1.5.3 explain src/args.ts --from HEAD~1",
-      "npx --yes ruleblast@1.5.3 case",
+      "npx --yes ruleblast@1.6.0 .",
+      "npx --yes ruleblast@1.6.0 diff HEAD~1",
+      "npx --yes ruleblast@1.6.0 explain src/args.ts --from HEAD~1",
+      "npx --yes ruleblast@1.6.0 case",
     ]) {
       expect(readme).toContain(action);
     }
@@ -242,11 +242,10 @@ describe("README story contract", () => {
   });
 
   it("keeps the required roadmap teaser verbatim", () => {
-    expect(readme).toContain(`Today: Codex, Claude Code, and opt-in GitHub Copilot CLI.
+    expect(readme).toContain(`Today: Codex, Claude Code, opt-in Copilot CLI, and opt-in Gemini CLI.
 
-The profile seam is already there for the rest.
+Reality is not host. Four documented realities. The editor companion is next.
 
-Two agents share this repo.
 How many rule realities are still hiding in it…?`);
   });
 

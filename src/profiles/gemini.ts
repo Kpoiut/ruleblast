@@ -186,7 +186,7 @@ export const geminiProfile: ProfileDefinition = {
     }
     return {
       id: GOOGLE_GEMINI_CLI_PROFILE_ID,
-      sourceDependencyPaths,
+      sourceDependencyPaths: Object.freeze([...sourceDependencyPaths]),
       project(targetPath: string): Projection {
         const sources: ResolvedSource[] = [];
         const contributions: string[] = [];
