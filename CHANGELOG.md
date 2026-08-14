@@ -2,7 +2,11 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## Unreleased — 1.0.3 candidate
+## Unreleased — 1.1.0 candidate
+
+- Opt-in `--witness` prints why-edges, including same-directory override precedence. Default `--json` remains the canonical schema-1 result.
+
+## 1.0.3 — SHIPPED TO MAIN
 
 - Semantic `--help` and packaged `AGENT_USAGE.md`.
 - README leads with the 206-stack GIF proof. `case` is labeled the 33→106 teaching receipt.

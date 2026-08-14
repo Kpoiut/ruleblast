@@ -1,5 +1,7 @@
 import type { CliOutput } from "./args.js";
 import { canonicalJson } from "./canonical.js";
+import { renderWitness, witnessForProjection, type WitnessGraph } from "./domain/witness.js";
+import type { Projection } from "./model.js";
 import {
   displayText,
   renderText,
@@ -55,12 +57,49 @@ function effectiveColor(output: CliOutput, io: OutputIo): boolean {
   return io.stdoutIsTTY;
 }
 
+export interface PresentationExtras {
+  readonly witness?: boolean;
+}
+
+function projectionsOf(value: PresentedResult): Projection[] {
+  if (value.mode === "explain") {
+    const path = value.path;
+    if ("projections" in path) return path.projections;
+    return [...path.before, ...path.after];
+  }
+  if (value.mode === "current") {
+    return value.paths.flatMap((path) => path.projections);
+  }
+  return value.paths.flatMap((path) => [...path.before, ...path.after]);
+}
+
+function witnessGraphs(value: PresentedResult): WitnessGraph[] {
+  return projectionsOf(value).map(witnessForProjection);
+}
+
 export function present(
   value: PresentedResult,
   output: CliOutput,
   io: OutputIo,
   context?: TextPresentationContext,
+  extras: PresentationExtras = {},
 ): void {
+  if (extras.witness === true) {
+    const graphs = witnessGraphs(value);
+    if (output.kind === "json") {
+      writeLine(io.stdout, canonicalJson({
+        envelope: "ruleblast.witness.v1",
+        result: value,
+        witness: graphs,
+      }));
+      return;
+    }
+    writeLine(
+      io.stdout,
+      `${renderText(value, context, effectiveColor(output, io))}\n\n${renderWitness(graphs)}`,
+    );
+    return;
+  }
   writeLine(
     io.stdout,
     output.kind === "json"

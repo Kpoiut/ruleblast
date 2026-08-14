@@ -97,7 +97,7 @@ afterEach(() => {
   }
 });
 
-describe("1.0.3 package identity", () => {
+describe("1.1.0 package identity", () => {
   it("pins release metadata without install lifecycle behavior", () => {
     const descriptor = readJson(join(repositoryRoot, "package.json"));
     const lock = readJson(join(repositoryRoot, "package-lock.json"));
@@ -105,7 +105,7 @@ describe("1.0.3 package identity", () => {
 
     expect(descriptor).toMatchObject({
       name: "ruleblast",
-      version: "1.0.3",
+      version: "1.1.0",
       description:
         "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex and Claude Code projections already differ.",
       repository: {
@@ -131,8 +131,8 @@ describe("1.0.3 package identity", () => {
         "developer-tools",
       ],
     });
-    expect(lock.version).toBe("1.0.3");
-    expect(packages[""]?.version).toBe("1.0.3");
+    expect(lock.version).toBe("1.1.0");
+    expect(packages[""]?.version).toBe("1.1.0");
     expect(Object.keys(descriptor.dependencies as object).sort()).toEqual([
       "diff",
       "minimatch",
@@ -169,7 +169,7 @@ describe("release artifact", () => {
     };
     const tarballPath = join(isolatedRelease, manifest.tarball.file);
     const tarballBytes = readFileSync(tarballPath);
-    expect(manifest.package).toEqual({ name: "ruleblast", version: "1.0.3" });
+    expect(manifest.package).toEqual({ name: "ruleblast", version: "1.1.0" });
     expect(manifest.schemaVersion).toBe(1);
     expect(manifest.tarball.bytes).toBe(statSync(tarballPath).size);
     expect(manifest.tarball.bytes).toBeLessThanOrEqual(1024 * 1024);
@@ -217,7 +217,7 @@ describe("release artifact", () => {
     );
     expect(readdirSync(isolatedRelease).sort()).toEqual([
       "manifest.json",
-      "ruleblast-1.0.3.tgz",
+      "ruleblast-1.1.0.tgz",
     ]);
 
     const before = new Map(readdirSync(isolatedRelease).map((name) => [

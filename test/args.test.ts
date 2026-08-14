@@ -3,32 +3,36 @@ import { CliUsageError, parseArgs } from "../src/args.js";
 
 const text = { kind: "text", color: "auto" } as const;
 const json = { kind: "json", color: "auto" } as const;
+const flags = { witness: false } as const;
 
 describe("parseArgs", () => {
   it.each([
-    [[], { action: "scan", startPath: ".", output: text }],
-    [["."], { action: "scan", startPath: ".", output: text }],
-    [["scan", "--json"], { action: "scan", startPath: "scan", output: json }],
+    [[], { action: "scan", startPath: ".", output: text, ...flags }],
+    [["."], { action: "scan", startPath: ".", output: text, ...flags }],
+    [["scan", "--json"], { action: "scan", startPath: "scan", output: json, ...flags }],
     [["src", "--color=always"], {
-      action: "scan", startPath: "src", output: { kind: "text", color: "always" },
+      action: "scan", startPath: "src", output: { kind: "text", color: "always" }, ...flags,
     }],
     [["diff"], {
       action: "diff",
       base: { kind: "git", ref: "HEAD" },
       target: { kind: "worktree" },
       output: text,
+      ...flags,
     }],
     [["diff", "HEAD~1", "--to", "release", "--json"], {
       action: "diff",
       base: { kind: "git", ref: "HEAD~1" },
       target: { kind: "git", ref: "release" },
       output: json,
+      ...flags,
     }],
     [["diff", "HEAD", "--to", "-release"], {
       action: "diff",
       base: { kind: "git", ref: "HEAD" },
       target: { kind: "git", ref: "-release" },
       output: text,
+      ...flags,
     }],
     [["explain", "src\\nested//./index.ts"], {
       action: "explain",
@@ -36,6 +40,7 @@ describe("parseArgs", () => {
       from: null,
       target: { kind: "worktree" },
       output: text,
+      ...flags,
     }],
     [["explain", "src/index.ts", "--from", "HEAD~1", "--to", "HEAD"], {
       action: "explain",
@@ -43,6 +48,7 @@ describe("parseArgs", () => {
       from: { kind: "git", ref: "HEAD~1" },
       target: { kind: "git", ref: "HEAD" },
       output: text,
+      ...flags,
     }],
     [["explain", "file.ts", "--from", "-release"], {
       action: "explain",
@@ -50,17 +56,26 @@ describe("parseArgs", () => {
       from: { kind: "git", ref: "-release" },
       target: { kind: "worktree" },
       output: text,
+      ...flags,
     }],
-    [["case"], { action: "case", explainPath: null, output: text }],
+    [["case"], { action: "case", explainPath: null, output: text, ...flags }],
     [["case", "--explain", "packages\\api//./refund.ts", "--json"], {
-      action: "case", explainPath: "packages/api/refund.ts", output: json,
+      action: "case", explainPath: "packages/api/refund.ts", output: json, ...flags,
     }],
-    [["demo"], { action: "case", explainPath: null, output: text }],
+    [["demo"], { action: "case", explainPath: null, output: text, ...flags }],
     [["demo", "--explain", "packages\\api//./refund.ts", "--json"], {
-      action: "case", explainPath: "packages/api/refund.ts", output: json,
+      action: "case", explainPath: "packages/api/refund.ts", output: json, ...flags,
     }],
     [["demo", "--explain", "-file.ts"], {
-      action: "case", explainPath: "-file.ts", output: text,
+      action: "case", explainPath: "-file.ts", output: text, ...flags,
+    }],
+    [[".", "--witness"], { action: "scan", startPath: ".", output: text, witness: true }],
+    [["diff", "--witness", "--json"], {
+      action: "diff",
+      base: { kind: "git", ref: "HEAD" },
+      target: { kind: "worktree" },
+      output: json,
+      witness: true,
     }],
     [["--help"], { action: "help" }],
     [["--version"], { action: "version" }],
@@ -95,6 +110,8 @@ describe("parseArgs", () => {
     [["diff", "--to", "--json"], "MISSING_OPTION_VALUE"],
     [["demo", "--explain", "--json"], "MISSING_OPTION_VALUE"],
     [["diff", "--json", "--json"], "DUPLICATE_OPTION"],
+    [[".", "--witness", "--witness"], "DUPLICATE_OPTION"],
+    [[".", "--receipt"], "UNKNOWN_OPTION"],
     [["diff", "--to", "one", "--to", "two"], "DUPLICATE_OPTION"],
     [["diff", "--json", "--color=always"], "OPTION_CONFLICT"],
     [["scan", "--color=rainbow"], "OPTION_CONFLICT"],

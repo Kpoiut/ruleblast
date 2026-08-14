@@ -88,6 +88,8 @@ One Git tree. Two documented instruction realities.
              ruleblast case --color=never
              Teaching receipt 33→106, not the 206 Codex proof.
 
+  --witness  Why-edges for the selected resolution. Opt-in envelope only.
+
 Exits
   0  defensible result or no candidates — not "every path COMPLETE"
   1  recoverable input / repository / ref / path
@@ -95,10 +97,10 @@ Exits
   70 internal failure
 
 Usage:
-  ruleblast [path] [--json] [--color=auto|always|never]
-  ruleblast diff [base] [--to <ref|WORKTREE>] [--json] [--color=auto|always|never]
-  ruleblast explain <path> [--from <ref>] [--to <ref|WORKTREE>] [--json] [--color=auto|always|never]
-  ruleblast case [--explain <path>] [--json] [--color=auto|always|never]
+  ruleblast [path] [--json] [--witness] [--color=auto|always|never]
+  ruleblast diff [base] [--to <ref|WORKTREE>] [--json] [--witness] [--color=auto|always|never]
+  ruleblast explain <path> [--from <ref>] [--to <ref|WORKTREE>] [--json] [--witness] [--color=auto|always|never]
+  ruleblast case [--explain <path>] [--json] [--witness] [--color=auto|always|never]
   ruleblast --help
   ruleblast --version
 `;

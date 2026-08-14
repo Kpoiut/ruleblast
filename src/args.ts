@@ -18,6 +18,7 @@ export type SnapshotSelector = GitSelector | WorktreeSelector;
 
 interface CommonArgs {
   readonly output: CliOutput;
+  readonly witness: boolean;
 }
 
 export interface ScanArgs extends CommonArgs {
@@ -80,9 +81,10 @@ interface ParsedTokens {
   readonly positionals: readonly string[];
   readonly output: CliOutput;
   readonly options: ReadonlyMap<string, string>;
+  readonly witness: boolean;
 }
 
-const NO_VALUE_OPTIONS = new Set(["--json"]);
+const NO_VALUE_OPTIONS = new Set(["--json", "--witness"]);
 const WINDOWS_DRIVE_PATH = /^[A-Za-z]:/;
 
 function usage(code: CliUsageErrorCode, message: string): never {
@@ -150,6 +152,7 @@ function parseTokens(
   const positionals: string[] = [];
   const options = new Map<string, string>();
   let json = false;
+  let witness = false;
   let color: ColorMode = "auto";
   let colorSeen = false;
   for (let index = 0; index < tokens.length; index += 1) {
@@ -157,9 +160,14 @@ function parseTokens(
     if (token === undefined) {
       return usage("INVALID_ARGUMENT_VECTOR", "Argument disappeared during parsing");
     }
-    if (NO_VALUE_OPTIONS.has(token)) {
+    if (token === "--json") {
       if (json) return usage("DUPLICATE_OPTION", "--json may be specified only once");
       json = true;
+      continue;
+    }
+    if (token === "--witness") {
+      if (witness) return usage("DUPLICATE_OPTION", "--witness may be specified only once");
+      witness = true;
       continue;
     }
     if (token.startsWith("--color=")) {
@@ -195,6 +203,7 @@ function parseTokens(
     positionals: Object.freeze(positionals),
     output: Object.freeze({ kind: json ? "json" : "text", color }),
     options,
+    witness,
   });
 }
 
@@ -254,6 +263,7 @@ function parseScan(tokens: readonly string[]): ScanArgs {
     action: "scan",
     startPath: scanPath(parsed.positionals[0]),
     output: parsed.output,
+    witness: parsed.witness,
   });
 }
 
@@ -265,7 +275,9 @@ function parseDiff(tokens: readonly string[]): DiffArgs {
   if (target.kind === "git" && base.ref === target.ref) {
     return usage("IDENTICAL_ENDPOINTS", "Diff endpoints must be different");
   }
-  return Object.freeze({ action: "diff", base, target, output: parsed.output });
+  return Object.freeze({
+    action: "diff", base, target, output: parsed.output, witness: parsed.witness,
+  });
 }
 
 function parseExplain(tokens: readonly string[]): ExplainArgs {
@@ -280,6 +292,7 @@ function parseExplain(tokens: readonly string[]): ExplainArgs {
   }
   return Object.freeze({
     action: "explain", path, from, target, output: parsed.output,
+    witness: parsed.witness,
   });
 }
 
@@ -291,6 +304,7 @@ function parseCase(tokens: readonly string[]): CaseArgs {
     action: "case",
     explainPath: explainValue === undefined ? null : repositoryPath(explainValue),
     output: parsed.output,
+    witness: parsed.witness,
   });
 }
 

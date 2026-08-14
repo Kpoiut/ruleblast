@@ -63,6 +63,10 @@ function selectorLabel(selector: SnapshotSelector): string {
   return selector.kind === "worktree" ? "WORKTREE" : selector.ref;
 }
 
+function presentationExtras(args: { readonly witness: boolean }): { witness: boolean } {
+  return { witness: args.witness };
+}
+
 function diffTextContext(
   beforeLabel: string,
   target: SnapshotSelector,
@@ -125,7 +129,7 @@ export async function runAnalysisAction(
         afterLabel: PACKAGED_CASE_PRESENTATION.afterLabel,
         caseLabel: PACKAGED_CASE_PRESENTATION.label,
         shellDialect: dependencies.shellDialect,
-      });
+      }, presentationExtras(args));
       return noDefensibleResult(result) ? 2 : 0;
     }
     const selected = result.paths.find((path) => path.path === args.explainPath);
@@ -140,7 +144,7 @@ export async function runAnalysisAction(
       afterLabel: PACKAGED_CASE_PRESENTATION.afterLabel,
       caseLabel: PACKAGED_CASE_PRESENTATION.label,
       shellDialect: dependencies.shellDialect,
-    });
+    }, presentationExtras(args));
     return noDefensibleDiffPath(selected) ? 2 : 0;
   }
 
@@ -158,7 +162,7 @@ export async function runAnalysisAction(
       currentLabel: "WORKTREE",
       caseLabel: null,
       shellDialect: dependencies.shellDialect,
-    });
+    }, presentationExtras(args));
     return noDefensibleResult(result) ? 2 : 0;
   }
   if (args.action === "diff") {
@@ -175,6 +179,7 @@ export async function runAnalysisAction(
       args.output,
       io,
       diffTextContext(args.base.ref, args.target, dependencies.shellDialect),
+      presentationExtras(args),
     );
     return noDefensibleResult(result) ? 2 : 0;
   }
@@ -191,7 +196,7 @@ export async function runAnalysisAction(
       currentLabel: selectorLabel(args.target),
       caseLabel: null,
       shellDialect: dependencies.shellDialect,
-    });
+    }, presentationExtras(args));
     return noDefensibleCurrentPath(selected) ? 2 : 0;
   }
   const before = await dependencies.openGitSnapshot(root, args.from.ref);
@@ -207,6 +212,7 @@ export async function runAnalysisAction(
     args.output,
     io,
     diffTextContext(args.from.ref, args.target, dependencies.shellDialect),
+    presentationExtras(args),
   );
   return noDefensibleDiffPath(selected) ? 2 : 0;
 }

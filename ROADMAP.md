@@ -102,13 +102,17 @@ No star, fork, or download count is a release guarantee; the patch succeeds by m
 
 **Verified publication receipt.** Signed tag object `136c56cb5f1ba2de0fcaf7ab899ebf4678bc824b` for [`v1.0.2`](https://github.com/Kpoiut/ruleblast/releases/tag/v1.0.2) targets signed commit `18c250b2b58910c81e5d5d9cefb7c31ca54304a0`. [npm `ruleblast@1.0.2`](https://www.npmjs.com/package/ruleblast/v/1.0.2) reports integrity `sha512-YNJp217L6g3PaEapgwcxmHRMxi/9aFwA1kNRp9HdlWOKv96ptWwLzLjjYkrGsh4fOD9ZGJ528oqlpoPbUVWMwA==`; exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download and GitHub Release asset both match the reviewed 89,244-byte tarball with SHA-256 `0d40d2297924e70c93bad51a9a84d7bd8af174ffa4cd008567f926adb0b941a2`; the canonical manifest has SHA-256 `59134fd306cdd34f92da145e3a6671d4099023acefe2add73874448c5f27fc64`. The dispatched [eight-cell registry upgrade matrix](https://github.com/Kpoiut/ruleblast/actions/runs/31722775046) completed successfully across Windows and Linux on Node.js 20, 22, 24, and 26. These are independently verified external records, not facts inferred from this checkout.
 
-## **IN BUILD** — `v1.0.3`: Agent Route Proof
+## **SHIPPED TO MAIN** — `v1.0.3`: Agent Route Proof
 
 Semantic `--help`, packaged `AGENT_USAGE.md`, and a shorter GitHub-first README. Four existing routes. No fifth action.
 
-## **NEXT** — `v1.1.0`: Blast Receipts
+## **IN BUILD** — `v1.1.0`: Resolution Witness Graph
 
-The current canonical JSON Blast Case is an evidence record for one immutable comparison. The `v1.1.0` target is a portable, user-facing Markdown receipt derived only from `RuleBlastResult`.
+Opt-in `--witness` prints why-edges derived from existing projection sources. Default canonical JSON is unchanged.
+
+## **NEXT** — `v1.2.0`: Blast Receipts
+
+The current canonical JSON Blast Case is an evidence record for one immutable comparison. The `v1.2.0` target is a portable, user-facing Markdown receipt derived only from `RuleBlastResult`.
 
 A receipt may carry:
 
@@ -121,7 +125,7 @@ It must not recalculate impact, fetch a web page, embed a generated image, intro
 
 > The result can travel. What happens when a third agent reads the same repo?
 
-## **HORIZON** — `v1.2.0`: Third Reality
+## **HORIZON** — `v1.3.0`: Third Documented Reality
 
 The target is exactly one additional surface, not a generic integration wave. Admission requires all of the following:
 
@@ -163,7 +167,7 @@ Any public number must come from a reproducible canonical result with immutable 
 
 These are unresolved questions, not current support or promised work:
 
-- Which third surface has both stable official semantics and enough demand to pass the `v1.2.0` gate?
+- Which third surface has both stable official semantics and enough demand to pass the `v1.3.0` gate?
 - Can the finite Reality Pack representation reproduce every bundled golden result without an executable escape hatch?
 - How should an offline run reveal that a pinned evidence revision may have drifted without making a network request?
 - Can a licensed corpus of Blast Cases cover monorepos, nested instructions, imports, exclusions, and uncertain order without publishing sensitive content?

@@ -186,6 +186,22 @@ describe("runCli", () => {
     expect(h.stderr).toEqual([]);
   });
 
+  it("wraps --witness --json around the unchanged canonical result", async () => {
+    const h = harness();
+    expect(await runCli(["subdir", "--json", "--witness"], h.io, h.dependencies)).toBe(0);
+    const parsed = JSON.parse(h.stdout[0]!) as {
+      readonly envelope: string;
+      readonly result: { readonly mode: string };
+      readonly witness: readonly unknown[];
+    };
+    expect(parsed.envelope).toBe("ruleblast.witness.v1");
+    expect(parsed.result.mode).toBe("current");
+    expect(parsed.witness).toHaveLength(1);
+    expect(await runCli(["subdir", "--json"], h.io, h.dependencies)).toBe(0);
+    expect(JSON.parse(h.stdout[1]!)).toMatchObject({ mode: "current" });
+    expect(h.stdout[1]).not.toContain("ruleblast.witness.v1");
+  });
+
   it("routes diff through immutable resolved snapshots and rejects equal OIDs", async () => {
     const oid = "c".repeat(40);
     const same = snapshot(gitRef(oid));
