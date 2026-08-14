@@ -325,6 +325,41 @@ describe("public release maturity", () => {
     );
   });
 
+  it("records the independently verified v1.6.2 release receipt", () => {
+    const roadmap = read("ROADMAP.md");
+    const releasedHeading = "## **RELEASED** — `v1.6.2`: Last-Result Explain";
+    const nextHeading = "## **NEXT** — `v2.0.0`: Reality Packs";
+    const releasedStart = roadmap.indexOf(releasedHeading);
+    const nextStart = roadmap.indexOf(nextHeading);
+
+    expect(releasedStart).toBeGreaterThanOrEqual(0);
+    expect(nextStart).toBeGreaterThan(releasedStart);
+
+    const released = roadmap.slice(releasedStart, nextStart);
+    for (const evidence of [
+      "4883efb6d5a82e0bcfe4ebd8375a0f024ff7943b",
+      "ef2206a40b44a1debb211bd131f23afb519ac32f",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v1.6.2",
+      "https://www.npmjs.com/package/ruleblast/v/1.6.2",
+      "108,652",
+      "0c93bc4c24410297ce0f20dc5cf7788ad4dfb3259c2b99662782969bec49101f",
+      "8725791048ff228835279abbcaa855002303aa5867a8971182fbac601f80fec4",
+      "sha512-JE3H3hE7Gp1/AuQIz8swceyFRlGnfFjLcJz/MOriBswDt69ObMatn3w/AzkjeqSSThsyhgGnnpdR4emkYKw1eg==",
+      "gitHead is absent",
+      "registry download and GitHub Release asset both match",
+      "not facts inferred from this checkout",
+    ]) {
+      expect(released).toContain(evidence);
+    }
+    expect(released).not.toMatch(/\bIN BUILD\b|remain conditional|publication.+incomplete/iu);
+
+    const changelog = read("CHANGELOG.md");
+    expect(changelog).toContain("## 1.6.2 — RELEASED");
+    expect(changelog).toContain(
+      "Signed tag object `4883efb6d5a82e0bcfe4ebd8375a0f024ff7943b`",
+    );
+  });
+
   it("keeps release-state records outside the current package boundary", () => {
     const descriptor = JSON.parse(read("package.json")) as {
       readonly files?: readonly string[];

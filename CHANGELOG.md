@@ -2,11 +2,17 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 1.6.2 — IN BUILD
+## 1.6.2 — RELEASED
 
 - Default `explain` text is the shared visual source tree: catalog badges, cwd, changed markers, why-this-path, and findings. Digests stay in `--json`.
 - `--receipt` and `diff` source-blast lines use catalog badges instead of raw profile ids. Canonical JSON is unchanged.
 - Companion explain uses the last canonical result, keeps `STALE` when the worktree already moved, and shows explain plus source-blast on the scoreboard tree. Select Reality is a session option, not a fifth action.
+
+### Release artifact
+
+- Signed tag object `4883efb6d5a82e0bcfe4ebd8375a0f024ff7943b` targets commit `ef2206a40b44a1debb211bd131f23afb519ac32f`.
+- npm and the GitHub Release serve the same 108,652-byte tarball with SHA-256 `0c93bc4c24410297ce0f20dc5cf7788ad4dfb3259c2b99662782969bec49101f`; the release manifest SHA-256 is `8725791048ff228835279abbcaa855002303aa5867a8971182fbac601f80fec4`.
+- [npm `ruleblast@1.6.2`](https://www.npmjs.com/package/ruleblast/v/1.6.2) reports integrity `sha512-JE3H3hE7Gp1/AuQIz8swceyFRlGnfFjLcJz/MOriBswDt69ObMatn3w/AzkjeqSSThsyhgGnnpdR4emkYKw1eg==`; exact-tarball publication means registry `gitHead is absent` rather than invented.
 
 ## 1.6.1 — SHIPPED TO MAIN
 

@@ -225,11 +225,13 @@ Technical admission is evidence + fixtures + conformance. A public featured Blas
 
 One host class: a read-only VS Code-compatible companion under `hosts/vscode`. It imports the application facade, renders the shared explain model, and must produce byte-identical canonical JSON. It is not a second engine. File changes mark `STALE` and do not restart analysis. Cursor and Windsurf are compatible hosts only after acceptance tests. They are not modeled realities.
 
-## **IN BUILD** — `v1.6.2`: Last-Result Explain
+## **RELEASED** — `v1.6.2`: Last-Result Explain
 
 Presentation and host-session logic on the existing four actions. Default explain text is the shared visual source tree. Receipt and source-blast lines use catalog badges. The companion explains from the last canonical result, keeps `STALE` when the worktree already moved, and treats Select Reality as a session option. It is not a fifth action, a second engine, or a new reality.
 
-This tree is `1.6.2`. Latest independently verified public npm distribution remains `1.5.1`.
+**Verified publication receipt.** Signed tag object `4883efb6d5a82e0bcfe4ebd8375a0f024ff7943b` for [`v1.6.2`](https://github.com/Kpoiut/ruleblast/releases/tag/v1.6.2) targets commit `ef2206a40b44a1debb211bd131f23afb519ac32f`. [npm `ruleblast@1.6.2`](https://www.npmjs.com/package/ruleblast/v/1.6.2) reports integrity `sha512-JE3H3hE7Gp1/AuQIz8swceyFRlGnfFjLcJz/MOriBswDt69ObMatn3w/AzkjeqSSThsyhgGnnpdR4emkYKw1eg==`; exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download and GitHub Release asset both match the reviewed 108,652-byte tarball with SHA-256 `0c93bc4c24410297ce0f20dc5cf7788ad4dfb3259c2b99662782969bec49101f`; the canonical manifest has SHA-256 `8725791048ff228835279abbcaa855002303aa5867a8971182fbac601f80fec4`. These are independently verified external records, not facts inferred from this checkout.
+
+This tree is `1.6.2`. Latest independently verified public npm distribution is `1.6.2`.
 
 ## **NEXT** — `v2.0.0`: Reality Packs
 

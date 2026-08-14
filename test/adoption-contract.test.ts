@@ -184,7 +184,7 @@ describe("v1.6.2 adoption contract", () => {
     expect(conduct).toMatch(/protect/iu);
 
     const contributingLead = read("CONTRIBUTING.md").slice(0, 700);
-    expect(contributingLead).toContain("v1.5.1");
+    expect(contributingLead).toContain("v1.6.2");
     expect(contributingLead).toContain("1.6.2");
     expect(contributingLead).toMatch(/you do not need a 25-commit/iu);
     expect(contributingLead).toMatch(/surprising result/iu);
