@@ -48,18 +48,21 @@ npx --yes ruleblast@1.3.0 .
 ## Visual benchmark
 
 <p align="center">
-  <img src="assets/ruleblast-visual-benchmark.png" width="1200" alt="RuleBlast visual benchmark: Codex 206 path stacks moved, Claude Code 0, 4,476 unchanged, 10,000-path budget under 2,000 ms">
+  <img src="assets/ruleblast-visual-benchmark.png" width="100%" alt="Compact RuleBlast scoreboard: Git 2 lines / 3 files / 6 deletions; Codex 206; Claude 0; 4,476 unchanged; 4.40% hit; 0/0/0 uncertainty; 10,000-path p95 under 2,000 ms">
 </p>
 
-Same sealed `openai/codex` proof. Same packed 10,000-path budget. It does not measure model quality.
+Read left to right. Git’s first diff is tiny. The second diff is 206 Codex stacks and 0 Claude Code stacks. It does not measure model quality.
 
-| What to look at | Number | How to explain it |
+| Dial | Number | Why it matters |
 |---|---:|---|
-| Instruction-line edits Git can see | 2 | The first diff |
-| Codex path stacks moved | 206 | The documented Codex projection changed |
-| Claude Code path stacks moved | 0 | The same commit, the other reality |
-| Unchanged tracked paths | 4,476 | The blast was local, not the whole tree |
-| Packed performance budget | 10,000 nested paths, p95 < 2,000 ms | `npm run benchmark` |
+| Git first diff | 2 instruction lines · 3 files, 6 deleted lines | What `git diff` can see |
+| Codex stacks moved | 206 of 4,682 | Nested `AGENTS.md` changed that projection |
+| Claude Code stacks moved | 0 of 4,682 | Same commit, other documented reality |
+| Unchanged / hit rate | 4,476 · 4.40% | The blast was local |
+| Uncertainty | 0 / 0 / 0 | Zero partial, unknown, or indeterminate |
+| Packed budget | 10,000 nested paths, p95 < 2,000 ms | `npm run benchmark` |
+| Teaching receipt | 33→106 | Different artifact — packaged `case`, not the 206 proof |
+| Sealed bytes | 150,404,342 | Immutable proof, not a live model trace |
 
 Pinned public [`openai/codex`](https://github.com/openai/codex/compare/8fcf2ad931b90589dd29a571f367e3185d26bbe0...f0f483e8b2a2630bf8dfa5f8451e81eba20def6c) refs [`8fcf2ad…`](https://github.com/openai/codex/commit/8fcf2ad931b90589dd29a571f367e3185d26bbe0) → [`f0f483e…`](https://github.com/openai/codex/commit/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c). Profiles `openai/codex-cli@1` and `anthropic/claude-code-cli@1` were already `DIFFERENT → DIFFERENT`; no path newly split across profiles. One exact cause: [`codex-rs/tui/src/bottom_pane/action_required_title.rs`](https://github.com/openai/codex/blob/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c/codex-rs/tui/src/bottom_pane/action_required_title.rs) under nested [`AGENTS.md`](https://github.com/openai/codex/blob/8fcf2ad931b90589dd29a571f367e3185d26bbe0/codex-rs/tui/src/bottom_pane/AGENTS.md). zero partial, zero unknown, and zero indeterminate. Not a claim about model compliance or response behavior.
 
@@ -217,10 +220,10 @@ Optional. Not a hosted product. The runner only executes the published CLI.
 - uses: actions/checkout@v4
   with:
     fetch-depth: 0
-- uses: Kpoiut/ruleblast@main
+- uses: Kpoiut/ruleblast/.github/actions/ruleblast@main
 ```
 
-The action posts a `--receipt` comment for `base.sha → head.sha`. Pin a commit instead of `@main` after you trust the workflow.
+The nested composite Action posts a `--receipt` comment for `base.sha → head.sha`. It is not listed on the GitHub Marketplace. Pin a commit instead of `@main` after you trust the workflow.
 
 ## Contribute a Blast Case
 

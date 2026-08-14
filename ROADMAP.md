@@ -153,6 +153,12 @@ One explainable scoreboard on the README. It restates the sealed 2→206 public 
 
 This tree is `1.4.0`. Latest independently verified public npm distribution remains `1.3.0`.
 
+## **SHIPPED TO MAIN** — `v1.4.1`: Compact Scoreboard
+
+A presentation patch. The visual benchmark is a 1,200×360 instrument strip, not a poster. The optional composite Action lives at `.github/actions/ruleblast` so GitHub does not treat the repository root as an unpublished Marketplace Action.
+
+This tree is `1.4.1`. Latest independently verified public npm distribution remains `1.3.0`.
+
 ## **NEXT** — `v2.0.0`: Reality Packs
 
 The target is a finite, reviewed, declarative profile format—not an executable plugin system.

@@ -1,5 +1,5 @@
 name: RuleBlast
-description: Comment a published-CLI instruction blast for a Git range. Read-only analysis on the runner. Not a hosted product.
+description: Comment a published-CLI instruction blast for a Git range. Read-only analysis on the runner. Not a hosted product and not a Marketplace Action.
 author: Kpoiut
 branding:
   icon: zap

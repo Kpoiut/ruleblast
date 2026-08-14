@@ -2,6 +2,11 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 1.4.1 — SHIPPED TO MAIN
+
+- Compact 1,200×360 visual scoreboard with Git/Codex/Claude/unchanged/uncertainty/budget dials and the commands that reproduce them.
+- Moved the optional composite Action to `.github/actions/ruleblast` so the repository root is no longer a GitHub Marketplace Action draft. Not a hosted product.
+
 ## 1.4.0 — SHIPPED TO MAIN
 
 - Visual benchmark on the README: the sealed 2→206 Codex/Claude split next to the packed 10,000-path, p95 < 2,000 ms budget. It does not measure model quality.

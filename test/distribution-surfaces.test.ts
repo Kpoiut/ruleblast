@@ -20,12 +20,22 @@ describe("distribution surfaces", () => {
     expect(read("AGENT_USAGE.md")).toContain("not discovered from `node_modules`");
   });
 
-  it("wraps the published CLI in a composite action without a fifth command", () => {
-    const action = read("action.yml");
+  it("wraps the published CLI in a nested composite action without a Marketplace root action", () => {
+    const actionPath = ".github/actions/ruleblast/action.yml";
+    expect(existsSync(join(repositoryRoot, "action.yml"))).toBe(false);
+    expect(existsSync(join(repositoryRoot, actionPath))).toBe(true);
+    const action = read(actionPath);
     expect(action).toContain("using: composite");
     expect(action).toContain('npx --yes "ruleblast@${RULEBLAST_VERSION}"');
     expect(action).toContain("--receipt");
     expect(action).not.toMatch(/ruleblast scan\b/u);
-    expect(read(".github/workflows/ruleblast-pr.yml")).toContain("uses: ./");
+    expect(action).toMatch(/not a hosted product|not a marketplace action/iu);
+    expect(read(".github/workflows/ruleblast-pr.yml")).toContain(
+      "uses: ./.github/actions/ruleblast",
+    );
+    expect(read("README.md")).toContain(
+      "uses: Kpoiut/ruleblast/.github/actions/ruleblast@main",
+    );
+    expect(read("README.md")).not.toMatch(/uses: Kpoiut\/ruleblast@main\s*$/mu);
   });
 });

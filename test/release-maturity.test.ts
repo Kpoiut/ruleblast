@@ -172,7 +172,7 @@ describe("public release maturity", () => {
   it("records v1.4.0 as a shipped visual benchmark without inventing publication", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v1.4.0`: Visual Benchmark";
-    const nextHeading = "## **NEXT** — `v2.0.0`: Reality Packs";
+    const nextHeading = "## **SHIPPED TO MAIN** — `v1.4.1`: Compact Scoreboard";
     const start = roadmap.indexOf(heading);
     const next = roadmap.indexOf(nextHeading);
     expect(start).toBeGreaterThan(-1);
@@ -187,6 +187,25 @@ describe("public release maturity", () => {
     expect(changelog).toContain("## 1.4.0 — SHIPPED TO MAIN");
     expect(changelog).toMatch(/visual benchmark/iu);
     expect(changelog).not.toMatch(/## 1\.4\.0 — RELEASED/u);
+  });
+
+  it("records v1.4.1 as a compact scoreboard patch without a Marketplace root action", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v1.4.1`: Compact Scoreboard";
+    const nextHeading = "## **NEXT** — `v2.0.0`: Reality Packs";
+    const start = roadmap.indexOf(heading);
+    const next = roadmap.indexOf(nextHeading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toMatch(/1,200.?×.?360/iu);
+    expect(shipped).toMatch(/Marketplace/iu);
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+
+    const changelog = read("CHANGELOG.md");
+    expect(changelog).toContain("## 1.4.1 — SHIPPED TO MAIN");
+    expect(changelog).toMatch(/compact/iu);
+    expect(changelog).not.toMatch(/## 1\.4\.1 — RELEASED/u);
   });
 
   it("keeps release-state records outside the current package boundary", () => {
