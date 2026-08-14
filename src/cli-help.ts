@@ -93,6 +93,9 @@ One Git tree. Two documented instruction realities.
              User toggle: RULEBLAST_AGENT_ALLOW or .ruleblast-allow.
   --reality  github/copilot-cli@1 only. Default JSON stays two-profile.
 
+Skills   Codex .agents/skills · Claude Code .claude/skills
+         Not node_modules. Agents default to ask.
+
 Exits
   0  defensible result or no candidates — not "every path COMPLETE"
   1  recoverable input / repository / ref / path

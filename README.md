@@ -225,7 +225,9 @@ npx --yes ruleblast@1.3.0 diff HEAD~1 --json
 
 ## Give your agent RuleBlast
 
-Codex discovers repository skills from `.agents/skills`, not from `node_modules`. Copy [`.agents/skills/ruleblast/SKILL.md`](.agents/skills/ruleblast/SKILL.md) into your repo. Then an agent that hits an `AGENTS.md` / `CLAUDE.md` blast can run `npx --yes ruleblast@1.3.0` without you re-explaining the four routes.
+Codex discovers repository skills from `.agents/skills`. Claude Code discovers project skills from `.claude/skills` ([official skills docs](https://code.claude.com/docs/en/skills)). Neither reads `node_modules`.
+
+Copy [`.agents/skills/ruleblast/SKILL.md`](.agents/skills/ruleblast/SKILL.md) for Codex and [`.claude/skills/ruleblast/SKILL.md`](.claude/skills/ruleblast/SKILL.md) for Claude Code. Same four routes. Agents still need your allow gate before they run.
 
 ## Show a blast on a pull request
 

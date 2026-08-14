@@ -23,6 +23,22 @@ describe("distribution surfaces", () => {
     expect(read("AGENT_USAGE.md")).toContain(".ruleblast-allow");
   });
 
+  it("ships the same protocol at the official Claude Code project skill path", () => {
+    const claudePath = ".claude/skills/ruleblast/SKILL.md";
+    const codexPath = ".agents/skills/ruleblast/SKILL.md";
+    expect(existsSync(join(repositoryRoot, claudePath))).toBe(true);
+    const claude = read(claudePath);
+    const codex = read(codexPath);
+    expect(claude).toContain("There is no `ruleblast scan` subcommand");
+    expect(claude).toContain(".ruleblast-allow");
+    expect(claude).toContain("npx --yes ruleblast@1.3.0");
+    expect(claude).toContain(".claude/skills");
+    expect(codex).toContain(".claude/skills");
+    expect(read("AGENT_USAGE.md")).toContain(".claude/skills");
+    expect(read("README.md")).toContain(".claude/skills/ruleblast/SKILL.md");
+    expect(read("README.md")).toContain("https://code.claude.com/docs/en/skills");
+  });
+
   it("wraps the published CLI in a nested composite action without a Marketplace root action", () => {
     const actionPath = ".github/actions/ruleblast/action.yml";
     expect(existsSync(join(repositoryRoot, "action.yml"))).toBe(false);

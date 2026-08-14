@@ -2,6 +2,10 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 1.4.3 — SHIPPED TO MAIN
+
+- Dual skill discovery: Codex `.agents/skills` and Claude Code `.claude/skills` (official project path). Same four routes and ask-first allow gate. No new surface and no fifth action.
+
 ## 1.4.2 — SHIPPED TO MAIN
 
 - Compact `--receipt` scoreboard box. User-owned on/off via `RULEBLAST_AGENT_ALLOW` or `.ruleblast-allow`. Agents default to ask. No fifth action, no product UI, no live agent telemetry, and RuleBlast never writes the allow file.

@@ -165,6 +165,12 @@ The visual scoreboard is a closable README box plus the opt-in `--receipt` card.
 
 This tree is `1.4.2`. Latest independently verified public npm distribution remains `1.3.0`.
 
+## **SHIPPED TO MAIN** — `v1.4.3`: Dual Skill Discovery
+
+Codex keeps `.agents/skills`. Claude Code gains the official project path `.claude/skills/<name>/SKILL.md`. Same permission protocol. This is discovery compatibility, not a new resolver surface.
+
+This tree is `1.4.3`. Latest independently verified public npm distribution remains `1.3.0`.
+
 ## **NEXT** — `v2.0.0`: Reality Packs
 
 The target is a finite, reviewed, declarative profile format—not an executable plugin system.

@@ -211,7 +211,7 @@ describe("public release maturity", () => {
   it("records v1.4.2 as a user-owned scoreboard gate without inventing publication", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v1.4.2`: User-Owned Scoreboard Gate";
-    const nextHeading = "## **NEXT** — `v2.0.0`: Reality Packs";
+    const nextHeading = "## **SHIPPED TO MAIN** — `v1.4.3`: Dual Skill Discovery";
     const start = roadmap.indexOf(heading);
     const next = roadmap.indexOf(nextHeading);
     expect(start).toBeGreaterThan(-1);
@@ -220,6 +220,19 @@ describe("public release maturity", () => {
     expect(roadmap.slice(start, next)).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 1.4.2 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 1\.4\.2 — RELEASED/u);
+  });
+
+  it("records v1.4.3 as dual skill discovery without inventing publication", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v1.4.3`: Dual Skill Discovery";
+    const next = roadmap.indexOf("## **NEXT** — `v2.0.0`: Reality Packs");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    expect(roadmap.slice(start, next)).toContain(".claude/skills");
+    expect(roadmap.slice(start, next)).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 1.4.3 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 1\.4\.3 — RELEASED/u);
   });
 
   it("keeps release-state records outside the current package boundary", () => {
