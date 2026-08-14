@@ -93,8 +93,10 @@ describe("README story contract", () => {
       "actions/workflows/verify.yml/badge.svg",
       "img.shields.io/npm/v/ruleblast",
       "assets/ruleblast-causal-proof.gif",
+      "Git will never show that second diff",
       "2 instruction-line edits",
       "206 tracked paths changed stack",
+      "npx --yes ruleblast@1.3.0 .",
       "codex-rs/tui/src/bottom_pane/action_required_title.rs",
       "npx --yes ruleblast@1.3.0 case",
       "## Install",
@@ -206,7 +208,7 @@ describe("README story contract", () => {
   });
 
   it("keeps the required roadmap teaser verbatim", () => {
-    expect(readme).toContain(`Today: Codex + Claude Code.
+    expect(readme).toContain(`Today: Codex, Claude Code, and opt-in GitHub Copilot CLI.
 
 The profile seam is already there for the rest.
 

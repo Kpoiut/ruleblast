@@ -141,6 +141,12 @@ A vendor's CLI, editor extension, and hosted agent count as distinct surfaces wh
 
 **Verified publication receipt.** Signed tag object `f417ee350a6aa7431f23bbe698d58edd24dc8285` for [`v1.3.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v1.3.0) targets signed commit `8b2d083e6ebedb43315a2135621bd237a06a5f5d`. [npm `ruleblast@1.3.0`](https://www.npmjs.com/package/ruleblast/v/1.3.0) reports integrity `sha512-BsVvo3OsYiQKZx961VTZH7tYMLoEJuNNYWqX+OXcYMZZz77Rtvfs5rJ3kiGTfoycn3f4h4ze++tySXrOTiIRIw==`; exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download and GitHub Release asset both match the reviewed 93,562-byte tarball with SHA-256 `b4a2f04e4536d1859e3e80c2d4722b456d5194f47b7167df879af5577da5ec7c`; the canonical manifest has SHA-256 `9b5da71c2352b3273efeef5cdd228a602060e535ccbcf5804089a9ddacd9a664`. These are independently verified external records, not facts inferred from this checkout.
 
+## **SHIPPED TO MAIN** — `v1.3.1`: Longer Causal Proof
+
+A presentation patch on the released `v1.3.0` CLI. The README causal-proof loop is 28 held frames and 1,960 centiseconds. It now opens on the failure mode — Git will never show that second diff — walks the same 2→206 Codex/Claude split, and closes on `npx --yes ruleblast@1.3.0 .`. Community-health tabs lead with a human sentence. No fifth action, no new surface, no invented SAME→DIFFERENT split.
+
+This tree is `1.3.1`. Latest independently verified public npm distribution remains `1.3.0`.
+
 ## **NEXT** — `v2.0.0`: Reality Packs
 
 The target is a finite, reviewed, declarative profile format—not an executable plugin system.

@@ -1,6 +1,8 @@
 # Security Policy
 
-RuleBlast is a local, read-only repository debugger. Its supported product boundary excludes hosted services, model calls, telemetry, repository mutation, and executable profile extensions. Security reports should focus on behavior that crosses that boundary, unsafe package or command execution, path confinement, dependency provenance, receipt integrity, or disclosure of repository contents.
+RuleBlast is supposed to stay on your machine.
+
+If something in the package, the CLI, or a receipt looks like it left that boundary, send the smallest safe report — not a public exploit thread. RuleBlast is a local, read-only repository debugger. Its supported product boundary excludes hosted services, model calls, telemetry, repository mutation, and executable profile extensions. Security reports should focus on behavior that crosses that boundary, unsafe package or command execution, path confinement, dependency provenance, receipt integrity, or disclosure of repository contents.
 
 ## Reporting a vulnerability
 

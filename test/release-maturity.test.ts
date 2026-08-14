@@ -118,7 +118,7 @@ describe("public release maturity", () => {
     const roadmap = read("ROADMAP.md");
     const releasedHeading =
       "## **RELEASED** — `v1.3.0`: Third Documented Reality";
-    const nextHeading = "## **NEXT** — `v2.0.0`: Reality Packs";
+    const nextHeading = "## **SHIPPED TO MAIN** — `v1.3.1`: Longer Causal Proof";
     const releasedStart = roadmap.indexOf(releasedHeading);
     const nextStart = roadmap.indexOf(nextHeading);
 
@@ -148,6 +148,25 @@ describe("public release maturity", () => {
     expect(changelog).toContain(
       "Signed tag object `f417ee350a6aa7431f23bbe698d58edd24dc8285`",
     );
+  });
+
+  it("records v1.3.1 as a shipped presentation patch without inventing publication", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v1.3.1`: Longer Causal Proof";
+    const nextHeading = "## **NEXT** — `v2.0.0`: Reality Packs";
+    const start = roadmap.indexOf(heading);
+    const next = roadmap.indexOf(nextHeading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toMatch(/28 held frames/iu);
+    expect(shipped).toMatch(/Git will never show that second diff/iu);
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+
+    const changelog = read("CHANGELOG.md");
+    expect(changelog).toContain("## 1.3.1 — SHIPPED TO MAIN");
+    expect(changelog).toMatch(/longer causal-proof/iu);
+    expect(changelog).not.toMatch(/## 1\.3\.1 — RELEASED/u);
   });
 
   it("keeps release-state records outside the current package boundary", () => {

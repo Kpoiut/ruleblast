@@ -1,6 +1,8 @@
 # Code of Conduct
 
-RuleBlast contributors build evidence about repository instruction projection. The same evidence-first standard applies to how people are treated here.
+Hard evidence. Soft people.
+
+RuleBlast is a place to bring surprising repository-instruction results, not a place to win arguments. We protect the person who filed the weird blast as carefully as we protect the bytes. Contributors build evidence about repository instruction projection, and the same evidence-first standard applies to how people are treated here.
 
 ## Expected behavior
 

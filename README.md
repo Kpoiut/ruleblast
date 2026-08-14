@@ -17,7 +17,13 @@
 </p>
 
 <p align="center">
-  <img src="assets/ruleblast-causal-proof.gif" width="1200" alt="A verified RuleBlast causal proof: two instruction-line edits change 206 projected path stacks, then one affected path is traced to its exact source">
+  <img src="assets/ruleblast-causal-proof.gif" width="1200" alt="A verified RuleBlast causal proof: two instruction-line edits change 206 projected path stacks, Codex moves and Claude Code does not, then one path is traced to its exact source, then the same CLI runs on your repository">
+</p>
+
+<p align="center">
+  You changed 2 lines in <code>AGENTS.md</code>.<br>
+  <strong>Codex: 206 path stacks moved. Claude Code: 0.</strong><br>
+  Git will never show that second diff.
 </p>
 
 <p align="center"><strong>2 instruction-line edits. Codex: 206 path stacks moved. Claude Code: 0.</strong></p>
@@ -32,6 +38,12 @@ One Git tree. Two documented instruction realities. Delete two instruction lines
 | 1 changed instruction source | 206 tracked paths changed stack |
 | — | 4,476 tracked paths remained unchanged |
 | — | Codex changed: 206 · Claude Code changed: 0 |
+
+See that second diff on your repository first:
+
+```bash
+npx --yes ruleblast@1.3.0 .
+```
 
 Pinned public [`openai/codex`](https://github.com/openai/codex/compare/8fcf2ad931b90589dd29a571f367e3185d26bbe0...f0f483e8b2a2630bf8dfa5f8451e81eba20def6c) refs [`8fcf2ad…`](https://github.com/openai/codex/commit/8fcf2ad931b90589dd29a571f367e3185d26bbe0) → [`f0f483e…`](https://github.com/openai/codex/commit/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c). Profiles `openai/codex-cli@1` and `anthropic/claude-code-cli@1` were already `DIFFERENT → DIFFERENT`; no path newly split across profiles. One exact cause: [`codex-rs/tui/src/bottom_pane/action_required_title.rs`](https://github.com/openai/codex/blob/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c/codex-rs/tui/src/bottom_pane/action_required_title.rs) under nested [`AGENTS.md`](https://github.com/openai/codex/blob/8fcf2ad931b90589dd29a571f367e3185d26bbe0/codex-rs/tui/src/bottom_pane/AGENTS.md). zero partial, zero unknown, and zero indeterminate. Not a claim about model compliance or response behavior.
 
@@ -202,7 +214,7 @@ Promoted Blast Case: official evidence, retrieval date, manifests, expected JSON
 
 ## Roadmap
 
-Today: Codex + Claude Code.
+Today: Codex, Claude Code, and opt-in GitHub Copilot CLI.
 
 The profile seam is already there for the rest.
 

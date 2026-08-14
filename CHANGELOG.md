@@ -2,8 +2,11 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## Unreleased — repository only after v1.3.0
+## 1.3.1 — SHIPPED TO MAIN
 
+- Longer causal-proof README loop: 28 held frames, 1,960 centiseconds, consequence opener, and a your-repo close. Same 2→206 evidence. No fifth action and no new surface.
+- First-fold copy now sells the failure mode — Git will never show that second diff — then `npx --yes ruleblast@1.3.0 .` before the teaching `case`.
+- GitHub community tabs (Code of conduct, Contributing, Security) lead with a human sentence. Latest verified public release remains `v1.3.0`.
 - Repository skill at `.agents/skills/ruleblast` and an optional composite Action that comments a published-CLI `--receipt` on pull requests. Not a fifth CLI action and not a hosted product.
 
 ## 1.3.0 — RELEASED

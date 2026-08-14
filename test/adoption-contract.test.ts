@@ -25,13 +25,13 @@ interface PackageLock {
   readonly packages: Readonly<Record<string, { readonly version?: string }>>;
 }
 
-describe("v1.3.0 adoption contract", () => {
+describe("v1.3.1 adoption contract", () => {
   it("locks the exact package identity and supported discovery metadata", () => {
     const descriptor = readJson<PackageDescriptor>("package.json");
     const lock = readJson<PackageLock>("package-lock.json");
 
     expect(descriptor).toMatchObject({
-      version: "1.3.0",
+      version: "1.3.1",
       description:
         "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex and Claude Code projections already differ.",
       repository: {
@@ -57,8 +57,8 @@ describe("v1.3.0 adoption contract", () => {
       "cli",
       "developer-tools",
     ]);
-    expect(lock.version).toBe("1.3.0");
-    expect(lock.packages[""]?.version).toBe("1.3.0");
+    expect(lock.version).toBe("1.3.1");
+    expect(lock.packages[""]?.version).toBe("1.3.1");
 
     const discovery = `${descriptor.description}\n${descriptor.keywords.join("\n")}`;
     expect(discovery).not.toMatch(
@@ -111,14 +111,20 @@ describe("v1.3.0 adoption contract", () => {
 
     const tagline = readme.indexOf("Git shows the <code>AGENTS.md</code>");
     const causalProof = readme.indexOf("assets/ruleblast-causal-proof.gif");
+    const consequence = readme.indexOf("Git will never show that second diff");
     const blast = readme.indexOf("206 tracked paths changed stack");
+    const yourRepo = readme.indexOf("npx --yes ruleblast@1.3.0 .");
     const teachingCase = readme.indexOf("npx --yes ruleblast@1.3.0 case");
     const install = readme.indexOf("## Install");
     expect(tagline).toBeGreaterThan(-1);
     expect(causalProof).toBeGreaterThan(tagline);
-    expect(blast).toBeGreaterThan(causalProof);
-    expect(teachingCase).toBeGreaterThan(blast);
+    expect(consequence).toBeGreaterThan(causalProof);
+    expect(blast).toBeGreaterThan(consequence);
+    expect(yourRepo).toBeGreaterThan(blast);
+    expect(teachingCase).toBeGreaterThan(yourRepo);
     expect(install).toBeGreaterThan(teachingCase);
+    expect(readme).toContain("Codex: 206 path stacks moved");
+    expect(readme).toContain("Claude Code: 0");
   });
 
   it("publishes a truthful community funnel without shipping repository-only assets", () => {
@@ -160,12 +166,21 @@ describe("v1.3.0 adoption contract", () => {
     expect(security).toMatch(/latest published `1\.3\.x`/iu);
     expect(security).toMatch(/private vulnerability reporting is enabled/iu);
     expect(security).toMatch(/security\/advisories\/new/iu);
+    expect(security).toMatch(/stay on your machine/iu);
     expect(security).not.toContain("UNAVAILABLE");
 
     const conduct = read("CODE_OF_CONDUCT.md");
     expect(conduct).toMatch(/harassment/iu);
     expect(conduct).toMatch(/privacy/iu);
     expect(conduct).toMatch(/maintainers/iu);
+    expect(conduct).toMatch(/hard evidence/iu);
+    expect(conduct).toMatch(/protect/iu);
+
+    const contributingLead = read("CONTRIBUTING.md").slice(0, 600);
+    expect(contributingLead).toContain("v1.3.0");
+    expect(contributingLead).toContain("1.3.1");
+    expect(contributingLead).toMatch(/you do not need a 25-commit/iu);
+    expect(contributingLead).toMatch(/surprising result/iu);
 
     const installReport = read(".github/ISSUE_TEMPLATE/install-run.yml");
     for (const field of [
@@ -309,18 +324,18 @@ describe("v1.3.0 adoption contract", () => {
         totalDelayCentiseconds += delayCentiseconds;
       }
     }
-    expect(frameControls).toHaveLength(15);
+    expect(frameControls).toHaveLength(28);
     expect(frameControls.every(({ disposal }) => disposal === 1)).toBe(true);
     expect(frameControls.every(({ delayCentiseconds }) =>
       delayCentiseconds > 0 && delayCentiseconds <= 70
     )).toBe(true);
-    expect(totalDelayCentiseconds).toBe(1_050);
+    expect(totalDelayCentiseconds).toBe(1_960);
     expect(bytes.toString("ascii")).toContain("NETSCAPE2.0");
     expect(bytes.toString("ascii")).toContain(
-      "RULEBLAST_POSTER=A tiny instruction diff; complete held frames only",
+      "RULEBLAST_POSTER=Git will never show that second diff; complete held frames only",
     );
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "c4a79cf8e53c47e2ab1c3fef69b4f83ebe56bcaf7644e6b9e1225fc23881b1eb",
+      "5b4047a11205d0554760e328ae6d20d4dd768709110747df52827f6dbc33c84b",
     );
 
     const descriptor = readJson<PackageDescriptor>("package.json");

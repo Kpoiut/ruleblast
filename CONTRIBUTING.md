@@ -1,6 +1,8 @@
 # Contributing to RuleBlast
 
-RuleBlast `v1.3.0` is the latest verified public release. Fastest contribution: [surprising result](https://github.com/Kpoiut/ruleblast/issues/new?template=surprising-result.yml) — command, observed text, one sentence. No canonical JSON. Promoted Blast Cases stay the evidence gate.
+You do not need a 25-commit pilot to help.
+
+RuleBlast `v1.3.0` is the latest verified public release. This tree is `1.3.1`. Fastest contribution: [surprising result](https://github.com/Kpoiut/ruleblast/issues/new?template=surprising-result.yml) — command, observed text, one sentence. No canonical JSON. Promoted Blast Cases stay the evidence gate.
 
 ## Pull requests
 

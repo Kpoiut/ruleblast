@@ -2,7 +2,7 @@
 
 This document is the public behavior and result contract for RuleBlast v1. It defines what a result means, which bytes are in scope, how uncertainty survives analysis, and what the product may claim. Implementation details may change while this contract and the canonical JSON remain compatible.
 
-The v1 package version is `1.3.0`. An authorized distribution binds it to signed source tag `v1.3.0`; registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
+The v1 package version is `1.3.1`. An authorized distribution binds it to signed source tag `v1.3.1`; registry and GitHub Release availability are external facts that this contract never infers from a source checkout. Latest independently verified public npm distribution remains `1.3.0`.
 
 ## Product claims
 
