@@ -426,10 +426,11 @@ describe("repository documentation integrity", () => {
     expect(roadmap).not.toMatch(/\bQ[1-4]\b|\b20\d{2}-\d{2}-\d{2}\b/gu);
 
     const shippedStart = roadmap.indexOf("## **SHIPPED TO MAIN**");
-    const shipped = roadmap.slice(
-      shippedStart,
-      roadmap.indexOf("## **IN BUILD**", shippedStart),
-    );
+    const gatedEnd = ["## **IN BUILD**", "## **NEXT**"]
+      .map((heading) => roadmap.indexOf(heading, shippedStart))
+      .filter((index) => index > shippedStart)
+      .sort((left, right) => left - right)[0] ?? roadmap.length;
+    const shipped = roadmap.slice(shippedStart, gatedEnd);
     expect(shipped).toMatch(/packaged.+verified case/isu);
     expect(roadmap).not.toContain("**Production-pipeline demo**");
   });

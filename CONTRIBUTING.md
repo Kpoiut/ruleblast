@@ -1,6 +1,6 @@
 # Contributing to RuleBlast
 
-RuleBlast `v1.0.2` is the latest verified public release. This tree is `1.3.0`. Fastest contribution: [surprising result](https://github.com/Kpoiut/ruleblast/issues/new?template=surprising-result.yml).
+RuleBlast `v1.3.0` is the latest verified public release. Fastest contribution: [surprising result](https://github.com/Kpoiut/ruleblast/issues/new?template=surprising-result.yml).
 
 ## Pull requests
 

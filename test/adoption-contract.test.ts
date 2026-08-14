@@ -157,7 +157,7 @@ describe("v1.3.0 adoption contract", () => {
     const security = read("SECURITY.md");
     expect(security).toMatch(/do not include exploit details in a public issue/iu);
     expect(security).toMatch(/no response-time or remediation-time guarantee/iu);
-    expect(security).toMatch(/latest published `1\.0\.x`/iu);
+    expect(security).toMatch(/latest published `1\.3\.x`/iu);
     expect(security).toMatch(/private vulnerability reporting is enabled/iu);
     expect(security).toMatch(/security\/advisories\/new/iu);
     expect(security).not.toContain("UNAVAILABLE");

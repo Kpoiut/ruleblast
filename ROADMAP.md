@@ -125,11 +125,11 @@ It must not recalculate impact, fetch a web page, embed a generated image, intro
 
 > The result can travel. What happens when a third agent reads the same repo?
 
-## **IN BUILD** — `v1.3.0`: Third Documented Reality
+## **RELEASED** — `v1.3.0`: Third Documented Reality
 
 `--reality github/copilot-cli@1` adds one evidence-pinned Copilot CLI surface. Default two-profile bytes stay put. Copilot VS Code and hosted Copilot remain distinct unsupported surfaces.
 
-The target remains exactly one additional surface, not a generic integration wave. Admission required all of the following:
+The release remains exactly one additional surface, not a generic integration wave. Admission required all of the following:
 
 - official, versionable evidence for discovery, precedence, applicability, and limits;
 - positive, negative, ordering, ambiguity, and unknown fixtures;
@@ -138,6 +138,8 @@ The target remains exactly one additional surface, not a generic integration wav
 - implementation through the profile contract, with no vendor branch in snapshot, impact, transition, canonicalization, or rendering code.
 
 A vendor's CLI, editor extension, and hosted agent count as distinct surfaces whenever their loading semantics differ. Similar branding is not evidence of equivalent reality.
+
+**Verified publication receipt.** Signed tag object `f417ee350a6aa7431f23bbe698d58edd24dc8285` for [`v1.3.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v1.3.0) targets signed commit `8b2d083e6ebedb43315a2135621bd237a06a5f5d`. [npm `ruleblast@1.3.0`](https://www.npmjs.com/package/ruleblast/v/1.3.0) reports integrity `sha512-BsVvo3OsYiQKZx961VTZH7tYMLoEJuNNYWqX+OXcYMZZz77Rtvfs5rJ3kiGTfoycn3f4h4ze++tySXrOTiIRIw==`; exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download and GitHub Release asset both match the reviewed 93,562-byte tarball with SHA-256 `b4a2f04e4536d1859e3e80c2d4722b456d5194f47b7167df879af5577da5ec7c`; the canonical manifest has SHA-256 `9b5da71c2352b3273efeef5cdd228a602060e535ccbcf5804089a9ddacd9a664`. These are independently verified external records, not facts inferred from this checkout.
 
 ## **NEXT** — `v2.0.0`: Reality Packs
 

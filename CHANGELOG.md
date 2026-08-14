@@ -2,9 +2,21 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## Unreleased — 1.3.0 candidate
+## 1.3.0 — RELEASED
 
-- Opt-in `--reality github/copilot-cli@1` adds one evidence-pinned Copilot CLI surface. Default `--json` remains the two-profile schema-1 result. Copilot VS Code and hosted Copilot stay unsupported.
+### Changed
+
+- Semantic `--help`, packaged `AGENT_USAGE.md`, and a shorter GitHub-first README. Four existing routes. No fifth action.
+- Opt-in `--witness` prints why-edges, including same-directory override precedence. Default `--json` remains the canonical schema-1 result.
+- Opt-in `--receipt` prints a pasteable proof card and an `RBCTX1` identity derived from existing projection bytes.
+- Opt-in `--reality github/copilot-cli@1` adds one evidence-pinned Copilot CLI surface. Copilot VS Code and hosted Copilot stay unsupported.
+- Advanced public install identity to exact `ruleblast@1.3.0` while preserving the historical `1.0.0` receipt command.
+
+### Release artifact
+
+- Signed tag object `f417ee350a6aa7431f23bbe698d58edd24dc8285` targets signed commit `8b2d083e6ebedb43315a2135621bd237a06a5f5d`.
+- npm and the GitHub Release serve the same 93,562-byte tarball with SHA-256 `b4a2f04e4536d1859e3e80c2d4722b456d5194f47b7167df879af5577da5ec7c`; the release manifest SHA-256 is `9b5da71c2352b3273efeef5cdd228a602060e535ccbcf5804089a9ddacd9a664`.
+- [npm `ruleblast@1.3.0`](https://www.npmjs.com/package/ruleblast/v/1.3.0) reports integrity `sha512-BsVvo3OsYiQKZx961VTZH7tYMLoEJuNNYWqX+OXcYMZZz77Rtvfs5rJ3kiGTfoycn3f4h4ze++tySXrOTiIRIw==`; exact-tarball publication means registry `gitHead is absent` rather than invented.
 
 ## 1.2.0 — SHIPPED TO MAIN
 
