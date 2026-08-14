@@ -1,17 +1,13 @@
-import { readFile } from "node:fs/promises";
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { canonicalJson, sha256 } from "./canonical.js";
 import type { DiffRuleBlastResult } from "./model.js";
 
-const RECEIPT_URL = new URL(
-  "../cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json",
-  import.meta.url,
-);
-const RECEIPT_SHA256 =
-  "5735038d47cae7b538e113d51214dbbc6ecd29cbca815912813abaa900ecfc89";
-const CORE_SHA256 =
-  "1e907a88ed648ebbd68b4f588c3bd09058ab7714e8f85a3f2d4a1c60e5a40938";
-const BASE = "27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8";
-const HEAD = "e420008a1c10c5c328e506247560117f4d40b855";
+const CASES_ROOT = fileURLToPath(new URL("../cases", import.meta.url));
+const GIT_OID = /^[0-9a-f]{40}$/u;
+const GIT_DIGEST = /^[0-9a-f]{64}$/u;
+const GITHUB_NAME = /^[A-Za-z0-9_.-]+$/u;
 const RESULT_FIELDS = [
   "mode",
   "schemaVersion",
@@ -26,11 +22,19 @@ const RESULT_FIELDS = [
   "findings",
 ] as const;
 
-export const PACKAGED_CASE_PRESENTATION = Object.freeze({
-  label: "kpoiut/ruleblast",
-  beforeLabel: BASE.slice(0, 12),
-  afterLabel: HEAD.slice(0, 12),
-});
+export interface PackagedCasePresentation {
+  readonly label: string;
+  readonly beforeLabel: string;
+  readonly afterLabel: string;
+}
+
+export interface VerifiedPromotedCase {
+  readonly receiptSha256: string;
+  readonly resultCore: DiffRuleBlastResult;
+  readonly presentation: PackagedCasePresentation;
+  readonly base: string;
+  readonly head: string;
+}
 
 interface CaseReceipt {
   readonly schemaVersion: unknown;
@@ -54,6 +58,20 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+function requireGitOid(value: unknown, label: string): string {
+  if (typeof value !== "string" || !GIT_OID.test(value)) {
+    fail(`${label} must be a full Git commit id`);
+  }
+  return value;
+}
+
+function requireGithubName(value: unknown, label: string): string {
+  if (typeof value !== "string" || !GITHUB_NAME.test(value)) {
+    fail(`${label} is not a public GitHub identity`);
+  }
+  return value;
+}
+
 function assertCore(
   value: unknown,
   base: string,
@@ -70,8 +88,19 @@ function assertCore(
   }
 }
 
+function listReceiptPaths(root: string, relative = ""): string[] {
+  const directory = relative === "" ? root : join(root, relative);
+  const found: string[] = [];
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const next = relative === "" ? entry.name : `${relative}/${entry.name}`;
+    if (entry.isDirectory()) found.push(...listReceiptPaths(root, next));
+    else if (entry.isFile() && entry.name.endsWith(".json")) found.push(next);
+  }
+  return found.sort((left, right) => left < right ? -1 : left > right ? 1 : 0);
+}
+
 function parseReceipt(bytes: Uint8Array): CaseReceipt {
-  if (sha256(bytes) !== RECEIPT_SHA256) fail("receipt SHA-256 changed");
+  if (bytes.byteLength === 0) fail("receipt is empty");
   const text = Buffer.from(bytes).toString("utf8");
   let parsed: unknown;
   try {
@@ -86,24 +115,65 @@ function parseReceipt(bytes: Uint8Array): CaseReceipt {
   return parsed as unknown as CaseReceipt;
 }
 
-function verifyReceipt(receipt: CaseReceipt): DiffRuleBlastResult {
+export function verifyPromotedReceipt(
+  bytes: Uint8Array,
+  relativePosixPath: string,
+): VerifiedPromotedCase {
+  const receiptSha256 = sha256(bytes);
+  if (!GIT_DIGEST.test(receiptSha256)) fail("receipt SHA-256 is incomplete");
+  const receipt = parseReceipt(bytes);
   if (receipt.schemaVersion !== 1 || receipt.resolverRevision !== 1 ||
-      receipt.base !== BASE || receipt.head !== HEAD ||
-      !isRecord(receipt.repository) ||
-      receipt.repository.url !== "https://github.com/kpoiut/ruleblast" ||
-      receipt.repository.owner !== "kpoiut" ||
-      receipt.repository.repo !== "ruleblast") {
+      !isRecord(receipt.repository)) {
     fail("repository identity or resolver revision changed");
   }
-  assertCore(receipt.resultCore, BASE, HEAD);
-  const digest = sha256(canonicalJson(receipt.resultCore));
-  if (receipt.coreDigest !== CORE_SHA256 || digest !== CORE_SHA256) {
+  const owner = requireGithubName(receipt.repository.owner, "owner");
+  const repo = requireGithubName(receipt.repository.repo, "repo");
+  const base = requireGitOid(receipt.base, "base");
+  const head = requireGitOid(receipt.head, "head");
+  const expectedPath = `${owner}__${repo}/${base.slice(0, 12)}..${head.slice(0, 12)}.json`;
+  if (relativePosixPath !== expectedPath) {
+    fail("receipt path does not bind to repository identity");
+  }
+  if (receipt.repository.url !== `https://github.com/${owner}/${repo}`) {
+    fail("repository identity or resolver revision changed");
+  }
+  if (typeof receipt.coreDigest !== "string" || !GIT_DIGEST.test(receipt.coreDigest)) {
     fail("resultCore digest changed");
   }
-  return receipt.resultCore;
+  assertCore(receipt.resultCore, base, head);
+  const digest = sha256(canonicalJson(receipt.resultCore));
+  if (digest !== receipt.coreDigest) fail("resultCore digest changed");
+  return {
+    receiptSha256,
+    resultCore: receipt.resultCore,
+    presentation: {
+      label: `${owner}/${repo}`,
+      beforeLabel: base.slice(0, 12),
+      afterLabel: head.slice(0, 12),
+    },
+    base,
+    head,
+  };
+}
+
+function loadPromotedCase(): VerifiedPromotedCase {
+  const receipts = listReceiptPaths(CASES_ROOT);
+  if (receipts.length !== 1) {
+    fail("exactly one promoted receipt must be packaged");
+  }
+  const relativePosixPath = receipts[0]!;
+  return verifyPromotedReceipt(
+    readFileSync(join(CASES_ROOT, ...relativePosixPath.split("/"))),
+    relativePosixPath,
+  );
+}
+
+export function packagedCasePresentation(): PackagedCasePresentation {
+  return loadPromotedCase().presentation;
 }
 
 export function captureCaseResult(value: unknown): DiffRuleBlastResult {
+  const promoted = loadPromotedCase();
   const captured = JSON.parse(canonicalJson(value)) as unknown;
   if (!isRecord(captured) || Object.keys(captured).length !== RESULT_FIELDS.length ||
       RESULT_FIELDS.some((field) => !(field in captured)) ||
@@ -112,13 +182,13 @@ export function captureCaseResult(value: unknown): DiffRuleBlastResult {
       typeof captured.after.oid !== "string") {
     fail("case dependency returned an invalid result");
   }
-  assertCore(captured, BASE, HEAD);
-  if (sha256(canonicalJson(captured)) !== CORE_SHA256) {
+  assertCore(captured, promoted.base, promoted.head);
+  if (sha256(canonicalJson(captured)) !== sha256(canonicalJson(promoted.resultCore))) {
     fail("case dependency returned an unverified result");
   }
   return captured;
 }
 
 export async function openPackagedCase(): Promise<DiffRuleBlastResult> {
-  return verifyReceipt(parseReceipt(await readFile(RECEIPT_URL)));
+  return loadPromotedCase().resultCore;
 }

@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
-import { readFileSync, realpathSync } from "node:fs";
+import { realpathSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { CliUsageError, parseArgs } from "./args.js";
 import { openPackagedCase } from "./case.js";
+import { packageVersion } from "./package-identity.js";
 import { displayText, writeLine } from "./cli-output.js";
 import { runAnalysisAction } from "./cli-actions.js";
 import {
@@ -37,21 +38,6 @@ export type {
 } from "./cli-output.js";
 
 const USAGE = renderCliHelp();
-
-function packageVersion(): string {
-  const value = JSON.parse(
-    readFileSync(new URL("../package.json", import.meta.url), "utf8"),
-  ) as unknown;
-  if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    throw new TypeError("package.json must contain an object");
-  }
-  const descriptor = Object.getOwnPropertyDescriptor(value, "version");
-  if (descriptor === undefined || !("value" in descriptor) ||
-      typeof descriptor.value !== "string" || descriptor.value === "") {
-    throw new TypeError("package.json version must be a non-empty string");
-  }
-  return descriptor.value;
-}
 
 const DEFAULT_PROFILES = Object.freeze([claudeProfile, codexProfile]);
 const DEFAULT_DEPENDENCIES: CliDependencies = Object.freeze({

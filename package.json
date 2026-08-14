@@ -1,6 +1,6 @@
 {
   "name": "ruleblast",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex and Claude Code projections already differ.",
   "keywords": [
     "agents.md",

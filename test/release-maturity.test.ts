@@ -296,7 +296,7 @@ describe("public release maturity", () => {
   it("records v1.5.2 as evidence-link wording without inventing publication", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v1.5.2`: Evidence-Link Wording";
-    const next = roadmap.indexOf("## **NEXT** — `v2.0.0`: Reality Packs");
+    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v1.5.3`: Receipt Binding");
     expect(roadmap.indexOf(heading)).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(roadmap.indexOf(heading));
     const shipped = roadmap.slice(roadmap.indexOf(heading), next);
@@ -306,6 +306,23 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 1.5.2 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 1\.5\.2 — RELEASED/u);
     expect(read("CHANGELOG.md")).toMatch(/evidence links/iu);
+  });
+
+  it("records v1.5.3 as receipt binding without inventing publication", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v1.5.3`: Receipt Binding";
+    const next = roadmap.indexOf("## **NEXT** — `v2.0.0`: Reality Packs");
+    expect(roadmap.indexOf(heading)).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(roadmap.indexOf(heading));
+    const shipped = roadmap.slice(roadmap.indexOf(heading), next);
+    expect(shipped).toMatch(/coreDigest/u);
+    expect(shipped).toMatch(/\{owner\}__\{repo\}/u);
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 1.5.3 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 1\.5\.3 — RELEASED/u);
+    expect(read("src/case.ts")).not.toContain(
+      "5735038d47cae7b538e113d51214dbbc6ecd29cbca815912813abaa900ecfc89",
+    );
   });
 
   it("keeps release-state records outside the current package boundary", () => {

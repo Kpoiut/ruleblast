@@ -2,7 +2,7 @@
 
 This document is the public behavior and result contract for RuleBlast v1. It defines what a result means, which bytes are in scope, how uncertainty survives analysis, and what the product may claim. Implementation details may change while this contract and the canonical JSON remain compatible.
 
-The v1 package version is `1.5.2`. An authorized distribution binds it to signed source tag `v1.5.2`; registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
+The v1 package version is `1.5.3`. An authorized distribution binds it to signed source tag `v1.5.3`; registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
 
 ## Product claims
 
@@ -289,7 +289,7 @@ Text color, shell quoting, terminal labels, and explanatory metaphors are presen
 
 ## Packaged case contract
 
-The packaged `case` action presents one promoted real-public-repository receipt. It verifies the complete receipt SHA-256, canonical single-line JSON plus trailing LF, repository identity, immutable full base and head commit ids, resolver revision, and the SHA-256 of `resultCore` before emitting output. A failed verification is an internal integrity failure and emits no result.
+The packaged `case` action presents the single promoted real-public-repository receipt under `cases/`. It computes the complete receipt SHA-256, requires canonical single-line JSON plus trailing LF, binds the file path to `{owner}__{repo}/{base12}..{head12}.json`, checks the public GitHub URL against those identity fields, requires full immutable base and head commit ids, resolver revision 1, and that `coreDigest` equals the SHA-256 of `resultCore` before emitting output. A failed verification is an internal integrity failure and emits no result. Identity is taken from the receipt; it is not duplicated as source literals.
 
 The action presents the verified `resultCore` directly. It does not reconstruct unavailable repository source bytes, rerun profile resolution or impact analysis, require a Git checkout, or access the network. `case --json` is exactly the canonical `resultCore` plus one LF. Text identifies the public repository and abbreviated immutable refs before its first metric; `case --explain <path>` selects only a path already recorded in that core.
 

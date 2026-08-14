@@ -2,6 +2,10 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 1.5.3 — SHIPPED TO MAIN
+
+- Packaged `case` binds the single promoted receipt by path convention and internal digest. Receipt SHA, core digest, and commit ids are no longer duplicated as source literals. Advertised pin is `ruleblast@1.5.3`. Public preview images name `v1.5.3`. No fifth action.
+
 ## 1.5.2 — SHIPPED TO MAIN
 
 - Separates the public 206 example into a changed instruction source (nested `AGENTS.md`) and an affected consumer path. `causes` stay evidence links. Advertised pin is `ruleblast@1.5.2`. No fifth action.

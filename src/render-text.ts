@@ -1,3 +1,4 @@
+import { advertisedPackage } from "./package-identity.js";
 import { summarizeSourceBlasts } from "./domain/source-blast.js";
 import type {
   CurrentPathProjection,
@@ -178,7 +179,7 @@ function renderCurrent(
       "No repo instructions yet.",
       "",
       "Want the 10-second reveal?",
-      "  npx --yes ruleblast@1.5.2 case",
+      `  npx --yes ${advertisedPackage()} case`,
     );
   } else {
     const count = result.counts.currentSplitPathCount;

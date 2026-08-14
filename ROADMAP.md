@@ -207,6 +207,12 @@ Presentation. The public 206 example names the nested `AGENTS.md` as the changed
 
 This tree is `1.5.2`. Latest independently verified public npm distribution remains `1.5.1`.
 
+## **SHIPPED TO MAIN** — `v1.5.3`: Receipt Binding
+
+The packaged `case` command discovers the single promoted receipt, binds `{owner}__{repo}/{base12}..{head12}.json` to the receipt identity, and checks `coreDigest` against `resultCore`. It does not keep a second copy of those hashes in source.
+
+This tree is `1.5.3`. Latest independently verified public npm distribution remains `1.5.1`.
+
 ## **NEXT** — `v2.0.0`: Reality Packs
 
 The target is a finite, reviewed, declarative profile format—not an executable plugin system.

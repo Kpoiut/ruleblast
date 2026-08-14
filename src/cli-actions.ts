@@ -1,7 +1,7 @@
 import type { CliArgs, SnapshotSelector } from "./args.js";
 import {
   captureCaseResult,
-  PACKAGED_CASE_PRESENTATION,
+  packagedCasePresentation,
 } from "./case.js";
 import {
   currentExplain,
@@ -139,11 +139,12 @@ export async function runAnalysisAction(
 ): Promise<number> {
   if (args.action === "case") {
     const result = captureCaseResult(await dependencies.openCase());
+    const presentation = packagedCasePresentation();
     if (args.explainPath === null) {
       present(result, args.output, io, {
-        beforeLabel: PACKAGED_CASE_PRESENTATION.beforeLabel,
-        afterLabel: PACKAGED_CASE_PRESENTATION.afterLabel,
-        caseLabel: PACKAGED_CASE_PRESENTATION.label,
+        beforeLabel: presentation.beforeLabel,
+        afterLabel: presentation.afterLabel,
+        caseLabel: presentation.label,
         shellDialect: dependencies.shellDialect,
       }, presentationExtras(args));
       return noDefensibleResult(result) ? 2 : 0;
@@ -156,9 +157,9 @@ export async function runAnalysisAction(
       );
     }
     present(diffExplain(result, args.explainPath), args.output, io, {
-      beforeLabel: PACKAGED_CASE_PRESENTATION.beforeLabel,
-      afterLabel: PACKAGED_CASE_PRESENTATION.afterLabel,
-      caseLabel: PACKAGED_CASE_PRESENTATION.label,
+      beforeLabel: presentation.beforeLabel,
+      afterLabel: presentation.afterLabel,
+      caseLabel: presentation.label,
       shellDialect: dependencies.shellDialect,
     }, presentationExtras(args));
     return noDefensibleDiffPath(selected) ? 2 : 0;

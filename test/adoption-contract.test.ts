@@ -25,13 +25,13 @@ interface PackageLock {
   readonly packages: Readonly<Record<string, { readonly version?: string }>>;
 }
 
-describe("v1.5.2 adoption contract", () => {
+describe("v1.5.3 adoption contract", () => {
   it("locks the exact package identity and supported discovery metadata", () => {
     const descriptor = readJson<PackageDescriptor>("package.json");
     const lock = readJson<PackageLock>("package-lock.json");
 
     expect(descriptor).toMatchObject({
-      version: "1.5.2",
+      version: "1.5.3",
       description:
         "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex and Claude Code projections already differ.",
       repository: {
@@ -57,8 +57,8 @@ describe("v1.5.2 adoption contract", () => {
       "cli",
       "developer-tools",
     ]);
-    expect(lock.version).toBe("1.5.2");
-    expect(lock.packages[""]?.version).toBe("1.5.2");
+    expect(lock.version).toBe("1.5.3");
+    expect(lock.packages[""]?.version).toBe("1.5.3");
 
     const discovery = `${descriptor.description}\n${descriptor.keywords.join("\n")}`;
     expect(discovery).not.toMatch(
@@ -96,7 +96,7 @@ describe("v1.5.2 adoption contract", () => {
   it("keeps the public onboarding on the verified case and product boundary", () => {
     const readme = read("README.md");
     expect(readme).toContain("## Run the verified case");
-    expect(readme).toContain("npx --yes ruleblast@1.5.2 case");
+    expect(readme).toContain("npx --yes ruleblast@1.5.3 case");
     expect(readme).not.toMatch(/ruleblast demo/iu);
     expect(readme).not.toContain("DEMO FIXTURE");
     expect(readme).not.toContain("remains conditional");
@@ -111,10 +111,10 @@ describe("v1.5.2 adoption contract", () => {
 
     const tagline = readme.indexOf("Git shows the <code>AGENTS.md</code>");
     const causalProof = readme.indexOf("assets/ruleblast-causal-proof.gif");
-    const yourRepo = readme.indexOf("npx --yes ruleblast@1.5.2 .");
+    const yourRepo = readme.indexOf("npx --yes ruleblast@1.5.3 .");
     const missed = readme.indexOf("## What Git missed");
     const proof = readme.indexOf("PROOF.md");
-    const teachingCase = readme.indexOf("npx --yes ruleblast@1.5.2 case");
+    const teachingCase = readme.indexOf("npx --yes ruleblast@1.5.3 case");
     const install = readme.indexOf("## Install");
     expect(tagline).toBeGreaterThan(-1);
     expect(causalProof).toBeGreaterThan(tagline);
@@ -179,7 +179,7 @@ describe("v1.5.2 adoption contract", () => {
 
     const contributingLead = read("CONTRIBUTING.md").slice(0, 700);
     expect(contributingLead).toContain("v1.5.1");
-    expect(contributingLead).toContain("1.5.2");
+    expect(contributingLead).toContain("1.5.3");
     expect(contributingLead).toMatch(/you do not need a 25-commit/iu);
     expect(contributingLead).toMatch(/surprising result/iu);
 
@@ -357,7 +357,7 @@ describe("v1.5.2 adoption contract", () => {
     const asset = "assets/ruleblast-visual-benchmark.png";
     const image = readme.indexOf(asset);
     const install = readme.indexOf("## Install");
-    expect(heading).toBeGreaterThan(readme.indexOf("npx --yes ruleblast@1.5.2 ."));
+    expect(heading).toBeGreaterThan(readme.indexOf("npx --yes ruleblast@1.5.3 ."));
     expect(image).toBeGreaterThan(heading);
     expect(install).toBeGreaterThan(image);
     expect(readme).toContain("10,000 nested paths");
@@ -379,7 +379,7 @@ describe("v1.5.2 adoption contract", () => {
     expect(bytes.readUInt32BE(20)).toBe(240);
     expect(statSync(join(repositoryRoot, asset)).size).toBeLessThanOrEqual(400_000);
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "c65f560a5d0311f9dd66b1e648bc9943f890355a474866d101b611d7e22b821a",
+      "39f905b44b05db9af116d23b91da291ca0f7a32fc875ecd1dc3401e02500a02c",
     );
     const descriptor = readJson<PackageDescriptor>("package.json");
     expect(descriptor.files).not.toContain(asset);
