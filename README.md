@@ -1,7 +1,7 @@
 <h1 align="center">RuleBlast — Git diff for invisible repository instructions</h1>
 
 <p align="center">
-  <img src="assets/ruleblast-hero.png" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
+  <img src="assets/ruleblast-hero.png?v=1.5.3" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
 </p>
 
 <p align="center">
@@ -23,7 +23,7 @@
 </p>
 
 <div align="center">
-  <img src="assets/ruleblast-causal-proof.gif" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
+  <img src="assets/ruleblast-causal-proof.gif?v=1.5.3" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
 </div>
 
 ```bash
@@ -37,7 +37,7 @@ npx --yes ruleblast@1.5.3 diff HEAD~1
 ## What Git missed
 
 <div align="center">
-  <img src="assets/ruleblast-visual-benchmark.png" alt="What Git missed: 2 instruction lines, 206 Codex paths, 0 Claude Code paths" width="100%">
+  <img src="assets/ruleblast-visual-benchmark.png?v=1.5.3" alt="What Git missed: 2 instruction lines, 206 Codex paths, 0 Claude Code paths" width="100%">
 </div>
 
 Git shows the instruction edit. It does not show every repository path that inherits it.
