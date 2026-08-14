@@ -249,18 +249,48 @@ describe("public release maturity", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v1.5.0`: Source-Centric Blast Attribution";
     expect(roadmap.indexOf(heading)).toBeGreaterThan(-1);
-    expect(roadmap.indexOf("## **SHIPPED TO MAIN** — `v1.5.1`"))
+    expect(roadmap.indexOf("## **RELEASED** — `v1.5.1`: Public Install Identity"))
       .toBeGreaterThan(roadmap.indexOf(heading));
     expect(read("CHANGELOG.md")).toContain("## 1.5.0 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 1\.5\.0 — RELEASED/u);
   });
 
-  it("records the feature admission test and v1.5.1 without inventing publication yet", () => {
+  it("records the independently verified v1.5.1 release receipt", () => {
     const roadmap = read("ROADMAP.md");
+    const releasedHeading =
+      "## **RELEASED** — `v1.5.1`: Public Install Identity";
+    const nextHeading = "## **NEXT** — `v2.0.0`: Reality Packs";
+    const releasedStart = roadmap.indexOf(releasedHeading);
+    const nextStart = roadmap.indexOf(nextHeading);
+
+    expect(releasedStart).toBeGreaterThanOrEqual(0);
+    expect(nextStart).toBeGreaterThan(releasedStart);
+
+    const released = roadmap.slice(releasedStart, nextStart);
+    for (const evidence of [
+      "1e1ee219b45c69da46a732ef215835eee11f33fc",
+      "ca6dea5efab263a11dbfc0221b88570cdcf50b7f",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v1.5.1",
+      "https://www.npmjs.com/package/ruleblast/v/1.5.1",
+      "95,434",
+      "d85e4f35233b1bd65f778c65eb83122b41405df42cd4ef72b4c602a18bb1a036",
+      "08711a24f3ed1a9c43e0c065337962c2ef229e9c8edf3f0051fdd97b402de590",
+      "sha512-0QRQ88yxOMrOPYME1I5IIZKaWlJ8PECP40L+rXZ4rKmPM2ANFfJjlaKJnCFOAMvxOCXcyXqqk2/ON6mHPZPA8g==",
+      "gitHead is absent",
+      "registry download and GitHub Release asset both match",
+      "not facts inferred from this checkout",
+    ]) {
+      expect(released).toContain(evidence);
+    }
+    expect(released).not.toMatch(/\bIN BUILD\b|remain conditional|publication.+incomplete/iu);
     expect(roadmap).toContain("## Feature admission test");
     expect(roadmap).toContain("Does it make the blast radius more exact?");
-    expect(roadmap).toContain("## **SHIPPED TO MAIN** — `v1.5.1`");
-    expect(read("CHANGELOG.md")).toContain("## 1.5.1 — SHIPPED TO MAIN");
+
+    const changelog = read("CHANGELOG.md");
+    expect(changelog).toContain("## 1.5.1 — RELEASED");
+    expect(changelog).toContain(
+      "Signed tag object `1e1ee219b45c69da46a732ef215835eee11f33fc`",
+    );
   });
 
   it("keeps release-state records outside the current package boundary", () => {

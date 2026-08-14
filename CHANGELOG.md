@@ -2,9 +2,15 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 1.5.1 — SHIPPED TO MAIN
+## 1.5.1 — RELEASED
 
 - Public install identity `ruleblast@1.5.1`. Feature admission test on the roadmap. No fifth action.
+
+### Release artifact
+
+- Signed tag object `1e1ee219b45c69da46a732ef215835eee11f33fc` targets commit `ca6dea5efab263a11dbfc0221b88570cdcf50b7f`.
+- npm and the GitHub Release serve the same 95,434-byte tarball with SHA-256 `d85e4f35233b1bd65f778c65eb83122b41405df42cd4ef72b4c602a18bb1a036`; the release manifest SHA-256 is `08711a24f3ed1a9c43e0c065337962c2ef229e9c8edf3f0051fdd97b402de590`.
+- [npm `ruleblast@1.5.1`](https://www.npmjs.com/package/ruleblast/v/1.5.1) reports integrity `sha512-0QRQ88yxOMrOPYME1I5IIZKaWlJ8PECP40L+rXZ4rKmPM2ANFfJjlaKJnCFOAMvxOCXcyXqqk2/ON6mHPZPA8g==`; exact-tarball publication means registry `gitHead is absent` rather than invented.
 
 ## 1.5.0 — SHIPPED TO MAIN
 

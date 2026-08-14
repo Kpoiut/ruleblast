@@ -193,9 +193,11 @@ This tree is `1.4.4`. Latest independently verified public npm distribution rema
 
 This tree is `1.5.0`. Latest independently verified public npm distribution remains `1.3.0`.
 
-## **SHIPPED TO MAIN** — `v1.5.1`: Public Install Identity
+## **RELEASED** — `v1.5.1`: Public Install Identity
 
 Pins advertised `npx` and the optional Action to `ruleblast@1.5.1`. Adds the feature admission test. Gemini CLI remains gated.
+
+**Verified publication receipt.** Signed tag object `1e1ee219b45c69da46a732ef215835eee11f33fc` for [`v1.5.1`](https://github.com/Kpoiut/ruleblast/releases/tag/v1.5.1) targets commit `ca6dea5efab263a11dbfc0221b88570cdcf50b7f`. [npm `ruleblast@1.5.1`](https://www.npmjs.com/package/ruleblast/v/1.5.1) reports integrity `sha512-0QRQ88yxOMrOPYME1I5IIZKaWlJ8PECP40L+rXZ4rKmPM2ANFfJjlaKJnCFOAMvxOCXcyXqqk2/ON6mHPZPA8g==`; exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download and GitHub Release asset both match the reviewed 95,434-byte tarball with SHA-256 `d85e4f35233b1bd65f778c65eb83122b41405df42cd4ef72b4c602a18bb1a036`; the canonical manifest has SHA-256 `08711a24f3ed1a9c43e0c065337962c2ef229e9c8edf3f0051fdd97b402de590`. These are independently verified external records, not facts inferred from this checkout.
 
 This tree is `1.5.1`.
 
