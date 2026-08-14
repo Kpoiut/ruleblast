@@ -16,7 +16,7 @@ inputs:
   version:
     description: Exact published package to run.
     required: false
-    default: "1.5.1"
+    default: "1.5.2"
   github-token:
     description: Token used only to post the pull request comment.
     required: false

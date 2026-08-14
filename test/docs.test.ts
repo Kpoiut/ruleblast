@@ -94,14 +94,14 @@ describe("README story contract", () => {
       "img.shields.io/npm/v/ruleblast",
       "Git shows the <code>AGENTS.md</code>",
       "assets/ruleblast-causal-proof.gif",
-      "npx --yes ruleblast@1.5.1 .",
+      "npx --yes ruleblast@1.5.2 .",
       "## What Git missed",
       "assets/ruleblast-visual-benchmark.png",
       "codex-rs/tui/src/bottom_pane/action_required_title.rs",
       "PROOF.md",
       "## Install",
       "## Run the verified case",
-      "npx --yes ruleblast@1.5.1 case --json",
+      "npx --yes ruleblast@1.5.2 case --json",
       "Exact packaged-case terminal transcript",
       "## Explain one path",
       "## Scope",
@@ -120,6 +120,33 @@ describe("README story contract", () => {
     }
     expect(read("PROOF.md")).toContain("zero partial");
     expect(readme).not.toContain("DEMO FIXTURE");
+  });
+
+  it("names the nested AGENTS.md as the changed source and the .rs file as an affected path", () => {
+    const proof = read("PROOF.md");
+    const pair = `${readme}\n${proof}`;
+    expect(pair).not.toMatch(/One (exact )?cause/iu);
+    expect(pair).not.toMatch(
+      /exact cause[^\n]*action_required_title\.rs/iu,
+    );
+    expect(readme).toMatch(
+      /One affected path:[\s\S]*action_required_title\.rs[\s\S]*inheriting the changed nested[\s\S]*AGENTS\.md/iu,
+    );
+    expect(proof).toMatch(/Changed instruction source/u);
+    expect(proof).toContain(
+      "codex-rs/tui/src/bottom_pane/AGENTS.md",
+    );
+    expect(proof).toMatch(/Example affected path/u);
+    expect(proof).toContain(
+      "codex-rs/tui/src/bottom_pane/action_required_title.rs",
+    );
+    expect(proof).toMatch(/evidence link/iu);
+    expect(
+      readme.slice(
+        readme.indexOf("## Real repository"),
+        readme.indexOf("## Install"),
+      ),
+    ).toMatch(/\?/u);
   });
 
   it("embeds the checked golden verified-case transcript exactly", () => {
@@ -152,21 +179,21 @@ describe("README story contract", () => {
   it("documents one-command, global, local, maintenance, and source installs", () => {
     for (const command of [
       "node --version",
-      "npm view ruleblast@1.5.1 version",
-      "npx --yes ruleblast@1.5.1",
-      "npx --yes ruleblast@1.5.1 --help",
+      "npm view ruleblast@1.5.2 version",
+      "npx --yes ruleblast@1.5.2",
+      "npx --yes ruleblast@1.5.2 --help",
       "cd <your-git-repository>",
-      "npm install --global ruleblast@1.5.1",
+      "npm install --global ruleblast@1.5.2",
       "ruleblast --version",
       "ruleblast --help",
       "ruleblast",
-      "npm install --save-dev --save-exact ruleblast@1.5.1",
+      "npm install --save-dev --save-exact ruleblast@1.5.2",
       "npx ruleblast --version",
       "npx ruleblast --help",
       "npm uninstall --global ruleblast",
       "npm uninstall --save-dev ruleblast",
       "npm cache verify",
-      "git clone --branch v1.5.1 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v1.5.2 --depth 1 https://github.com/Kpoiut/ruleblast.git",
       "npm ci --ignore-scripts",
       "npm run build",
       "node dist/cli.js --version",
@@ -175,10 +202,10 @@ describe("README story contract", () => {
       expect(readme).toContain(command);
     }
     for (const action of [
-      "npx --yes ruleblast@1.5.1 .",
-      "npx --yes ruleblast@1.5.1 diff HEAD~1",
-      "npx --yes ruleblast@1.5.1 explain src/args.ts --from HEAD~1",
-      "npx --yes ruleblast@1.5.1 case",
+      "npx --yes ruleblast@1.5.2 .",
+      "npx --yes ruleblast@1.5.2 diff HEAD~1",
+      "npx --yes ruleblast@1.5.2 explain src/args.ts --from HEAD~1",
+      "npx --yes ruleblast@1.5.2 case",
     ]) {
       expect(readme).toContain(action);
     }

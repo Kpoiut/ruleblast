@@ -201,6 +201,12 @@ Pins advertised `npx` and the optional Action to `ruleblast@1.5.1`. Adds the fea
 
 This tree is `1.5.1`.
 
+## **SHIPPED TO MAIN** — `v1.5.2`: Evidence-Link Wording
+
+Presentation. The public 206 example names the nested `AGENTS.md` as the changed instruction source and `action_required_title.rs` as one affected path. Source-centric counts remain overlapping attribution, not a counterfactual partition.
+
+This tree is `1.5.2`. Latest independently verified public npm distribution remains `1.5.1`.
+
 ## **NEXT** — `v2.0.0`: Reality Packs
 
 The target is a finite, reviewed, declarative profile format—not an executable plugin system.

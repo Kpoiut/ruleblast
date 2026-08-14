@@ -259,7 +259,7 @@ describe("public release maturity", () => {
     const roadmap = read("ROADMAP.md");
     const releasedHeading =
       "## **RELEASED** — `v1.5.1`: Public Install Identity";
-    const nextHeading = "## **NEXT** — `v2.0.0`: Reality Packs";
+    const nextHeading = "## **SHIPPED TO MAIN** — `v1.5.2`: Evidence-Link Wording";
     const releasedStart = roadmap.indexOf(releasedHeading);
     const nextStart = roadmap.indexOf(nextHeading);
 
@@ -291,6 +291,21 @@ describe("public release maturity", () => {
     expect(changelog).toContain(
       "Signed tag object `1e1ee219b45c69da46a732ef215835eee11f33fc`",
     );
+  });
+
+  it("records v1.5.2 as evidence-link wording without inventing publication", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v1.5.2`: Evidence-Link Wording";
+    const next = roadmap.indexOf("## **NEXT** — `v2.0.0`: Reality Packs");
+    expect(roadmap.indexOf(heading)).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(roadmap.indexOf(heading));
+    const shipped = roadmap.slice(roadmap.indexOf(heading), next);
+    expect(shipped).toMatch(/affected path/iu);
+    expect(shipped).toMatch(/overlapping attribution/iu);
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 1.5.2 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 1\.5\.2 — RELEASED/u);
+    expect(read("CHANGELOG.md")).toMatch(/evidence links/iu);
   });
 
   it("keeps release-state records outside the current package boundary", () => {

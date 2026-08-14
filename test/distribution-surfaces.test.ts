@@ -14,13 +14,17 @@ describe("distribution surfaces", () => {
     const skill = read(skillPath);
     expect(skill).toMatch(/^---\r?\nname: ruleblast\r?\n/u);
     expect(skill).toContain("Use when");
-    expect(skill).toContain("npx --yes ruleblast@1.5.1");
+    expect(skill).toContain("npx --yes ruleblast@1.5.2");
     expect(skill).toContain("There is no `ruleblast scan` subcommand");
     expect(skill).toMatch(/RULEBLAST_AGENT_ALLOW|\.ruleblast-allow/u);
     expect(skill).toMatch(/ask/iu);
     expect(skill).not.toMatch(/npx --yes ruleblast@1\.3\.0 scan\b/u);
     expect(read("AGENT_USAGE.md")).toContain("not discovered from `node_modules`");
     expect(read("AGENT_USAGE.md")).toContain(".ruleblast-allow");
+    expect(skill).toMatch(/affected path/iu);
+    expect(skill).toMatch(/instruction source/iu);
+    expect(skill).toMatch(/overlap/iu);
+    expect(skill).not.toMatch(/exact cause/iu);
   });
 
   it("ships the same protocol at the official Claude Code project skill path", () => {
@@ -31,7 +35,7 @@ describe("distribution surfaces", () => {
     const codex = read(codexPath);
     expect(claude).toContain("There is no `ruleblast scan` subcommand");
     expect(claude).toContain(".ruleblast-allow");
-    expect(claude).toContain("npx --yes ruleblast@1.5.1");
+    expect(claude).toContain("npx --yes ruleblast@1.5.2");
     expect(claude).toContain(".claude/skills");
     expect(codex).toContain(".claude/skills");
     expect(read("AGENT_USAGE.md")).toContain(".claude/skills");

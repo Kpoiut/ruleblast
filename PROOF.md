@@ -16,7 +16,10 @@ This is the sealed public comparison behind the README headline. It is not a cla
 | Candidates | 4,682 · 4.40% hit |
 | Uncertainty | zero partial, zero unknown, and zero indeterminate |
 | Newly split across profiles | none. Profiles `openai/codex-cli@1` and `anthropic/claude-code-cli@1` were already `DIFFERENT → DIFFERENT`. We do not invent a split. |
-| One exact cause | [`codex-rs/tui/src/bottom_pane/action_required_title.rs`](https://github.com/openai/codex/blob/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c/codex-rs/tui/src/bottom_pane/action_required_title.rs) under nested [`AGENTS.md`](https://github.com/openai/codex/blob/8fcf2ad931b90589dd29a571f367e3185d26bbe0/codex-rs/tui/src/bottom_pane/AGENTS.md) |
+| Changed instruction source | nested [`codex-rs/tui/src/bottom_pane/AGENTS.md`](https://github.com/openai/codex/blob/8fcf2ad931b90589dd29a571f367e3185d26bbe0/codex-rs/tui/src/bottom_pane/AGENTS.md) |
+| Example affected path | [`codex-rs/tui/src/bottom_pane/action_required_title.rs`](https://github.com/openai/codex/blob/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c/codex-rs/tui/src/bottom_pane/action_required_title.rs) |
+
+A `causes` entry is an evidence link: the path used that changed source. Counts per source can overlap. The rest of the 206 is in the command.
 
 ## Reproduction
 

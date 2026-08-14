@@ -19,6 +19,8 @@ Agents default to **ask**. A human enables them with `RULEBLAST_AGENT_ALLOW=yes`
 
 `case` is the 33→106 `kpoiut/ruleblast` teaching receipt. It is not the openai/codex 2→206 proof.
 
+`causes` are changed instruction sources that were effective for a path. A consumer file is an affected path, not a cause. Source counts can overlap.
+
 ## Acquisition vs analysis
 
 `npx` writes the npm cache. Project install writes `node_modules` and the lockfile. Global install writes the prefix. Ask a human before acquisition. After the CLI is present, analysis is local and read-only.
