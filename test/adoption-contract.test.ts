@@ -110,6 +110,7 @@ describe("v1.5.3 adoption contract", () => {
     expect(readme).toMatch(/network calls, model calls, telemetry, dashboard, or product UI/iu);
 
     const tagline = readme.indexOf("Git shows the <code>AGENTS.md</code>");
+    const eyeHero = readme.indexOf("assets/ruleblast-hero.png");
     const causalProof = readme.indexOf("assets/ruleblast-causal-proof.gif");
     const yourRepo = readme.indexOf("npx --yes ruleblast@1.5.3 .");
     const missed = readme.indexOf("## What Git missed");
@@ -117,7 +118,8 @@ describe("v1.5.3 adoption contract", () => {
     const teachingCase = readme.indexOf("npx --yes ruleblast@1.5.3 case");
     const install = readme.indexOf("## Install");
     expect(tagline).toBeGreaterThan(-1);
-    expect(causalProof).toBeGreaterThan(tagline);
+    expect(eyeHero).toBeGreaterThan(tagline);
+    expect(causalProof).toBeGreaterThan(eyeHero);
     expect(yourRepo).toBeGreaterThan(causalProof);
     expect(missed).toBeGreaterThan(yourRepo);
     expect(proof).toBeGreaterThan(missed);
@@ -239,7 +241,7 @@ describe("v1.5.3 adoption contract", () => {
   it("uses the selected horizontal hero without shipping presentation media", () => {
     const asset = "assets/ruleblast-hero.png";
     const bytes = readFileSync(join(repositoryRoot, asset));
-    expect(read("README.md").indexOf(asset)).toBe(-1);
+    expect(read("README.md").indexOf(asset)).toBeGreaterThan(-1);
     expect(bytes.subarray(1, 4).toString("ascii")).toBe("PNG");
     expect(bytes.readUInt32BE(16)).toBe(1_774);
     expect(bytes.readUInt32BE(20)).toBe(887);
@@ -255,6 +257,7 @@ describe("v1.5.3 adoption contract", () => {
   it("leads with an evidence-locked causal hero instead of a demo fixture", () => {
     const readme = read("README.md");
     const proof = read("PROOF.md");
+    const eye = readme.indexOf("assets/ruleblast-hero.png");
     const hero = readme.indexOf("assets/ruleblast-causal-proof.gif");
     const cause = readme.indexOf("2 instruction-line edits");
     const blast = readme.indexOf("206 tracked paths changed stack");
@@ -262,8 +265,8 @@ describe("v1.5.3 adoption contract", () => {
       "codex-rs/tui/src/bottom_pane/action_required_title.rs",
     );
     const install = readme.indexOf("## Install");
-    expect(readme.indexOf("assets/ruleblast-hero.png")).toBe(-1);
-    expect(hero).toBeGreaterThan(-1);
+    expect(eye).toBeGreaterThan(-1);
+    expect(hero).toBeGreaterThan(eye);
     expect(cause).toBeGreaterThan(hero);
     expect(blast).toBeGreaterThan(cause);
     expect(explain).toBeGreaterThan(blast);

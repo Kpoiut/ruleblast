@@ -93,6 +93,7 @@ describe("README story contract", () => {
       "actions/workflows/verify.yml/badge.svg",
       "img.shields.io/github/package-json/v/Kpoiut/ruleblast",
       "Git shows the <code>AGENTS.md</code>",
+      "assets/ruleblast-hero.png",
       "assets/ruleblast-causal-proof.gif",
       "npx --yes ruleblast@1.5.3 .",
       "## What Git missed",
@@ -158,9 +159,14 @@ describe("README story contract", () => {
     expect(transcript).toBe(golden);
   });
 
-  it("keeps the branding hero as a repository asset without leading the README", () => {
+  it("embeds the branding hero in the first fold without packaging it", () => {
     const asset = "assets/ruleblast-hero.png";
-    expect(readme.indexOf(asset)).toBe(-1);
+    expect(readme.indexOf(asset)).toBeGreaterThan(
+      readme.indexOf("Git shows the <code>AGENTS.md</code>"),
+    );
+    expect(readme.indexOf(asset)).toBeLessThan(
+      readme.indexOf("assets/ruleblast-causal-proof.gif"),
+    );
     const bytes = readFileSync(join(repositoryRoot, asset));
     expect(bytes.subarray(1, 4).toString("ascii")).toBe("PNG");
     expect(bytes.readUInt32BE(16)).toBe(1_774);

@@ -12,7 +12,7 @@
 </p>
 
 <div align="center">
-  <img src="assets/ruleblast-causal-proof.gif" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
+  <img src="assets/ruleblast-hero.png" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
 </div>
 
 <p align="center">
@@ -21,6 +21,10 @@
   <strong>Codex: 206 · Claude Code: 0</strong><br>
   Why did only one agent inherit that nested <code>AGENTS.md</code>?
 </p>
+
+<div align="center">
+  <img src="assets/ruleblast-causal-proof.gif" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
+</div>
 
 ```bash
 cd <your-git-repository>
