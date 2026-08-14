@@ -343,7 +343,7 @@ describe("v1.5.3 adoption contract", () => {
       "RULEBLAST_POSTER=Git shows the edit; complete held frames only",
     );
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "43f40fae51a03bf1a30d61f6438f56771061d2467da95003782b970f6ba575d8",
+      "46de49e7600f7b9ee4f0ce73adffa93ec957fe25812a62e79fadaec38d699900",
     );
 
     const descriptor = readJson<PackageDescriptor>("package.json");
