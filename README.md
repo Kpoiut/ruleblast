@@ -23,8 +23,8 @@
 
 ```bash
 cd <your-git-repository>
-npx --yes ruleblast@1.3.0 .
-npx --yes ruleblast@1.3.0 diff HEAD~1
+npx --yes ruleblast@1.5.1 .
+npx --yes ruleblast@1.5.1 diff HEAD~1
 ```
 
 <p align="center"><sub>Local · read-only · deterministic · no network or model call</sub></p>
@@ -49,12 +49,12 @@ ruleblast diff 8fcf2ad931b90589dd29a571f367e3185d26bbe0 --to f0f483e8b2a2630bf8d
 
 ## Install
 
-Published CLI is `ruleblast@1.3.0`. Node.js 20+. `npx` downloads and runs the pinned package.
+Published CLI is `ruleblast@1.5.1`. Node.js 20+. `npx` downloads and runs the pinned package.
 
 ```bash
 cd <your-git-repository>
-npx --yes ruleblast@1.3.0 .
-npx --yes ruleblast@1.3.0 diff HEAD~1
+npx --yes ruleblast@1.5.1 .
+npx --yes ruleblast@1.5.1 diff HEAD~1
 ```
 
 `NOT_REPOSITORY` means `cd` into a Git repo first. `REF_NOT_FOUND` means pick a real ref. On a permission error, use `npx` instead of elevating. Release CI is Windows and Linux.
@@ -64,51 +64,30 @@ npx --yes ruleblast@1.3.0 diff HEAD~1
 
 ```bash
 node --version
-npm view ruleblast@1.3.0 version
-npx --yes ruleblast@1.3.0 --help
-npm install --global ruleblast@1.3.0
+npm view ruleblast@1.5.1 version
+npx --yes ruleblast@1.5.1 --help
+npm install --global ruleblast@1.5.1
 ruleblast --version
 ruleblast --help
 ruleblast
-npm install --save-dev --save-exact ruleblast@1.3.0
+npm install --save-dev --save-exact ruleblast@1.5.1
 npx ruleblast --version
 npx ruleblast --help
 npx ruleblast
-npx --yes ruleblast@1.3.0 explain src/args.ts --from HEAD~1
-npx --yes ruleblast@1.3.0 case
+npx --yes ruleblast@1.5.1 explain src/args.ts --from HEAD~1
+npx --yes ruleblast@1.5.1 case
 ```
 
 A global install downloads the full CLI.
 
 ```bash
 npm uninstall --global ruleblast
-npm install --global ruleblast@1.3.0
+npm install --global ruleblast@1.5.1
 npm uninstall --save-dev ruleblast
-npm install --save-dev --save-exact ruleblast@1.3.0
+npm install --save-dev --save-exact ruleblast@1.5.1
 npm cache verify
-npx --yes ruleblast@1.3.0 --help
-git clone --branch v1.3.0 --depth 1 https://github.com/Kpoiut/ruleblast.git
-cd ruleblast
-npm ci --ignore-scripts
-npm run build
-node dist/cli.js --version
-node dist/cli.js --help
-node dist/cli.js .
-node dist/cli.js case --json
-```
-
-The `1.0.1 → 1.0.2` registry upgrade was verified by the guarded [eight-cell release workflow](https://github.com/Kpoiut/ruleblast/actions/runs/31722775046).
-
-</details>
-
-```bash
-npm uninstall --global ruleblast
-npm install --global ruleblast@1.3.0
-npm uninstall --save-dev ruleblast
-npm install --save-dev --save-exact ruleblast@1.3.0
-npm cache verify
-npx --yes ruleblast@1.3.0 --help
-git clone --branch v1.3.0 --depth 1 https://github.com/Kpoiut/ruleblast.git
+npx --yes ruleblast@1.5.1 --help
+git clone --branch v1.5.1 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
 npm ci --ignore-scripts
 npm run build
@@ -127,9 +106,9 @@ The `1.0.1 → 1.0.2` registry upgrade was verified by the guarded [eight-cell r
 Packaged teaching receipt: [`27d52e2…`](https://github.com/Kpoiut/ruleblast/commit/27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8) → [`e420008…`](https://github.com/Kpoiut/ruleblast/commit/e420008a1c10c5c328e506247560117f4d40b855). 33 instruction-line edits. 106 of 106 stacks moved. Zero current split, partial, unknown, or indeterminate paths. [Canonical receipt](cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json) core digest `1e907a88ed648ebbd68b4f588c3bd09058ab7714e8f85a3f2d4a1c60e5a40938`.
 
 ```bash
-npx --yes ruleblast@1.3.0 case
-npx --yes ruleblast@1.3.0 case --json
-npx --yes ruleblast@1.3.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@1.5.1 case
+npx --yes ruleblast@1.5.1 case --json
+npx --yes ruleblast@1.5.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 <details>
@@ -165,7 +144,7 @@ Scope: 106 tracked paths · repository-only · resolver revision 1
 ## Explain one path
 
 ```bash
-npx --yes ruleblast@1.3.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@1.5.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 Historical reproduction (needs both commits checked out):
@@ -198,11 +177,11 @@ Packed budget: 10,000 nested paths, p95 < 2,000 ms. `npm run benchmark`. Not a c
 The optional path is only a filesystem starting point for repository discovery. Add `--witness` when you need why-edges. Add `--receipt` when you need a pasteable card. Add `--reality github/copilot-cli@1` when you need that third documented surface. Default `--json` stays the two-profile canonical result.
 
 ```bash
-npx --yes ruleblast@1.3.0 .
-npx --yes ruleblast@1.3.0 packages/api/internal
-npx --yes ruleblast@1.3.0 diff HEAD~1
-npx --yes ruleblast@1.3.0 explain src/args.ts --from HEAD~1
-npx --yes ruleblast@1.3.0 diff HEAD~1 --json
+npx --yes ruleblast@1.5.1 .
+npx --yes ruleblast@1.5.1 packages/api/internal
+npx --yes ruleblast@1.5.1 diff HEAD~1
+npx --yes ruleblast@1.5.1 explain src/args.ts --from HEAD~1
+npx --yes ruleblast@1.5.1 diff HEAD~1 --json
 ```
 
 ## Give your agent RuleBlast
@@ -214,7 +193,7 @@ Copy [`.agents/skills/ruleblast/SKILL.md`](.agents/skills/ruleblast/SKILL.md) fo
 ```bash
 echo yes > .ruleblast-allow
 # or:  set RULEBLAST_AGENT_ALLOW=yes
-npx --yes ruleblast@1.3.0 . --receipt
+npx --yes ruleblast@1.5.1 . --receipt
 ```
 
 Off: `RULEBLAST_AGENT_ALLOW=off`. RuleBlast never writes the allow file.

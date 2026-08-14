@@ -6,7 +6,7 @@ If something in the package, the CLI, or a receipt looks like it left that bound
 
 ## Reporting a vulnerability
 
-The latest published `1.3.x` release is the supported line. A source commit, signed tag, npm version, and GitHub Release are separate facts; verify each external record before relying on a version label.
+The latest published `1.5.x` release is the supported line. A source commit, signed tag, npm version, and GitHub Release are separate facts; verify each external record before relying on a version label.
 
 Private vulnerability reporting is enabled for this repository. Submit confidential reports through `https://github.com/Kpoiut/ruleblast/security/advisories/new`; GitHub keeps the report private while maintainers triage it.
 

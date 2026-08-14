@@ -2,6 +2,10 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 1.5.1 — SHIPPED TO MAIN
+
+- Public install identity `ruleblast@1.5.1`. Feature admission test on the roadmap. No fifth action.
+
 ## 1.5.0 — SHIPPED TO MAIN
 
 - Source-centric blast attribution on `diff` text: each changed instruction source lists affected paths per profile. Derived from existing causes. No fifth action, no `--source`, no schema change.

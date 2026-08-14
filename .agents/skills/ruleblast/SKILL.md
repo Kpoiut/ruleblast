@@ -32,10 +32,10 @@ There is no `ruleblast scan` subcommand. `diff` has no `--from`.
 
 | Symptom | Command |
 |---|---|
-| What does each pinned CLI project now? | `npx --yes ruleblast@1.3.0 . --color=never` |
-| Which stacks moved? | `npx --yes ruleblast@1.3.0 diff HEAD~1 --to HEAD --color=never` |
-| Why this path? | `npx --yes ruleblast@1.3.0 explain <path> --from HEAD~1 --to HEAD --json` |
-| Teaching receipt, no clone | `npx --yes ruleblast@1.3.0 case --color=never` |
+| What does each pinned CLI project now? | `npx --yes ruleblast@1.5.1 . --color=never` |
+| Which stacks moved? | `npx --yes ruleblast@1.5.1 diff HEAD~1 --to HEAD --color=never` |
+| Why this path? | `npx --yes ruleblast@1.5.1 explain <path> --from HEAD~1 --to HEAD --json` |
+| Teaching receipt, no clone | `npx --yes ruleblast@1.5.1 case --color=never` |
 
 Add `--receipt` for the compact scoreboard (per-profile inheritance, not live agent telemetry). Add `--witness` for why-edges. Add `--reality github/copilot-cli@1` only when that surface is requested. Default `--json` stays two-profile.
 

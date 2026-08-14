@@ -249,10 +249,18 @@ describe("public release maturity", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v1.5.0`: Source-Centric Blast Attribution";
     expect(roadmap.indexOf(heading)).toBeGreaterThan(-1);
-    expect(roadmap.indexOf("## **NEXT** — `v2.0.0`: Reality Packs"))
+    expect(roadmap.indexOf("## **SHIPPED TO MAIN** — `v1.5.1`"))
       .toBeGreaterThan(roadmap.indexOf(heading));
     expect(read("CHANGELOG.md")).toContain("## 1.5.0 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 1\.5\.0 — RELEASED/u);
+  });
+
+  it("records the feature admission test and v1.5.1 without inventing publication yet", () => {
+    const roadmap = read("ROADMAP.md");
+    expect(roadmap).toContain("## Feature admission test");
+    expect(roadmap).toContain("Does it make the blast radius more exact?");
+    expect(roadmap).toContain("## **SHIPPED TO MAIN** — `v1.5.1`");
+    expect(read("CHANGELOG.md")).toContain("## 1.5.1 — SHIPPED TO MAIN");
   });
 
   it("keeps release-state records outside the current package boundary", () => {

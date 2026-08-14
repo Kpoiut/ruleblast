@@ -14,6 +14,16 @@ RuleBlast grows by proving one product dimension at a time. This roadmap shows d
 | **HORIZON** | Ordered product direction, not a guarantee or current support claim. |
 | **EXPLORING** | An open question or candidate that has not passed admission. |
 
+## Feature admission test
+
+A new feature may merge only when it answers YES to at least one question and stays inside the scope firewall:
+
+1. Does it make the blast radius more exact?
+2. Does it make the blast radius easier to explain or prove?
+3. Does it make the blast radius more useful in a Git workflow without creating a second product?
+
+Gemini CLI, Cursor, dashboards, linters, fixers, MCP servers, and generic plugin APIs currently fail this test. Source-centric attribution passed (2 and 3).
+
 ## **SHIPPED TO MAIN** — Ground-truth core
 
 The proof-bearing path from repository bytes to an explainable terminal result includes:
@@ -182,6 +192,12 @@ This tree is `1.4.4`. Latest independently verified public npm distribution rema
 `diff` now answers “this instruction file changed — which agents and paths inherited it?” from existing `causes` and `changedProfiles`. Not a fifth action. Gemini CLI stays behind the admission gate.
 
 This tree is `1.5.0`. Latest independently verified public npm distribution remains `1.3.0`.
+
+## **SHIPPED TO MAIN** — `v1.5.1`: Public Install Identity
+
+Pins advertised `npx` and the optional Action to `ruleblast@1.5.1`. Adds the feature admission test. Gemini CLI remains gated.
+
+This tree is `1.5.1`.
 
 ## **NEXT** — `v2.0.0`: Reality Packs
 
