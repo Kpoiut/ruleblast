@@ -5,6 +5,13 @@ RULEBLAST · VERIFIED CASE · kpoiut/ruleblast · 27d52e2cd6ee → e420008a1c10
 106
 tracked paths changed stack.
 
+CHANGED SOURCES
+AGENTS.md
+  anthropic/claude-code-cli@1  106 affected paths
+  openai/codex-cli@1  106 affected paths
+CLAUDE.md
+  anthropic/claude-code-cli@1  106 affected paths
+  openai/codex-cli@1  106 affected paths
 No paths newly split across profiles.
 
 The largest blast starts at ./.

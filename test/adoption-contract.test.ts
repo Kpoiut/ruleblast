@@ -25,13 +25,13 @@ interface PackageLock {
   readonly packages: Readonly<Record<string, { readonly version?: string }>>;
 }
 
-describe("v1.4.4 adoption contract", () => {
+describe("v1.5.0 adoption contract", () => {
   it("locks the exact package identity and supported discovery metadata", () => {
     const descriptor = readJson<PackageDescriptor>("package.json");
     const lock = readJson<PackageLock>("package-lock.json");
 
     expect(descriptor).toMatchObject({
-      version: "1.4.4",
+      version: "1.5.0",
       description:
         "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex and Claude Code projections already differ.",
       repository: {
@@ -57,8 +57,8 @@ describe("v1.4.4 adoption contract", () => {
       "cli",
       "developer-tools",
     ]);
-    expect(lock.version).toBe("1.4.4");
-    expect(lock.packages[""]?.version).toBe("1.4.4");
+    expect(lock.version).toBe("1.5.0");
+    expect(lock.packages[""]?.version).toBe("1.5.0");
 
     const discovery = `${descriptor.description}\n${descriptor.keywords.join("\n")}`;
     expect(discovery).not.toMatch(
@@ -179,7 +179,7 @@ describe("v1.4.4 adoption contract", () => {
 
     const contributingLead = read("CONTRIBUTING.md").slice(0, 700);
     expect(contributingLead).toContain("v1.3.0");
-    expect(contributingLead).toContain("1.4.4");
+    expect(contributingLead).toContain("1.5.0");
     expect(contributingLead).toMatch(/you do not need a 25-commit/iu);
     expect(contributingLead).toMatch(/surprising result/iu);
 

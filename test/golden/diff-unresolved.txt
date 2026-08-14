@@ -5,6 +5,8 @@ RULEBLAST · HEAD → WORKTREE
 1
 tracked path changed stack.
 
+CHANGED SOURCE
+packages/api/AGENTS.md
 No paths newly split across profiles.
 
 Coverage notes:

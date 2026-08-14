@@ -2,6 +2,10 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 1.5.0 — SHIPPED TO MAIN
+
+- Source-centric blast attribution on `diff` text: each changed instruction source lists affected paths per profile. Derived from existing causes. No fifth action, no `--source`, no schema change.
+
 ## 1.4.4 — SHIPPED TO MAIN
 
 - CLI-first README: terminal demo, one 2→206 statement, What Git missed, evidence in [PROOF.md](PROOF.md). No fifth action.

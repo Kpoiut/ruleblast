@@ -177,6 +177,12 @@ Presentation only. The README leads with a terminal demo and a single 2→206 st
 
 This tree is `1.4.4`. Latest independently verified public npm distribution remains `1.3.0`.
 
+## **SHIPPED TO MAIN** — `v1.5.0`: Source-Centric Blast Attribution
+
+`diff` now answers “this instruction file changed — which agents and paths inherited it?” from existing `causes` and `changedProfiles`. Not a fifth action. Gemini CLI stays behind the admission gate.
+
+This tree is `1.5.0`. Latest independently verified public npm distribution remains `1.3.0`.
+
 ## **NEXT** — `v2.0.0`: Reality Packs
 
 The target is a finite, reviewed, declarative profile format—not an executable plugin system.

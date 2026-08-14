@@ -1,3 +1,4 @@
+import { summarizeSourceBlasts } from "./domain/source-blast.js";
 import type {
   CurrentPathProjection,
   CurrentRuleBlastResult,
@@ -251,6 +252,32 @@ function renderDiff(
     `tracked ${plural(changed, "path")} changed stack.`,
     "",
   );
+  const sources = summarizeSourceBlasts(result);
+  if (sources.length === 1) {
+    lines.push("CHANGED SOURCE", sources[0]!.sourcePath);
+    for (const row of sources[0]!.byProfile) {
+      lines.push(
+        `  ${displayText(row.profile)}  ${formatCount(row.affectedPathCount)} affected ${plural(row.affectedPathCount, "path")}`,
+      );
+    }
+    if (sources[0]!.examplePaths.length > 0) {
+      lines.push("  Examples");
+      for (const example of sources[0]!.examplePaths) {
+        lines.push(`    ${displayText(example)}`);
+      }
+    }
+  } else if (sources.length > 1) {
+    lines.push("CHANGED SOURCES");
+    for (const source of sources) {
+      lines.push(source.sourcePath);
+      for (const row of source.byProfile) {
+        lines.push(
+          `  ${displayText(row.profile)}  ${formatCount(row.affectedPathCount)} affected ${plural(row.affectedPathCount, "path")}`,
+        );
+      }
+    }
+  }
+
   const split = result.counts.newlySplitPathCount;
   lines.push(split > 0
     ? `${formatCount(split)} ${plural(split, "path")} now ${split === 1 ? "lives" : "live"} in two AI realities.`
