@@ -2,7 +2,7 @@
   "name": "ruleblast",
   "displayName": "RuleBlast",
   "description": "Read-only companion for the RuleBlast analysis engine. Same four actions, same canonical result.",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "publisher": "kpoiut",
   "private": true,
   "engines": {
@@ -14,7 +14,8 @@
     "onCommand:ruleblast.scanWorkspace",
     "onCommand:ruleblast.diffFrom",
     "onCommand:ruleblast.explainActiveFile",
-    "onCommand:ruleblast.openVerifiedCase"
+    "onCommand:ruleblast.openVerifiedCase",
+    "onCommand:ruleblast.selectReality"
   ],
   "main": "./out/extension.js",
   "type": "module",
@@ -23,7 +24,8 @@
       { "command": "ruleblast.scanWorkspace", "title": "RuleBlast: Scan Workspace" },
       { "command": "ruleblast.diffFrom", "title": "RuleBlast: Diff From…" },
       { "command": "ruleblast.explainActiveFile", "title": "RuleBlast: Explain Active File" },
-      { "command": "ruleblast.openVerifiedCase", "title": "RuleBlast: Open Verified Case" }
+      { "command": "ruleblast.openVerifiedCase", "title": "RuleBlast: Open Verified Case" },
+      { "command": "ruleblast.selectReality", "title": "RuleBlast: Select Reality…" }
     ],
     "viewsContainers": {
       "activitybar": [

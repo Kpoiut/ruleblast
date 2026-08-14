@@ -387,7 +387,7 @@ describe("renderText", () => {
     expect(renderText(unresolved, diffContext())).toBe(golden("diff-unresolved"));
   });
 
-  it("renders detailed before/after sources, context, digests, and uncertainty", () => {
+  it("renders the shared visual source tree and why-this-path", () => {
     const base = diffResult();
     const transition = base.paths[0]!;
     const claude = projection(ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID, transition.path, {

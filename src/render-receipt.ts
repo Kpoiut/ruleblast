@@ -1,9 +1,14 @@
+import { presentationLabel } from "./application/profile-catalog.js";
 import { rbctxForCurrent, rbctxForDiff } from "./domain/rbctx.js";
 import type {
   CurrentRuleBlastResult,
   DiffRuleBlastResult,
 } from "./model.js";
 import { formatCount } from "./render-format.js";
+
+function receiptProfileLine(profile: string, count: number, word: string): string {
+  return `${presentationLabel(profile)}  ${formatCount(count)} ${word}`;
+}
 
 export interface ReceiptCard {
   readonly version: "RBREC1";
@@ -34,7 +39,7 @@ export function receiptForCurrent(
       `${formatCount(result.counts.candidatePathCount)} candidate paths`,
       `${formatCount(result.counts.currentSplitPathCount)} path stacks already split`,
       ...result.counts.byProfile.map((profile) =>
-        `${profile.profile}  ${formatCount(profile.completePathCount)} complete`
+        receiptProfileLine(profile.profile, profile.completePathCount, "complete")
       ),
       `unknown ${formatCount(result.counts.unknownPathCount)}`,
       `agent-allow ${agentAllow}`,
@@ -60,7 +65,7 @@ export function receiptForDiff(
       `${formatCount(instructionLines)} instruction lines`,
       `${formatCount(result.counts.changedStackPathCount)} path stacks moved`,
       ...result.counts.byProfile.map((profile) =>
-        `${profile.profile}  ${formatCount(profile.changedStackPathCount)} changed`
+        receiptProfileLine(profile.profile, profile.changedStackPathCount, "changed")
       ),
       `unknown ${formatCount(result.counts.unknownPathCount)}`,
       `agent-allow ${agentAllow}`,

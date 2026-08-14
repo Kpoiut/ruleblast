@@ -221,11 +221,15 @@ This release also introduces the compile-time profile catalog, the analysis-auth
 
 Technical admission is evidence + fixtures + conformance. A public featured Blast Case is a marketing gate, not a semantics gate.
 
-## **IN BUILD** — `v1.6.1`: Canonical Companion
+## **SHIPPED TO MAIN** — `v1.6.1`: Canonical Companion
 
 One host class: a read-only VS Code-compatible companion under `hosts/vscode`. It imports the application facade, renders the shared explain model, and must produce byte-identical canonical JSON. It is not a second engine. File changes mark `STALE` and do not restart analysis. Cursor and Windsurf are compatible hosts only after acceptance tests. They are not modeled realities.
 
-This tree is `1.6.1`. Latest independently verified public npm distribution remains `1.5.1`.
+## **IN BUILD** — `v1.6.2`: Last-Result Explain
+
+Presentation and host-session logic on the existing four actions. Default explain text is the shared visual source tree. Receipt and source-blast lines use catalog badges. The companion explains from the last canonical result, keeps `STALE` when the worktree already moved, and treats Select Reality as a session option. It is not a fifth action, a second engine, or a new reality.
+
+This tree is `1.6.2`. Latest independently verified public npm distribution remains `1.5.1`.
 
 ## **NEXT** — `v2.0.0`: Reality Packs
 
@@ -277,7 +281,7 @@ Across every stage, RuleBlast remains:
 - capped at four bundled realities; no fifth before Reality Packs;
 - at most two host classes: the terminal reference host and one VS Code-compatible companion renderer.
 
-The 1.6 line admits one product dimension per release: 1.6.0 is the fourth reality, 1.6.1 is the companion host. A proposal that needs a fifth action, arbitrary executable extension, hidden network access, or host-specific resolver is a different project.
+The 1.6 line admits one product dimension per release: 1.6.0 is the fourth reality, 1.6.1 is the companion host, 1.6.2 is last-result explain and shared visual presentation. A proposal that needs a fifth action, arbitrary executable extension, hidden network access, or host-specific resolver is a different project.
 
 ## Admission gate for a new reality
 

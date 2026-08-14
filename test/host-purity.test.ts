@@ -28,12 +28,17 @@ describe("companion host purity", () => {
     const manifest = JSON.parse(
       readFileSync(join(repositoryRoot, "hosts/vscode/package.json"), "utf8"),
     ) as { readonly contributes: { readonly commands: readonly { readonly command: string }[] } };
-    expect(manifest.contributes.commands.map((item) => item.command).sort()).toEqual([
+    const commands = manifest.contributes.commands.map((item) => item.command);
+    const analysis = commands.filter((command) => command !== "ruleblast.selectReality");
+    expect(analysis.sort()).toEqual([
       "ruleblast.diffFrom",
       "ruleblast.explainActiveFile",
       "ruleblast.openVerifiedCase",
       "ruleblast.scanWorkspace",
     ]);
+    for (const command of commands) {
+      expect(command.startsWith("ruleblast.")).toBe(true);
+    }
   });
 
   it("lets the VS Code host import only the application facade and vscode", () => {

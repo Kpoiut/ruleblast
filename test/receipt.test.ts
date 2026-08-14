@@ -115,7 +115,8 @@ describe("pasteable receipt", () => {
     expect(first.markdown).toContain("RULEBLAST PROOF");
     expect(first.markdown).toContain("+-- scoreboard");
     expect(first.markdown).toContain("WORKTREE");
-    expect(first.markdown).toContain("openai/codex-cli@1");
+    expect(first.markdown).toContain("CX Codex");
+    expect(first.markdown).not.toContain("openai/codex-cli@1");
     expect(first.markdown).toContain("agent-allow ask");
     expect(first.markdown).toContain("Not a claim about model compliance.");
     expect(first.markdown).not.toContain("Copilot");

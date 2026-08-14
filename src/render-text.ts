@@ -1,4 +1,5 @@
 import { advertisedPackage } from "./package-identity.js";
+import { presentationLabel } from "./application/profile-catalog.js";
 import { summarizeSourceBlasts } from "./domain/source-blast.js";
 import type {
   CurrentPathProjection,
@@ -258,7 +259,7 @@ function renderDiff(
     lines.push("CHANGED SOURCE", sources[0]!.sourcePath);
     for (const row of sources[0]!.byProfile) {
       lines.push(
-        `  ${displayText(row.profile)}  ${formatCount(row.affectedPathCount)} affected ${plural(row.affectedPathCount, "path")}`,
+        `  ${presentationLabel(row.profile)}  ${formatCount(row.affectedPathCount)} affected ${plural(row.affectedPathCount, "path")}`,
       );
     }
     if (sources[0]!.examplePaths.length > 0) {
@@ -273,7 +274,7 @@ function renderDiff(
       lines.push(source.sourcePath);
       for (const row of source.byProfile) {
         lines.push(
-          `  ${displayText(row.profile)}  ${formatCount(row.affectedPathCount)} affected ${plural(row.affectedPathCount, "path")}`,
+          `  ${presentationLabel(row.profile)}  ${formatCount(row.affectedPathCount)} affected ${plural(row.affectedPathCount, "path")}`,
         );
       }
     }

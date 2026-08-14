@@ -1,51 +1,11 @@
 import * as vscode from "vscode";
-import type { CompanionState } from "../../../dist/application/host-session.js";
-import { companionScoreboard, companionStatusLine } from "../../../dist/application/host-session.js";
+import type { CompanionState, ScoreboardNode } from "../../../dist/application/host-session.js";
+import { companionTree } from "../../../dist/application/host-session.js";
 
-export interface ScoreboardNode {
-  readonly id: string;
-  readonly label: string;
-  readonly description?: string;
-  readonly children?: readonly ScoreboardNode[];
-}
+export type { ScoreboardNode };
 
 export function scoreboardNodes(state: CompanionState): ScoreboardNode[] {
-  const board = companionScoreboard(state);
-  const nodes: ScoreboardNode[] = [{
-    id: "status",
-    label: companionStatusLine(state),
-  }];
-  if (state.error !== null) {
-    nodes.push({ id: "error", label: state.error.code, description: state.error.message });
-  }
-  if (board === null) {
-    nodes.push({ id: "empty", label: "Run Scan Workspace, Diff From…, or Open Verified Case" });
-    return nodes;
-  }
-  nodes.push({
-    id: "counts",
-    label: `${board.candidatePathCount} tracked paths`,
-    description: board.changedStackPathCount === null
-      ? `${board.currentSplitPathCount} split`
-      : `${board.changedStackPathCount} changed`,
-  });
-  nodes.push({
-    id: "profiles",
-    label: "Profiles",
-    children: board.profiles.map((profile) => ({
-      id: `profile:${profile.profile}`,
-      label: `${profile.badge} ${profile.shortLabel}`,
-      description: profile.changedStackPathCount === null
-        ? `${profile.completePathCount} complete`
-        : `${profile.changedStackPathCount} changed`,
-    })),
-  });
-  nodes.push({
-    id: "uncertainty",
-    label: "Uncertainty",
-    description: `${board.partialPathCount} partial · ${board.unknownPathCount} unknown · ${board.findingCount} findings`,
-  });
-  return nodes;
+  return companionTree(state);
 }
 
 export class RuleBlastTreeProvider implements vscode.TreeDataProvider<ScoreboardNode> {

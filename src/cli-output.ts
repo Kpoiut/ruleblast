@@ -13,7 +13,9 @@ import type {
   CurrentRuleBlastResult,
   DiffRuleBlastResult,
   Finding,
+  RuleBlastResult,
 } from "./model.js";
+import { explainViewFromResult, type ExplainView } from "./application/explain-view.js";
 
 export interface OutputIo {
   readonly stdout: (text: string) => void;
@@ -185,4 +187,17 @@ export function diffExplain(
     path: pathResult,
     findings: selectedFindings(result.findings, path),
   };
+}
+
+export function explainExistingResult(
+  result: RuleBlastResult,
+  path: string,
+): {
+  readonly explain: CurrentExplainResult | DiffExplainResult;
+  readonly view: ExplainView;
+} {
+  const explain = result.mode === "diff"
+    ? diffExplain(result, path)
+    : currentExplain(result, path);
+  return { explain, view: explainViewFromResult(explain) };
 }

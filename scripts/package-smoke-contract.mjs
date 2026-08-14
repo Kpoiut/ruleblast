@@ -76,7 +76,7 @@ export function assertTextContracts(outputs) {
   const expected = new Map([
     ["current-text", ["RULEBLAST · WORKTREE", "tracked paths", "Scope: 3 tracked paths"]],
     ["diff-text", ["RULEBLAST · HEAD → WORKTREE", "instruction-line edit", "tracked paths changed stack"]],
-    ["explain-text", ["RULEBLAST EXPLAIN · WORKTREE", "src/index.ts", "Sources:"]],
+    ["explain-text", ["RULEBLAST EXPLAIN · WORKTREE", "src/index.ts", "SELECTED"]],
   ]);
   for (const [label, fragments] of expected) {
     const text = outputs.get(label)?.toString("utf8") ?? "";

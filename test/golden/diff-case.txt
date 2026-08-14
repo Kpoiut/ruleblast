@@ -7,11 +7,11 @@ tracked paths changed stack.
 
 CHANGED SOURCES
 AGENTS.md
-  anthropic/claude-code-cli@1  106 affected paths
-  openai/codex-cli@1  106 affected paths
+  CC Claude Code  106 affected paths
+  CX Codex  106 affected paths
 CLAUDE.md
-  anthropic/claude-code-cli@1  106 affected paths
-  openai/codex-cli@1  106 affected paths
+  CC Claude Code  106 affected paths
+  CX Codex  106 affected paths
 No paths newly split across profiles.
 
 The largest blast starts at ./.

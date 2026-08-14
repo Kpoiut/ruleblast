@@ -7,12 +7,16 @@ import type { RepositorySnapshot } from "../snapshot.js";
 import {
   currentExplain,
   diffExplain,
+  explainExistingResult,
   type CurrentExplainResult,
   type DiffExplainResult,
 } from "../cli-output.js";
 import { explainViewFromResult, type ExplainView } from "./explain-view.js";
 import { profilesForReality } from "./profile-catalog.js";
-import { renderExplainView } from "../render-explain.js";
+import {
+  explainPresentationContext,
+  renderExplain,
+} from "../render-explain.js";
 
 export interface AuthorityScanInput {
   readonly snapshot: RepositorySnapshot;
@@ -81,8 +85,10 @@ export async function explainRepository(
 export function presentExplain(
   explain: CurrentExplainResult | DiffExplainResult,
 ): string {
-  return renderExplainView(explain);
+  return renderExplain(explain, explainPresentationContext(explain), false);
 }
+
+export { explainExistingResult };
 
 export type { ExplainView } from "./explain-view.js";
 export {
@@ -90,6 +96,7 @@ export {
   isOptInReality,
   optInRealityIds,
   presentationFor,
+  presentationLabel,
   profilesForReality,
 } from "./profile-catalog.js";
 export { analysisState, formatAnalysisState } from "./analysis-state.js";
@@ -97,17 +104,25 @@ export type { AnalysisLifecycle, AnalysisState } from "./analysis-state.js";
 export {
   companionBegin,
   companionExplain,
+  companionExplainFromResult,
   companionFail,
   companionMarkStale,
   companionNoteDirty,
   companionScoreboard,
+  companionSetReality,
   companionStatusLine,
   companionSucceed,
+  companionTree,
   gateWorkspace,
   initialCompanionState,
   toRepositoryRelativePath,
 } from "./host-session.js";
-export type { CompanionState, HostCommand, HostWorkspace } from "./host-session.js";
+export type {
+  CompanionState,
+  HostCommand,
+  HostWorkspace,
+  ScoreboardNode,
+} from "./host-session.js";
 export { renderScoreboard, scoreboardView } from "./scoreboard-view.js";
 export {
   findRepositoryRoot,

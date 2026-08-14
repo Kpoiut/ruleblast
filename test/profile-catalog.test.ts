@@ -4,6 +4,7 @@ import {
   isOptInReality,
   optInRealityIds,
   presentationFor,
+  presentationLabel,
   profilesForReality,
 } from "../src/application/profile-catalog.js";
 import { explainViewFromCurrent } from "../src/application/explain-view.js";
@@ -43,6 +44,7 @@ describe("profile catalog", () => {
       admission: "default",
     });
     expect(presentationFor(GOOGLE_GEMINI_CLI_PROFILE_ID).badge).toBe("GM");
+    expect(presentationLabel(OPENAI_CODEX_CLI_PROFILE_ID)).toBe("CX Codex");
   });
 });
 
@@ -87,5 +89,6 @@ describe("explain presentation model", () => {
     expect(view.profiles[0]?.affected).toBeNull();
     expect(view.profiles[0]?.sources[0]?.path).toBe("AGENTS.md");
     expect(view.relation).toBe("DIFFERENT");
+    expect(view.why).toBeNull();
   });
 });

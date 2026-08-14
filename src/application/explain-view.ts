@@ -10,6 +10,7 @@ import type {
   SourceDisposition,
   Trigger,
 } from "../model.js";
+import { compareCodePoints } from "../domain/repository-path.js";
 import type { CurrentExplainResult, DiffExplainResult, ExplainResult } from "../cli-output.js";
 import { presentationFor } from "./profile-catalog.js";
 
@@ -17,6 +18,7 @@ export interface ExplainSourceView {
   readonly path: string;
   readonly disposition: SourceDisposition;
   readonly changed: boolean;
+  readonly truncated: boolean;
 }
 
 export interface ExplainProfileView {
@@ -25,6 +27,7 @@ export interface ExplainProfileView {
   readonly shortLabel: string;
   readonly badge: string;
   readonly trigger: Trigger;
+  readonly cwd: string;
   readonly affected: boolean | null;
   readonly completeness: Completeness;
   readonly composition: CompositionState;
@@ -33,12 +36,28 @@ export interface ExplainProfileView {
   readonly boundaryNotes: readonly string[];
 }
 
+export interface ExplainWhyProfile {
+  readonly profile: ProfileId;
+  readonly badge: string;
+  readonly shortLabel: string;
+}
+
+export interface ExplainWhyView {
+  readonly counts: boolean;
+  readonly causes: readonly string[];
+  readonly changedProfiles: readonly ExplainWhyProfile[];
+  readonly beforeRelation: PayloadRelation;
+  readonly afterRelation: PayloadRelation;
+  readonly newlySplit: boolean;
+}
+
 export interface ExplainView {
   readonly path: string;
   readonly profiles: readonly ExplainProfileView[];
   readonly relation: PayloadRelation | null;
   readonly completeness: Completeness;
   readonly findings: readonly Finding[];
+  readonly why: ExplainWhyView | null;
 }
 
 function worstCompleteness(values: readonly Completeness[]): Completeness {
@@ -54,6 +73,9 @@ function boundaryNotes(projection: Projection): readonly string[] {
     item.includes("RUNTIME") ||
     item.includes("UNSUPPORTED") ||
     item.includes("UNRESOLVED") ||
+    item.includes("import") ||
+    item.includes("external") ||
+    item.includes("unknown") ||
     item.includes("drift") ||
     item.includes("downward"),
   );
@@ -84,6 +106,7 @@ function sourceViews(
     path: source.path,
     disposition: source.disposition,
     changed: causes.includes(source.path),
+    truncated: source.truncated,
   }));
 }
 
@@ -99,12 +122,36 @@ function profileView(
     shortLabel: presentation.shortLabel,
     badge: presentation.badge,
     trigger: projection.context.trigger,
+    cwd: projection.context.cwd,
     affected,
     completeness: projection.status,
     composition: projection.composition,
     sources: sourceViews(projection, causes),
     reason: reasonFor(projection, affected, causes),
     boundaryNotes: boundaryNotes(projection),
+  });
+}
+
+function whyFromTransition(path: PathTransition): ExplainWhyView {
+  return Object.freeze({
+    counts: path.changedProfiles.length > 0,
+    causes: Object.freeze([...path.causes]),
+    changedProfiles: Object.freeze(
+      [...path.changedProfiles]
+        .sort(compareCodePoints)
+        .map((profile) => {
+          const presentation = presentationFor(profile);
+          return Object.freeze({
+            profile: presentation.id,
+            badge: presentation.badge,
+            shortLabel: presentation.shortLabel,
+          });
+        }),
+    ),
+    beforeRelation: path.beforePayloadRelation,
+    afterRelation: path.afterPayloadRelation,
+    newlySplit: path.beforePayloadRelation === "SAME" &&
+      path.afterPayloadRelation === "DIFFERENT",
   });
 }
 
@@ -117,21 +164,22 @@ export function explainViewFromCurrent(path: CurrentPathProjection): ExplainView
     relation: path.payloadRelation,
     completeness: worstCompleteness(path.projections.map((item) => item.status)),
     findings: [],
+    why: null,
   });
 }
 
 export function explainViewFromTransition(path: PathTransition): ExplainView {
-  const afterByProfile = new Map(path.after.map((item) => [item.profile, item]));
   const profiles = path.after.map((after) =>
     profileView(after, path.changedProfiles.includes(after.profile), path.causes),
   );
-  if (afterByProfile.size === 0) {
+  if (path.after.length === 0) {
     return Object.freeze({
       path: path.path,
       profiles: path.before.map((before) => profileView(before, false, path.causes)),
       relation: path.afterPayloadRelation,
       completeness: worstCompleteness(path.before.map((item) => item.status)),
       findings: [],
+      why: whyFromTransition(path),
     });
   }
   return Object.freeze({
@@ -140,6 +188,7 @@ export function explainViewFromTransition(path: PathTransition): ExplainView {
     relation: path.afterPayloadRelation,
     completeness: worstCompleteness(path.after.map((item) => item.status)),
     findings: [],
+    why: whyFromTransition(path),
   });
 }
 

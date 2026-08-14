@@ -2,19 +2,24 @@ import * as vscode from "vscode";
 import {
   companionBegin,
   companionExplain,
+  companionExplainFromResult,
   companionFail,
   companionMarkStale,
   companionNoteDirty,
+  companionSetReality,
+  companionStatusLine,
   companionSucceed,
   diffRepository,
   explainRepository,
   findRepositoryRoot,
   gateWorkspace,
   initialCompanionState,
+  optInRealityIds,
   openGitSnapshot,
   openPackagedCase,
   openTrackedWorktree,
   presentExplain,
+  presentationLabel,
   scanRepository,
   toRepositoryRelativePath,
   type CompanionState,
@@ -41,7 +46,7 @@ function reveal(next: CompanionState, tree: RuleBlastTreeProvider, status: vscod
   state = next;
   tree.refresh(state);
   status.text = `RB ${state.lifecycle}`;
-  status.tooltip = state.error?.message ?? state.lifecycle;
+  status.tooltip = state.error?.message ?? companionStatusLine(state);
   status.show();
 }
 
@@ -86,7 +91,10 @@ export function activate(context: vscode.ExtensionContext): void {
       await withRoot(tree, status, "scan", async (folder) => {
         const root = await findRepositoryRoot(folder);
         const snapshot = await openTrackedWorktree(root);
-        return companionSucceed(state, await scanRepository({ snapshot, reality: null }));
+        return companionSucceed(state, await scanRepository({
+          snapshot,
+          reality: state.reality,
+        }));
       });
     }),
     vscode.commands.registerCommand("ruleblast.diffFrom", async () => {
@@ -102,7 +110,7 @@ export function activate(context: vscode.ExtensionContext): void {
         return companionSucceed(state, await diffRepository({
           before,
           after,
-          reality: null,
+          reality: state.reality,
         }));
       });
     }),
@@ -112,18 +120,37 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.window.showErrorMessage("Open a file to explain.");
         return;
       }
-      await withRoot(tree, status, "explain", async (folder) => {
-        const root = await findRepositoryRoot(folder);
-        const relative = toRepositoryRelativePath(root, editor.document.uri.fsPath);
-        if (relative === null) {
-          return companionFail(state, "INVALID_PATH", "Active file is outside the selected repository.");
+      const gate = gateWorkspace(workspaceGate());
+      if (!gate.ok) {
+        reveal(companionFail(state, gate.code, gate.message), tree, status);
+        vscode.window.showErrorMessage(gate.message);
+        return;
+      }
+      const root = await findRepositoryRoot(gate.root);
+      const relative = toRepositoryRelativePath(root, editor.document.uri.fsPath);
+      if (relative === null) {
+        reveal(companionFail(state, "INVALID_PATH", "Active file is outside the selected repository."), tree, status);
+        return;
+      }
+      const dirty = companionNoteDirty(state, editor.document.isDirty);
+      if (dirty.result !== null) {
+        const next = companionExplainFromResult(dirty, relative, presentExplain);
+        if (next.explainText !== null) {
+          await vscode.window.showTextDocument(
+            await vscode.workspace.openTextDocument({ content: next.explainText, language: "markdown" }),
+          );
+        } else {
+          vscode.window.showErrorMessage(next.error?.message ?? "Last result has no path.");
         }
-        const dirty = companionNoteDirty(state, editor.document.isDirty);
+        reveal(next, tree, status);
+        return;
+      }
+      await withRoot(tree, status, "explain", async () => {
         const snapshot = await openTrackedWorktree(root);
         const explained = await explainRepository({
           snapshot,
           path: relative,
-          reality: null,
+          reality: dirty.reality,
         });
         const text = presentExplain(explained.explain);
         await vscode.window.showTextDocument(
@@ -131,6 +158,21 @@ export function activate(context: vscode.ExtensionContext): void {
         );
         return companionExplain(dirty, explained.view, text);
       });
+    }),
+    vscode.commands.registerCommand("ruleblast.selectReality", async () => {
+      const picked = await vscode.window.showQuickPick(
+        [
+          { label: "Default (Codex + Claude Code)", reality: null },
+          ...optInRealityIds().map((reality) => ({
+            label: presentationLabel(reality),
+            description: reality,
+            reality,
+          })),
+        ],
+        { title: "RuleBlast opt-in reality", placeHolder: "Adds one documented surface to the next scan or diff" },
+      );
+      if (picked === undefined) return;
+      reveal(companionSetReality(state, picked.reality), tree, status);
     }),
     vscode.commands.registerCommand("ruleblast.openVerifiedCase", async () => {
       await withRoot(tree, status, "case", async () =>

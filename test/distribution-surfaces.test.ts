@@ -14,7 +14,7 @@ describe("distribution surfaces", () => {
     const skill = read(skillPath);
     expect(skill).toMatch(/^---\r?\nname: ruleblast\r?\n/u);
     expect(skill).toContain("Use when");
-    expect(skill).toContain("npx --yes ruleblast@1.6.1");
+    expect(skill).toContain("npx --yes ruleblast@1.6.2");
     expect(skill).toContain("There is no `ruleblast scan` subcommand");
     expect(skill).toMatch(/RULEBLAST_AGENT_ALLOW|\.ruleblast-allow/u);
     expect(skill).toMatch(/ask/iu);
@@ -35,7 +35,7 @@ describe("distribution surfaces", () => {
     const codex = read(codexPath);
     expect(claude).toContain("There is no `ruleblast scan` subcommand");
     expect(claude).toContain(".ruleblast-allow");
-    expect(claude).toContain("npx --yes ruleblast@1.6.1");
+    expect(claude).toContain("npx --yes ruleblast@1.6.2");
     expect(claude).toContain(".claude/skills");
     expect(codex).toContain(".claude/skills");
     expect(read("AGENT_USAGE.md")).toContain(".claude/skills");

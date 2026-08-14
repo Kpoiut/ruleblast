@@ -62,6 +62,10 @@ declare module "vscode" {
     showErrorMessage(message: string): void;
     showInformationMessage(message: string): void;
     showInputBox(options: { prompt: string; value?: string }): Promise<string | undefined>;
+    showQuickPick<T extends { label: string }>(
+      items: readonly T[],
+      options?: { title?: string; placeHolder?: string },
+    ): Promise<T | undefined>;
     showTextDocument(document: TextDocument): Promise<unknown>;
     createOutputChannel(name: string): OutputChannel;
     createStatusBarItem(alignment?: StatusBarAlignment, priority?: number): StatusBarItem;

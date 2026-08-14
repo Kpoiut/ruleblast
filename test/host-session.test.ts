@@ -3,16 +3,20 @@ import { canonicalJson } from "../src/canonical.js";
 import {
   companionBegin,
   companionExplain,
+  companionExplainFromResult,
   companionFail,
   companionMarkStale,
   companionNoteDirty,
+  companionSetReality,
   companionStatusLine,
   companionSucceed,
+  companionTree,
   gateWorkspace,
   initialCompanionState,
   toRepositoryRelativePath,
 } from "../src/application/host-session.js";
-import { scanRepository } from "../src/application/authority.js";
+import { diffRepository, scanRepository } from "../src/application/authority.js";
+import { GOOGLE_GEMINI_CLI_PROFILE_ID } from "../src/model.js";
 import { scoreboardView } from "../src/application/scoreboard-view.js";
 import { claudeProfile } from "../src/profiles/claude.js";
 import { ManifestSnapshot } from "../src/snapshot.js";
@@ -88,10 +92,73 @@ describe("companion session", () => {
       relation: "SAME" as const,
       completeness: "COMPLETE" as const,
       findings: [],
+      why: null,
     };
     const state = companionExplain(initialCompanionState(), view, "src/a.ts\n");
     expect(state.explainView).toBe(view);
     expect(state.explainText).toBe("src/a.ts\n");
+  });
+
+  it("explains from the last canonical result and keeps STALE", async () => {
+    const result = await scanRepository({
+      snapshot: snapshot({ "AGENTS.md": "root", "src/a.ts": "code" }),
+      reality: null,
+    });
+    let state = companionSucceed(companionBegin(initialCompanionState(), "scan"), result);
+    state = companionMarkStale(state);
+    state = companionExplainFromResult(state, "src/a.ts", (explain) => explain.path.path);
+    expect(state.lifecycle).toBe("STALE");
+    expect(state.explainView?.path).toBe("src/a.ts");
+    expect(state.result).toBe(result);
+    expect(state.canonicalJson).toBe(canonicalJson(result));
+  });
+
+  it("does not recapture when the last result omits the path", async () => {
+    const result = await scanRepository({
+      snapshot: snapshot({ "AGENTS.md": "root", "src/a.ts": "code" }),
+      reality: null,
+    });
+    const state = companionExplainFromResult(
+      companionSucceed(initialCompanionState(), result),
+      "missing.ts",
+      () => {
+        throw new Error("presenter must not run for a missing path");
+      },
+    );
+    expect(state.lifecycle).toBe("ERROR");
+    expect(state.error?.code).toBe("PATH_NOT_IN_RESULT");
+    expect(state.result).toBe(result);
+  });
+
+  it("marks an existing result stale when the session reality changes", async () => {
+    const result = await scanRepository({
+      snapshot: snapshot({ "AGENTS.md": "root", "src/a.ts": "code" }),
+      reality: null,
+    });
+    let state = companionSucceed(initialCompanionState(), result);
+    state = companionSetReality(state, GOOGLE_GEMINI_CLI_PROFILE_ID);
+    expect(state.reality).toBe(GOOGLE_GEMINI_CLI_PROFILE_ID);
+    expect(state.lifecycle).toBe("STALE");
+    expect(state.result).toBe(result);
+    expect(() => companionSetReality(state, "cursor/editor@1")).toThrow(/opt-in reality/i);
+  });
+
+  it("puts last explain and source blast on the scoreboard tree", async () => {
+    const before = snapshot({ "AGENTS.md": "root", "src/a.ts": "code" });
+    const after = snapshot({
+      "AGENTS.md": "root",
+      "packages/api/AGENTS.md": "nested",
+      "src/a.ts": "code",
+    });
+    const result = await diffRepository({ before, after, reality: null });
+    let state = companionSucceed(companionBegin(initialCompanionState(), "diff"), result);
+    state = companionExplainFromResult(state, "src/a.ts", (explain) => explain.path.path);
+    const ids = companionTree(state).map((node) => node.id);
+    expect(ids).toContain("explain");
+    expect(ids).toContain("blast");
+    expect(ids).toContain("reality");
+    expect(companionTree(state).find((node) => node.id === "explain")?.label)
+      .toContain("src/a.ts");
   });
 
   it("keeps errors on the lifecycle axis", () => {

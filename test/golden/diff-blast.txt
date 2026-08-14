@@ -7,7 +7,7 @@ tracked paths changed stack.
 
 CHANGED SOURCE
 packages/api/AGENTS.md
-  openai/codex-cli@1  1 affected path
+  CX Codex  1 affected path
   Examples
     packages/api/internal/refund.ts
 1,229 paths now live in two AI realities.

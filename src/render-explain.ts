@@ -1,17 +1,19 @@
 import type { ExplainResult } from "./cli-output.js";
-import { presentationFor } from "./application/profile-catalog.js";
-import { explainViewFromResult } from "./application/explain-view.js";
-import type { Finding, PathTransition, Projection } from "./model.js";
+import { presentationLabel } from "./application/profile-catalog.js";
+import {
+  explainViewFromResult,
+  type ExplainProfileView,
+  type ExplainSourceView,
+  type ExplainWhyView,
+} from "./application/explain-view.js";
+import type { Finding } from "./model.js";
 import {
   compareText,
   displayText,
   formatCount,
   heading,
 } from "./render-format.js";
-import type {
-  DiffTextPresentationContext,
-  TextPresentationContext,
-} from "./render-text.js";
+import type { TextPresentationContext } from "./render-text.js";
 
 function explainHeading(
   context: TextPresentationContext,
@@ -27,47 +29,57 @@ function explainHeading(
   return heading(`RULEBLAST EXPLAIN · ${suffix}`, color);
 }
 
-function profileName(profile: string): string {
-  return presentationFor(profile).shortLabel.toUpperCase();
+function sourceLine(source: ExplainSourceView, last: boolean): string {
+  const branch = last ? "└" : "├";
+  const truncated = source.truncated ? " · truncated" : "";
+  const marker = source.changed ? " ← changed" : "";
+  return `  ${branch} ${source.disposition} ${displayText(source.path)}${truncated}${marker}`;
 }
 
-function renderProjection(
-  lines: string[],
-  phase: string,
-  projection: Projection,
-): void {
-  lines.push(
-    `  ${displayText(phase)} · ${projection.status} · ${projection.composition}`,
-    `  Context: cwd=${displayText(projection.context.cwd)} · trigger=${projection.context.trigger} · target=${displayText(projection.context.targetPath)} · repository-only`,
-    "  Sources:",
-  );
-  if (projection.sources.length === 0) {
-    lines.push("    (none)");
-  } else {
-    for (const source of projection.sources) {
-      lines.push(
-        `    [${source.disposition}] ${displayText(source.path)} · digest=${displayText(source.digest)} · bytes=${formatCount(source.bytesUsed)}${source.truncated ? " · truncated" : ""}`,
-      );
-    }
-  }
-  lines.push(
-    `  Projection digest: ${projection.projectionDigest === null ? "unresolved" : displayText(projection.projectionDigest)}`,
-    `  Payload digest: ${projection.normalizedPayloadDigest === null ? "unresolved" : displayText(projection.normalizedPayloadDigest)}`,
-    "  Evidence:",
-  );
-  if (projection.evidence.length === 0) {
-    lines.push("    (none)");
-  } else {
-    for (const evidence of projection.evidence) {
-      lines.push(`    ${displayText(evidence)}`);
-    }
-  }
+function affectMark(profile: ExplainProfileView): string {
+  if (profile.affected === true) return "affected";
+  if (profile.affected === false) return "unchanged";
+  return profile.completeness.toLowerCase();
 }
 
-function sortedProfiles(projections: readonly Projection[]): Projection[] {
-  return [...projections].sort((left, right) =>
-    compareText(left.profile, right.profile),
+function renderProfile(profile: ExplainProfileView): string[] {
+  const lines = [
+    `${profile.badge} ${profile.label}`,
+    `${profile.trigger} · cwd=${displayText(profile.cwd)} · ${profile.completeness} · ${affectMark(profile)}`,
+  ];
+  if (profile.sources.length === 0) {
+    lines.push("  (no sources)");
+  } else {
+    profile.sources.forEach((source, index) => {
+      lines.push(sourceLine(source, index === profile.sources.length - 1));
+    });
+  }
+  lines.push(profile.reason);
+  for (const note of profile.boundaryNotes) lines.push(displayText(note));
+  return lines;
+}
+
+function renderWhy(why: ExplainWhyView): string[] {
+  const lines = [
+    "",
+    why.counts ? "WHY THIS PATH COUNTS" : "WHY THIS PATH DID NOT CHANGE",
+  ];
+  if (why.counts) {
+    for (const cause of [...why.causes].sort(compareText)) {
+      lines.push(`  + ${displayText(cause)}`);
+    }
+  }
+  const changed = why.changedProfiles.length === 0
+    ? "none"
+    : why.changedProfiles
+      .map((profile) => `${profile.badge} ${profile.shortLabel}`)
+      .join(", ");
+  lines.push(
+    `  = changed profiles: ${changed}`,
+    `  = profile relation: ${why.beforeRelation} → ${why.afterRelation}`,
+    `  = newly split: ${why.newlySplit ? "yes" : "no"}`,
   );
+  return lines;
 }
 
 function appendFindings(lines: string[], findings: readonly Finding[]): void {
@@ -82,117 +94,20 @@ function appendFindings(lines: string[], findings: readonly Finding[]): void {
   for (const finding of sorted) {
     const profile = finding.profile === null
       ? "repository"
-      : displayText(finding.profile);
+      : presentationLabel(finding.profile);
     lines.push(`  [${finding.code}] ${profile} · ${displayText(finding.detail)}`);
   }
-}
-
-function renderCurrentExplain(
-  result: Extract<ExplainResult, { analysisMode: "current" }>,
-  context: Extract<TextPresentationContext, { currentLabel: string }>,
-  color: boolean,
-): string {
-  const lines = [
-    explainHeading(context, color),
-    "",
-    displayText(result.path.path),
-  ];
-  for (const projection of sortedProfiles(result.path.projections)) {
-    lines.push("", `${profileName(projection.profile)} · ${displayText(projection.profile)}`);
-    renderProjection(lines, "CURRENT", projection);
-  }
-  lines.push("", `PROFILE RELATION · ${result.path.payloadRelation}`);
-  appendFindings(lines, result.findings);
-  lines.push(
-    "",
-    `Repository-only · Git-tracked sources · resolver revision ${formatCount(result.resolverRevision)}`,
-  );
-  return `${lines.join("\n")}\n`;
-}
-
-function projectionByProfile(
-  projections: readonly Projection[],
-  profile: string,
-): Projection {
-  const selected = projections.find((projection) => projection.profile === profile);
-  if (selected === undefined) {
-    throw new TypeError(`Explain transition omitted profile ${JSON.stringify(profile)}`);
-  }
-  return selected;
-}
-
-function transitionProfiles(path: PathTransition): string[] {
-  return [...new Set([
-    ...path.before.map((projection) => projection.profile),
-    ...path.after.map((projection) => projection.profile),
-  ])].sort(compareText);
-}
-
-function renderDiffExplain(
-  result: Extract<ExplainResult, { analysisMode: "diff" }>,
-  context: DiffTextPresentationContext,
-  color: boolean,
-): string {
-  const lines = [
-    explainHeading(context, color),
-    "",
-    displayText(result.path.path),
-  ];
-  for (const profile of transitionProfiles(result.path)) {
-    lines.push("", `${profileName(profile)} · ${displayText(profile)}`);
-    renderProjection(lines, "BEFORE", projectionByProfile(result.path.before, profile));
-    renderProjection(
-      lines,
-      context.afterLabel,
-      projectionByProfile(result.path.after, profile),
-    );
-  }
-  const changed = result.path.changedProfiles.length > 0;
-  lines.push(
-    "",
-    changed ? "WHY THIS PATH COUNTS" : "WHY THIS PATH DID NOT CHANGE",
-  );
-  const causes = [...result.path.causes].sort(compareText);
-  if (changed) {
-    for (const cause of causes) lines.push(`  + ${displayText(cause)}`);
-  }
-  const changedProfiles = [...result.path.changedProfiles].sort(compareText);
-  lines.push(
-    `  = changed profiles: ${changedProfiles.length === 0 ? "none" : changedProfiles.map(displayText).join(", ")}`,
-    `  = profile relation: ${result.path.beforePayloadRelation} → ${result.path.afterPayloadRelation}`,
-    `  = newly split: ${result.path.beforePayloadRelation === "SAME" && result.path.afterPayloadRelation === "DIFFERENT" ? "yes" : "no"}`,
-  );
-  appendFindings(lines, result.findings);
-  lines.push(
-    "",
-    `Repository-only · Git-tracked sources · resolver revision ${formatCount(result.resolverRevision)}`,
-  );
-  return `${lines.join("\n")}\n`;
 }
 
 export function renderExplainView(value: ExplainResult): string {
   const view = explainViewFromResult(value);
   const lines = [displayText(view.path)];
   for (const profile of view.profiles) {
-    const mark = profile.affected === true ? "affected" :
-      profile.affected === false ? "unchanged" : profile.completeness.toLowerCase();
-    lines.push(
-      "",
-      `${profile.badge} ${profile.label}`,
-      `${profile.trigger} · ${profile.completeness} · ${mark}`,
-    );
-    if (profile.sources.length === 0) {
-      lines.push("(no sources)");
-    } else {
-      for (const source of profile.sources) {
-        const marker = source.changed ? " ← changed" : "";
-        lines.push(`${source.disposition} ${source.path}${marker}`);
-      }
-    }
-    lines.push(profile.reason);
-    for (const note of profile.boundaryNotes) lines.push(note);
+    lines.push("", ...renderProfile(profile));
   }
+  if (view.why !== null) lines.push(...renderWhy(view.why));
   if (view.relation !== null) lines.push("", `RELATION · ${view.relation}`);
+  appendFindings(lines, view.findings);
   return `${lines.join("\n")}\n`;
 }
 
@@ -201,14 +116,36 @@ export function renderExplain(
   context: TextPresentationContext,
   color: boolean,
 ): string {
-  if (value.analysisMode === "current") {
-    if (!("currentLabel" in context)) {
-      throw new TypeError("Current explain requires current presentation context");
-    }
-    return renderCurrentExplain(value, context, color);
+  if (value.analysisMode === "current" && !("currentLabel" in context)) {
+    throw new TypeError("Current explain requires current presentation context");
   }
-  if (!("beforeLabel" in context)) {
+  if (value.analysisMode === "diff" && !("beforeLabel" in context)) {
     throw new TypeError("Diff explain requires endpoint presentation context");
   }
-  return renderDiffExplain(value, context, color);
+  return [
+    explainHeading(context, color),
+    "",
+    renderExplainView(value).trimEnd(),
+    "",
+    `Repository-only · Git-tracked sources · resolver revision ${formatCount(value.resolverRevision)}`,
+    "",
+  ].join("\n");
+}
+
+export function explainPresentationContext(
+  value: ExplainResult,
+): TextPresentationContext {
+  if (value.analysisMode === "current") {
+    return {
+      currentLabel: value.snapshot.label,
+      caseLabel: null,
+      shellDialect: "posix",
+    };
+  }
+  return {
+    beforeLabel: value.before.label,
+    afterLabel: value.after.label,
+    caseLabel: null,
+    shellDialect: "posix",
+  };
 }

@@ -2,7 +2,13 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 1.6.1 — IN BUILD
+## 1.6.2 — IN BUILD
+
+- Default `explain` text is the shared visual source tree: catalog badges, cwd, changed markers, why-this-path, and findings. Digests stay in `--json`.
+- `--receipt` and `diff` source-blast lines use catalog badges instead of raw profile ids. Canonical JSON is unchanged.
+- Companion explain uses the last canonical result, keeps `STALE` when the worktree already moved, and shows explain plus source-blast on the scoreboard tree. Select Reality is a session option, not a fifth action.
+
+## 1.6.1 — SHIPPED TO MAIN
 
 - Read-only VS Code-compatible companion under `hosts/vscode`. Four commands map to scan, diff, explain, and case. File changes mark the last result stale. Unsaved buffers are not worktree snapshots.
 - Companion imports the application facade only. Cross-host tests require CLI engine bytes and companion session bytes to match.

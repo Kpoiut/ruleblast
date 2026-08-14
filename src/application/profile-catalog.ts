@@ -63,6 +63,11 @@ export const PROFILE_CATALOG: readonly CatalogEntry[] = Object.freeze([
   }),
 ]);
 
+export function presentationLabel(id: string): string {
+  const presentation = presentationFor(id);
+  return `${presentation.badge} ${presentation.shortLabel}`;
+}
+
 export function presentationFor(id: string): ProfilePresentation {
   const entry = PROFILE_CATALOG.find((item) => item.id === id);
   if (entry === undefined) {
