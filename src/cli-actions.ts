@@ -22,7 +22,7 @@ import type {
   ShellDialect,
 } from "./render-text.js";
 import type { RepositorySnapshot } from "./snapshot.js";
-import { copilotProfile, GITHUB_COPILOT_CLI_PROFILE_ID } from "./profiles/copilot.js";
+import { profilesForReality } from "./application/authority.js";
 import type { ProfileDefinition } from "./profiles/profile.js";
 
 function noDefensibleResult(
@@ -77,10 +77,10 @@ function analysisProfiles(
   dependencies: CliDependencies,
 ): readonly ProfileDefinition[] {
   if (args.reality === null) return dependencies.profiles;
-  if (dependencies.profiles.some((profile) => profile.id === GITHUB_COPILOT_CLI_PROFILE_ID)) {
+  if (dependencies.profiles.some((profile) => profile.id === args.reality)) {
     return dependencies.profiles;
   }
-  return Object.freeze([...dependencies.profiles, copilotProfile]);
+  return profilesForReality(args.reality);
 }
 
 function diffTextContext(

@@ -89,6 +89,9 @@ describe("parseArgs", () => {
     [[".", "--reality", "github/copilot-cli@1"], {
       action: "scan", startPath: ".", output: text, ...flags, reality: "github/copilot-cli@1",
     }],
+    [[".", "--reality", "google/gemini-cli@1"], {
+      action: "scan", startPath: ".", output: text, ...flags, reality: "google/gemini-cli@1",
+    }],
     [["--help"], { action: "help" }],
     [["--version"], { action: "version" }],
   ] as const)("parses %j", (argv, expected) => {
@@ -125,6 +128,7 @@ describe("parseArgs", () => {
     [[".", "--witness", "--witness"], "DUPLICATE_OPTION"],
     [[".", "--receipt", "--receipt"], "DUPLICATE_OPTION"],
     [[".", "--reality", "github/copilot-vscode@1"], "OPTION_CONFLICT"],
+    [[".", "--reality", "cursor/editor@1"], "OPTION_CONFLICT"],
     [["case", "--reality", "github/copilot-cli@1"], "OPTION_CONFLICT"],
     [["diff", "--to", "one", "--to", "two"], "DUPLICATE_OPTION"],
     [["diff", "--json", "--color=always"], "OPTION_CONFLICT"],

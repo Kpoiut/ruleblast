@@ -1,5 +1,7 @@
 import {
   ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
+  GITHUB_COPILOT_CLI_PROFILE_ID,
+  GOOGLE_GEMINI_CLI_PROFILE_ID,
   OPENAI_CODEX_CLI_PROFILE_ID,
   type ProfileId,
 } from "../model.js";
@@ -11,10 +13,15 @@ import type {
 import type { RepositorySnapshot } from "../snapshot.js";
 import { captureCanonicalRepositoryPaths } from "./projection-boundary.js";
 
-const BUNDLED_PROFILE_IDS = Object.freeze([
+const DEFAULT_PROFILE_IDS = Object.freeze([
   ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
   OPENAI_CODEX_CLI_PROFILE_ID,
 ].sort(compareCodePoints));
+
+const OPT_IN_PROFILE_IDS = Object.freeze([
+  GITHUB_COPILOT_CLI_PROFILE_ID,
+  GOOGLE_GEMINI_CLI_PROFILE_ID,
+]);
 
 export interface PreparedPair {
   readonly before: PreparedProfile;
@@ -29,11 +36,14 @@ export interface CapturedProfileDefinition {
 export function validateProfiles(
   profiles: readonly ProfileDefinition[],
 ): readonly CapturedProfileDefinition[] {
-  if (!Array.isArray(profiles) || profiles.length !== BUNDLED_PROFILE_IDS.length) {
-    throw new TypeError("V1 analysis requires exactly the two bundled profiles");
+  if (!Array.isArray(profiles) ||
+      (profiles.length !== DEFAULT_PROFILE_IDS.length &&
+        profiles.length !== DEFAULT_PROFILE_IDS.length + 1)) {
+    throw new TypeError("V1 analysis requires the two default profiles and at most one opt-in reality");
   }
   const arrayDescriptors = Object.getOwnPropertyDescriptors(profiles);
-  const captured = BUNDLED_PROFILE_IDS.map((_, index): CapturedProfileDefinition => {
+  const captured: CapturedProfileDefinition[] = [];
+  for (let index = 0; index < profiles.length; index += 1) {
     const element = arrayDescriptors[String(index)];
     if (element === undefined || !("value" in element) ||
         typeof element.value !== "object" || element.value === null) {
@@ -53,27 +63,34 @@ export function validateProfiles(
     if (typeof prepare !== "function") {
       throw new TypeError(`Profile prepare must be a function: ${id}`);
     }
-    return Object.freeze({
+    captured.push(Object.freeze({
       id,
       prepare: (snapshot: RepositorySnapshot) => prepare.call(profile, snapshot),
-    });
-  });
+    }));
+  }
   const byId = new Map<ProfileId, CapturedProfileDefinition>();
+  const extras: ProfileId[] = [];
   for (const profile of captured) {
-    if (!BUNDLED_PROFILE_IDS.includes(profile.id)) {
+    const allowed = DEFAULT_PROFILE_IDS.includes(profile.id) ||
+      OPT_IN_PROFILE_IDS.includes(profile.id);
+    if (!allowed) {
       throw new TypeError(`Unknown v1 profile id: ${profile.id}`);
     }
     if (byId.has(profile.id)) {
       throw new TypeError(`Duplicate v1 profile id: ${profile.id}`);
     }
     byId.set(profile.id, profile);
+    if (!DEFAULT_PROFILE_IDS.includes(profile.id)) extras.push(profile.id);
   }
-  for (const id of BUNDLED_PROFILE_IDS) {
+  for (const id of DEFAULT_PROFILE_IDS) {
     if (!byId.has(id)) {
       throw new TypeError(`Missing bundled v1 profile id: ${id}`);
     }
   }
-  return BUNDLED_PROFILE_IDS.map((id) => byId.get(id)!);
+  if (extras.length > 1) {
+    throw new TypeError("V1 analysis accepts at most one opt-in reality");
+  }
+  return [...byId.keys()].sort(compareCodePoints).map((id) => byId.get(id)!);
 }
 
 function capturePreparedProfile(

@@ -180,3 +180,11 @@ export const OPENAI_CODEX_CLI_PROFILE_ID = parseProfileId(
 export const ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID = parseProfileId(
   "anthropic/claude-code-cli@1",
 );
+
+export const GOOGLE_GEMINI_CLI_PROFILE_ID = parseProfileId(
+  "google/gemini-cli@1",
+);
+
+export const GITHUB_COPILOT_CLI_PROFILE_ID = parseProfileId(
+  "github/copilot-cli@1",
+);

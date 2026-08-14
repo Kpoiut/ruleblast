@@ -91,7 +91,7 @@ One Git tree. Two documented instruction realities.
   --witness  Why-edges for the selected resolution. Opt-in envelope only.
   --receipt  Opt-in scoreboard box plus RBCTX1. Off unless passed.
              User toggle: RULEBLAST_AGENT_ALLOW or .ruleblast-allow.
-  --reality  github/copilot-cli@1 only. Default JSON stays two-profile.
+  --reality  github/copilot-cli@1 or google/gemini-cli@1. Default JSON stays two-profile.
 
 Skills   Codex .agents/skills · Claude Code .claude/skills
          Not node_modules. Agents default to ask.

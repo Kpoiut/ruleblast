@@ -83,7 +83,7 @@ describe("github/copilot-cli@1", () => {
 describe("default two-profile gate", () => {
   it("keeps production DEFAULT_PROFILES as Claude then Codex", () => {
     const source = readFileSync(join(repositoryRoot, "src/cli.ts"), "utf8");
-    expect(source).toContain("Object.freeze([claudeProfile, codexProfile])");
+    expect(source).toContain("defaultProfileDefinitions()");
     expect(source).not.toContain("copilotProfile");
   });
 });

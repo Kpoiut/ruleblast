@@ -23,8 +23,7 @@ import {
 } from "./git.js";
 import { analyzeCurrent, analyzeDiff } from "./impact.js";
 import { renderCliHelp } from "./cli-help.js";
-import { claudeProfile } from "./profiles/claude.js";
-import { codexProfile } from "./profiles/codex.js";
+import { defaultProfileDefinitions } from "./application/authority.js";
 
 export {
   CliRuntimeError,
@@ -39,7 +38,7 @@ export type {
 
 const USAGE = renderCliHelp();
 
-const DEFAULT_PROFILES = Object.freeze([claudeProfile, codexProfile]);
+const DEFAULT_PROFILES = defaultProfileDefinitions();
 const DEFAULT_DEPENDENCIES: CliDependencies = Object.freeze({
   version: packageVersion(),
   shellDialect: process.platform === "win32" ? "powershell" : "posix",

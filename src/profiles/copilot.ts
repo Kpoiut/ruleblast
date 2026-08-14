@@ -1,7 +1,7 @@
 import { Minimatch } from "minimatch";
 import { canonicalJson, sha256 } from "../canonical.js";
 import {
-  parseProfileId,
+  GITHUB_COPILOT_CLI_PROFILE_ID,
   type Projection,
   type ResolvedSource,
 } from "../model.js";
@@ -14,7 +14,7 @@ import {
   type ProfileDefinition,
 } from "./profile.js";
 
-export const GITHUB_COPILOT_CLI_PROFILE_ID = parseProfileId("github/copilot-cli@1");
+export { GITHUB_COPILOT_CLI_PROFILE_ID } from "../model.js";
 export const COPILOT_REALITY = GITHUB_COPILOT_CLI_PROFILE_ID;
 
 const FILE_REFERENCE = /(?:^|\s)@([A-Za-z0-9_./-]+)/u;

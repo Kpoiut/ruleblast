@@ -1,11 +1,7 @@
 import type { ExplainResult } from "./cli-output.js";
-import {
-  ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
-  OPENAI_CODEX_CLI_PROFILE_ID,
-  type Finding,
-  type PathTransition,
-  type Projection,
-} from "./model.js";
+import { presentationFor } from "./application/profile-catalog.js";
+import { explainViewFromResult } from "./application/explain-view.js";
+import type { Finding, PathTransition, Projection } from "./model.js";
 import {
   compareText,
   displayText,
@@ -32,9 +28,7 @@ function explainHeading(
 }
 
 function profileName(profile: string): string {
-  if (profile === OPENAI_CODEX_CLI_PROFILE_ID) return "CODEX";
-  if (profile === ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID) return "CLAUDE CODE";
-  return displayText(profile);
+  return presentationFor(profile).shortLabel.toUpperCase();
 }
 
 function renderProjection(
@@ -173,6 +167,32 @@ function renderDiffExplain(
     "",
     `Repository-only · Git-tracked sources · resolver revision ${formatCount(result.resolverRevision)}`,
   );
+  return `${lines.join("\n")}\n`;
+}
+
+export function renderExplainView(value: ExplainResult): string {
+  const view = explainViewFromResult(value);
+  const lines = [displayText(view.path)];
+  for (const profile of view.profiles) {
+    const mark = profile.affected === true ? "affected" :
+      profile.affected === false ? "unchanged" : profile.completeness.toLowerCase();
+    lines.push(
+      "",
+      `${profile.badge} ${profile.label}`,
+      `${profile.trigger} · ${profile.completeness} · ${mark}`,
+    );
+    if (profile.sources.length === 0) {
+      lines.push("(no sources)");
+    } else {
+      for (const source of profile.sources) {
+        const marker = source.changed ? " ← changed" : "";
+        lines.push(`${source.disposition} ${source.path}${marker}`);
+      }
+    }
+    lines.push(profile.reason);
+    for (const note of profile.boundaryNotes) lines.push(note);
+  }
+  if (view.relation !== null) lines.push("", `RELATION · ${view.relation}`);
   return `${lines.join("\n")}\n`;
 }
 

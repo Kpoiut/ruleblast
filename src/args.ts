@@ -1,3 +1,5 @@
+import { isOptInReality, optInRealityIds } from "./application/profile-catalog.js";
+
 export type ColorMode = "auto" | "always" | "never";
 
 export type CliOutput = Readonly<{
@@ -17,6 +19,7 @@ export interface WorktreeSelector {
 export type SnapshotSelector = GitSelector | WorktreeSelector;
 
 export const COPILOT_REALITY = "github/copilot-cli@1";
+export const GEMINI_REALITY = "google/gemini-cli@1";
 
 interface CommonArgs {
   readonly output: CliOutput;
@@ -280,10 +283,10 @@ function parsedReality(
       "--reality cannot be used with the packaged case; that receipt remains two-profile",
     );
   }
-  if (value !== COPILOT_REALITY) {
+  if (!isOptInReality(value)) {
     return usage(
       "OPTION_CONFLICT",
-      `--reality must be ${COPILOT_REALITY}; Copilot VS Code and hosted Copilot are distinct unsupported surfaces`,
+      `--reality must be one of ${optInRealityIds().join(" | ")}; editor and hosted surfaces are distinct and unsupported`,
     );
   }
   return value;
