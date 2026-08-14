@@ -3,7 +3,7 @@ import { CliUsageError, parseArgs } from "../src/args.js";
 
 const text = { kind: "text", color: "auto" } as const;
 const json = { kind: "json", color: "auto" } as const;
-const flags = { witness: false } as const;
+const flags = { witness: false, receipt: false } as const;
 
 describe("parseArgs", () => {
   it.each([
@@ -69,13 +69,19 @@ describe("parseArgs", () => {
     [["demo", "--explain", "-file.ts"], {
       action: "case", explainPath: "-file.ts", output: text, ...flags,
     }],
-    [[".", "--witness"], { action: "scan", startPath: ".", output: text, witness: true }],
+    [[".", "--witness"], {
+      action: "scan", startPath: ".", output: text, witness: true, receipt: false,
+    }],
     [["diff", "--witness", "--json"], {
       action: "diff",
       base: { kind: "git", ref: "HEAD" },
       target: { kind: "worktree" },
       output: json,
       witness: true,
+      receipt: false,
+    }],
+    [["case", "--receipt"], {
+      action: "case", explainPath: null, output: text, witness: false, receipt: true,
     }],
     [["--help"], { action: "help" }],
     [["--version"], { action: "version" }],
@@ -111,7 +117,7 @@ describe("parseArgs", () => {
     [["demo", "--explain", "--json"], "MISSING_OPTION_VALUE"],
     [["diff", "--json", "--json"], "DUPLICATE_OPTION"],
     [[".", "--witness", "--witness"], "DUPLICATE_OPTION"],
-    [[".", "--receipt"], "UNKNOWN_OPTION"],
+    [[".", "--receipt", "--receipt"], "DUPLICATE_OPTION"],
     [["diff", "--to", "one", "--to", "two"], "DUPLICATE_OPTION"],
     [["diff", "--json", "--color=always"], "OPTION_CONFLICT"],
     [["scan", "--color=rainbow"], "OPTION_CONFLICT"],

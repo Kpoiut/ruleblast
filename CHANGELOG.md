@@ -2,7 +2,11 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## Unreleased — 1.1.0 candidate
+## Unreleased — 1.2.0 candidate
+
+- Opt-in `--receipt` prints a pasteable proof card and an `RBCTX1` identity derived from existing projection bytes. Default `--json` remains the canonical schema-1 result.
+
+## 1.1.0 — SHIPPED TO MAIN
 
 - Opt-in `--witness` prints why-edges, including same-directory override precedence. Default `--json` remains the canonical schema-1 result.
 

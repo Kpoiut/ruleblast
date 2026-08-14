@@ -157,7 +157,6 @@ describe("--witness parser", () => {
 
   it("rejects a duplicate --witness and later product flags", () => {
     expect(() => parseArgs([".", "--witness", "--witness"])).toThrow(CliUsageError);
-    expect(() => parseArgs([".", "--receipt"])).toThrow(/Unknown option/u);
     expect(() => parseArgs([".", "--reality", "github/copilot-cli@1"])).toThrow(
       /Unknown option/u,
     );

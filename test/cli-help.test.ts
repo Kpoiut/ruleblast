@@ -26,7 +26,7 @@ describe("route catalog", () => {
     expect(help).toContain("not the 206 Codex proof");
     expect(help).toContain("not \"every path COMPLETE\"");
     expect(help).toContain("--witness");
-    expect(help).not.toContain("--receipt");
+    expect(help).toContain("--receipt");
     expect(help).not.toContain("--reality");
   });
 });

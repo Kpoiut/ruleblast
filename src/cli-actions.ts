@@ -63,8 +63,11 @@ function selectorLabel(selector: SnapshotSelector): string {
   return selector.kind === "worktree" ? "WORKTREE" : selector.ref;
 }
 
-function presentationExtras(args: { readonly witness: boolean }): { witness: boolean } {
-  return { witness: args.witness };
+function presentationExtras(args: {
+  readonly witness: boolean;
+  readonly receipt: boolean;
+}): { witness: boolean; receipt: boolean } {
+  return { witness: args.witness, receipt: args.receipt };
 }
 
 function diffTextContext(

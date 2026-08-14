@@ -167,7 +167,7 @@ Snapshot → evidence-pinned Codex/Claude projection → compare payloads → re
 
 ## Examples
 
-The optional path is only a filesystem starting point for repository discovery. Add `--witness` when you need why-edges. Default `--json` stays the canonical result.
+The optional path is only a filesystem starting point for repository discovery. Add `--witness` when you need why-edges. Add `--receipt` when you need a pasteable card. Default `--json` stays the canonical result.
 
 ```bash
 npx --yes ruleblast@1.0.2 .

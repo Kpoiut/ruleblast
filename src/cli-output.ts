@@ -2,6 +2,7 @@ import type { CliOutput } from "./args.js";
 import { canonicalJson } from "./canonical.js";
 import { renderWitness, witnessForProjection, type WitnessGraph } from "./domain/witness.js";
 import type { Projection } from "./model.js";
+import { receiptForCurrent, receiptForDiff } from "./render-receipt.js";
 import {
   displayText,
   renderText,
@@ -59,6 +60,7 @@ function effectiveColor(output: CliOutput, io: OutputIo): boolean {
 
 export interface PresentationExtras {
   readonly witness?: boolean;
+  readonly receipt?: boolean;
 }
 
 function projectionsOf(value: PresentedResult): Projection[] {
@@ -84,6 +86,24 @@ export function present(
   context?: TextPresentationContext,
   extras: PresentationExtras = {},
 ): void {
+  if (extras.receipt === true && (value.mode === "current" || value.mode === "diff")) {
+    const card = value.mode === "diff" ? receiptForDiff(value) : receiptForCurrent(value);
+    writeLine(io.stdout, output.kind === "json" ? canonicalJson(card) : card.markdown);
+    return;
+  }
+  if (extras.receipt === true && value.mode === "explain") {
+    writeLine(
+      io.stdout,
+      output.kind === "json"
+        ? canonicalJson({
+          version: "RBREC1",
+          title: "explain",
+          path: value.path.path,
+        })
+        : `RULEBLAST PROOF\nexplain ${value.path.path}\n\nNot a claim about model compliance.`,
+    );
+    return;
+  }
   if (extras.witness === true) {
     const graphs = witnessGraphs(value);
     if (output.kind === "json") {

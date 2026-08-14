@@ -19,6 +19,7 @@ export type SnapshotSelector = GitSelector | WorktreeSelector;
 interface CommonArgs {
   readonly output: CliOutput;
   readonly witness: boolean;
+  readonly receipt: boolean;
 }
 
 export interface ScanArgs extends CommonArgs {
@@ -82,9 +83,10 @@ interface ParsedTokens {
   readonly output: CliOutput;
   readonly options: ReadonlyMap<string, string>;
   readonly witness: boolean;
+  readonly receipt: boolean;
 }
 
-const NO_VALUE_OPTIONS = new Set(["--json", "--witness"]);
+const NO_VALUE_OPTIONS = new Set(["--json", "--witness", "--receipt"]);
 const WINDOWS_DRIVE_PATH = /^[A-Za-z]:/;
 
 function usage(code: CliUsageErrorCode, message: string): never {
@@ -153,6 +155,7 @@ function parseTokens(
   const options = new Map<string, string>();
   let json = false;
   let witness = false;
+  let receipt = false;
   let color: ColorMode = "auto";
   let colorSeen = false;
   for (let index = 0; index < tokens.length; index += 1) {
@@ -168,6 +171,11 @@ function parseTokens(
     if (token === "--witness") {
       if (witness) return usage("DUPLICATE_OPTION", "--witness may be specified only once");
       witness = true;
+      continue;
+    }
+    if (token === "--receipt") {
+      if (receipt) return usage("DUPLICATE_OPTION", "--receipt may be specified only once");
+      receipt = true;
       continue;
     }
     if (token.startsWith("--color=")) {
@@ -204,6 +212,7 @@ function parseTokens(
     output: Object.freeze({ kind: json ? "json" : "text", color }),
     options,
     witness,
+    receipt,
   });
 }
 
@@ -264,6 +273,7 @@ function parseScan(tokens: readonly string[]): ScanArgs {
     startPath: scanPath(parsed.positionals[0]),
     output: parsed.output,
     witness: parsed.witness,
+    receipt: parsed.receipt,
   });
 }
 
@@ -276,7 +286,8 @@ function parseDiff(tokens: readonly string[]): DiffArgs {
     return usage("IDENTICAL_ENDPOINTS", "Diff endpoints must be different");
   }
   return Object.freeze({
-    action: "diff", base, target, output: parsed.output, witness: parsed.witness,
+    action: "diff", base, target, output: parsed.output,
+    witness: parsed.witness, receipt: parsed.receipt,
   });
 }
 
@@ -292,7 +303,7 @@ function parseExplain(tokens: readonly string[]): ExplainArgs {
   }
   return Object.freeze({
     action: "explain", path, from, target, output: parsed.output,
-    witness: parsed.witness,
+    witness: parsed.witness, receipt: parsed.receipt,
   });
 }
 
@@ -305,6 +316,7 @@ function parseCase(tokens: readonly string[]): CaseArgs {
     explainPath: explainValue === undefined ? null : repositoryPath(explainValue),
     output: parsed.output,
     witness: parsed.witness,
+    receipt: parsed.receipt,
   });
 }
 

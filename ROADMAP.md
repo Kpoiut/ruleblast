@@ -106,11 +106,11 @@ No star, fork, or download count is a release guarantee; the patch succeeds by m
 
 Semantic `--help`, packaged `AGENT_USAGE.md`, and a shorter GitHub-first README. Four existing routes. No fifth action.
 
-## **IN BUILD** — `v1.1.0`: Resolution Witness Graph
+## **SHIPPED TO MAIN** — `v1.1.0`: Resolution Witness Graph
 
 Opt-in `--witness` prints why-edges derived from existing projection sources. Default canonical JSON is unchanged.
 
-## **NEXT** — `v1.2.0`: Blast Receipts
+## **IN BUILD** — `v1.2.0`: Blast Receipts
 
 The current canonical JSON Blast Case is an evidence record for one immutable comparison. The `v1.2.0` target is a portable, user-facing Markdown receipt derived only from `RuleBlastResult`.
 
@@ -125,7 +125,7 @@ It must not recalculate impact, fetch a web page, embed a generated image, intro
 
 > The result can travel. What happens when a third agent reads the same repo?
 
-## **HORIZON** — `v1.3.0`: Third Documented Reality
+## **NEXT** — `v1.3.0`: Third Documented Reality
 
 The target is exactly one additional surface, not a generic integration wave. Admission requires all of the following:
 

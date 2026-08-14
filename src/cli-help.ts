@@ -89,6 +89,7 @@ One Git tree. Two documented instruction realities.
              Teaching receipt 33→106, not the 206 Codex proof.
 
   --witness  Why-edges for the selected resolution. Opt-in envelope only.
+  --receipt  Pasteable proof card plus RBCTX1 identity. Opt-in only.
 
 Exits
   0  defensible result or no candidates — not "every path COMPLETE"
@@ -97,10 +98,10 @@ Exits
   70 internal failure
 
 Usage:
-  ruleblast [path] [--json] [--witness] [--color=auto|always|never]
-  ruleblast diff [base] [--to <ref|WORKTREE>] [--json] [--witness] [--color=auto|always|never]
-  ruleblast explain <path> [--from <ref>] [--to <ref|WORKTREE>] [--json] [--witness] [--color=auto|always|never]
-  ruleblast case [--explain <path>] [--json] [--witness] [--color=auto|always|never]
+  ruleblast [path] [--json] [--witness] [--receipt] [--color=auto|always|never]
+  ruleblast diff [base] [--to <ref|WORKTREE>] [--json] [--witness] [--receipt] [--color=auto|always|never]
+  ruleblast explain <path> [--from <ref>] [--to <ref|WORKTREE>] [--json] [--witness] [--receipt] [--color=auto|always|never]
+  ruleblast case [--explain <path>] [--json] [--witness] [--receipt] [--color=auto|always|never]
   ruleblast --help
   ruleblast --version
 `;
