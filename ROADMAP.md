@@ -171,6 +171,12 @@ Codex keeps `.agents/skills`. Claude Code gains the official project path `.clau
 
 This tree is `1.4.3`. Latest independently verified public npm distribution remains `1.3.0`.
 
+## **SHIPPED TO MAIN** — `v1.4.4`: CLI-First Front Page
+
+Presentation only. The README leads with a terminal demo and a single 2→206 statement. Sealed bytes live in PROOF.md. Gemini CLI remains behind the admission gate.
+
+This tree is `1.4.4`. Latest independently verified public npm distribution remains `1.3.0`.
+
 ## **NEXT** — `v2.0.0`: Reality Packs
 
 The target is a finite, reviewed, declarative profile format—not an executable plugin system.

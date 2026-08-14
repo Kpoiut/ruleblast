@@ -2,6 +2,10 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 1.4.4 — SHIPPED TO MAIN
+
+- CLI-first README: terminal demo, one 2→206 statement, What Git missed, evidence in [PROOF.md](PROOF.md). No fifth action.
+
 ## 1.4.3 — SHIPPED TO MAIN
 
 - Dual skill discovery: Codex `.agents/skills` and Claude Code `.claude/skills` (official project path). Same four routes and ask-first allow gate. No new surface and no fifth action.

@@ -19,6 +19,7 @@ const publicDocs = [
   "ROADMAP.md",
   "CONTRIBUTING.md",
   "CHANGELOG.md",
+  "PROOF.md",
   "AGENTS.md",
   "CLAUDE.md",
 ] as const;
@@ -89,24 +90,23 @@ describe("README story contract", () => {
       /^<h1 align="center">RuleBlast — Git diff for invisible repository instructions<\/h1>\s/u,
     );
     expectOrdered(readme, [
-      "assets/ruleblast-hero.png",
       "actions/workflows/verify.yml/badge.svg",
       "img.shields.io/npm/v/ruleblast",
+      "Git shows the <code>AGENTS.md</code>",
       "assets/ruleblast-causal-proof.gif",
-      "Git will never show that second diff",
-      "2 instruction-line edits",
-      "206 tracked paths changed stack",
       "npx --yes ruleblast@1.3.0 .",
-      "## Visual benchmark",
+      "## What Git missed",
       "assets/ruleblast-visual-benchmark.png",
       "codex-rs/tui/src/bottom_pane/action_required_title.rs",
-      "npx --yes ruleblast@1.3.0 case",
+      "PROOF.md",
       "## Install",
       "## Run the verified case",
+      "npx --yes ruleblast@1.3.0 case --json",
       "Exact packaged-case terminal transcript",
       "## Explain one path",
       "## Scope",
       "## How it works",
+      "## Performance",
       "## Examples",
       "## Give your agent RuleBlast",
       "## Show a blast on a pull request",
@@ -115,9 +115,10 @@ describe("README story contract", () => {
     ]);
 
     const marker = readme.indexOf("invisible repository instructions</h1>");
-    for (const metric of ["2", "206", "4,476", "zero partial"]) {
+    for (const metric of ["2", "206", "4,476"]) {
       expect(readme.indexOf(metric)).toBeGreaterThan(marker);
     }
+    expect(read("PROOF.md")).toContain("zero partial");
     expect(readme).not.toContain("DEMO FIXTURE");
   });
 
@@ -130,11 +131,9 @@ describe("README story contract", () => {
     expect(transcript).toBe(golden);
   });
 
-  it("renders the selected horizontal RuleBlast hero without packaging it", () => {
+  it("keeps the branding hero as a repository asset without leading the README", () => {
     const asset = "assets/ruleblast-hero.png";
-    expect(readme).toContain(
-      `<img src="https://raw.githubusercontent.com/Kpoiut/ruleblast/main/${asset}" width="100%"`,
-    );
+    expect(readme.indexOf(asset)).toBe(-1);
     const bytes = readFileSync(join(repositoryRoot, asset));
     expect(bytes.subarray(1, 4).toString("ascii")).toBe("PNG");
     expect(bytes.readUInt32BE(16)).toBe(1_774);

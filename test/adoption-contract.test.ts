@@ -25,13 +25,13 @@ interface PackageLock {
   readonly packages: Readonly<Record<string, { readonly version?: string }>>;
 }
 
-describe("v1.4.3 adoption contract", () => {
+describe("v1.4.4 adoption contract", () => {
   it("locks the exact package identity and supported discovery metadata", () => {
     const descriptor = readJson<PackageDescriptor>("package.json");
     const lock = readJson<PackageLock>("package-lock.json");
 
     expect(descriptor).toMatchObject({
-      version: "1.4.3",
+      version: "1.4.4",
       description:
         "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex and Claude Code projections already differ.",
       repository: {
@@ -57,8 +57,8 @@ describe("v1.4.3 adoption contract", () => {
       "cli",
       "developer-tools",
     ]);
-    expect(lock.version).toBe("1.4.3");
-    expect(lock.packages[""]?.version).toBe("1.4.3");
+    expect(lock.version).toBe("1.4.4");
+    expect(lock.packages[""]?.version).toBe("1.4.4");
 
     const discovery = `${descriptor.description}\n${descriptor.keywords.join("\n")}`;
     expect(discovery).not.toMatch(
@@ -111,20 +111,21 @@ describe("v1.4.3 adoption contract", () => {
 
     const tagline = readme.indexOf("Git shows the <code>AGENTS.md</code>");
     const causalProof = readme.indexOf("assets/ruleblast-causal-proof.gif");
-    const consequence = readme.indexOf("Git will never show that second diff");
-    const blast = readme.indexOf("206 tracked paths changed stack");
     const yourRepo = readme.indexOf("npx --yes ruleblast@1.3.0 .");
+    const missed = readme.indexOf("## What Git missed");
+    const proof = readme.indexOf("PROOF.md");
     const teachingCase = readme.indexOf("npx --yes ruleblast@1.3.0 case");
     const install = readme.indexOf("## Install");
     expect(tagline).toBeGreaterThan(-1);
     expect(causalProof).toBeGreaterThan(tagline);
-    expect(consequence).toBeGreaterThan(causalProof);
-    expect(blast).toBeGreaterThan(consequence);
-    expect(yourRepo).toBeGreaterThan(blast);
-    expect(teachingCase).toBeGreaterThan(yourRepo);
-    expect(install).toBeGreaterThan(teachingCase);
-    expect(readme).toContain("Codex: 206 path stacks moved");
-    expect(readme).toContain("Claude Code: 0");
+    expect(yourRepo).toBeGreaterThan(causalProof);
+    expect(missed).toBeGreaterThan(yourRepo);
+    expect(proof).toBeGreaterThan(missed);
+    expect(install).toBeGreaterThan(proof);
+    expect(teachingCase).toBeGreaterThan(install);
+    expect(readme).toContain("Codex: 206 · Claude Code: 0");
+    expect(readme).toMatch(/Git shows what changed|Git shows the instruction edit/iu);
+    expect(readme).not.toContain("Git will never show that second diff");
   });
 
   it("publishes a truthful community funnel without shipping repository-only assets", () => {
@@ -178,7 +179,7 @@ describe("v1.4.3 adoption contract", () => {
 
     const contributingLead = read("CONTRIBUTING.md").slice(0, 700);
     expect(contributingLead).toContain("v1.3.0");
-    expect(contributingLead).toContain("1.4.3");
+    expect(contributingLead).toContain("1.4.4");
     expect(contributingLead).toMatch(/you do not need a 25-commit/iu);
     expect(contributingLead).toMatch(/surprising result/iu);
 
@@ -236,13 +237,9 @@ describe("v1.4.3 adoption contract", () => {
   });
 
   it("uses the selected horizontal hero without shipping presentation media", () => {
-    const readme = read("README.md");
     const asset = "assets/ruleblast-hero.png";
     const bytes = readFileSync(join(repositoryRoot, asset));
-    expect(readme).toContain(
-      `https://raw.githubusercontent.com/Kpoiut/ruleblast/main/${asset}`,
-    );
-    expect(readme).toContain('width="100%"');
+    expect(read("README.md").indexOf(asset)).toBe(-1);
     expect(bytes.subarray(1, 4).toString("ascii")).toBe("PNG");
     expect(bytes.readUInt32BE(16)).toBe(1_774);
     expect(bytes.readUInt32BE(20)).toBe(887);
@@ -257,7 +254,7 @@ describe("v1.4.3 adoption contract", () => {
 
   it("leads with an evidence-locked causal hero instead of a demo fixture", () => {
     const readme = read("README.md");
-    const eye = readme.indexOf("assets/ruleblast-hero.png");
+    const proof = read("PROOF.md");
     const hero = readme.indexOf("assets/ruleblast-causal-proof.gif");
     const cause = readme.indexOf("2 instruction-line edits");
     const blast = readme.indexOf("206 tracked paths changed stack");
@@ -265,8 +262,8 @@ describe("v1.4.3 adoption contract", () => {
       "codex-rs/tui/src/bottom_pane/action_required_title.rs",
     );
     const install = readme.indexOf("## Install");
-    expect(eye).toBeGreaterThan(-1);
-    expect(hero).toBeGreaterThan(eye);
+    expect(readme.indexOf("assets/ruleblast-hero.png")).toBe(-1);
+    expect(hero).toBeGreaterThan(-1);
     expect(cause).toBeGreaterThan(hero);
     expect(blast).toBeGreaterThan(cause);
     expect(explain).toBeGreaterThan(blast);
@@ -278,21 +275,21 @@ describe("v1.4.3 adoption contract", () => {
       "f0f483e8b2a2630bf8dfa5f8451e81eba20def6c",
     );
     expect(readme).toContain("4,476 tracked paths remained unchanged");
-    expect(readme).toContain("Codex changed: 206 · Claude Code changed: 0");
-    expect(readme).toContain("openai/codex-cli@1");
-    expect(readme).toContain("anthropic/claude-code-cli@1");
-    expect(readme).toContain("DIFFERENT → DIFFERENT");
-    expect(readme).toMatch(/no path newly split across profiles/iu);
-    expect(readme).toMatch(/zero partial, zero unknown, and zero indeterminate/iu);
-    expect(readme).toMatch(/not a claim about model compliance or response behavior/iu);
-    expect(readme).toContain(
+    expect(readme).toContain("Codex: 206 · Claude Code: 0");
+    expect(proof).toContain("openai/codex-cli@1");
+    expect(proof).toContain("anthropic/claude-code-cli@1");
+    expect(proof).toContain("DIFFERENT → DIFFERENT");
+    expect(proof).toMatch(/do not invent a split/iu);
+    expect(proof).toMatch(/zero partial, zero unknown, and zero indeterminate/iu);
+    expect(proof).toMatch(/not a claim about model compliance or response behavior/iu);
+    expect(proof).toContain(
       "517cc07af9d2d7dafb48b9f2b3cfaecd85444a1d",
     );
-    expect(readme).toContain(
+    expect(proof).toContain(
       "5659e4cb83051aeaa246c3b45fad75698754806db30f4e710849d220d12ee9d2",
     );
-    expect(readme).toContain("resolver revision 1");
-    expect(readme).toContain(
+    expect(proof).toContain("Resolver revision 1");
+    expect(proof).toContain(
       "https://github.com/openai/codex/blob/f73a07224653c2cc775b3f84f129b872b1e08f85/LICENSE",
     );
     expect(readme).toContain(
@@ -324,18 +321,18 @@ describe("v1.4.3 adoption contract", () => {
         totalDelayCentiseconds += delayCentiseconds;
       }
     }
-    expect(frameControls).toHaveLength(28);
+    expect(frameControls).toHaveLength(12);
     expect(frameControls.every(({ disposal }) => disposal === 1)).toBe(true);
     expect(frameControls.every(({ delayCentiseconds }) =>
       delayCentiseconds > 0 && delayCentiseconds <= 70
     )).toBe(true);
-    expect(totalDelayCentiseconds).toBe(1_960);
+    expect(totalDelayCentiseconds).toBe(840);
     expect(bytes.toString("ascii")).toContain("NETSCAPE2.0");
     expect(bytes.toString("ascii")).toContain(
-      "RULEBLAST_POSTER=Git will never show that second diff; complete held frames only",
+      "RULEBLAST_POSTER=Git shows the edit; complete held frames only",
     );
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "5b4047a11205d0554760e328ae6d20d4dd768709110747df52827f6dbc33c84b",
+      "55bcfcd318421d2c1cc032d29e9c0ec75fe56f0c77c05b2a3fa3343e94d13b8a",
     );
 
     const descriptor = readJson<PackageDescriptor>("package.json");
@@ -348,9 +345,10 @@ describe("v1.4.3 adoption contract", () => {
     expect(current).toContain("206 tracked paths");
   });
 
-  it("embeds an explainable visual benchmark without packaging it", () => {
+  it("embeds What Git missed without packaging it", () => {
     const readme = read("README.md");
-    const heading = readme.indexOf("## Visual benchmark");
+    const proof = read("PROOF.md");
+    const heading = readme.indexOf("## What Git missed");
     const asset = "assets/ruleblast-visual-benchmark.png";
     const image = readme.indexOf(asset);
     const install = readme.indexOf("## Install");
@@ -360,23 +358,23 @@ describe("v1.4.3 adoption contract", () => {
     expect(readme).toContain("10,000 nested paths");
     expect(readme).toContain("p95 < 2,000 ms");
     expect(readme).toContain("npm run benchmark");
-    expect(readme).toMatch(/does not measure model quality/iu);
+    expect(readme).toMatch(/does not measure model quality|Not a claim about model quality/iu);
     expect(readme).toContain("<details>");
     expect(readme).toContain(".ruleblast-allow");
     expect(readme).toContain("RULEBLAST_AGENT_ALLOW");
-    expect(readme).toContain("4.40%");
-    expect(readme).toContain("4,682");
-    expect(readme).toContain("3 files, 6 deleted lines");
-    expect(readme).toContain("33→106");
-    expect(readme).toContain("150,404,342");
+    expect(proof).toContain("4.40%");
+    expect(proof).toContain("4,682");
+    expect(proof).toContain("3 files, 6 deleted lines");
+    expect(proof).toContain("33→106");
+    expect(proof).toContain("150,404,342");
 
     const bytes = readFileSync(join(repositoryRoot, asset));
     expect(bytes.subarray(1, 4).toString("ascii")).toBe("PNG");
     expect(bytes.readUInt32BE(16)).toBe(1_200);
-    expect(bytes.readUInt32BE(20)).toBe(360);
+    expect(bytes.readUInt32BE(20)).toBe(240);
     expect(statSync(join(repositoryRoot, asset)).size).toBeLessThanOrEqual(400_000);
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "f57427c10008fdfbdb1ff4324d36fe3bb15bb5c3a53b42559f214fdbc971d2ff",
+      "c65f560a5d0311f9dd66b1e648bc9943f890355a474866d101b611d7e22b821a",
     );
     const descriptor = readJson<PackageDescriptor>("package.json");
     expect(descriptor.files).not.toContain(asset);

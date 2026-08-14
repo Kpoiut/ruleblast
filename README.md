@@ -1,10 +1,6 @@
 <h1 align="center">RuleBlast — Git diff for invisible repository instructions</h1>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Kpoiut/ruleblast/main/assets/ruleblast-hero.png" width="100%" alt="RuleBlast — See the second diff. Local, read-only, evidence-first.">
-</p>
-
-<p align="center">
   <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
   <a href="https://www.npmjs.com/package/ruleblast"><img src="https://img.shields.io/npm/v/ruleblast" alt="npm version"></a>
   <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
@@ -12,123 +8,98 @@
 </p>
 
 <p align="center">
-  Git shows the <code>AGENTS.md</code> and <code>CLAUDE.md</code> edit. RuleBlast shows the second diff: every tracked path that inherits it.<br>
-  <sub>Local · read-only · deterministic · no network or model call</sub>
+  Git shows the <code>AGENTS.md</code> and <code>CLAUDE.md</code> edit. RuleBlast shows where that change lands.
 </p>
 
 <p align="center">
-  <img src="assets/ruleblast-causal-proof.gif" width="1200" alt="A verified RuleBlast causal proof: two instruction-line edits change 206 projected path stacks, Codex moves and Claude Code does not, then one path is traced to its exact source, then the same CLI runs on your repository">
+  You changed 2 instruction lines.<br>
+  Git sees 2 lines. RuleBlast finds 206 affected paths.<br>
+  <strong>Codex: 206 · Claude Code: 0</strong>
 </p>
 
 <p align="center">
-  You changed 2 lines in <code>AGENTS.md</code>.<br>
-  <strong>Codex: 206 path stacks moved. Claude Code: 0.</strong><br>
-  Git will never show that second diff.
+  <img src="assets/ruleblast-causal-proof.gif" width="1200" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md">
 </p>
-
-<p align="center"><strong>2 instruction-line edits. Codex: 206 path stacks moved. Claude Code: 0.</strong></p>
-
-## Two lines. 206 path stacks. One exact cause.
-
-One Git tree. Two documented instruction realities. Delete two instruction lines. **Codex changed: 206 · Claude Code changed: 0.** 206 tracked paths changed stack. That is the shock. Profiles were already `DIFFERENT → DIFFERENT`; no path newly split. We do not invent a split.
-
-| Git records | RuleBlast reveals |
-|---|---|
-| 3 files, 6 deleted lines | 2 instruction-line edits |
-| 1 changed instruction source | 206 tracked paths changed stack |
-| — | 4,476 tracked paths remained unchanged |
-| — | Codex changed: 206 · Claude Code changed: 0 |
-
-See that second diff on your repository first:
 
 ```bash
+cd <your-git-repository>
 npx --yes ruleblast@1.3.0 .
+npx --yes ruleblast@1.3.0 diff HEAD~1
 ```
 
-## Visual benchmark
+<p align="center"><sub>Local · read-only · deterministic · no network or model call</sub></p>
 
-<details>
-<summary><strong>Scoreboard</strong> — click to open or close. Opt-in. Agents need your allow.</summary>
+## What Git missed
 
 <p align="center">
-  <img src="assets/ruleblast-visual-benchmark.png" width="100%" alt="Compact RuleBlast scoreboard: Git 2 lines / 3 files / 6 deletions; Codex 206; Claude 0; 4,476 unchanged; 4.40% hit; 0/0/0 uncertainty; 10,000-path p95 under 2,000 ms">
+  <img src="assets/ruleblast-visual-benchmark.png" width="100%" alt="What Git missed: 2 instruction lines, 206 Codex paths, 0 Claude Code paths">
 </p>
 
-Read left to right. Git’s first diff is tiny. The second diff is 206 Codex stacks and 0 Claude Code stacks. The box tracks inherited profile stacks, not live agent tool calls. It does not measure model quality.
+Git shows the instruction edit. It does not show every repository path that inherits it.
 
-Setup — RuleBlast never writes these. You own the toggle:
+## Real repository. Reproducible result.
 
-```bash
-echo yes > .ruleblast-allow
-# or:  set RULEBLAST_AGENT_ALLOW=yes
-npx --yes ruleblast@1.3.0 . --receipt
-```
+Not a synthetic fixture. Public [`openai/codex`](https://github.com/openai/codex/compare/8fcf2ad931b90589dd29a571f367e3185d26bbe0...f0f483e8b2a2630bf8dfa5f8451e81eba20def6c) `8fcf2ad` → `f0f483e`: 2 instruction-line edits, 206 tracked paths changed stack for Codex, 0 for Claude Code. 4,476 tracked paths remained unchanged. One cause: [`codex-rs/tui/src/bottom_pane/action_required_title.rs`](https://github.com/openai/codex/blob/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c/codex-rs/tui/src/bottom_pane/action_required_title.rs) under nested [`AGENTS.md`](https://github.com/openai/codex/blob/8fcf2ad931b90589dd29a571f367e3185d26bbe0/codex-rs/tui/src/bottom_pane/AGENTS.md).
 
-Off: `RULEBLAST_AGENT_ALLOW=off` or put `off` in `.ruleblast-allow`. Without allow, an agent must ask before running RuleBlast.
-
-</details>
-
-| Dial | Number | Why it matters |
-|---|---:|---|
-| Git first diff | 2 instruction lines · 3 files, 6 deleted lines | What `git diff` can see |
-| Codex stacks moved | 206 of 4,682 | Nested `AGENTS.md` changed that projection |
-| Claude Code stacks moved | 0 of 4,682 | Same commit, other documented reality |
-| Unchanged / hit rate | 4,476 · 4.40% | The blast was local |
-| Uncertainty | 0 / 0 / 0 | Zero partial, unknown, or indeterminate |
-| Packed budget | 10,000 nested paths, p95 < 2,000 ms | `npm run benchmark` |
-| Teaching receipt | 33→106 | Different artifact — packaged `case`, not the 206 proof |
-| Sealed bytes | 150,404,342 | Immutable proof, not a live model trace |
-
-Pinned public [`openai/codex`](https://github.com/openai/codex/compare/8fcf2ad931b90589dd29a571f367e3185d26bbe0...f0f483e8b2a2630bf8dfa5f8451e81eba20def6c) refs [`8fcf2ad…`](https://github.com/openai/codex/commit/8fcf2ad931b90589dd29a571f367e3185d26bbe0) → [`f0f483e…`](https://github.com/openai/codex/commit/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c). Profiles `openai/codex-cli@1` and `anthropic/claude-code-cli@1` were already `DIFFERENT → DIFFERENT`; no path newly split across profiles. One exact cause: [`codex-rs/tui/src/bottom_pane/action_required_title.rs`](https://github.com/openai/codex/blob/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c/codex-rs/tui/src/bottom_pane/action_required_title.rs) under nested [`AGENTS.md`](https://github.com/openai/codex/blob/8fcf2ad931b90589dd29a571f367e3185d26bbe0/codex-rs/tui/src/bottom_pane/AGENTS.md). zero partial, zero unknown, and zero indeterminate. Not a claim about model compliance or response behavior.
+[Inspect the evidence →](PROOF.md)
 
 ```bash
 ruleblast diff 8fcf2ad931b90589dd29a571f367e3185d26bbe0 --to f0f483e8b2a2630bf8dfa5f8451e81eba20def6c
 ```
 
-Sealed on implementation [`517cc07…`](https://github.com/Kpoiut/ruleblast/commit/517cc07af9d2d7dafb48b9f2b3cfaecd85444a1d): 150,404,342 canonical bytes, SHA-256 `5659e4cb83051aeaa246c3b45fad75698754806db30f4e710849d220d12ee9d2`. License at [`f73a072…/LICENSE`](https://github.com/openai/codex/blob/f73a07224653c2cc775b3f84f129b872b1e08f85/LICENSE).
-
-Ten-second teaching receipt — different artifact (33→106 on this repo), not the 206 proof:
-
-```bash
-npx --yes ruleblast@1.3.0 case
-```
-
 ## Install
 
-Published CLI is `ruleblast@1.3.0`. Node.js 20+. `npx` downloads and runs the pinned package. A global install downloads the full CLI.
+Published CLI is `ruleblast@1.3.0`. Node.js 20+. `npx` downloads and runs the pinned package.
 
 ```bash
-node --version
-npm view ruleblast@1.3.0 version
 cd <your-git-repository>
 npx --yes ruleblast@1.3.0 .
-npx --yes ruleblast@1.3.0 --help
-```
-
-```bash
-npm install --global ruleblast@1.3.0
-ruleblast --version
-ruleblast --help
-ruleblast
-```
-
-```bash
-npm install --save-dev --save-exact ruleblast@1.3.0
-npx ruleblast --version
-npx ruleblast --help
-npx ruleblast
+npx --yes ruleblast@1.3.0 diff HEAD~1
 ```
 
 `NOT_REPOSITORY` means `cd` into a Git repo first. `REF_NOT_FOUND` means pick a real ref. On a permission error, use `npx` instead of elevating. Release CI is Windows and Linux.
 
+<details>
+<summary>Global, project-local, uninstall, cache, source build</summary>
+
 ```bash
-npx --yes ruleblast@1.3.0 diff HEAD~1
+node --version
+npm view ruleblast@1.3.0 version
+npx --yes ruleblast@1.3.0 --help
+npm install --global ruleblast@1.3.0
+ruleblast --version
+ruleblast --help
+ruleblast
+npm install --save-dev --save-exact ruleblast@1.3.0
+npx ruleblast --version
+npx ruleblast --help
+npx ruleblast
 npx --yes ruleblast@1.3.0 explain src/args.ts --from HEAD~1
 npx --yes ruleblast@1.3.0 case
 ```
 
-<details>
-<summary>Uninstall, cache, source build</summary>
+A global install downloads the full CLI.
+
+```bash
+npm uninstall --global ruleblast
+npm install --global ruleblast@1.3.0
+npm uninstall --save-dev ruleblast
+npm install --save-dev --save-exact ruleblast@1.3.0
+npm cache verify
+npx --yes ruleblast@1.3.0 --help
+git clone --branch v1.3.0 --depth 1 https://github.com/Kpoiut/ruleblast.git
+cd ruleblast
+npm ci --ignore-scripts
+npm run build
+node dist/cli.js --version
+node dist/cli.js --help
+node dist/cli.js .
+node dist/cli.js case --json
+```
+
+The `1.0.1 → 1.0.2` registry upgrade was verified by the guarded [eight-cell release workflow](https://github.com/Kpoiut/ruleblast/actions/runs/31722775046).
+
+</details>
 
 ```bash
 npm uninstall --global ruleblast
@@ -211,6 +182,10 @@ Unresolved stays `PARTIAL`, `UNKNOWN`, or `INDETERMINATE`. Contract: [CONTRACT.m
 
 Snapshot → evidence-pinned Codex/Claude projection → compare payloads → render the blast. Adapters own vendor rules. Impact stays profile-neutral.
 
+## Performance
+
+Packed budget: 10,000 nested paths, p95 < 2,000 ms. `npm run benchmark`. Not a claim about model quality.
+
 ## Examples
 
 The optional path is only a filesystem starting point for repository discovery. Add `--witness` when you need why-edges. Add `--receipt` when you need a pasteable card. Add `--reality github/copilot-cli@1` when you need that third documented surface. Default `--json` stays the two-profile canonical result.
@@ -228,6 +203,14 @@ npx --yes ruleblast@1.3.0 diff HEAD~1 --json
 Codex discovers repository skills from `.agents/skills`. Claude Code discovers project skills from `.claude/skills` ([official skills docs](https://code.claude.com/docs/en/skills)). Neither reads `node_modules`.
 
 Copy [`.agents/skills/ruleblast/SKILL.md`](.agents/skills/ruleblast/SKILL.md) for Codex and [`.claude/skills/ruleblast/SKILL.md`](.claude/skills/ruleblast/SKILL.md) for Claude Code. Same four routes. Agents still need your allow gate before they run.
+
+```bash
+echo yes > .ruleblast-allow
+# or:  set RULEBLAST_AGENT_ALLOW=yes
+npx --yes ruleblast@1.3.0 . --receipt
+```
+
+Off: `RULEBLAST_AGENT_ALLOW=off`. RuleBlast never writes the allow file.
 
 ## Show a blast on a pull request
 

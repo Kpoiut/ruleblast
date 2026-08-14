@@ -225,7 +225,7 @@ describe("public release maturity", () => {
   it("records v1.4.3 as dual skill discovery without inventing publication", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v1.4.3`: Dual Skill Discovery";
-    const next = roadmap.indexOf("## **NEXT** — `v2.0.0`: Reality Packs");
+    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v1.4.4`: CLI-First Front Page");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -233,6 +233,16 @@ describe("public release maturity", () => {
     expect(roadmap.slice(start, next)).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 1.4.3 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 1\.4\.3 — RELEASED/u);
+  });
+
+  it("records v1.4.4 as a CLI-first front page without inventing publication", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v1.4.4`: CLI-First Front Page";
+    const next = roadmap.indexOf("## **NEXT** — `v2.0.0`: Reality Packs");
+    expect(roadmap.indexOf(heading)).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(roadmap.indexOf(heading));
+    expect(read("CHANGELOG.md")).toContain("## 1.4.4 — SHIPPED TO MAIN");
+    expect(read("PROOF.md")).toContain("150,404,342");
   });
 
   it("keeps release-state records outside the current package boundary", () => {
