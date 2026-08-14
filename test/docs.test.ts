@@ -91,7 +91,7 @@ describe("README story contract", () => {
     );
     expectOrdered(readme, [
       "actions/workflows/verify.yml/badge.svg",
-      "img.shields.io/npm/v/ruleblast",
+      "img.shields.io/github/package-json/v/Kpoiut/ruleblast",
       "Git shows the <code>AGENTS.md</code>",
       "assets/ruleblast-causal-proof.gif",
       "npx --yes ruleblast@1.5.3 .",

@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
-  <a href="https://www.npmjs.com/package/ruleblast"><img src="https://img.shields.io/npm/v/ruleblast" alt="npm version"></a>
+  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v1.5.3"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="package version 1.5.3"></a>
   <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/ruleblast" alt="Apache-2.0 license"></a>
 </p>
@@ -11,11 +11,9 @@
   Git shows the <code>AGENTS.md</code> and <code>CLAUDE.md</code> edit. RuleBlast shows where that change lands.
 </p>
 
-<p align="center">
-
-![Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md](assets/ruleblast-causal-proof.gif)
-
-</p>
+<div align="center">
+  <img src="assets/ruleblast-causal-proof.gif" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
+</div>
 
 <p align="center">
   You changed 2 instruction lines.<br>
@@ -34,11 +32,9 @@ npx --yes ruleblast@1.5.3 diff HEAD~1
 
 ## What Git missed
 
-<p align="center">
-
-![What Git missed: 2 instruction lines, 206 Codex paths, 0 Claude Code paths](assets/ruleblast-visual-benchmark.png)
-
-</p>
+<div align="center">
+  <img src="assets/ruleblast-visual-benchmark.png" alt="What Git missed: 2 instruction lines, 206 Codex paths, 0 Claude Code paths" width="100%">
+</div>
 
 Git shows the instruction edit. It does not show every repository path that inherits it.
 
