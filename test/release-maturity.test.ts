@@ -370,6 +370,9 @@ describe("public release maturity", () => {
     const shipped = roadmap.slice(start, next);
     expect(shipped).toContain("f9e6833aeadcb3e3f23753ebf0f761df68749f0a");
     expect(shipped).toContain("38cb0f50bd03bc39a0046426b6fa3004103d4f4a");
+    expect(shipped).toContain("250f54ff2a1ae354581919f471d3bb48dd231db4");
+    expect(shipped).toContain("bf51ada55b7e34db2b8f5b6c0eebd468b35c0382");
+    expect(shipped).toContain("1059f9c02e474cb1f1376bb4664aee03f63ac13af8ac4817fcdb6fd7a94c0777");
     expect(shipped).toContain("D2a");
     expect(shipped).toMatch(/bundled into this 2\.0\.0 line/iu);
     expect(shipped).toMatch(/No `--pack`/u);

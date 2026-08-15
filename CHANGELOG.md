@@ -10,6 +10,12 @@ All notable user-visible changes to RuleBlast are recorded here.
 - `npm run test:pack-schema` checks JSON Schema (dev) and the fail-closed TypeScript decoder. No runtime schema-validator dependency.
 - Not an npm publication. Default two-profile canonical goldens are unchanged.
 
+### Release artifact
+
+- Signed tag object `250f54ff2a1ae354581919f471d3bb48dd231db4` targets commit `bf51ada55b7e34db2b8f5b6c0eebd468b35c0382`.
+- The GitHub Release serves the 118,042-byte tarball with SHA-256 `1059f9c02e474cb1f1376bb4664aee03f63ac13af8ac4817fcdb6fd7a94c0777`; the release manifest SHA-256 is `04b8fe547e684aef54af743ebdd1f6172a647834255d1ff3a4f11fa02087a52c`.
+- Registry `ruleblast@2.0.0` is not yet an independently verified npm record. Latest verified npm distribution remains `1.6.2`.
+
 ## 1.6.2 — RELEASED
 
 - Default `explain` text is the shared visual source tree: catalog badges, cwd, changed markers, why-this-path, and findings. Digests stay in `--json`.

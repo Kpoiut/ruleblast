@@ -235,7 +235,7 @@ That release is `1.6.2`. Latest independently verified public npm distribution a
 
 ## **SHIPPED TO MAIN** — `v2.0.0`: Reality Packs
 
-This tree is `2.0.0`. Latest independently verified public npm distribution remains `1.6.2` until an authorized publication.
+This tree is `2.0.0`. Signed tag object `250f54ff2a1ae354581919f471d3bb48dd231db4` for [`v2.0.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.0.0) targets commit `bf51ada55b7e34db2b8f5b6c0eebd468b35c0382`. The GitHub Release serves the reviewed 118,042-byte tarball with SHA-256 `1059f9c02e474cb1f1376bb4664aee03f63ac13af8ac4817fcdb6fd7a94c0777`; the canonical manifest has SHA-256 `04b8fe547e684aef54af743ebdd1f6172a647834255d1ff3a4f11fa02087a52c`. Latest independently verified public npm distribution remains `1.6.2`; a registry `2.0.0` record is not yet verified.
 
 Bundled, reviewed, data-only packs under `packs/bundled` now define the four realities. The fail-closed decoder rejects unknown keys and dangling claim ids. Catalog admission stays product policy. No `--pack`, no fifth reality, no executable pack extension.
 
