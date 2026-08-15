@@ -1,12 +1,12 @@
 <h1 align="center">RuleBlast — Git diff for invisible repository instructions</h1>
 
 <p align="center">
-  <img src="assets/ruleblast-hero.png?v=1.6.2" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
+  <img src="assets/ruleblast-hero.png?v=2.0.0" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
 </p>
 
 <p align="center">
   <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
-  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v1.6.2"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="package version 2.0.0"></a>
+  <a href="https://github.com/Kpoiut/ruleblast/releases"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="package version 2.0.0"></a>
   <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/ruleblast" alt="Apache-2.0 license"></a>
 </p>
@@ -23,7 +23,7 @@
 </p>
 
 <div align="center">
-  <img src="assets/ruleblast-causal-proof.gif?v=1.6.2" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
+  <img src="assets/ruleblast-causal-proof.gif?v=2.0.0" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
 </div>
 
 ```bash
@@ -37,7 +37,7 @@ npx --yes ruleblast@2.0.0 diff HEAD~1
 ## What Git missed
 
 <div align="center">
-  <img src="assets/ruleblast-visual-benchmark.png?v=1.6.2" alt="What Git missed: 2 instruction lines, 206 Codex paths, 0 Claude Code paths" width="100%">
+  <img src="assets/ruleblast-visual-benchmark.png?v=2.0.0" alt="What Git missed: 2 instruction lines, 206 Codex paths, 0 Claude Code paths" width="100%">
 </div>
 
 Git shows the instruction edit. It does not show every repository path that inherits it.
@@ -171,7 +171,7 @@ Unresolved stays `PARTIAL`, `UNKNOWN`, or `INDETERMINATE`. Contract: [CONTRACT.m
 
 ## How it works
 
-Snapshot → evidence-pinned profile projection → compare payloads → render the blast. Adapters own vendor rules. The analysis engine is the authority; the CLI is the reference host. Impact stays profile-neutral.
+Snapshot → evidence-pinned profile projection → compare payloads → render the blast. Bundled Reality Packs declare the four realities; named engines own vendor rules. The analysis engine is the authority; the CLI is the reference host. Impact stays profile-neutral.
 
 ## Performance
 

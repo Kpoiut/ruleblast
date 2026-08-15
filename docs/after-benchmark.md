@@ -18,4 +18,4 @@ target:    p95 < 2000ms
 
 Gate: p95 1079.77ms < 2000ms. Pass.
 
-Adapter-vs-pack regression is only claimed vs `docs/v2/migration-base-benchmark.md` (p95 994.87ms) on this same machine. The delta is not treated as a pack failure; both are under the published 2000ms budget.
+Adapter-vs-pack regression is only claimed vs [migration-base-benchmark.md](migration-base-benchmark.md) (p95 994.87ms) on this same machine. The delta is not treated as a pack failure; both are under the published 2000ms budget.

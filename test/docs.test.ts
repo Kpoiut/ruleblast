@@ -383,12 +383,19 @@ describe("repository documentation integrity", () => {
   it("keeps superseded design records outside the public repository tree", () => {
     expect(existsSync(join(repositoryRoot, "docs/superpowers"))).toBe(false);
     expect(existsSync(join(repositoryRoot, "docs/plans"))).toBe(false);
+    expect(existsSync(join(repositoryRoot, "docs/v2"))).toBe(false);
     const docsRoot = join(repositoryRoot, "docs");
-    if (!existsSync(docsRoot)) return;
+    expect(existsSync(docsRoot)).toBe(true);
     const names = readdirSync(docsRoot, { withFileTypes: true });
-    expect(names.map((entry) => entry.name)).toEqual(["v2"]);
-    const v2 = join(docsRoot, "v2");
-    expect(readdirSync(v2).every((name) => name.endsWith(".md"))).toBe(true);
+    expect(names.every((entry) => entry.isFile() && entry.name.endsWith(".md"))).toBe(true);
+    expect(names.map((entry) => entry.name).sort()).toEqual([
+      "README.md",
+      "after-benchmark.md",
+      "baseline-benchmark.md",
+      "gemini-nested-import.md",
+      "migration-base-benchmark.md",
+      "representability.md",
+    ].sort());
   });
 
   it("keeps public claims restrained", () => {
@@ -410,7 +417,12 @@ describe("repository documentation integrity", () => {
   });
 
   it("resolves every local Markdown link", () => {
-    for (const path of publicDocs) {
+    const extraDocs = existsSync(join(repositoryRoot, "docs"))
+      ? readdirSync(join(repositoryRoot, "docs"))
+        .filter((name) => name.endsWith(".md"))
+        .map((name) => `docs/${name}`)
+      : [];
+    for (const path of [...publicDocs, ...extraDocs]) {
       const base = dirname(path);
       for (const target of localMarkdownLinks(read(path))) {
         expect(
