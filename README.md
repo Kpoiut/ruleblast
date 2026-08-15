@@ -1,18 +1,18 @@
 <h1 align="center">RuleBlast — Git diff for invisible repository instructions</h1>
 
 <p align="center">
-  <img src="assets/ruleblast-hero.png?v=2.0.1" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
+  <img src="assets/ruleblast-hero.png?v=2.0.2" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
 </p>
 
 <p align="center">
   <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
-  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.0.1"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="package version 2.0.1"></a>
+  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.0.2"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="package version 2.0.2"></a>
   <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/ruleblast" alt="Apache-2.0 license"></a>
 </p>
 
 <p align="center">
-  Git shows the <code>AGENTS.md</code> and <code>CLAUDE.md</code> edit. RuleBlast shows where that change lands.
+  Git shows the <code>AGENTS.md</code> and <code>CLAUDE.md</code> edit. RuleBlast shows the blast radius — which files inherit that change across Codex, Claude Code, Gemini CLI, and Copilot CLI.
 </p>
 
 <p align="center">
@@ -23,13 +23,13 @@
 </p>
 
 <div align="center">
-  <img src="assets/ruleblast-causal-proof.gif?v=2.0.1" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
+  <img src="assets/ruleblast-causal-proof.gif?v=2.0.2" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
 </div>
 
 ```bash
 cd <your-git-repository>
-npx --yes ruleblast@2.0.1 .
-npx --yes ruleblast@2.0.1 diff HEAD~1
+npx --yes ruleblast@2.0.2 .
+npx --yes ruleblast@2.0.2 diff HEAD~1
 ```
 
 <p align="center"><sub>Local · read-only · deterministic · no network or model call</sub></p>
@@ -37,7 +37,7 @@ npx --yes ruleblast@2.0.1 diff HEAD~1
 ## What Git missed
 
 <div align="center">
-  <img src="assets/ruleblast-visual-benchmark.png?v=2.0.1" alt="Square RuleBlast 2.0.1 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; why-this-path, CLI and IDE surfaces, user allow gate" width="100%">
+  <img src="assets/ruleblast-visual-benchmark.png?v=2.0.2" alt="Square RuleBlast 2.0.2 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; why-this-path, CLI and IDE surfaces, user allow gate" width="100%">
 </div>
 
 Git shows the instruction edit. It does not show every repository path that inherits it.
@@ -54,12 +54,12 @@ ruleblast diff 8fcf2ad931b90589dd29a571f367e3185d26bbe0 --to f0f483e8b2a2630bf8d
 
 ## Install
 
-Published CLI is `ruleblast@2.0.1`. Node.js 20+. `npx` downloads and runs the pinned package.
+Published CLI is `ruleblast@2.0.2`. Node.js 20+. `npx` downloads and runs the pinned package.
 
 ```bash
 cd <your-git-repository>
-npx --yes ruleblast@2.0.1 .
-npx --yes ruleblast@2.0.1 diff HEAD~1
+npx --yes ruleblast@2.0.2 .
+npx --yes ruleblast@2.0.2 diff HEAD~1
 ```
 
 `NOT_REPOSITORY` means `cd` into a Git repo first. `REF_NOT_FOUND` means pick a real ref. On a permission error, use `npx` instead of elevating. Release CI is Windows and Linux.
@@ -69,30 +69,30 @@ npx --yes ruleblast@2.0.1 diff HEAD~1
 
 ```bash
 node --version
-npm view ruleblast@2.0.1 version
-npx --yes ruleblast@2.0.1 --help
-npm install --global ruleblast@2.0.1
+npm view ruleblast@2.0.2 version
+npx --yes ruleblast@2.0.2 --help
+npm install --global ruleblast@2.0.2
 ruleblast --version
 ruleblast --help
 ruleblast
-npm install --save-dev --save-exact ruleblast@2.0.1
+npm install --save-dev --save-exact ruleblast@2.0.2
 npx ruleblast --version
 npx ruleblast --help
 npx ruleblast
-npx --yes ruleblast@2.0.1 explain src/args.ts --from HEAD~1
-npx --yes ruleblast@2.0.1 case
+npx --yes ruleblast@2.0.2 explain src/args.ts --from HEAD~1
+npx --yes ruleblast@2.0.2 case
 ```
 
 A global install downloads the full CLI.
 
 ```bash
 npm uninstall --global ruleblast
-npm install --global ruleblast@2.0.1
+npm install --global ruleblast@2.0.2
 npm uninstall --save-dev ruleblast
-npm install --save-dev --save-exact ruleblast@2.0.1
+npm install --save-dev --save-exact ruleblast@2.0.2
 npm cache verify
-npx --yes ruleblast@2.0.1 --help
-git clone --branch v2.0.1 --depth 1 https://github.com/Kpoiut/ruleblast.git
+npx --yes ruleblast@2.0.2 --help
+git clone --branch v2.0.2 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
 npm ci --ignore-scripts
 npm run build
@@ -111,9 +111,9 @@ The `1.0.1 → 1.0.2` registry upgrade was verified by the guarded [eight-cell r
 Packaged teaching receipt: [`27d52e2…`](https://github.com/Kpoiut/ruleblast/commit/27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8) → [`e420008…`](https://github.com/Kpoiut/ruleblast/commit/e420008a1c10c5c328e506247560117f4d40b855). 33 instruction-line edits. 106 of 106 stacks moved. Zero current split, partial, unknown, or indeterminate paths. [Canonical receipt](cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json) core digest `1e907a88ed648ebbd68b4f588c3bd09058ab7714e8f85a3f2d4a1c60e5a40938`.
 
 ```bash
-npx --yes ruleblast@2.0.1 case
-npx --yes ruleblast@2.0.1 case --json
-npx --yes ruleblast@2.0.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@2.0.2 case
+npx --yes ruleblast@2.0.2 case --json
+npx --yes ruleblast@2.0.2 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 <details>
@@ -149,7 +149,7 @@ Scope: 106 tracked paths · repository-only · resolver revision 1
 ## Explain one path
 
 ```bash
-npx --yes ruleblast@2.0.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@2.0.2 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 Historical reproduction (needs both commits checked out):
@@ -191,11 +191,11 @@ The optional path is only a filesystem starting point for repository discovery. 
 | Cursor | not a reality id | compatible host | not claimed |
 
 ```bash
-npx --yes ruleblast@2.0.1 .
-npx --yes ruleblast@2.0.1 packages/api/internal
-npx --yes ruleblast@2.0.1 diff HEAD~1
-npx --yes ruleblast@2.0.1 explain src/args.ts --from HEAD~1
-npx --yes ruleblast@2.0.1 diff HEAD~1 --json
+npx --yes ruleblast@2.0.2 .
+npx --yes ruleblast@2.0.2 packages/api/internal
+npx --yes ruleblast@2.0.2 diff HEAD~1
+npx --yes ruleblast@2.0.2 explain src/args.ts --from HEAD~1
+npx --yes ruleblast@2.0.2 diff HEAD~1 --json
 ```
 
 ## Open in the editor
@@ -218,7 +218,7 @@ Copy [`.agents/skills/ruleblast/SKILL.md`](.agents/skills/ruleblast/SKILL.md) fo
 ```bash
 echo yes > .ruleblast-allow
 # or:  set RULEBLAST_AGENT_ALLOW=yes
-npx --yes ruleblast@2.0.1 . --receipt
+npx --yes ruleblast@2.0.2 . --receipt
 ```
 
 Off: `RULEBLAST_AGENT_ALLOW=off`. RuleBlast never writes the allow file.

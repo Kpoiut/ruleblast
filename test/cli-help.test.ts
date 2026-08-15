@@ -29,6 +29,8 @@ describe("route catalog", () => {
     expect(help).toContain("--receipt");
     expect(help).toContain("--reality");
     expect(help).toContain("github/copilot-cli@1");
+    expect(help).toContain("Shows the blast radius of AGENTS.md and CLAUDE.md changes");
+    expect(help).toContain("Git diff for repository instructions");
   });
 });
 

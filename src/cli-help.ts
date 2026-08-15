@@ -1,4 +1,5 @@
 import { parseArgs } from "./args.js";
+import { IDENTITY_BLAST, IDENTITY_TITLE } from "./package-identity.js";
 
 export interface RouteCard {
   readonly id: "scan" | "diff" | "explain" | "case";
@@ -70,8 +71,9 @@ export function routeCatalog(): readonly RouteCard[] {
 }
 
 export function renderCliHelp(): string {
-  return `RuleBlast — Git diff for invisible repository instructions.
+  return `RuleBlast — ${IDENTITY_TITLE}.
 
+${IDENTITY_BLAST}.
 One Git tree. Two default realities. Two opt-in CLI surfaces.
 
   [path]     ${ROUTES[0]!.useWhen}

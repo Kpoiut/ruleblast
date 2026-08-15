@@ -1,5 +1,5 @@
 name: RuleBlast
-description: Comment a published-CLI instruction blast for a Git range. Read-only analysis on the runner. Not a hosted product and not a Marketplace Action.
+description: Shows the blast radius of AGENTS.md and CLAUDE.md changes. Comment a published-CLI instruction blast for a Git range. Read-only analysis on the runner. Not a hosted product and not a Marketplace Action.
 author: Kpoiut
 branding:
   icon: zap
@@ -16,7 +16,7 @@ inputs:
   version:
     description: Exact published package to run.
     required: false
-    default: "2.0.1"
+    default: "2.0.2"
   reality:
     description: Optional extra modeled reality. github/copilot-cli@1 or google/gemini-cli@1.
     required: false

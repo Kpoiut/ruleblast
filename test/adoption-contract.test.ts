@@ -25,15 +25,15 @@ interface PackageLock {
   readonly packages: Readonly<Record<string, { readonly version?: string }>>;
 }
 
-describe("v2.0.1 adoption contract", () => {
+describe("v2.0.2 adoption contract", () => {
   it("locks the exact package identity and supported discovery metadata", () => {
     const descriptor = readJson<PackageDescriptor>("package.json");
     const lock = readJson<PackageLock>("package-lock.json");
 
     expect(descriptor).toMatchObject({
-      version: "2.0.1",
+      version: "2.0.2",
       description:
-        "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex, Claude Code, Copilot CLI, and Gemini CLI projections already differ.",
+        "Git diff for repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes across Codex, Claude Code, Gemini CLI, and Copilot CLI.",
       repository: {
         type: "git",
         url: "git+https://github.com/Kpoiut/ruleblast.git",
@@ -54,14 +54,32 @@ describe("v2.0.1 adoption contract", () => {
       "repository-instructions",
       "repository-rules",
       "instruction-scope",
+      "instruction-inheritance",
+      "instruction-provenance",
       "blast-radius",
       "git",
       "cli",
       "developer-tools",
     ]);
-    expect(lock.version).toBe("2.0.1");
-    expect(lock.packages[""]?.version).toBe("2.0.1");
+    expect(lock.version).toBe("2.0.2");
+    expect(lock.packages[""]?.version).toBe("2.0.2");
 
+    expect(descriptor.description).toContain("blast radius");
+    expect(descriptor.description).toContain("AGENTS.md");
+    expect(descriptor.description).toContain("CLAUDE.md");
+    expect(descriptor.description).toContain("Codex");
+    expect(descriptor.description).toContain("Claude Code");
+    const phrase = "blast radius of AGENTS.md and CLAUDE.md";
+    expect(descriptor.description).toContain(phrase);
+    expect(read("src/package-identity.ts")).toContain(phrase);
+    expect(read("src/cli-help.ts")).toContain("IDENTITY_BLAST");
+    expect(read(".agents/skills/ruleblast/SKILL.md")).toContain(phrase);
+    expect(read(".claude/skills/ruleblast/SKILL.md")).toContain(phrase);
+    expect(read("hosts/vscode/package.json")).toContain(phrase);
+    expect(read("AGENT_USAGE.md")).toContain(phrase);
+    expect(read("README.md")).toMatch(
+      /blast radius — which files inherit that change/u,
+    );
     const discovery = `${descriptor.description}\n${descriptor.keywords.join("\n")}`;
     expect(discovery).not.toMatch(
       /all agents|model quality|model compliance/iu,
@@ -98,7 +116,7 @@ describe("v2.0.1 adoption contract", () => {
   it("keeps the public onboarding on the verified case and product boundary", () => {
     const readme = read("README.md");
     expect(readme).toContain("## Run the verified case");
-    expect(readme).toContain("npx --yes ruleblast@2.0.1 case");
+    expect(readme).toContain("npx --yes ruleblast@2.0.2 case");
     expect(readme).not.toMatch(/ruleblast demo/iu);
     expect(readme).not.toContain("DEMO FIXTURE");
     expect(readme).not.toContain("remains conditional");
@@ -115,10 +133,10 @@ describe("v2.0.1 adoption contract", () => {
     const eyeHero = readme.indexOf("assets/ruleblast-hero.png");
     const tagline = readme.indexOf("Git shows the <code>AGENTS.md</code>");
     const causalProof = readme.indexOf("assets/ruleblast-causal-proof.gif");
-    const yourRepo = readme.indexOf("npx --yes ruleblast@2.0.1 .");
+    const yourRepo = readme.indexOf("npx --yes ruleblast@2.0.2 .");
     const missed = readme.indexOf("## What Git missed");
     const proof = readme.indexOf("PROOF.md");
-    const teachingCase = readme.indexOf("npx --yes ruleblast@2.0.1 case");
+    const teachingCase = readme.indexOf("npx --yes ruleblast@2.0.2 case");
     const install = readme.indexOf("## Install");
     expect(title).toBeGreaterThan(-1);
     expect(eyeHero).toBeGreaterThan(title);
@@ -184,8 +202,8 @@ describe("v2.0.1 adoption contract", () => {
     expect(conduct).toMatch(/protect/iu);
 
     const contributingLead = read("CONTRIBUTING.md").slice(0, 700);
-    expect(contributingLead).toContain("v2.0.1");
-    expect(contributingLead).toContain("2.0.1");
+    expect(contributingLead).toContain("v2.0.2");
+    expect(contributingLead).toContain("2.0.2");
     expect(contributingLead).toMatch(/you do not need a 25-commit/iu);
     expect(contributingLead).toMatch(/surprising result/iu);
 
@@ -365,7 +383,7 @@ describe("v2.0.1 adoption contract", () => {
     const asset = "assets/ruleblast-visual-benchmark.png";
     const image = readme.indexOf(asset);
     const install = readme.indexOf("## Install");
-    expect(heading).toBeGreaterThan(readme.indexOf("npx --yes ruleblast@2.0.1 ."));
+    expect(heading).toBeGreaterThan(readme.indexOf("npx --yes ruleblast@2.0.2 ."));
     expect(image).toBeGreaterThan(heading);
     expect(install).toBeGreaterThan(image);
     expect(readme).toContain("10,000 nested paths");
@@ -387,7 +405,7 @@ describe("v2.0.1 adoption contract", () => {
     expect(bytes.readUInt32BE(20)).toBe(1_200);
     expect(statSync(join(repositoryRoot, asset)).size).toBeLessThanOrEqual(400_000);
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "9044da047ba7dcb88f255fb005b9139e5ff4fdcd59b99d72456373c7a3688c7b",
+      "46ccbdb21b8bae07c0e327cafa115ca3ee202c8c24cec2e46151278207fb5c14",
     );
     const descriptor = readJson<PackageDescriptor>("package.json");
     expect(descriptor.files).not.toContain(asset);

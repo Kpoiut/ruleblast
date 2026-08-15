@@ -1,5 +1,9 @@
 import { readFileSync } from "node:fs";
 
+export const IDENTITY_TITLE = "Git diff for repository instructions";
+export const IDENTITY_BLAST =
+  "Shows the blast radius of AGENTS.md and CLAUDE.md changes";
+
 export function packageVersion(): string {
   const value = JSON.parse(
     readFileSync(new URL("../package.json", import.meta.url), "utf8"),

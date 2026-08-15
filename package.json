@@ -1,7 +1,7 @@
 {
   "name": "ruleblast",
-  "version": "2.0.1",
-  "description": "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex, Claude Code, Copilot CLI, and Gemini CLI projections already differ.",
+  "version": "2.0.2",
+  "description": "Git diff for repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes across Codex, Claude Code, Gemini CLI, and Copilot CLI.",
   "keywords": [
     "agents.md",
     "claude.md",
@@ -14,6 +14,8 @@
     "repository-instructions",
     "repository-rules",
     "instruction-scope",
+    "instruction-inheritance",
+    "instruction-provenance",
     "blast-radius",
     "git",
     "cli",

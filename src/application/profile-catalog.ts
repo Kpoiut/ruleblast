@@ -3,7 +3,8 @@ import {
   type ProfileId,
 } from "../model.js";
 import { compareCodePoints } from "../domain/repository-path.js";
-import { loadBundledPack } from "../packs/load.js";
+import { InvalidPackError } from "../packs/compile.js";
+import { bundledDirectoryForPackId, loadBundledPack } from "../packs/load.js";
 import { profileFromCompiledPack } from "../packs/profile.js";
 import type { ProfileDefinition } from "../profiles/profile.js";
 
@@ -25,6 +26,12 @@ export interface CatalogEntry extends ProfilePresentation {
 
 function catalogEntry(directoryName: string, admission: ProfileAdmission): CatalogEntry {
   const compiled = loadBundledPack(directoryName);
+  const expected = bundledDirectoryForPackId(compiled.pack.id);
+  if (expected !== directoryName) {
+    throw new InvalidPackError(
+      `bundled directory ${JSON.stringify(directoryName)} does not match pack id ${JSON.stringify(compiled.pack.id)}`,
+    );
+  }
   return Object.freeze({
     id: parseProfileId(compiled.pack.id),
     label: compiled.pack.label,

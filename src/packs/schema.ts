@@ -66,11 +66,6 @@ export interface SelectSpec {
   readonly claimIds: readonly string[];
 }
 
-export interface ApplySpec {
-  readonly kind: "path-glob" | "settings-exclude" | "none";
-  readonly claimIds: readonly string[];
-}
-
 export interface TransformSpec {
   readonly kind: "byte-budget" | "at-path-import" | "strip-html-comments";
   readonly bytes?: number;
@@ -92,7 +87,6 @@ export interface ResolverSpec {
   };
   readonly discover: DiscoverSpec;
   readonly select: SelectSpec;
-  readonly apply?: ApplySpec;
   readonly transform: readonly TransformSpec[];
   readonly assemble: AssembleSpec;
   readonly fingerprint: FingerprintBuiltin;

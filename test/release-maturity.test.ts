@@ -396,7 +396,7 @@ describe("public release maturity", () => {
   it("records v2.0.1 as the Action pin and honest help patch", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v2.0.1`: Honest PR engine pin";
-    const next = roadmap.indexOf("## **NEXT** — `v2.1.0`: Many-Reality Diff");
+    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.0.2`: Retrievable identity and fail-closed pack load");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -409,7 +409,23 @@ describe("public release maturity", () => {
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.0.1 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.1 — RELEASED/u);
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.0\.1"/u);
+  });
+
+  it("records v2.0.2 as retrievable identity and fail-closed pack load", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v2.0.2`: Retrievable identity and fail-closed pack load";
+    const next = roadmap.indexOf("## **NEXT** — `v2.1.0`: Many-Reality Diff");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toMatch(/blast radius/iu);
+    expect(shipped).toContain("INVALID_PACK");
+    expect(shipped).toMatch(/drive-relative|contained|unsafe pack directory/iu);
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 2.0.2 — SHIPPED TO MAIN");
+    expect(read("package.json")).toContain("blast radius of AGENTS.md and CLAUDE.md");
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.0\.2"/u);
   });
 
   it("keeps release-state records outside the current package boundary", () => {

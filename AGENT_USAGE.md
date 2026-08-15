@@ -1,5 +1,7 @@
 # AGENT_USAGE
 
+Git diff for repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes.
+
 Packaged routing guide. This is not a Codex skill and is not discovered from `node_modules`.
 
 OpenAI’s documented Codex skill locations do not include `node_modules`; repository skills are discovered from `.agents/skills`. Claude Code’s documented project skills live at `.claude/skills/<name>/SKILL.md` (https://code.claude.com/docs/en/skills). This file is not discovered from either tree.

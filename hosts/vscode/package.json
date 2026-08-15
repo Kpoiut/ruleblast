@@ -1,8 +1,8 @@
 {
   "name": "ruleblast",
   "displayName": "RuleBlast",
-  "description": "Read-only companion for the RuleBlast analysis engine. Same four actions, same canonical result.",
-  "version": "2.0.1",
+  "description": "Read-only companion. Same four actions as the CLI. Shows the blast radius of AGENTS.md and CLAUDE.md changes.",
+  "version": "2.0.2",
   "publisher": "kpoiut",
   "private": true,
   "engines": {

@@ -2,6 +2,14 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.0.2 — SHIPPED TO MAIN
+
+- Shared identity sentence: blast radius of `AGENTS.md` and `CLAUDE.md` changes across Codex, Claude Code, Gemini CLI, and Copilot CLI. Same claim in package.json, README, `--help`, companion, skills, and `AGENT_USAGE.md`.
+- Problem-query first fold: which files inherit an `AGENTS.md` / `CLAUDE.md` change. Keywords add `instruction-inheritance` and `instruction-provenance`.
+- Bundled pack load is fail-closed and contained: nested names, Windows drive-relative names such as `C:secret`, and path-escaping names raise `INVALID_PACK` before join. Missing JSON and malformed JSON are distinct `INVALID_PACK` errors.
+- Decoder rejects empty claim-id strings and `:` in repository-relative names. Catalog directory names must match `vendor-product@rev` for the pack id.
+- No fifth action, no `--pack`, no fifth reality.
+
 ## 2.0.1 — SHIPPED TO MAIN
 
 - Nested composite Action default package pin is `2.0.1`. After Reality Packs, the previous default `1.6.2` made PR receipts analyze the old engine.

@@ -258,9 +258,15 @@ Before external packs are admitted, the bundled profiles must migrate to the sam
 
 ## **SHIPPED TO MAIN** — `v2.0.1`: Honest PR engine pin
 
-This tree is `2.0.1`. Signed tag object `7ead43338441bfd541a88096587257189939a1b7` for [`v2.0.1`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.0.1) targets commit `eddaf663ea489a3b5ab576a1763c9af42df43a82`. The GitHub Release serves the 118,124-byte tarball with SHA-256 `d4a6f3d677636ff61bfd1a2af1a5929d597c4ba77bf6a832afd0bba194f27c46`. Latest independently verified public npm distribution remains `2.0.0` until an authorized publication.
+Signed tag object `7ead43338441bfd541a88096587257189939a1b7` for [`v2.0.1`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.0.1) targets commit `eddaf663ea489a3b5ab576a1763c9af42df43a82`. The GitHub Release serves the 118,124-byte tarball with SHA-256 `d4a6f3d677636ff61bfd1a2af1a5929d597c4ba77bf6a832afd0bba194f27c46`. Latest independently verified public npm distribution at that tag remains `2.0.0` until an authorized `2.0.1` publication.
 
-The nested composite Action still defaulted to `1.6.2` after Reality Packs shipped, so pull-request receipts analyzed the previous engine. The default package pin is now `2.0.1`. An optional `reality` input forwards the existing `--reality` flag. Help names two default realities and two opt-in CLI surfaces. No fifth action, no `--pack`, no fifth reality.
+The nested composite Action still defaulted to `1.6.2` after Reality Packs shipped, so pull-request receipts analyzed the previous engine. The default package pin is `2.0.1`. An optional `reality` input forwards the existing `--reality` flag. Help names two default realities and two opt-in CLI surfaces. No fifth action, no `--pack`, no fifth reality.
+
+## **SHIPPED TO MAIN** — `v2.0.2`: Retrievable identity and fail-closed pack load
+
+This tree is `2.0.2`. Latest independently verified public npm distribution remains `2.0.0` until an authorized publication.
+
+The npm description, README first fold, `--help`, companion blurb, agent skill frontmatter, and `AGENT_USAGE.md` now share one identity: blast radius of `AGENTS.md` / `CLAUDE.md` changes across the four modeled CLI surfaces. The first fold answers the problem query: which files inherit that change. Pack load rejects nested, drive-relative, and path-escaping directory names so a name such as `C:secret` cannot leave `packs/bundled`. Missing JSON and malformed JSON raise distinct `INVALID_PACK` errors. Catalog directories must match the pack id. No fifth action, no `--pack`, no fifth reality, no hosted discovery service.
 
 ## **NEXT** — `v2.1.0`: Many-Reality Diff
 

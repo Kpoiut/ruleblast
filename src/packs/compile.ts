@@ -74,8 +74,8 @@ function expectEnum<T extends string>(
 }
 
 function expectStringArray(value: unknown, label: string): readonly string[] {
-  if (!Array.isArray(value) || value.some((item) => typeof item !== "string")) {
-    fail(`${label} must be a string array`);
+  if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || item === "")) {
+    fail(`${label} must be a string array of non-empty strings`);
   }
   return Object.freeze([...value]);
 }
@@ -84,6 +84,8 @@ function expectSafeName(value: string, label: string): string {
   if (
     value.includes("\0") ||
     value.includes("\\") ||
+    value.includes(":") ||
+    /[\u0000-\u001f]/u.test(value) ||
     value.startsWith("/") ||
     value.split("/").some((part) => part === "" || part === "." || part === "..")
   ) {
