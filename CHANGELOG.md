@@ -2,7 +2,7 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 2.0.2 — SHIPPED TO MAIN
+## 2.0.2 — RELEASED
 
 - Shared identity sentence: blast radius of `AGENTS.md` and `CLAUDE.md` changes across Codex, Claude Code, Gemini CLI, and Copilot CLI. Same claim in package.json, README, `--help`, companion, skills, and `AGENT_USAGE.md`.
 - Problem-query first fold: which files inherit an `AGENTS.md` / `CLAUDE.md` change. Keywords add `instruction-inheritance` and `instruction-provenance`.
@@ -13,8 +13,8 @@ All notable user-visible changes to RuleBlast are recorded here.
 ### Release artifact
 
 - Signed tag object `7b0b169f49c6be0da5289b4afcb7bc0576607486` targets commit `1c926b6ee92915659c58cc140627a76480996b5b`.
-- The GitHub Release serves the 118,836-byte tarball with SHA-256 `9cec50fa91cbd13b3326f5aee5cdf98e0c31421ef483231560e8290a1b97387a`; the release manifest SHA-256 is `9a123b870a581d88b72089e1b5e5dcfd0b51b2ee361d16e302098dabdce0a9c9`.
-- npm `ruleblast@2.0.2` is staged as `8054bd9c-ea01-487c-bedb-7b8d04840471` until an authorized publication. Latest independently verified public npm distribution remains `2.0.0`.
+- npm and the GitHub Release serve the same 118,836-byte tarball with SHA-256 `9cec50fa91cbd13b3326f5aee5cdf98e0c31421ef483231560e8290a1b97387a`; the release manifest SHA-256 is `9a123b870a581d88b72089e1b5e5dcfd0b51b2ee361d16e302098dabdce0a9c9`.
+- [npm `ruleblast@2.0.2`](https://www.npmjs.com/package/ruleblast/v/2.0.2) reports integrity `sha512-DsiHO5GR5xiGNioWxqjn5rtO9n/9d7sCM7+ND4OKECdVQDXMR4U0t0Sd8z2k+Ahaz4FwaGq5iyRDSF1+3UhAQg==`; exact-tarball publication means registry `gitHead is absent` rather than invented.
 
 ## 2.0.1 — SHIPPED TO MAIN
 

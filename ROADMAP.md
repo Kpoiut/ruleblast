@@ -262,9 +262,11 @@ Signed tag object `7ead43338441bfd541a88096587257189939a1b7` for [`v2.0.1`](http
 
 The nested composite Action still defaulted to `1.6.2` after Reality Packs shipped, so pull-request receipts analyzed the previous engine. The default package pin is `2.0.1`. An optional `reality` input forwards the existing `--reality` flag. Help names two default realities and two opt-in CLI surfaces. No fifth action, no `--pack`, no fifth reality.
 
-## **SHIPPED TO MAIN** — `v2.0.2`: Retrievable identity and fail-closed pack load
+## **RELEASED** — `v2.0.2`: Retrievable identity and fail-closed pack load
 
-Signed tag object `7b0b169f49c6be0da5289b4afcb7bc0576607486` for [`v2.0.2`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.0.2) targets commit `1c926b6ee92915659c58cc140627a76480996b5b`. The GitHub Release serves the 118,836-byte tarball with SHA-256 `9cec50fa91cbd13b3326f5aee5cdf98e0c31421ef483231560e8290a1b97387a`; the release manifest SHA-256 is `9a123b870a581d88b72089e1b5e5dcfd0b51b2ee361d16e302098dabdce0a9c9`. Latest independently verified public npm distribution remains `2.0.0` until an authorized `2.0.2` publication.
+That release is `2.0.2`. Latest independently verified public npm distribution at that tag is `2.0.2`.
+
+**Verified publication receipt.** Signed tag object `7b0b169f49c6be0da5289b4afcb7bc0576607486` for [`v2.0.2`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.0.2) targets commit `1c926b6ee92915659c58cc140627a76480996b5b`. [npm `ruleblast@2.0.2`](https://www.npmjs.com/package/ruleblast/v/2.0.2) reports integrity `sha512-DsiHO5GR5xiGNioWxqjn5rtO9n/9d7sCM7+ND4OKECdVQDXMR4U0t0Sd8z2k+Ahaz4FwaGq5iyRDSF1+3UhAQg==`; exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download and GitHub Release asset both match the reviewed 118,836-byte tarball with SHA-256 `9cec50fa91cbd13b3326f5aee5cdf98e0c31421ef483231560e8290a1b97387a`; the canonical manifest has SHA-256 `9a123b870a581d88b72089e1b5e5dcfd0b51b2ee361d16e302098dabdce0a9c9`. These are independently verified external records, not facts inferred from this checkout.
 
 The npm description, README first fold, `--help`, companion blurb, agent skill frontmatter, and `AGENT_USAGE.md` now share one identity: blast radius of `AGENTS.md` / `CLAUDE.md` changes across the four modeled CLI surfaces. The first fold answers the problem query: which files inherit that change. Pack load rejects nested, drive-relative, and path-escaping directory names so a name such as `C:secret` cannot leave `packs/bundled`. Missing JSON and malformed JSON raise distinct `INVALID_PACK` errors. Catalog directories must match the pack id. No fifth action, no `--pack`, no fifth reality, no hosted discovery service.
 
