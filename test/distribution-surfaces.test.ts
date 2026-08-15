@@ -93,5 +93,22 @@ describe("distribution surfaces", () => {
     expect(descriptor.files).not.toContain("llms.txt");
     expect(descriptor.files).not.toContain("CITATION.cff");
     expect(descriptor.files).not.toContain("action.yml");
+    expect(descriptor.files).not.toContain("site");
+  });
+
+  it("ships a canonical landing page the project can submit to external indexes", () => {
+    const html = read("site/index.html");
+    expect(html).toContain('rel="canonical" href="https://kpoiut.github.io/ruleblast/"');
+    expect(html).toContain("blast radius of AGENTS.md and CLAUDE.md");
+    expect(html).toContain("which files inherit");
+    expect(html).toContain("https://github.com/Kpoiut/ruleblast");
+    expect(html).toContain("https://www.npmjs.com/package/ruleblast");
+    expect(html).toContain("SoftwareSourceCode");
+    expect(html).toContain("og:title");
+    expect(read("site/robots.txt")).toContain("Sitemap: https://kpoiut.github.io/ruleblast/sitemap.xml");
+    expect(read("site/sitemap.xml")).toContain("https://kpoiut.github.io/ruleblast/");
+    expect(existsSync(join(repositoryRoot, ".github/workflows/pages.yml"))).toBe(true);
+    expect(read(".github/workflows/pages.yml")).toContain("upload-pages-artifact");
+    expect(read("README.md")).toContain("https://kpoiut.github.io/ruleblast/");
   });
 });

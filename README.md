@@ -252,6 +252,6 @@ Reality is not host. Four documented realities. Same result in the terminal or e
 
 How many rule realities are still hiding in it…?
 
-Read [ROADMAP.md](ROADMAP.md). Apache-2.0. [CHANGELOG.md](CHANGELOG.md). Measurements: [docs/measurements](docs/measurements/). Evidence inventories: [docs/evidence](docs/evidence/).
+Canonical landing: [kpoiut.github.io/ruleblast](https://kpoiut.github.io/ruleblast/). Read [ROADMAP.md](ROADMAP.md). Apache-2.0. [CHANGELOG.md](CHANGELOG.md). Measurements: [docs/measurements](docs/measurements/). Evidence inventories: [docs/evidence](docs/evidence/).
 
 [Code of conduct](CODE_OF_CONDUCT.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RuleBlast — which files inherit a changed AGENTS.md?</title>
+  <meta name="description" content="Git diff for repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes across Codex, Claude Code, Gemini CLI, and Copilot CLI.">
+  <link rel="canonical" href="https://kpoiut.github.io/ruleblast/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kpoiut.github.io/ruleblast/">
+  <meta property="og:title" content="RuleBlast — which files inherit a changed AGENTS.md?">
+  <meta property="og:description" content="Git diff for repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes across Codex, Claude Code, Gemini CLI, and Copilot CLI.">
+  <meta name="twitter:card" content="summary">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "name": "RuleBlast",
+    "description": "Git diff for repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes across Codex, Claude Code, Gemini CLI, and Copilot CLI.",
+    "url": "https://kpoiut.github.io/ruleblast/",
+    "codeRepository": "https://github.com/Kpoiut/ruleblast",
+    "programmingLanguage": "TypeScript",
+    "runtimePlatform": "Node.js",
+    "license": "https://www.apache.org/licenses/LICENSE-2.0",
+    "sameAs": [
+      "https://github.com/Kpoiut/ruleblast",
+      "https://www.npmjs.com/package/ruleblast"
+    ]
+  }
+  </script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #071018;
+      --ink: #d7e6ef;
+      --muted: #9fb3c3;
+      --mint: #2dd4bf;
+      --line: #1b3340;
+      --card: #0c1520;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 18px/1.5 "Segoe UI", "IBM Plex Sans", sans-serif;
+    }
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+    .brand {
+      font-family: ui-monospace, "IBM Plex Mono", Consolas, monospace;
+      letter-spacing: 0.12em;
+      font-size: 14px;
+      color: var(--mint);
+    }
+    h1 {
+      margin: 16px 0 12px;
+      font-size: 36px;
+      line-height: 1.15;
+    }
+    .lead { color: var(--muted); margin: 0 0 28px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px 22px;
+      margin: 16px 0;
+    }
+    .num { color: var(--mint); font-weight: 700; }
+    a { color: var(--mint); }
+    nav { display: flex; flex-wrap: wrap; gap: 14px 20px; margin-top: 28px; }
+    code {
+      font-family: ui-monospace, "IBM Plex Mono", Consolas, monospace;
+      font-size: 0.92em;
+    }
+    pre {
+      overflow: auto;
+      background: #0a1c24;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand">RULEBLAST</div>
+    <h1>Which files inherit a changed AGENTS.md?</h1>
+    <p class="lead">
+      Git shows the <code>AGENTS.md</code> and <code>CLAUDE.md</code> edit.
+      RuleBlast shows the blast radius of those repository instructions across
+      Codex, Claude Code, Gemini CLI, and Copilot CLI.
+    </p>
+    <section class="card">
+      <p><span class="num">2</span> instruction-line edits.</p>
+      <p><span class="num">206</span> Codex stacks inherited a nested <code>AGENTS.md</code>.</p>
+      <p><span class="num">0</span> Claude Code stacks. <span class="num">4,476</span> paths unchanged.</p>
+      <p>That second diff is instruction inheritance, not the first Git diff.</p>
+    </section>
+    <pre><code>npx --yes ruleblast@2.1.1 .
+npx --yes ruleblast@2.1.1 diff HEAD~1</code></pre>
+    <nav>
+      <a href="https://github.com/Kpoiut/ruleblast">GitHub</a>
+      <a href="https://www.npmjs.com/package/ruleblast">npm</a>
+      <a href="https://github.com/Kpoiut/ruleblast/blob/main/PROOF.md">Verified case</a>
+      <a href="https://github.com/Kpoiut/ruleblast/blob/main/which-files-inherit-agents-md.md">Inheritance notes</a>
+      <a href="https://github.com/Kpoiut/ruleblast/releases">Releases</a>
+    </nav>
+  </main>
+</body>
+</html>
