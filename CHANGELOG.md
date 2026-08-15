@@ -2,6 +2,12 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.1.0 — SHIPPED TO MAIN
+
+- Repeat `--reality` to add both bundled opt-in CLI surfaces on one invocation. Default two-profile JSON is unchanged when neither flag is passed.
+- Compact `REALITY GROUPS` text groups paths by evidence-equivalent stacks. Clusters form only from pairwise `SAME`. Unresolved and runtime-decided states stay unresolved.
+- No `--reality all`, no fifth action, no fifth reality, no extra IDE host class.
+
 ## 2.0.2 — RELEASED
 
 - Shared identity sentence: blast radius of `AGENTS.md` and `CLAUDE.md` changes across Codex, Claude Code, Gemini CLI, and Copilot CLI. Same claim in package.json, README, `--help`, companion, skills, and `AGENT_USAGE.md`.

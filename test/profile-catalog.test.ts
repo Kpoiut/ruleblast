@@ -6,6 +6,7 @@ import {
   presentationFor,
   presentationLabel,
   profilesForReality,
+  profilesForRealities,
 } from "../src/application/profile-catalog.js";
 import { explainViewFromCurrent } from "../src/application/explain-view.js";
 import { analysisState, formatAnalysisState } from "../src/application/analysis-state.js";
@@ -35,6 +36,16 @@ describe("profile catalog", () => {
     expect(withGemini.map((profile) => profile.id)).toContain(GOOGLE_GEMINI_CLI_PROFILE_ID);
     expect(withGemini).toHaveLength(3);
     expect(() => profilesForReality("cursor/editor@1")).toThrow(/Unknown opt-in reality/);
+  });
+
+  it("admits both bundled opt-ins for an N-way comparison", () => {
+    const all = profilesForRealities(["google/gemini-cli@1", "github/copilot-cli@1"]);
+    expect(all.map((profile) => profile.id)).toEqual([
+      "anthropic/claude-code-cli@1",
+      "github/copilot-cli@1",
+      "google/gemini-cli@1",
+      "openai/codex-cli@1",
+    ]);
   });
 
   it("exposes presentation metadata so hosts do not hard-code vendor names", () => {

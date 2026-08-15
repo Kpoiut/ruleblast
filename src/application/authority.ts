@@ -12,7 +12,7 @@ import {
   type DiffExplainResult,
 } from "../cli-output.js";
 import { explainViewFromResult, type ExplainView } from "./explain-view.js";
-import { profilesForReality } from "./profile-catalog.js";
+import { profilesForRealities } from "./profile-catalog.js";
 import {
   explainPresentationContext,
   renderExplain,
@@ -20,13 +20,15 @@ import {
 
 export interface AuthorityScanInput {
   readonly snapshot: RepositorySnapshot;
-  readonly reality: string | null;
+  readonly realities?: readonly string[];
+  readonly reality?: string | null;
 }
 
 export interface AuthorityDiffInput {
   readonly before: RepositorySnapshot;
   readonly after: RepositorySnapshot;
-  readonly reality: string | null;
+  readonly realities?: readonly string[];
+  readonly reality?: string | null;
 }
 
 export interface AuthorityExplainInput {
@@ -34,7 +36,16 @@ export interface AuthorityExplainInput {
   readonly before?: RepositorySnapshot;
   readonly after?: RepositorySnapshot;
   readonly path: string;
-  readonly reality: string | null;
+  readonly realities?: readonly string[];
+  readonly reality?: string | null;
+}
+
+function selectedRealities(input: {
+  readonly realities?: readonly string[];
+  readonly reality?: string | null;
+}): readonly string[] {
+  if (input.realities !== undefined) return input.realities;
+  return input.reality === undefined || input.reality === null ? [] : [input.reality];
 }
 
 export async function scanRepository(
@@ -42,7 +53,7 @@ export async function scanRepository(
 ): Promise<CurrentRuleBlastResult> {
   return analyzeCurrent({
     snapshot: input.snapshot,
-    profiles: profilesForReality(input.reality),
+    profiles: profilesForRealities(selectedRealities(input)),
   });
 }
 
@@ -52,7 +63,7 @@ export async function diffRepository(
   return analyzeDiff({
     before: input.before,
     after: input.after,
-    profiles: profilesForReality(input.reality),
+    profiles: profilesForRealities(selectedRealities(input)),
   });
 }
 
@@ -66,7 +77,7 @@ export async function explainRepository(
     const result = await diffRepository({
       before: input.before,
       after: input.after,
-      reality: input.reality,
+      realities: selectedRealities(input),
     });
     const explain = diffExplain(result, input.path);
     return { explain, view: explainViewFromResult(explain) };
@@ -76,7 +87,7 @@ export async function explainRepository(
   }
   const result = await scanRepository({
     snapshot: input.snapshot,
-    reality: input.reality,
+    realities: selectedRealities(input),
   });
   const explain = currentExplain(result, input.path);
   return { explain, view: explainViewFromResult(explain) };
@@ -98,6 +109,7 @@ export {
   presentationFor,
   presentationLabel,
   profilesForReality,
+  profilesForRealities,
 } from "./profile-catalog.js";
 export { analysisState, formatAnalysisState } from "./analysis-state.js";
 export type { AnalysisLifecycle, AnalysisState } from "./analysis-state.js";

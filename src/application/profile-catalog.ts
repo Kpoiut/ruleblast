@@ -96,18 +96,28 @@ export function isOptInReality(value: string): boolean {
   return optInRealityIds().includes(value);
 }
 
-export function profilesForReality(reality: string | null): readonly ProfileDefinition[] {
+export function profilesForRealities(
+  realities: readonly string[],
+): readonly ProfileDefinition[] {
   const defaults = defaultProfileDefinitions();
-  if (reality === null) return defaults;
-  const extra = PROFILE_CATALOG.find(
-    (entry) => entry.admission === "opt-in" && entry.id === reality,
-  );
-  if (extra === undefined) {
-    throw new TypeError(`Unknown opt-in reality: ${JSON.stringify(reality)}`);
-  }
+  if (realities.length === 0) return defaults;
+  const extras = [...new Set(realities)].sort(compareCodePoints);
+  const found = extras.map((id) => {
+    const extra = PROFILE_CATALOG.find(
+      (entry) => entry.admission === "opt-in" && entry.id === id,
+    );
+    if (extra === undefined) {
+      throw new TypeError(`Unknown opt-in reality: ${JSON.stringify(id)}`);
+    }
+    return extra.definition;
+  });
   return Object.freeze(
-    [...defaults, extra.definition].sort((left, right) =>
+    [...defaults, ...found].sort((left, right) =>
       compareCodePoints(left.id, right.id),
     ),
   );
+}
+
+export function profilesForReality(reality: string | null): readonly ProfileDefinition[] {
+  return profilesForRealities(reality === null ? [] : [reality]);
 }

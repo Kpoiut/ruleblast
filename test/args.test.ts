@@ -3,7 +3,7 @@ import { CliUsageError, parseArgs } from "../src/args.js";
 
 const text = { kind: "text", color: "auto" } as const;
 const json = { kind: "json", color: "auto" } as const;
-const flags = { witness: false, receipt: false, reality: null } as const;
+const flags = { witness: false, receipt: false, realities: [] as const } as const;
 
 describe("parseArgs", () => {
   it.each([
@@ -71,7 +71,7 @@ describe("parseArgs", () => {
     }],
     [[".", "--witness"], {
       action: "scan", startPath: ".", output: text, witness: true, receipt: false,
-      reality: null,
+      realities: [],
     }],
     [["diff", "--witness", "--json"], {
       action: "diff",
@@ -80,17 +80,24 @@ describe("parseArgs", () => {
       output: json,
       witness: true,
       receipt: false,
-      reality: null,
+      realities: [],
     }],
     [["case", "--receipt"], {
       action: "case", explainPath: null, output: text, witness: false, receipt: true,
-      reality: null,
+      realities: [],
     }],
     [[".", "--reality", "github/copilot-cli@1"], {
-      action: "scan", startPath: ".", output: text, ...flags, reality: "github/copilot-cli@1",
+      action: "scan", startPath: ".", output: text, ...flags, realities: ["github/copilot-cli@1"],
     }],
     [[".", "--reality", "google/gemini-cli@1"], {
-      action: "scan", startPath: ".", output: text, ...flags, reality: "google/gemini-cli@1",
+      action: "scan", startPath: ".", output: text, ...flags, realities: ["google/gemini-cli@1"],
+    }],
+    [[".", "--reality", "google/gemini-cli@1", "--reality", "github/copilot-cli@1"], {
+      action: "scan",
+      startPath: ".",
+      output: text,
+      ...flags,
+      realities: ["github/copilot-cli@1", "google/gemini-cli@1"],
     }],
     [["--help"], { action: "help" }],
     [["--version"], { action: "version" }],
@@ -129,7 +136,9 @@ describe("parseArgs", () => {
     [[".", "--receipt", "--receipt"], "DUPLICATE_OPTION"],
     [[".", "--reality", "github/copilot-vscode@1"], "OPTION_CONFLICT"],
     [[".", "--reality", "cursor/editor@1"], "OPTION_CONFLICT"],
+    [[".", "--reality", "all"], "OPTION_CONFLICT"],
     [["case", "--reality", "github/copilot-cli@1"], "OPTION_CONFLICT"],
+    [[".", "--reality", "github/copilot-cli@1", "--reality", "github/copilot-cli@1"], "DUPLICATE_OPTION"],
     [["diff", "--to", "one", "--to", "two"], "DUPLICATE_OPTION"],
     [["diff", "--json", "--color=always"], "OPTION_CONFLICT"],
     [["scan", "--color=rainbow"], "OPTION_CONFLICT"],

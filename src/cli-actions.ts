@@ -22,7 +22,7 @@ import type {
   ShellDialect,
 } from "./render-text.js";
 import type { RepositorySnapshot } from "./snapshot.js";
-import { profilesForReality } from "./application/authority.js";
+import { profilesForRealities } from "./application/authority.js";
 import type { ProfileDefinition } from "./profiles/profile.js";
 
 function noDefensibleResult(
@@ -73,14 +73,11 @@ function presentationExtras(args: {
 }
 
 function analysisProfiles(
-  args: { readonly reality: string | null },
+  args: { readonly realities: readonly string[] },
   dependencies: CliDependencies,
 ): readonly ProfileDefinition[] {
-  if (args.reality === null) return dependencies.profiles;
-  if (dependencies.profiles.some((profile) => profile.id === args.reality)) {
-    return dependencies.profiles;
-  }
-  return profilesForReality(args.reality);
+  if (args.realities.length === 0) return dependencies.profiles;
+  return profilesForRealities(args.realities);
 }
 
 function diffTextContext(

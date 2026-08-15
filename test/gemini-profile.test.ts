@@ -172,7 +172,7 @@ describe("google/gemini-cli@1", () => {
   it("accepts --reality google/gemini-cli@1 and rejects a fifth invented surface", () => {
     expect(parseArgs([".", "--reality", "google/gemini-cli@1"])).toMatchObject({
       action: "scan",
-      reality: "google/gemini-cli@1",
+      realities: ["google/gemini-cli@1"],
     });
     expect(() => parseArgs([".", "--reality", "cursor/editor@1"])).toThrow(/must be one of/i);
   });

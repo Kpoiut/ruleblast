@@ -15,7 +15,7 @@ OpenAI’s documented Codex skill locations do not include `node_modules`; repos
 | Why this path | `ruleblast explain src/args.ts --json` |
 | Zero-clone teaching receipt | `ruleblast case --color=never` |
 
-`[path]` only starts Git discovery. There is no `ruleblast scan` subcommand. `diff` has no `--from`. `--witness` prints why-edges. `--receipt` prints the compact scoreboard box (opt-in). `--reality github/copilot-cli@1` or `--reality google/gemini-cli@1` adds that one documented surface. Default `--json` remains the two-profile canonical result.
+`[path]` only starts Git discovery. There is no `ruleblast scan` subcommand. `diff` has no `--from`. `--witness` prints why-edges. `--receipt` prints the compact scoreboard box (opt-in). `--reality github/copilot-cli@1` and `--reality google/gemini-cli@1` add those documented surfaces. Repeat `--reality` to compare both. Default `--json` remains the two-profile canonical result.
 
 Agents default to **ask**. A human enables them with `RULEBLAST_AGENT_ALLOW=yes` or a user-created `.ruleblast-allow` containing `yes`. RuleBlast never writes that file. The scoreboard reports inherited profile stacks. It does not record live agent tool calls.
 

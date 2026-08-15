@@ -93,7 +93,7 @@ One Git tree. Two default realities. Two opt-in CLI surfaces.
   --witness  Why-edges for the selected resolution. Opt-in envelope only.
   --receipt  Opt-in scoreboard box plus RBCTX1. Off unless passed.
              User toggle: RULEBLAST_AGENT_ALLOW or .ruleblast-allow.
-  --reality  github/copilot-cli@1 or google/gemini-cli@1. Default JSON stays two-profile.
+  --reality  github/copilot-cli@1 and/or google/gemini-cli@1. Repeat to add both. Default JSON stays two-profile.
 
 Skills   Codex .agents/skills · Claude Code .claude/skills
          Not node_modules. Agents default to ask.
@@ -105,9 +105,9 @@ Exits
   70 internal failure
 
 Usage:
-  ruleblast [path] [--json] [--witness] [--receipt] [--reality <id>] [--color=auto|always|never]
-  ruleblast diff [base] [--to <ref|WORKTREE>] [--json] [--witness] [--receipt] [--reality <id>] [--color=auto|always|never]
-  ruleblast explain <path> [--from <ref>] [--to <ref|WORKTREE>] [--json] [--witness] [--receipt] [--reality <id>] [--color=auto|always|never]
+  ruleblast [path] [--json] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
+  ruleblast diff [base] [--to <ref|WORKTREE>] [--json] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
+  ruleblast explain <path> [--from <ref>] [--to <ref|WORKTREE>] [--json] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
   ruleblast case [--explain <path>] [--json] [--witness] [--receipt] [--color=auto|always|never]
   ruleblast --help
   ruleblast --version

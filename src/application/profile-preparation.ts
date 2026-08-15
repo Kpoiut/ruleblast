@@ -37,9 +37,9 @@ export function validateProfiles(
   profiles: readonly ProfileDefinition[],
 ): readonly CapturedProfileDefinition[] {
   if (!Array.isArray(profiles) ||
-      (profiles.length !== DEFAULT_PROFILE_IDS.length &&
-        profiles.length !== DEFAULT_PROFILE_IDS.length + 1)) {
-    throw new TypeError("V1 analysis requires the two default profiles and at most one opt-in reality");
+      profiles.length < DEFAULT_PROFILE_IDS.length ||
+      profiles.length > DEFAULT_PROFILE_IDS.length + OPT_IN_PROFILE_IDS.length) {
+    throw new TypeError("V1 analysis requires the two default profiles and at most both bundled opt-in realities");
   }
   const arrayDescriptors = Object.getOwnPropertyDescriptors(profiles);
   const captured: CapturedProfileDefinition[] = [];
@@ -87,8 +87,8 @@ export function validateProfiles(
       throw new TypeError(`Missing bundled v1 profile id: ${id}`);
     }
   }
-  if (extras.length > 1) {
-    throw new TypeError("V1 analysis accepts at most one opt-in reality");
+  if (extras.length > OPT_IN_PROFILE_IDS.length) {
+    throw new TypeError("V1 analysis accepts at most the two bundled opt-in realities");
   }
   return [...byId.keys()].sort(compareCodePoints).map((id) => byId.get(id)!);
 }

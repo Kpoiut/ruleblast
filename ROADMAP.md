@@ -270,16 +270,15 @@ That release is `2.0.2`. Latest independently verified public npm distribution a
 
 The npm description, README first fold, `--help`, companion blurb, agent skill frontmatter, and `AGENT_USAGE.md` now share one identity: blast radius of `AGENTS.md` / `CLAUDE.md` changes across the four modeled CLI surfaces. The first fold answers the problem query: which files inherit that change. Pack load rejects nested, drive-relative, and path-escaping directory names so a name such as `C:secret` cannot leave `packs/bundled`. Missing JSON and malformed JSON raise distinct `INVALID_PACK` errors. Catalog directories must match the pack id. No fifth action, no `--pack`, no fifth reality, no hosted discovery service.
 
-## **NEXT** — `v2.1.0`: Many-Reality Diff
+## **SHIPPED TO MAIN** — `v2.1.0`: Many-Reality Diff
 
-The target is a compact N-way reveal built from canonical projections:
+This tree is `2.1.0`. Latest independently verified public npm distribution remains `2.0.2` until an authorized `2.1.0` publication.
 
-- pairwise comparison remains available as the inspectable ground truth;
-- named clusters are created only when evidence-equivalent projections justify the name;
-- compact aggregate output links back to the paths and sources behind each grouping;
-- unknown, partial, unordered, unspecified, and runtime-decided states are never coerced into a clean alignment.
+Compact N-way reveal from existing canonical projections. Repeat `--reality` to add both bundled opt-in CLI surfaces on one invocation. Profiles cluster only when pairwise payload relation is `SAME`. Incomplete, `INDETERMINATE`, `UNSPECIFIED`, and `RUNTIME_DECIDED` states stay unresolved and are never coerced into a named alignment. Pairwise projections remain the inspectable ground truth. Default two-profile `--json` is unchanged when neither flag is passed. No `--reality all`, no fifth action, no fifth reality, no extra host class.
 
-Any public number must come from a reproducible canonical result with immutable refs. Placeholder field tokens are allowed in design discussion; invented metrics are not.
+## **NEXT** — Offline evidence-revision reveal
+
+An offline run should be able to say that a pinned evidence revision may have drifted without contacting a network. That is a later gate, not a host or marketplace expansion.
 
 ## **EXPLORING** — Questions before commitments
 

@@ -1,11 +1,13 @@
 import { advertisedPackage } from "./package-identity.js";
 import { presentationLabel } from "./application/profile-catalog.js";
+import { tallyRealityGroups } from "./domain/reality-cluster.js";
 import { summarizeSourceBlasts } from "./domain/source-blast.js";
 import type {
   CurrentPathProjection,
   CurrentRuleBlastResult,
   DiffRuleBlastResult,
   ImpactGroup,
+  Projection,
 } from "./model.js";
 import type { ExplainResult } from "./cli-output.js";
 import {
@@ -158,6 +160,33 @@ function appendCoverageNotes(
   }
 }
 
+function appendRealityGroups(
+  lines: string[],
+  paths: readonly {
+    readonly path: string;
+    readonly projections: readonly Projection[];
+  }[],
+): void {
+  const profileCount = paths[0]?.projections.length ?? 0;
+  if (profileCount < 3) return;
+  lines.push("", "REALITY GROUPS");
+  for (const tally of tallyRealityGroups(paths)) {
+    for (const cluster of tally.clusters) {
+      const labels = cluster.members.map((id) => presentationLabel(id)).join(" · ");
+      const kind = cluster.members.length > 1 ? "same stack" : "own stack";
+      lines.push(
+        `  ${labels}  ${kind}  · ${formatCount(tally.pathCount)} ${plural(tally.pathCount, "path")}`,
+      );
+    }
+    if (tally.unresolved.length > 0) {
+      const labels = tally.unresolved.map((id) => presentationLabel(id)).join(" · ");
+      lines.push(
+        `  ${labels}  unresolved  · ${formatCount(tally.pathCount)} ${plural(tally.pathCount, "path")}`,
+      );
+    }
+  }
+}
+
 function appendScope(
   lines: string[],
   candidatePathCount: number,
@@ -208,6 +237,7 @@ function renderCurrent(
         `  ruleblast explain ${repositoryPathToken(sample, context.shellDialect)}`,
       );
     }
+    appendRealityGroups(lines, result.paths);
   }
   appendCoverageNotes(lines, result.counts);
   appendScope(lines, result.counts.candidatePathCount, result.resolverRevision);
@@ -281,8 +311,11 @@ function renderDiff(
   }
 
   const split = result.counts.newlySplitPathCount;
+  const nway = result.counts.byProfile.length > 2;
   lines.push(split > 0
-    ? `${formatCount(split)} ${plural(split, "path")} now ${split === 1 ? "lives" : "live"} in two AI realities.`
+    ? nway
+      ? `${formatCount(split)} ${plural(split, "path")} newly split across profiles.`
+      : `${formatCount(split)} ${plural(split, "path")} now ${split === 1 ? "lives" : "live"} in two AI realities.`
     : "No paths newly split across profiles.");
 
   const converged = result.counts.convergedPathCount;
@@ -311,6 +344,10 @@ function renderDiff(
       `  ${diffExplainCommand(sample, context)}`,
     );
   }
+  appendRealityGroups(
+    lines,
+    result.paths.map((path) => ({ path: path.path, projections: path.after })),
+  );
   appendCoverageNotes(
     lines,
     result.counts,

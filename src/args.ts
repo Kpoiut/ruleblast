@@ -25,7 +25,7 @@ interface CommonArgs {
   readonly output: CliOutput;
   readonly witness: boolean;
   readonly receipt: boolean;
-  readonly reality: string | null;
+  readonly realities: readonly string[];
 }
 
 export interface ScanArgs extends CommonArgs {
@@ -88,6 +88,7 @@ interface ParsedTokens {
   readonly positionals: readonly string[];
   readonly output: CliOutput;
   readonly options: ReadonlyMap<string, string>;
+  readonly realities: readonly string[];
   readonly witness: boolean;
   readonly receipt: boolean;
 }
@@ -159,6 +160,7 @@ function parseTokens(
 ): ParsedTokens {
   const positionals: string[] = [];
   const options = new Map<string, string>();
+  const realities: string[] = [];
   let json = false;
   let witness = false;
   let receipt = false;
@@ -190,6 +192,18 @@ function parseTokens(
       colorSeen = true;
       continue;
     }
+    if (token === "--reality" && valueOptions.has(token)) {
+      const value = tokens[index + 1];
+      if (value === undefined || isRecognizedOptionToken(value, valueOptions)) {
+        return usage("MISSING_OPTION_VALUE", "--reality requires a value");
+      }
+      if (realities.includes(value)) {
+        return usage("DUPLICATE_OPTION", "--reality may name each surface only once");
+      }
+      realities.push(value);
+      index += 1;
+      continue;
+    }
     if (valueOptions.has(token)) {
       if (options.has(token)) {
         return usage("DUPLICATE_OPTION", `${token} may be specified only once`);
@@ -217,6 +231,7 @@ function parseTokens(
     positionals: Object.freeze(positionals),
     output: Object.freeze({ kind: json ? "json" : "text", color }),
     options,
+    realities: Object.freeze(realities),
     witness,
     receipt,
   });
@@ -271,25 +286,27 @@ function onlyPositionals(parsed: ParsedTokens, maximum: number): void {
   }
 }
 
-function parsedReality(
+function parsedRealities(
   parsed: ParsedTokens,
   allow: boolean,
-): string | null {
-  const value = parsed.options.get("--reality") ?? null;
-  if (value === null) return null;
+): readonly string[] {
+  if (parsed.realities.length === 0) return Object.freeze([]);
   if (!allow) {
     return usage(
       "OPTION_CONFLICT",
       "--reality cannot be used with the packaged case; that receipt remains two-profile",
     );
   }
-  if (!isOptInReality(value)) {
-    return usage(
-      "OPTION_CONFLICT",
-      `--reality must be one of ${optInRealityIds().join(" | ")}; editor and hosted surfaces are distinct and unsupported`,
-    );
+  const allowed = optInRealityIds();
+  for (const value of parsed.realities) {
+    if (value === "all" || !isOptInReality(value)) {
+      return usage(
+        "OPTION_CONFLICT",
+        `--reality must be one of ${allowed.join(" | ")}; editor and hosted surfaces are distinct and unsupported`,
+      );
+    }
   }
-  return value;
+  return Object.freeze([...parsed.realities].sort());
 }
 
 function parseScan(tokens: readonly string[]): ScanArgs {
@@ -301,7 +318,7 @@ function parseScan(tokens: readonly string[]): ScanArgs {
     output: parsed.output,
     witness: parsed.witness,
     receipt: parsed.receipt,
-    reality: parsedReality(parsed, true),
+    realities: parsedRealities(parsed, true),
   });
 }
 
@@ -316,7 +333,7 @@ function parseDiff(tokens: readonly string[]): DiffArgs {
   return Object.freeze({
     action: "diff", base, target, output: parsed.output,
     witness: parsed.witness, receipt: parsed.receipt,
-    reality: parsedReality(parsed, true),
+    realities: parsedRealities(parsed, true),
   });
 }
 
@@ -333,7 +350,7 @@ function parseExplain(tokens: readonly string[]): ExplainArgs {
   return Object.freeze({
     action: "explain", path, from, target, output: parsed.output,
     witness: parsed.witness, receipt: parsed.receipt,
-    reality: parsedReality(parsed, true),
+    realities: parsedRealities(parsed, true),
   });
 }
 
@@ -347,7 +364,7 @@ function parseCase(tokens: readonly string[]): CaseArgs {
     output: parsed.output,
     witness: parsed.witness,
     receipt: parsed.receipt,
-    reality: parsedReality(parsed, false),
+    realities: parsedRealities(parsed, false),
   });
 }
 

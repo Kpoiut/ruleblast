@@ -91,11 +91,11 @@ describe("default two-profile gate", () => {
 describe("--reality", () => {
   it("accepts only the documented Copilot CLI surface on analysis actions", () => {
     expect(parseArgs([".", "--reality", "github/copilot-cli@1"])).toMatchObject({
-      action: "scan", reality: "github/copilot-cli@1",
+      action: "scan", realities: ["github/copilot-cli@1"],
     });
     expect(parseArgs(["diff", "HEAD~1", "--reality", "github/copilot-cli@1"]))
-      .toMatchObject({ action: "diff", reality: "github/copilot-cli@1" });
-    expect(parseArgs(["."])).toMatchObject({ action: "scan", reality: null });
+      .toMatchObject({ action: "diff", realities: ["github/copilot-cli@1"] });
+    expect(parseArgs(["."])).toMatchObject({ action: "scan", realities: [] });
   });
 
   it("rejects unknown surfaces, duplicates, and --reality on the packaged case", () => {
