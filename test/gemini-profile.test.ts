@@ -149,6 +149,16 @@ describe("google/gemini-cli@1", () => {
     expect(target?.causes).toContain("b.md");
   });
 
+  it("treats @path inside an HTML comment as an import (no comment state)", async () => {
+    const prepared = await geminiProfile.prepare(snapshot({
+      "GEMINI.md": "root\n<!-- @./hidden.md -->\n",
+      "hidden.md": "secret",
+      "src/file.ts": "code",
+    }));
+    const projection = prepared.project("src/file.ts");
+    expect(projection.sources.map((source) => source.path)).toContain("hidden.md");
+  });
+
   it("marks missing and absolute imports partial without guessing", async () => {
     const prepared = await geminiProfile.prepare(snapshot({
       "GEMINI.md": "root\n@./missing.md\n@/etc/passwd\n",
