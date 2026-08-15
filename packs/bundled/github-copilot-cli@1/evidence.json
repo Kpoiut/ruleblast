@@ -1,0 +1,26 @@
+[
+  {
+    "claimId": "copilot.repo.1",
+    "sourceType": "vendor-doc",
+    "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",
+    "retrievedAt": "2026-08-14",
+    "sourceRevision": "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-14",
+    "claim": "Copilot CLI loads repository-wide .github/copilot-instructions.md from standard locations."
+  },
+  {
+    "claimId": "copilot.apply.1",
+    "sourceType": "vendor-doc",
+    "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",
+    "retrievedAt": "2026-08-14",
+    "sourceRevision": "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-14",
+    "claim": "Path-specific .github/instructions/**/*.instructions.md files apply only when applyTo matches a file Copilot CLI is working with."
+  },
+  {
+    "claimId": "copilot.agent.1",
+    "sourceType": "vendor-doc",
+    "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",
+    "retrievedAt": "2026-08-14",
+    "sourceRevision": "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-14",
+    "claim": "Copilot CLI also discovers AGENTS.md, CLAUDE.md, and GEMINI.md in standard locations and does not define a general precedence order."
+  }
+]

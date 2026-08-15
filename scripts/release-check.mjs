@@ -77,7 +77,11 @@ export function expectedPackedFiles(repositoryRoot = REPOSITORY_ROOT) {
     "AGENT_USAGE.md",
     "cases/README.md",
     "cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json",
+    "schemas/reality-pack-v1.schema.json",
   ];
+  const packs = filesBelow(join(repositoryRoot, "packs/bundled")).map((path) =>
+    slashPath(relative(repositoryRoot, path)),
+  );
   const dist = filesBelow(join(repositoryRoot, "src"))
     .filter((path) => path.endsWith(".ts"))
     .flatMap((path) => {
@@ -85,7 +89,7 @@ export function expectedPackedFiles(repositoryRoot = REPOSITORY_ROOT) {
       const base = sourceRelative.slice(0, -3);
       return [`dist/${base}.js`, `dist/${base}.d.ts`];
     });
-  return [...fixed, ...dist].sort();
+  return [...fixed, ...packs, ...dist].sort();
 }
 
 export function validatePackage(report, repositoryRoot = REPOSITORY_ROOT) {

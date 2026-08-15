@@ -1,0 +1,7 @@
+{
+  "schema": "ruleblast.pack.v1",
+  "id": "anthropic/claude-code-cli@1",
+  "label": "Claude Code CLI",
+  "shortLabel": "Claude Code",
+  "badge": "CC"
+}

@@ -1,6 +1,7 @@
 import type { CliOutput } from "./args.js";
 import { canonicalJson } from "./canonical.js";
 import { renderWitness, witnessForProjection, type WitnessGraph } from "./domain/witness.js";
+import { packWitnessHint } from "./packs/witness-hints.js";
 import type { Projection } from "./model.js";
 import { resolveAgentAllow } from "./domain/agent-allow.js";
 import { receiptForCurrent, receiptForDiff } from "./render-receipt.js";
@@ -80,7 +81,9 @@ function projectionsOf(value: PresentedResult): Projection[] {
 }
 
 function witnessGraphs(value: PresentedResult): WitnessGraph[] {
-  return projectionsOf(value).map(witnessForProjection);
+  return projectionsOf(value).map((projection) =>
+    witnessForProjection(projection, packWitnessHint),
+  );
 }
 
 export function present(

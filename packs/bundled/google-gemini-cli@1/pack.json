@@ -1,0 +1,7 @@
+{
+  "schema": "ruleblast.pack.v1",
+  "id": "google/gemini-cli@1",
+  "label": "Gemini CLI",
+  "shortLabel": "Gemini",
+  "badge": "GM"
+}

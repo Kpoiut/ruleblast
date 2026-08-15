@@ -1,0 +1,40 @@
+{
+  "context": {
+    "cwd": "repository-root",
+    "trigger": "READ_TARGET",
+    "repositoryOnly": true
+  },
+  "discover": {
+    "origins": [
+      {
+        "kind": "fixed",
+        "paths": [".github/copilot-instructions.md"]
+      },
+      {
+        "kind": "glob",
+        "pattern": ".github/instructions/**/*.instructions.md"
+      },
+      {
+        "kind": "ancestors",
+        "from": "repositoryRoot",
+        "to": "dirname-target",
+        "inclusive": true,
+        "names": ["AGENTS.md", "CLAUDE.md", "GEMINI.md"]
+      }
+    ],
+    "claimIds": ["copilot.repo.1", "copilot.apply.1", "copilot.agent.1"]
+  },
+  "select": {
+    "mode": "all",
+    "names": ["AGENTS.md", "CLAUDE.md", "GEMINI.md"],
+    "shadows": {},
+    "claimIds": ["copilot.agent.1"]
+  },
+  "transform": [],
+  "assemble": {
+    "mode": "unspecified",
+    "claimIds": ["copilot.agent.1"]
+  },
+  "fingerprint": "copilot-v1",
+  "onSymlink": "unknown-unfollowed"
+}

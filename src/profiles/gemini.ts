@@ -8,6 +8,7 @@ import type { RepositorySnapshot, SnapshotEntry } from "../snapshot.js";
 import {
   digestNormalizedPayload,
   unitizePayloadContributions,
+  type EvidenceRef,
   type PreparedProfile,
   type ProfileDefinition,
 } from "./profile.js";
@@ -144,9 +145,14 @@ function isGeminiInstructionPath(path: string, fileNames: readonly string[]): bo
   return fileNames.some((name) => matchesFileName(path, name));
 }
 
-export const geminiProfile: ProfileDefinition = {
-  id: GOOGLE_GEMINI_CLI_PROFILE_ID,
-  evidence: GEMINI_EVIDENCE,
+export function createGeminiProfile(config: {
+  readonly id: string;
+  readonly evidence: readonly EvidenceRef[];
+}): ProfileDefinition {
+  const revisions = Object.freeze(config.evidence.map((item) => item.revision));
+  return {
+  id: config.id,
+  evidence: config.evidence,
   isInstructionPath(path: string): boolean {
     return path === GEMINI_SETTINGS_PATH ||
       path === DEFAULT_GEMINI_FILENAME ||
@@ -193,7 +199,7 @@ export const geminiProfile: ProfileDefinition = {
       }
     }
     return {
-      id: GOOGLE_GEMINI_CLI_PROFILE_ID,
+      id: config.id,
       sourceDependencyPaths: Object.freeze([...sourceDependencyPaths]),
       project(targetPath: string): Projection {
         const sources: ResolvedSource[] = [];
@@ -242,14 +248,14 @@ export const geminiProfile: ProfileDefinition = {
           repositoryOnly: true as const,
         };
         return {
-          profile: GOOGLE_GEMINI_CLI_PROFILE_ID,
+          profile: config.id,
           context,
           status,
           composition: "ORDERED",
           sources,
           normalizedPayloadUnits: units,
           projectionDigest: sha256(canonicalJson({
-            profile: GOOGLE_GEMINI_CLI_PROFILE_ID,
+            profile: config.id,
             context,
             status,
             composition: "ORDERED",
@@ -260,7 +266,7 @@ export const geminiProfile: ProfileDefinition = {
               bytesUsed: item.bytesUsed,
               truncated: item.truncated,
             })),
-            evidenceRevision: GEMINI_EVIDENCE.map((item) => item.revision),
+            evidenceRevision: revisions,
           })),
           normalizedPayloadDigest: digestNormalizedPayload(units, "ORDERED"),
           evidence,
@@ -269,3 +275,9 @@ export const geminiProfile: ProfileDefinition = {
     };
   },
 };
+}
+
+export const geminiProfile: ProfileDefinition = createGeminiProfile({
+  id: GOOGLE_GEMINI_CLI_PROFILE_ID,
+  evidence: GEMINI_EVIDENCE,
+});

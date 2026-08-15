@@ -1,0 +1,18 @@
+[
+  {
+    "claimId": "codex.discover.1",
+    "sourceType": "vendor-doc",
+    "sourceUrl": "https://learn.chatgpt.com/docs/agent-configuration/agents-md",
+    "retrievedAt": "2026-08-12",
+    "sourceRevision": "2026-08-12",
+    "claim": "Codex discovers AGENTS.md instructions through the repository hierarchy."
+  },
+  {
+    "claimId": "codex.budget.32kib.1",
+    "sourceType": "vendor-implementation",
+    "sourceUrl": "https://github.com/openai/codex/commit/4ef836f883c38ba6d39e6920f335ce6452b7de33",
+    "retrievedAt": "2026-08-12",
+    "sourceRevision": "4ef836f883c38ba6d39e6920f335ce6452b7de33",
+    "claim": "The pinned Codex implementation establishes the 32 KiB instruction byte budget and truncation behavior."
+  }
+]

@@ -1,15 +1,10 @@
 import {
-  ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
-  GOOGLE_GEMINI_CLI_PROFILE_ID,
-  OPENAI_CODEX_CLI_PROFILE_ID,
   parseProfileId,
   type ProfileId,
 } from "../model.js";
 import { compareCodePoints } from "../domain/repository-path.js";
-import { claudeProfile } from "../profiles/claude.js";
-import { codexProfile } from "../profiles/codex.js";
-import { copilotProfile, GITHUB_COPILOT_CLI_PROFILE_ID } from "../profiles/copilot.js";
-import { geminiProfile } from "../profiles/gemini.js";
+import { loadBundledPack } from "../packs/load.js";
+import { profileFromCompiledPack } from "../packs/profile.js";
 import type { ProfileDefinition } from "../profiles/profile.js";
 
 export type ProfileAdmission = "default" | "opt-in";
@@ -28,39 +23,23 @@ export interface CatalogEntry extends ProfilePresentation {
   readonly definition: ProfileDefinition;
 }
 
+function catalogEntry(directoryName: string, admission: ProfileAdmission): CatalogEntry {
+  const compiled = loadBundledPack(directoryName);
+  return Object.freeze({
+    id: parseProfileId(compiled.pack.id),
+    label: compiled.pack.label,
+    shortLabel: compiled.pack.shortLabel,
+    badge: compiled.pack.badge,
+    admission,
+    definition: profileFromCompiledPack(compiled),
+  });
+}
+
 export const PROFILE_CATALOG: readonly CatalogEntry[] = Object.freeze([
-  Object.freeze({
-    id: ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
-    label: "Claude Code CLI",
-    shortLabel: "Claude Code",
-    badge: "CC",
-    admission: "default",
-    definition: claudeProfile,
-  }),
-  Object.freeze({
-    id: OPENAI_CODEX_CLI_PROFILE_ID,
-    label: "Codex CLI",
-    shortLabel: "Codex",
-    badge: "CX",
-    admission: "default",
-    definition: codexProfile,
-  }),
-  Object.freeze({
-    id: GITHUB_COPILOT_CLI_PROFILE_ID,
-    label: "GitHub Copilot CLI",
-    shortLabel: "Copilot",
-    badge: "CP",
-    admission: "opt-in",
-    definition: copilotProfile,
-  }),
-  Object.freeze({
-    id: GOOGLE_GEMINI_CLI_PROFILE_ID,
-    label: "Gemini CLI",
-    shortLabel: "Gemini",
-    badge: "GM",
-    admission: "opt-in",
-    definition: geminiProfile,
-  }),
+  catalogEntry("anthropic-claude-code-cli@1", "default"),
+  catalogEntry("openai-codex-cli@1", "default"),
+  catalogEntry("github-copilot-cli@1", "opt-in"),
+  catalogEntry("google-gemini-cli@1", "opt-in"),
 ]);
 
 export function presentationLabel(id: string): string {

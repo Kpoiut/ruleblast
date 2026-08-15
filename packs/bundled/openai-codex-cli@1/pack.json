@@ -1,0 +1,7 @@
+{
+  "schema": "ruleblast.pack.v1",
+  "id": "openai/codex-cli@1",
+  "label": "Codex CLI",
+  "shortLabel": "Codex",
+  "badge": "CX"
+}

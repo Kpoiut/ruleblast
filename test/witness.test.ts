@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { CliUsageError, parseArgs } from "../src/args.js";
 import { present } from "../src/cli-output.js";
 import { witnessForProjection } from "../src/domain/witness.js";
+import { packWitnessHint } from "../src/packs/witness-hints.js";
 import {
   OPENAI_CODEX_CLI_PROFILE_ID,
   type CurrentRuleBlastResult,
@@ -92,7 +93,7 @@ function capturePresent(
 
 describe("resolution witness graph", () => {
   it("names same-directory override precedence instead of only repeating SHADOWED", () => {
-    const graph = witnessForProjection(projection());
+    const graph = witnessForProjection(projection(), packWitnessHint);
     expect(graph.version).toBe("RBWIT1");
     expect(graph.profile).toBe(OPENAI_CODEX_CLI_PROFILE_ID);
     expect(graph.targetPath).toBe("src/file.ts");

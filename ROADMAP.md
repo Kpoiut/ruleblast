@@ -231,11 +231,17 @@ Presentation and host-session logic on the existing four actions. Default explai
 
 **Verified publication receipt.** Signed tag object `4883efb6d5a82e0bcfe4ebd8375a0f024ff7943b` for [`v1.6.2`](https://github.com/Kpoiut/ruleblast/releases/tag/v1.6.2) targets commit `ef2206a40b44a1debb211bd131f23afb519ac32f`. [npm `ruleblast@1.6.2`](https://www.npmjs.com/package/ruleblast/v/1.6.2) reports integrity `sha512-JE3H3hE7Gp1/AuQIz8swceyFRlGnfFjLcJz/MOriBswDt69ObMatn3w/AzkjeqSSThsyhgGnnpdR4emkYKw1eg==`; exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download and GitHub Release asset both match the reviewed 108,652-byte tarball with SHA-256 `0c93bc4c24410297ce0f20dc5cf7788ad4dfb3259c2b99662782969bec49101f`; the canonical manifest has SHA-256 `8725791048ff228835279abbcaa855002303aa5867a8971182fbac601f80fec4`. These are independently verified external records, not facts inferred from this checkout.
 
-This tree is `1.6.2`. Latest independently verified public npm distribution is `1.6.2`.
+That release is `1.6.2`. Latest independently verified public npm distribution at that tag is `1.6.2`.
 
-## **NEXT** — `v2.0.0`: Reality Packs
+## **SHIPPED TO MAIN** — `v2.0.0`: Reality Packs
 
-The target is a finite, reviewed, declarative profile format—not an executable plugin system.
+This tree is `2.0.0`. Latest independently verified public npm distribution remains `1.6.2` until an authorized publication.
+
+Bundled, reviewed, data-only packs under `packs/bundled` now define the four realities. The fail-closed decoder rejects unknown keys and dangling claim ids. Catalog admission stays product policy. No `--pack`, no fifth reality, no executable pack extension.
+
+Increment 0.25 classified Gemini two-hop as D2a on `PROBE_TREE_SHA` `f9e6833aeadcb3e3f23753ebf0f761df68749f0a`. Increment 0.30 closed prepare-time `sourceDependencyPaths` at `MIGRATION_BASE_SHA` `38cb0f50bd03bc39a0046426b6fa3004103d4f4a`. The correction is bundled into this 2.0.0 line; it is not a 1.6.x release. Default two-profile goldens are unchanged. `resolverRevision` remains 1. Fingerprint recipes stay historical.
+
+A finite, reviewed, declarative profile format—not an executable plugin system. External packs remain unadmitted.
 
 A local, explicitly installed pack would contain:
 
@@ -248,7 +254,7 @@ The reader must reject unknown operators and fail closed on traversal, escaping 
 
 Before external packs are admitted, the bundled profiles must migrate to the same representation with result-equivalent canonical bytes. This release may expose raw N-profile projections and basic aggregates; named reality clusters remain outside its boundary.
 
-## **HORIZON** — `v2.1.0`: Many-Reality Diff
+## **NEXT** — `v2.1.0`: Many-Reality Diff
 
 The target is a compact N-way reveal built from canonical projections:
 

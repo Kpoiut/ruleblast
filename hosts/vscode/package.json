@@ -2,7 +2,7 @@
   "name": "ruleblast",
   "displayName": "RuleBlast",
   "description": "Read-only companion for the RuleBlast analysis engine. Same four actions, same canonical result.",
-  "version": "1.6.2",
+  "version": "2.0.0",
   "publisher": "kpoiut",
   "private": true,
   "engines": {

@@ -15,6 +15,20 @@ function walk(directory: string): string[] {
   return files;
 }
 
+describe("witness domain purity", () => {
+  it("keeps bundled profile ids out of witness.ts", () => {
+    const text = readFileSync(join(repositoryRoot, "src/domain/witness.ts"), "utf8");
+    expect(text).not.toContain("OPENAI_CODEX_CLI_PROFILE_ID");
+    expect(text).not.toContain("ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID");
+    expect(text).not.toContain("GITHUB_COPILOT_CLI_PROFILE_ID");
+    expect(text).not.toContain("GOOGLE_GEMINI_CLI_PROFILE_ID");
+    expect(text).not.toContain("openai/codex-cli@1");
+    expect(text).not.toContain("anthropic/claude-code-cli@1");
+    expect(text).not.toContain("github/copilot-cli@1");
+    expect(text).not.toContain("google/gemini-cli@1");
+  });
+});
+
 describe("companion host purity", () => {
   it("keeps the VS Code adapter off the npm analysis package", () => {
     const descriptor = JSON.parse(readFileSync(join(repositoryRoot, "package.json"), "utf8")) as {

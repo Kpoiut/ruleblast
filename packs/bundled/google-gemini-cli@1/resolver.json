@@ -1,0 +1,43 @@
+{
+  "context": {
+    "cwd": "repository-root",
+    "trigger": "READ_TARGET",
+    "repositoryOnly": true
+  },
+  "discover": {
+    "origins": [
+      {
+        "kind": "ancestors",
+        "from": "repositoryRoot",
+        "to": "dirname-target",
+        "inclusive": true,
+        "names": ["GEMINI.md"]
+      },
+      {
+        "kind": "fixed",
+        "paths": [".gemini/settings.json"]
+      }
+    ],
+    "claimIds": ["gemini.jit.1", "gemini.order.1", "gemini.names.1"]
+  },
+  "select": {
+    "mode": "all",
+    "names": ["GEMINI.md"],
+    "shadows": {},
+    "claimIds": ["gemini.default.1"]
+  },
+  "transform": [
+    {
+      "kind": "at-path-import",
+      "maxDepth": 5,
+      "lexer": "gemini-markdown-v1",
+      "claimIds": ["gemini.imports.1"]
+    }
+  ],
+  "assemble": {
+    "mode": "ordered",
+    "claimIds": ["gemini.order.1"]
+  },
+  "fingerprint": "gemini-v1",
+  "onSymlink": "partial-unfollowed"
+}

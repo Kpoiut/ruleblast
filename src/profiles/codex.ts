@@ -9,6 +9,7 @@ import {
   defineEvidenceRef,
   digestNormalizedPayload,
   unitizePayloadContributions,
+  type EvidenceRef,
   type PreparedProfile,
   type ProfileDefinition,
 } from "./profile.js";
@@ -138,9 +139,11 @@ function resolveDirectory(
   directory: string,
   candidates: ReadonlyMap<string, Candidate>,
   remaining: number,
+  overrideName: string,
+  agentsName: string,
 ): { readonly resolution: Resolution; readonly consumed: number } {
-  const override = candidates.get(candidatePath(directory, OVERRIDE_NAME));
-  const agents = candidates.get(candidatePath(directory, AGENTS_NAME));
+  const override = candidates.get(candidatePath(directory, overrideName));
+  const agents = candidates.get(candidatePath(directory, agentsName));
   const selected = override ?? agents;
   if (selected === undefined) {
     return {
@@ -186,8 +189,11 @@ function resolveDirectory(
 function resolve(
   directory: string,
   candidates: ReadonlyMap<string, Candidate>,
+  byteLimit: number,
+  overrideName: string,
+  agentsName: string,
 ): Resolution {
-  let remaining = BYTE_LIMIT;
+  let remaining = byteLimit;
   const sources: ResolvedSource[] = [];
   const contributions: string[] = [];
   const evidence: string[] = [];
@@ -195,7 +201,9 @@ function resolve(
   for (const ancestor of ancestorDirectories(
     directory === "." ? "target" : `${directory}/target`,
   )) {
-    const result = resolveDirectory(ancestor, candidates, remaining);
+    const result = resolveDirectory(
+      ancestor, candidates, remaining, overrideName, agentsName,
+    );
     remaining -= result.consumed;
     sources.push(...result.resolution.sources);
     contributions.push(...result.resolution.contributions);
@@ -235,7 +243,12 @@ function projectionMaterial(resolution: Resolution): ProjectionMaterial {
   };
 }
 
-function makeProjection(material: ProjectionMaterial, targetPath: string): Projection {
+function makeProjection(
+  material: ProjectionMaterial,
+  targetPath: string,
+  profileId: string,
+  evidenceRevisions: readonly string[],
+): Projection {
   const context = {
     cwd: directoryFromTarget(targetPath),
     trigger: "STARTUP" as const,
@@ -243,17 +256,17 @@ function makeProjection(material: ProjectionMaterial, targetPath: string): Proje
     repositoryOnly: true as const,
   };
   const projectionDigest = sha256(canonicalJson({
-    profile: OPENAI_CODEX_CLI_PROFILE_ID,
+    profile: profileId,
     context,
     status: material.status,
     composition: "ORDERED",
     assembledPayload: material.assembledPayload,
-    evidenceRevisions: CODEX_EVIDENCE.map((evidence) => evidence.revision),
+    evidenceRevisions,
     effectiveSources: material.effectiveSources,
     normalizedPayloadUnits: material.units,
   }));
   return {
-    profile: OPENAI_CODEX_CLI_PROFILE_ID,
+    profile: profileId,
     context,
     status: material.status,
     composition: "ORDERED",
@@ -280,47 +293,71 @@ const CODEX_EVIDENCE = Object.freeze([
     }),
 ]);
 
-export const codexProfile: ProfileDefinition = Object.freeze({
+export function createCodexProfile(config: {
+  readonly id: string;
+  readonly evidence: readonly EvidenceRef[];
+  readonly overrideName: string;
+  readonly agentsName: string;
+  readonly byteLimit: number;
+}): ProfileDefinition {
+  const names = Object.freeze([config.overrideName, config.agentsName]);
+  const revisions = Object.freeze(config.evidence.map((item) => item.revision));
+  return Object.freeze({
+    id: config.id,
+    evidence: config.evidence,
+    isInstructionPath(path: string): boolean {
+      const name = basename(path);
+      return names.includes(name);
+    },
+    async prepare(snapshot: RepositorySnapshot): Promise<PreparedProfile> {
+      const paths = await snapshot.listPaths();
+      const candidatePaths = [
+        ...new Set(paths.filter((path) => this.isInstructionPath(path))),
+      ].sort(compareCodePoints);
+      const candidates = new Map<string, Candidate>();
+      for (const path of candidatePaths) {
+        const entry = await snapshot.entry(path);
+        if (entry === null) {
+          throw new Error(`Missing Codex candidate entry during preparation: ${path}`);
+        }
+        const capturedEntry = captureCandidateEntry(entry, path);
+        const bytes = await snapshot.read(path);
+        if (bytes === null) {
+          throw new Error(`Missing Codex candidate bytes during preparation: ${path}`);
+        }
+        candidates.set(
+          path,
+          Object.freeze({ ...capturedEntry, bytes: new Uint8Array(bytes) }),
+        );
+      }
+      const cachedMaterials = new Map<string, ProjectionMaterial>();
+      return Object.freeze({
+        id: config.id,
+        sourceDependencyPaths: Object.freeze([...candidates.keys()].sort(compareCodePoints)),
+        project(targetPath: string): Projection {
+          const directory = directoryFromTarget(targetPath);
+          let material = cachedMaterials.get(directory);
+          if (material === undefined) {
+            material = projectionMaterial(resolve(
+              directory,
+              candidates,
+              config.byteLimit,
+              config.overrideName,
+              config.agentsName,
+            ));
+            cachedMaterials.set(directory, material);
+          }
+          return makeProjection(material, targetPath, config.id, revisions);
+        },
+      });
+    },
+  });
+}
+
+export const codexProfile: ProfileDefinition = createCodexProfile({
   id: OPENAI_CODEX_CLI_PROFILE_ID,
   evidence: CODEX_EVIDENCE,
-  isInstructionPath(path: string): boolean {
-    const name = basename(path);
-    return name === OVERRIDE_NAME || name === AGENTS_NAME;
-  },
-  async prepare(snapshot: RepositorySnapshot): Promise<PreparedProfile> {
-    const paths = await snapshot.listPaths();
-    const candidatePaths = [
-      ...new Set(paths.filter((path) => this.isInstructionPath(path))),
-    ].sort(compareCodePoints);
-    const candidates = new Map<string, Candidate>();
-    for (const path of candidatePaths) {
-      const entry = await snapshot.entry(path);
-      if (entry === null) {
-        throw new Error(`Missing Codex candidate entry during preparation: ${path}`);
-      }
-      const capturedEntry = captureCandidateEntry(entry, path);
-      const bytes = await snapshot.read(path);
-      if (bytes === null) {
-        throw new Error(`Missing Codex candidate bytes during preparation: ${path}`);
-      }
-      candidates.set(
-        path,
-        Object.freeze({ ...capturedEntry, bytes: new Uint8Array(bytes) }),
-      );
-    }
-    const cachedMaterials = new Map<string, ProjectionMaterial>();
-    return Object.freeze({
-      id: OPENAI_CODEX_CLI_PROFILE_ID,
-      sourceDependencyPaths: Object.freeze([...candidates.keys()].sort(compareCodePoints)),
-      project(targetPath: string): Projection {
-        const directory = directoryFromTarget(targetPath);
-        let material = cachedMaterials.get(directory);
-        if (material === undefined) {
-          material = projectionMaterial(resolve(directory, candidates));
-          cachedMaterials.set(directory, material);
-        }
-        return makeProjection(material, targetPath);
-      },
-    });
-  },
+  overrideName: OVERRIDE_NAME,
+  agentsName: AGENTS_NAME,
+  byteLimit: BYTE_LIMIT,
 });

@@ -1,9 +1,16 @@
-import {
-  ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
-  OPENAI_CODEX_CLI_PROFILE_ID,
-  type Projection,
-  type ResolvedSource,
-} from "../model.js";
+import type { Projection, ResolvedSource, SourceDisposition } from "../model.js";
+
+export interface WitnessHint {
+  readonly rule: string;
+  readonly inputs: readonly string[];
+  readonly detail: string;
+}
+
+export type WitnessHintLookup = (
+  profile: string,
+  disposition: SourceDisposition,
+  sourcePath: string,
+) => WitnessHint | null;
 
 export type WitnessDecision =
   | "DISCOVERED"
@@ -33,10 +40,13 @@ export interface WitnessGraph {
   readonly edges: readonly WitnessEdge[];
 }
 
-export function witnessForProjection(projection: Projection): WitnessGraph {
+export function witnessForProjection(
+  projection: Projection,
+  hint: WitnessHintLookup | null = null,
+): WitnessGraph {
   const edges: WitnessEdge[] = [];
   for (const source of projection.sources) {
-    edges.push(edgeForSource(projection, source));
+    edges.push(edgeForSource(projection, source, hint));
     if (source.truncated) {
       edges.push({
         rule: "repository-instruction-budget",
@@ -66,26 +76,23 @@ export function witnessForProjection(projection: Projection): WitnessGraph {
   };
 }
 
-function edgeForSource(projection: Projection, source: ResolvedSource): WitnessEdge {
+function edgeForSource(
+  projection: Projection,
+  source: ResolvedSource,
+  hint: WitnessHintLookup | null,
+): WitnessEdge {
   const profile = projection.profile;
-  if (source.disposition === "SHADOWED" && profile === OPENAI_CODEX_CLI_PROFILE_ID) {
+  const named = hint?.(profile, source.disposition, source.path);
+  if (named !== null && named !== undefined) {
     return {
-      rule: "same-directory-override-precedence",
+      rule: named.rule,
       evidenceRevision: profile,
-      inputs: [source.path, "AGENTS.override.md"],
-      decision: "SHADOWED",
+      inputs: named.inputs,
+      decision: source.disposition === "SHADOWED" || source.disposition === "EXCLUDED"
+        ? source.disposition
+        : "DISCOVERED",
       uncertainty: "NONE",
-      detail: "AGENTS.override.md wins the same directory; AGENTS.md is explanatory only.",
-    };
-  }
-  if (source.disposition === "EXCLUDED" && profile === ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID) {
-    return {
-      rule: "documented-exclusion",
-      evidenceRevision: profile,
-      inputs: [source.path],
-      decision: "EXCLUDED",
-      uncertainty: "NONE",
-      detail: "Claude Code documented exclusion removed this source from contribution.",
+      detail: named.detail,
     };
   }
   if (source.disposition === "IMPORTED") {

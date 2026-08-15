@@ -1,6 +1,6 @@
 {
   "name": "ruleblast",
-  "version": "1.6.2",
+  "version": "2.0.0",
   "description": "Git diff for invisible repository instructions. See which tracked paths inherit an AGENTS.md or CLAUDE.md edit—and whether pinned Codex, Claude Code, Copilot CLI, and Gemini CLI projections already differ.",
   "keywords": [
     "agents.md",
@@ -27,6 +27,8 @@
     "cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json",
     "cases/README.md",
     "dist",
+    "packs/bundled",
+    "schemas/reality-pack-v1.schema.json",
     "README.md",
     "CONTRACT.md",
     "LICENSE",
@@ -41,6 +43,7 @@
     "check": "tsc -p tsconfig.json && vitest run",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:pack-schema": "npm run build && node scripts/pack-schema.mjs",
     "pack:check": "npm run build && npm pack --dry-run",
     "package:smoke": "node scripts/package-smoke.mjs",
     "install:smoke": "node scripts/install-smoke.mjs",
@@ -55,6 +58,7 @@
   },
   "devDependencies": {
     "@types/node": "20.19.43",
+    "ajv": "8.17.1",
     "typescript": "7.0.2",
     "vitest": "4.1.10"
   },

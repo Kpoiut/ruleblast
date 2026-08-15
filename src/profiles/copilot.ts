@@ -10,6 +10,7 @@ import {
   defineEvidenceRef,
   digestNormalizedPayload,
   unitizePayloadContributions,
+  type EvidenceRef,
   type PreparedProfile,
   type ProfileDefinition,
 } from "./profile.js";
@@ -114,9 +115,13 @@ function isCopilotInstructionPath(path: string): boolean {
   return classify(path) !== null;
 }
 
-export const copilotProfile: ProfileDefinition = {
-  id: GITHUB_COPILOT_CLI_PROFILE_ID,
-  evidence: COPILOT_EVIDENCE,
+export function createCopilotProfile(config: {
+  readonly id: string;
+  readonly evidence: readonly EvidenceRef[];
+}): ProfileDefinition {
+  return {
+  id: config.id,
+  evidence: config.evidence,
   isInstructionPath: isCopilotInstructionPath,
   async prepare(snapshot: RepositorySnapshot): Promise<PreparedProfile> {
     const documents: CopilotDocument[] = [];
@@ -135,7 +140,7 @@ export const copilotProfile: ProfileDefinition = {
       });
     }
     return {
-      id: GITHUB_COPILOT_CLI_PROFILE_ID,
+      id: config.id,
       sourceDependencyPaths: documents.map((document) => document.path),
       project(targetPath: string): Projection {
         const sources: ResolvedSource[] = [];
@@ -194,14 +199,14 @@ export const copilotProfile: ProfileDefinition = {
           );
         }
         return {
-          profile: GITHUB_COPILOT_CLI_PROFILE_ID,
+          profile: config.id,
           context,
           status: partial ? "PARTIAL" : "COMPLETE",
           composition: "UNSPECIFIED",
           sources,
           normalizedPayloadUnits: units,
           projectionDigest: sha256(canonicalJson({
-            profile: GITHUB_COPILOT_CLI_PROFILE_ID,
+            profile: config.id,
             context,
             sources: sources.map((source) => ({
               path: source.path,
@@ -216,3 +221,9 @@ export const copilotProfile: ProfileDefinition = {
     };
   },
 };
+}
+
+export const copilotProfile: ProfileDefinition = createCopilotProfile({
+  id: GITHUB_COPILOT_CLI_PROFILE_ID,
+  evidence: COPILOT_EVIDENCE,
+});

@@ -1,0 +1,58 @@
+[
+  {
+    "claimId": "claude.memory.1",
+    "sourceType": "vendor-doc",
+    "sourceUrl": "https://code.claude.com/docs/en/memory",
+    "retrievedAt": "2026-08-12",
+    "sourceRevision": "anthropic/claude-code-cli@1:memory-locations",
+    "claim": "Claude Code documents project and local memory locations."
+  },
+  {
+    "claimId": "claude.ancestors.1",
+    "sourceType": "vendor-doc",
+    "sourceUrl": "https://code.claude.com/docs/en/memory",
+    "retrievedAt": "2026-08-12",
+    "sourceRevision": "anthropic/claude-code-cli@1:ancestor-loading",
+    "claim": "Claude Code documents ancestor and nested on-demand memory loading."
+  },
+  {
+    "claimId": "claude.imports.1",
+    "sourceType": "vendor-implementation",
+    "sourceUrl": "https://code.claude.com/docs/en/memory",
+    "retrievedAt": "2026-08-12",
+    "sourceRevision": "anthropic/claude-code-cli@1:imports",
+    "claim": "Claude Code documents relative recursive @path imports and their bounded depth."
+  },
+  {
+    "claimId": "claude.rules.1",
+    "sourceType": "vendor-doc",
+    "sourceUrl": "https://code.claude.com/docs/en/memory",
+    "retrievedAt": "2026-08-12",
+    "sourceRevision": "anthropic/claude-code-cli@1:rules",
+    "claim": "Claude Code documents recursively discovered project rules."
+  },
+  {
+    "claimId": "claude.globs.1",
+    "sourceType": "vendor-doc",
+    "sourceUrl": "https://code.claude.com/docs/en/memory",
+    "retrievedAt": "2026-08-12",
+    "sourceRevision": "anthropic/claude-code-cli@1:path-globs",
+    "claim": "Claude Code documents path glob and brace patterns for conditional rules."
+  },
+  {
+    "claimId": "claude.excludes.1",
+    "sourceType": "vendor-doc",
+    "sourceUrl": "https://code.claude.com/docs/en/memory",
+    "retrievedAt": "2026-08-12",
+    "sourceRevision": "anthropic/claude-code-cli@1:excludes",
+    "claim": "Claude Code documents claudeMdExcludes matched against absolute paths."
+  },
+  {
+    "claimId": "claude.comments.1",
+    "sourceType": "vendor-doc",
+    "sourceUrl": "https://code.claude.com/docs/en/memory",
+    "retrievedAt": "2026-08-12",
+    "sourceRevision": "anthropic/claude-code-cli@1:comments",
+    "claim": "Claude Code documents HTML comment stripping with fenced-code preservation."
+  }
+]

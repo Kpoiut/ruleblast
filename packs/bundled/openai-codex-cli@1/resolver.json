@@ -1,0 +1,40 @@
+{
+  "context": {
+    "cwd": "dirname-target",
+    "trigger": "STARTUP",
+    "repositoryOnly": true
+  },
+  "discover": {
+    "origins": [
+      {
+        "kind": "ancestors",
+        "from": "repositoryRoot",
+        "to": "cwd",
+        "inclusive": true,
+        "names": ["AGENTS.override.md", "AGENTS.md"]
+      }
+    ],
+    "claimIds": ["codex.discover.1"]
+  },
+  "select": {
+    "mode": "first-per-directory",
+    "names": ["AGENTS.override.md", "AGENTS.md"],
+    "shadows": {
+      "AGENTS.override.md": ["AGENTS.md"]
+    },
+    "claimIds": ["codex.discover.1"]
+  },
+  "transform": [
+    {
+      "kind": "byte-budget",
+      "bytes": 32768,
+      "claimIds": ["codex.budget.32kib.1"]
+    }
+  ],
+  "assemble": {
+    "mode": "ordered",
+    "claimIds": ["codex.discover.1"]
+  },
+  "fingerprint": "codex-v1",
+  "onSymlink": "unknown-unfollowed"
+}

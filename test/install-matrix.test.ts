@@ -82,13 +82,13 @@ describe("candidate installation matrix", () => {
         .toBeGreaterThanOrEqual(cursor);
       cursor = position + command.length;
     }
-    expect(workflow).toContain("RULEBLAST_REGISTRY_SMOKE: ruleblast@1.6.2");
+    expect(workflow).toContain("RULEBLAST_REGISTRY_SMOKE: ruleblast@2.0.0");
     expect(workflow).toContain(
       "RULEBLAST_REGISTRY_UPGRADE_FROM: ruleblast@1.5.1",
     );
     expect(workflow).toContain("npm run install:smoke -- --registry");
     expect(workflow).toContain("github.event_name == 'workflow_dispatch'");
-    expect(workflow).toContain("github.ref == 'refs/tags/v1.6.2'");
+    expect(workflow).toContain("github.ref == 'refs/tags/v2.0.0'");
     const parsed = parse(workflow) as VerifyWorkflow;
     const job = parsed.jobs.verify;
     expect(job["timeout-minutes"]).toBe(20);
@@ -100,9 +100,9 @@ describe("candidate installation matrix", () => {
       (step) => step.name === "Verify published registry upgrade",
     );
     expect(registryStep).toEqual(expect.objectContaining({
-      if: "github.event_name == 'workflow_dispatch' && github.ref == 'refs/tags/v1.6.2'",
+      if: "github.event_name == 'workflow_dispatch' && github.ref == 'refs/tags/v2.0.0'",
       env: {
-        RULEBLAST_REGISTRY_SMOKE: "ruleblast@1.6.2",
+        RULEBLAST_REGISTRY_SMOKE: "ruleblast@2.0.0",
         RULEBLAST_REGISTRY_UPGRADE_FROM: "ruleblast@1.5.1",
       },
       run: "npm run install:smoke -- --registry",
@@ -130,7 +130,7 @@ describe("candidate installation matrix", () => {
       local: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 1.6.2",
+        version: "ruleblast 2.0.0",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,
@@ -143,7 +143,7 @@ describe("candidate installation matrix", () => {
       global: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 1.6.2",
+        version: "ruleblast 2.0.0",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,
@@ -159,9 +159,9 @@ describe("candidate installation matrix", () => {
   it("documents exact, non-interactive and reversible install commands", async () => {
     const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
     for (const command of [
-      "npx --yes ruleblast@1.6.2 --help",
-      "npx --yes ruleblast@1.6.2 .",
-      "npm install --save-dev --save-exact ruleblast@1.6.2",
+      "npx --yes ruleblast@2.0.0 --help",
+      "npx --yes ruleblast@2.0.0 .",
+      "npm install --save-dev --save-exact ruleblast@2.0.0",
       "ruleblast --version",
       "npx ruleblast --version",
       "npm uninstall --global ruleblast",
@@ -171,17 +171,17 @@ describe("candidate installation matrix", () => {
       expect(readme).toContain(command);
     }
     expect(readme).toMatch(
-      /npm uninstall --global ruleblast[\s\S]+npm install --global ruleblast@1\.6\.2/u,
+      /npm uninstall --global ruleblast[\s\S]+npm install --global ruleblast@2\.0\.0/u,
     );
     expect(readme).toMatch(
-      /npm uninstall --save-dev ruleblast[\s\S]+npm install --save-dev --save-exact ruleblast@1\.6\.2/u,
+      /npm uninstall --save-dev ruleblast[\s\S]+npm install --save-dev --save-exact ruleblast@2\.0\.0/u,
     );
     expect(readme).toContain(
-      "git clone --branch v1.6.2 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v2.0.0 --depth 1 https://github.com/Kpoiut/ruleblast.git",
     );
     expect(readme).toMatch(/Windows.+Linux/isu);
     expect(readme).not.toMatch(/Windows.+macOS.+Linux/isu);
-    expect(readme).not.toMatch(/npx (?!--yes )ruleblast@1\.6\.2/gu);
+    expect(readme).not.toMatch(/npx (?!--yes )ruleblast@2\.0\.0/gu);
   });
 
   it("terminates timed-out process descendants before rejecting", async () => {

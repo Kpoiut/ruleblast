@@ -23,10 +23,12 @@ import {
   type ClaudeProjectSettings,
   type ParsedClaudeRule,
 } from "./claude-rules.js";
+import { compareCodePoints } from "../domain/repository-path.js";
 import {
   defineEvidenceRef,
   digestNormalizedPayload,
   unitizePayloadContributions,
+  type EvidenceRef,
   type PreparedProfile,
   type ProfileDefinition,
 } from "./profile.js";
@@ -36,22 +38,6 @@ const DOT_ROOT_MEMORY = ".claude/CLAUDE.md";
 const SETTINGS_PATH = ".claude/settings.json";
 const MEMORY_NAMES = new Set(["CLAUDE.md", "CLAUDE.local.md"]);
 const ENTRY_FIELDS = ["path", "kind", "executable"] as const;
-
-function compareCodePoints(left: string, right: string): number {
-  let a = 0;
-  let b = 0;
-  while (a < left.length && b < right.length) {
-    const leftPoint = left.codePointAt(a);
-    const rightPoint = right.codePointAt(b);
-    if (leftPoint === undefined || rightPoint === undefined) {
-      throw new Error("Unable to compare Claude dependency paths");
-    }
-    if (leftPoint !== rightPoint) return leftPoint < rightPoint ? -1 : 1;
-    a += leftPoint > 0xffff ? 2 : 1;
-    b += rightPoint > 0xffff ? 2 : 1;
-  }
-  return a === left.length && b === right.length ? 0 : a === left.length ? -1 : 1;
-}
 
 function basename(path: string): string {
   return path.slice(path.lastIndexOf("/") + 1);
@@ -166,22 +152,27 @@ function projectionMaterial(resolution: Resolution): ProjectionMaterial {
   };
 }
 
-function makeProjection(material: ProjectionMaterial, targetPath: string): Projection {
+function makeProjection(
+  material: ProjectionMaterial,
+  targetPath: string,
+  profileId: string,
+  evidenceRevisions: readonly string[],
+): Projection {
   const context = {
     cwd: ".", trigger: "READ_TARGET" as const, targetPath, repositoryOnly: true as const,
   };
   const projectionDigest = sha256(canonicalJson({
-    profile: ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
+    profile: profileId,
     context,
     status: material.status,
     composition: material.composition,
-    evidenceRevisions: CLAUDE_EVIDENCE.map((item) => item.revision),
+    evidenceRevisions,
     effectiveSources: material.effectiveSources,
     normalizedPayloadUnits: material.units,
     evidence: material.evidence,
   }));
   return {
-    profile: ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
+    profile: profileId,
     context,
     status: material.status,
     composition: material.composition,
@@ -371,29 +362,40 @@ const CLAUDE_EVIDENCE = Object.freeze(EVIDENCE_CLAIMS.map(([revision, claim]) =>
     claim,
   })));
 
-export const claudeProfile: ProfileDefinition = Object.freeze({
+export function createClaudeProfile(config: {
+  readonly id: string;
+  readonly evidence: readonly EvidenceRef[];
+}): ProfileDefinition {
+  const revisions = Object.freeze(config.evidence.map((item) => item.revision));
+  return Object.freeze({
+    id: config.id,
+    evidence: config.evidence,
+    isInstructionPath: isDirectCandidate,
+    async prepare(snapshot: RepositorySnapshot): Promise<PreparedProfile> {
+      const { files, documents, rules } = await captureDependencies(snapshot);
+      const settings = parseClaudeProjectSettings(files.get(SETTINGS_PATH));
+      const sourceDependencyPaths = Object.freeze([...files.keys()].sort(compareCodePoints));
+      const cache = new Map<string, ProjectionMaterial>();
+      return Object.freeze({
+        id: config.id,
+        sourceDependencyPaths,
+        project(targetPath: string): Projection {
+          const cacheKey = claudeResolutionCacheKey(targetPath, rules.length > 0);
+          let material = cache.get(cacheKey);
+          if (material === undefined) {
+            material = projectionMaterial(
+              resolveTarget(targetPath, files, rules, documents, settings),
+            );
+            cache.set(cacheKey, material);
+          }
+          return makeProjection(material, targetPath, config.id, revisions);
+        },
+      });
+    },
+  });
+}
+
+export const claudeProfile: ProfileDefinition = createClaudeProfile({
   id: ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
   evidence: CLAUDE_EVIDENCE,
-  isInstructionPath: isDirectCandidate,
-  async prepare(snapshot: RepositorySnapshot): Promise<PreparedProfile> {
-    const { files, documents, rules } = await captureDependencies(snapshot);
-    const settings = parseClaudeProjectSettings(files.get(SETTINGS_PATH));
-    const sourceDependencyPaths = Object.freeze([...files.keys()].sort(compareCodePoints));
-    const cache = new Map<string, ProjectionMaterial>();
-    return Object.freeze({
-      id: ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
-      sourceDependencyPaths,
-      project(targetPath: string): Projection {
-        const cacheKey = claudeResolutionCacheKey(targetPath, rules.length > 0);
-        let material = cache.get(cacheKey);
-        if (material === undefined) {
-          material = projectionMaterial(
-            resolveTarget(targetPath, files, rules, documents, settings),
-          );
-          cache.set(cacheKey, material);
-        }
-        return makeProjection(material, targetPath);
-      },
-    });
-  },
 });

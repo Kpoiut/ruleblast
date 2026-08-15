@@ -328,7 +328,7 @@ describe("public release maturity", () => {
   it("records the independently verified v1.6.2 release receipt", () => {
     const roadmap = read("ROADMAP.md");
     const releasedHeading = "## **RELEASED** — `v1.6.2`: Last-Result Explain";
-    const nextHeading = "## **NEXT** — `v2.0.0`: Reality Packs";
+    const nextHeading = "## **SHIPPED TO MAIN** — `v2.0.0`: Reality Packs";
     const releasedStart = roadmap.indexOf(releasedHeading);
     const nextStart = roadmap.indexOf(nextHeading);
 
@@ -358,6 +358,25 @@ describe("public release maturity", () => {
     expect(changelog).toContain(
       "Signed tag object `4883efb6d5a82e0bcfe4ebd8375a0f024ff7943b`",
     );
+  });
+
+  it("records v2.0.0 Reality Packs as shipped to main, not released", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v2.0.0`: Reality Packs";
+    const next = roadmap.indexOf("## **NEXT** — `v2.1.0`: Many-Reality Diff");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toContain("f9e6833aeadcb3e3f23753ebf0f761df68749f0a");
+    expect(shipped).toContain("38cb0f50bd03bc39a0046426b6fa3004103d4f4a");
+    expect(shipped).toContain("D2a");
+    expect(shipped).toMatch(/bundled into this 2\.0\.0 line/iu);
+    expect(shipped).toMatch(/No `--pack`/u);
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 2.0.0 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.0 — RELEASED/u);
+    expect(read("CONTRACT.md")).toContain("38cb0f50bd03bc39a0046426b6fa3004103d4f4a");
   });
 
   it("keeps release-state records outside the current package boundary", () => {

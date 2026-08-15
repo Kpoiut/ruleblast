@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ruleblast.dev/schemas/reality-pack-v1.schema.json",
+  "title": "RuleBlast Reality Pack bundle v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["pack", "evidence", "resolver"],
+  "properties": {
+    "pack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "id", "label", "shortLabel", "badge"],
+      "properties": {
+        "schema": { "const": "ruleblast.pack.v1" },
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*/[a-z0-9][a-z0-9-]*@[1-9][0-9]*$" },
+        "label": { "type": "string", "minLength": 1 },
+        "shortLabel": { "type": "string", "minLength": 1 },
+        "badge": { "type": "string", "minLength": 1, "maxLength": 4 }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claimId", "sourceType", "sourceUrl", "retrievedAt", "sourceRevision", "claim"],
+        "properties": {
+          "claimId": { "type": "string", "minLength": 1 },
+          "sourceType": { "enum": ["vendor-doc", "vendor-implementation", "ruleblast-compatibility"] },
+          "sourceUrl": { "type": "string", "minLength": 1 },
+          "retrievedAt": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+          "sourceRevision": { "type": "string", "minLength": 1 },
+          "claim": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "resolver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context", "discover", "select", "transform", "assemble", "fingerprint", "onSymlink"],
+      "properties": {
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["cwd", "trigger", "repositoryOnly"],
+          "properties": {
+            "cwd": { "enum": ["dirname-target", "repository-root"] },
+            "trigger": { "enum": ["STARTUP", "READ_TARGET"] },
+            "repositoryOnly": { "const": true }
+          }
+        },
+        "discover": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["origins", "claimIds"],
+          "properties": {
+            "origins": { "type": "array", "minItems": 1 },
+            "claimIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+          }
+        },
+        "select": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "names", "shadows", "claimIds"],
+          "properties": {
+            "mode": { "enum": ["all", "first-per-directory"] },
+            "names": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+            "shadows": { "type": "object" },
+            "claimIds": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+          }
+        },
+        "transform": { "type": "array" },
+        "assemble": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "claimIds"],
+          "properties": {
+            "mode": { "enum": ["ordered", "unspecified"] },
+            "claimIds": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+          }
+        },
+        "fingerprint": { "enum": ["codex-v1", "claude-v1", "gemini-v1", "copilot-v1"] },
+        "onSymlink": { "enum": ["unknown-unfollowed", "partial-unfollowed"] }
+      }
+    }
+  }
+}

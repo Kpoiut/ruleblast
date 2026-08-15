@@ -1,0 +1,7 @@
+{
+  "schema": "ruleblast.pack.v1",
+  "id": "github/copilot-cli@1",
+  "label": "GitHub Copilot CLI",
+  "shortLabel": "Copilot",
+  "badge": "CP"
+}

@@ -2,6 +2,14 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.0.0 — SHIPPED TO MAIN
+
+- Bundled Reality Packs (`packs/bundled`) are the profile source of truth. The catalog loads four reviewed packs. No `--pack`, no fifth reality, no executable pack code.
+- Gemini `sourceDependencyPaths` now includes nested `@import` targets up to the documented depth 5 (D2a). Detection was already correct; attribution was not. `google/gemini-cli@1` and `resolverRevision: 1` are unchanged.
+- `--witness` why-edges for Codex `SHADOWED` and Claude `EXCLUDED` come from pack presentation hints, not profile-id branches in `witness.ts`.
+- `npm run test:pack-schema` checks JSON Schema (dev) and the fail-closed TypeScript decoder. No runtime schema-validator dependency.
+- Not an npm publication. Default two-profile canonical goldens are unchanged.
+
 ## 1.6.2 — RELEASED
 
 - Default `explain` text is the shared visual source tree: catalog badges, cwd, changed markers, why-this-path, and findings. Digests stay in `--json`.

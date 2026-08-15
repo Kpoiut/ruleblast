@@ -1,0 +1,51 @@
+{
+  "context": {
+    "cwd": "repository-root",
+    "trigger": "READ_TARGET",
+    "repositoryOnly": true
+  },
+  "discover": {
+    "origins": [
+      {
+        "kind": "ancestors",
+        "from": "repositoryRoot",
+        "to": "dirname-target",
+        "inclusive": true,
+        "names": ["CLAUDE.md", "CLAUDE.local.md"]
+      },
+      {
+        "kind": "fixed",
+        "paths": [".claude/CLAUDE.md", ".claude/settings.json"]
+      },
+      {
+        "kind": "glob",
+        "pattern": ".claude/rules/**/*.md"
+      }
+    ],
+    "claimIds": ["claude.memory.1", "claude.ancestors.1", "claude.rules.1"]
+  },
+  "select": {
+    "mode": "all",
+    "names": ["CLAUDE.md", "CLAUDE.local.md"],
+    "shadows": {},
+    "claimIds": ["claude.memory.1"]
+  },
+  "transform": [
+    {
+      "kind": "strip-html-comments",
+      "claimIds": ["claude.comments.1"]
+    },
+    {
+      "kind": "at-path-import",
+      "maxDepth": 4,
+      "lexer": "claude-markdown-v1",
+      "claimIds": ["claude.imports.1"]
+    }
+  ],
+  "assemble": {
+    "mode": "unspecified",
+    "claimIds": ["claude.globs.1"]
+  },
+  "fingerprint": "claude-v1",
+  "onSymlink": "unknown-unfollowed"
+}
