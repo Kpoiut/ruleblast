@@ -2,11 +2,17 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 2.1.0 — SHIPPED TO MAIN
+## 2.1.0 — RELEASED
 
 - Repeat `--reality` to add both bundled opt-in CLI surfaces on one invocation. Default two-profile JSON is unchanged when neither flag is passed.
 - Compact `REALITY GROUPS` text groups paths by evidence-equivalent stacks. Clusters form only from pairwise `SAME`. Unresolved and runtime-decided states stay unresolved.
 - No `--reality all`, no fifth action, no fifth reality, no extra IDE host class.
+
+### Release artifact
+
+- Signed tag object `d89cc19599583ec7d81e379381ebd8fe13bb829f` targets commit `1cb9e6b7e1344c70b8d5dec0563c86efc3fd225b`.
+- npm and the GitHub Release serve the same 120,388-byte tarball with SHA-256 `1a8c94fd7b2d1a5875d64552ff001f9fdbdfc641b8e889d40094d744d83a982d`; the release manifest SHA-256 is `08b9104ced23ff298a54f8d465d42eaf10509927291e0e05b9be697b6f8ed093`.
+- [npm `ruleblast@2.1.0`](https://www.npmjs.com/package/ruleblast/v/2.1.0) reports integrity `sha512-tNxO7l++PZ02JIYyZNJGZvwtlb0l/lTM5aYhZUXFBFo22t2uv29nUWacYRzROQ/cwp7pkLbJAIpJCE2slJ6UvQ==`; exact-tarball publication means registry `gitHead is absent` rather than invented.
 
 ## 2.0.2 — RELEASED
 

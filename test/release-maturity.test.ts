@@ -414,7 +414,7 @@ describe("public release maturity", () => {
   it("records the independently verified v2.0.2 release receipt", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **RELEASED** — `v2.0.2`: Retrievable identity and fail-closed pack load";
-    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.1.0`: Many-Reality Diff");
+    const next = roadmap.indexOf("## **RELEASED** — `v2.1.0`: Many-Reality Diff");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -442,25 +442,41 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.2 — SHIPPED TO MAIN/u);
     expect(read("package.json")).toContain("blast radius of AGENTS.md and CLAUDE.md");
     expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.1\.0"/u);
-    expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.0.2`");
+    expect(released).toContain("Latest independently verified public npm distribution at that tag is `2.0.2`");
   });
 
-  it("records v2.1.0 as Many-Reality Diff without a new host class", () => {
+  it("records the independently verified v2.1.0 release receipt", () => {
     const roadmap = read("ROADMAP.md");
-    const heading = "## **SHIPPED TO MAIN** — `v2.1.0`: Many-Reality Diff";
+    const heading = "## **RELEASED** — `v2.1.0`: Many-Reality Diff";
     const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
-    const shipped = roadmap.slice(start, next);
-    expect(shipped).toMatch(/REALITY GROUPS|evidence-equivalent|pairwise/iu);
-    expect(shipped).toContain("SAME");
-    expect(shipped).toMatch(/No `--reality all`/u);
-    expect(shipped).not.toMatch(/\bRELEASED\b/u);
-    expect(shipped).not.toMatch(/Claude Desktop|Antigravity|Marketplace/iu);
-    expect(read("CHANGELOG.md")).toContain("## 2.1.0 — SHIPPED TO MAIN");
-    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.1\.0 — RELEASED/u);
+    const released = roadmap.slice(start, next);
+    for (const evidence of [
+      "d89cc19599583ec7d81e379381ebd8fe13bb829f",
+      "1cb9e6b7e1344c70b8d5dec0563c86efc3fd225b",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v2.1.0",
+      "https://www.npmjs.com/package/ruleblast/v/2.1.0",
+      "120,388",
+      "1a8c94fd7b2d1a5875d64552ff001f9fdbdfc641b8e889d40094d744d83a982d",
+      "08b9104ced23ff298a54f8d465d42eaf10509927291e0e05b9be697b6f8ed093",
+      "sha512-tNxO7l++PZ02JIYyZNJGZvwtlb0l/lTM5aYhZUXFBFo22t2uv29nUWacYRzROQ/cwp7pkLbJAIpJCE2slJ6UvQ==",
+      "gitHead is absent",
+      "registry download and GitHub Release asset both match",
+      "not facts inferred from this checkout",
+    ]) {
+      expect(released).toContain(evidence);
+    }
+    expect(released).toMatch(/REALITY GROUPS|evidence-equivalent|pairwise/iu);
+    expect(released).toContain("SAME");
+    expect(released).toMatch(/No `--reality all`/u);
+    expect(released).not.toMatch(/\bIN BUILD\b|remain conditional|publication.+incomplete/iu);
+    expect(released).not.toMatch(/Claude Desktop|Antigravity|Marketplace/iu);
+    expect(read("CHANGELOG.md")).toContain("## 2.1.0 — RELEASED");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.1\.0 — SHIPPED TO MAIN/u);
     expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.1\.0"/u);
+    expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.1.0`");
   });
 
   it("keeps release-state records outside the current package boundary", () => {

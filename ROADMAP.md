@@ -270,9 +270,11 @@ That release is `2.0.2`. Latest independently verified public npm distribution a
 
 The npm description, README first fold, `--help`, companion blurb, agent skill frontmatter, and `AGENT_USAGE.md` now share one identity: blast radius of `AGENTS.md` / `CLAUDE.md` changes across the four modeled CLI surfaces. The first fold answers the problem query: which files inherit that change. Pack load rejects nested, drive-relative, and path-escaping directory names so a name such as `C:secret` cannot leave `packs/bundled`. Missing JSON and malformed JSON raise distinct `INVALID_PACK` errors. Catalog directories must match the pack id. No fifth action, no `--pack`, no fifth reality, no hosted discovery service.
 
-## **SHIPPED TO MAIN** — `v2.1.0`: Many-Reality Diff
+## **RELEASED** — `v2.1.0`: Many-Reality Diff
 
-This tree is `2.1.0`. Latest independently verified public npm distribution remains `2.0.2` until an authorized `2.1.0` publication.
+That release is `2.1.0`. Latest independently verified public npm distribution at that tag is `2.1.0`.
+
+**Verified publication receipt.** Signed tag object `d89cc19599583ec7d81e379381ebd8fe13bb829f` for [`v2.1.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.1.0) targets commit `1cb9e6b7e1344c70b8d5dec0563c86efc3fd225b`. [npm `ruleblast@2.1.0`](https://www.npmjs.com/package/ruleblast/v/2.1.0) reports integrity `sha512-tNxO7l++PZ02JIYyZNJGZvwtlb0l/lTM5aYhZUXFBFo22t2uv29nUWacYRzROQ/cwp7pkLbJAIpJCE2slJ6UvQ==`; exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download and GitHub Release asset both match the reviewed 120,388-byte tarball with SHA-256 `1a8c94fd7b2d1a5875d64552ff001f9fdbdfc641b8e889d40094d744d83a982d`; the canonical manifest has SHA-256 `08b9104ced23ff298a54f8d465d42eaf10509927291e0e05b9be697b6f8ed093`. These are independently verified external records, not facts inferred from this checkout.
 
 Compact N-way reveal from existing canonical projections. Repeat `--reality` to add both bundled opt-in CLI surfaces on one invocation. Profiles cluster only when pairwise payload relation is `SAME`. Incomplete, `INDETERMINATE`, `UNSPECIFIED`, and `RUNTIME_DECIDED` states stay unresolved and are never coerced into a named alignment. Pairwise projections remain the inspectable ground truth. Default two-profile `--json` is unchanged when neither flag is passed. No `--reality all`, no fifth action, no fifth reality, no extra host class.
 
