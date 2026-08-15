@@ -53,6 +53,9 @@ describe("distribution surfaces", () => {
     expect(root).toContain("uses: ./.github/actions/ruleblast");
     expect(root).toMatch(/blast radius of AGENTS.md and CLAUDE.md/u);
     expect(root).toMatch(/not a hosted product/iu);
+    const rootDescription = /^description:\s*(.+)$/mu.exec(root)?.[1] ?? "";
+    expect(rootDescription.length).toBeGreaterThan(0);
+    expect(rootDescription.length).toBeLessThan(125);
     expect(root).not.toMatch(/ruleblast scan\b/u);
     expect(nested).toContain('npx --yes "ruleblast@${RULEBLAST_VERSION}"');
     expect(nested).toContain("--receipt");
