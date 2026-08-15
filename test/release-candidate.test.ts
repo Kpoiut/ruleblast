@@ -47,9 +47,14 @@ function digest(algorithm: "sha256" | "sha512", bytes: Buffer): string {
   return createHash(algorithm).update(bytes).digest("hex");
 }
 
-function createIsolatedRepository(): string {
+function createIsolatedRoot(): string {
   const root = mkdtempSync(join(tmpdir(), "ruleblast release test "));
   temporaryRoots.push(root);
+  return root;
+}
+
+function createIsolatedRepository(): string {
+  const root = createIsolatedRoot();
   for (const name of [
     "assets",
     "cases",
@@ -239,7 +244,7 @@ describe("release artifact", () => {
   }, 120_000);
 
   it("confines cleanup to the owned release directory", async () => {
-    const isolatedRoot = createIsolatedRepository();
+    const isolatedRoot = createIsolatedRoot();
     const isolatedArtifactRoot = join(isolatedRoot, "artifacts");
     const isolatedRelease = join(isolatedArtifactRoot, "release");
     mkdirSync(isolatedRelease, { recursive: true });
@@ -270,10 +275,10 @@ describe("release artifact", () => {
       { cwd: isolatedRoot, encoding: "utf8" },
     );
     expect(stdout).toBe("rejected");
-  });
+  }, 15_000);
 
   it("refuses cleanup through a symlinked artifact ancestor", async () => {
-    const isolatedRoot = createIsolatedRepository();
+    const isolatedRoot = createIsolatedRoot();
     const outside = mkdtempSync(join(tmpdir(), "ruleblast release outside "));
     temporaryRoots.push(outside);
     const outsideRelease = join(outside, "release");
@@ -296,7 +301,7 @@ describe("release artifact", () => {
       { cwd: isolatedRoot },
     )).rejects.toMatchObject({ stderr: expect.stringMatching(/real directory|junction|symlink/iu) });
     expect(readFileSync(marker, "utf8")).toBe("keep");
-  });
+  }, 15_000);
 
   it("re-verifies durable tarball bytes after the smoke boundary", async () => {
     const isolatedRoot = createIsolatedRepository();

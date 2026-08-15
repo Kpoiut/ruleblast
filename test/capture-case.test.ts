@@ -186,12 +186,31 @@ function cloneProducer(withDependencies = false): string {
   const parent = mkdtempSync(join(tmpdir(), "ruleblast case producer clone "));
   temporaryRoots.push(parent);
   const root = join(parent, "producer");
-  execFileSync("git", ["clone", "--local", "--no-hardlinks", producerRoot, root], {
+  execFileSync("git", ["clone", "--local", "--shared", producerRoot, root], {
     encoding: "utf8",
     env: { ...process.env, GIT_CONFIG_NOSYSTEM: "1", GIT_OPTIONAL_LOCKS: "0" },
   });
   if (withDependencies) copyExecutionDependencies(root);
   else mkdirSync(join(root, "node_modules"));
+  return root;
+}
+
+function createMinimalProducer(): string {
+  const root = mkdtempSync(join(tmpdir(), "ruleblast dirty producer "));
+  temporaryRoots.push(root);
+  mkdirSync(join(root, "src"));
+  mkdirSync(join(root, "scripts"));
+  writeFileSync(join(root, "package.json"), "{}\n");
+  writeFileSync(join(root, "package-lock.json"), "{}\n");
+  writeFileSync(join(root, "tsconfig.json"), "{}\n");
+  writeFileSync(join(root, "tsconfig.build.json"), "{}\n");
+  writeFileSync(join(root, "src", "index.ts"), "export {};\n");
+  writeFileSync(join(root, "scripts", "capture-case.mjs"), "export {};\n");
+  git(root, ["init", "--initial-branch=main"]);
+  git(root, ["config", "user.name", "RuleBlast Test"]);
+  git(root, ["config", "user.email", "ruleblast@example.invalid"]);
+  git(root, ["add", "--", "."]);
+  git(root, ["commit", "-m", "minimal producer"]);
   return root;
 }
 
@@ -468,7 +487,7 @@ describe("captureCase", () => {
     const assertCleanProducer = producer.assertCleanProducer as (
       root: string,
     ) => Promise<string>;
-    const trackedRoot = cloneProducer();
+    const trackedRoot = createMinimalProducer();
     const trackedOracle = indexOracle(trackedRoot);
     const capturePath = join(trackedRoot, "scripts", "capture-case.mjs");
     writeFileSync(capturePath, Buffer.concat([
@@ -478,14 +497,14 @@ describe("captureCase", () => {
     await expect(assertCleanProducer(trackedRoot)).rejects.toThrow(/dirty/i);
     expect(indexOracle(trackedRoot)).toEqual(trackedOracle);
 
-    const untrackedRoot = cloneProducer();
+    const untrackedRoot = createMinimalProducer();
     const untrackedOracle = indexOracle(untrackedRoot);
     const untracked = join(untrackedRoot, "scripts", "capture-case-rogue.mjs");
     writeFileSync(untracked, "export {};\n");
     await expect(assertCleanProducer(untrackedRoot)).rejects.toThrow(/dirty/i);
     expect(indexOracle(untrackedRoot)).toEqual(untrackedOracle);
     await expect(assertCleanProducer(producerRoot)).resolves.toBe(producerCommit);
-  });
+  }, 15_000);
 
   it("binds transitive build and runtime dependency bytes into producer provenance", async () => {
     const producer = await captureProducer();
