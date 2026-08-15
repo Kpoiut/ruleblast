@@ -278,9 +278,11 @@ That release is `2.1.0`. Latest independently verified public npm distribution a
 
 Compact N-way reveal from existing canonical projections. Repeat `--reality` to add both bundled opt-in CLI surfaces on one invocation. Profiles cluster only when pairwise payload relation is `SAME`. Incomplete, `INDETERMINATE`, `UNSPECIFIED`, and `RUNTIME_DECIDED` states stay unresolved and are never coerced into a named alignment. Pairwise projections remain the inspectable ground truth. Default two-profile `--json` is unchanged when neither flag is passed. No `--reality all`, no fifth action, no fifth reality, no extra host class.
 
-## **SHIPPED TO MAIN** — `v2.1.1`: Retrievable problem documents
+## **RELEASED** — `v2.1.1`: Retrievable problem documents
 
-This tree is `2.1.1`. Latest independently verified public npm distribution remains `2.1.0` until an authorized `2.1.1` publication.
+That release is `2.1.1`. Latest independently verified public npm distribution at that tag is `2.1.1`.
+
+**Verified publication receipt.** Signed tag object `52d3e8cb76948ab0698c0e4fda6d8ada81a5a9d2` for [`v2.1.1`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.1.1) targets commit `d324e8ebc2752437db1702879b896430bc961f6d`. [npm `ruleblast@2.1.1`](https://www.npmjs.com/package/ruleblast/v/2.1.1) reports integrity `sha512-eJFLnTidG0DrFabzNDktmh7QhypR29coKI69EZ2/JebsZML4I4aMnqNCaQdO+IlacLAhHye3X+tReWOgtWK56A==`; exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download and GitHub Release asset both match the reviewed 120,404-byte tarball with SHA-256 `c736da718b54a6877d8c54167f06b199fcf9ac28cecb8c2e351c595eb4f56900`; the canonical manifest has SHA-256 `56b1c8210bd80dd6c7a877889db131ba305a650913f834451ea07de433e39e6c`. These are independently verified external records, not facts inferred from this checkout.
 
 GitHub and npm metadata were already correct. This patch adds independent crawlable documents so problem queries can resolve to RuleBlast: which files inherit a changed `AGENTS.md`, why `git diff` is insufficient, and the sealed 2→206 case title. A root Action wrapper makes `uses: Kpoiut/ruleblast@v2.1.1` a discoverable GitHub Action entity without a second engine. No fifth action, no extra host class, no keyword stuffing.
 

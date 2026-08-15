@@ -448,7 +448,7 @@ describe("public release maturity", () => {
   it("records the independently verified v2.1.0 release receipt", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **RELEASED** — `v2.1.0`: Many-Reality Diff";
-    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.1.1`: Retrievable problem documents");
+    const next = roadmap.indexOf("## **RELEASED** — `v2.1.1`: Retrievable problem documents");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -476,24 +476,41 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.1.0 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.1\.0 — SHIPPED TO MAIN/u);
     expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.1\.1"/u);
-    expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.1.0`");
+    expect(released).toContain("Latest independently verified public npm distribution at that tag is `2.1.0`");
   });
 
-  it("records v2.1.1 as retrievable problem documents without a new product", () => {
+  it("records the independently verified v2.1.1 release receipt", () => {
     const roadmap = read("ROADMAP.md");
-    const heading = "## **SHIPPED TO MAIN** — `v2.1.1`: Retrievable problem documents";
+    const heading = "## **RELEASED** — `v2.1.1`: Retrievable problem documents";
     const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
-    const shipped = roadmap.slice(start, next);
-    expect(shipped).toMatch(/which files inherit/iu);
-    expect(shipped).toContain("Kpoiut/ruleblast@v2.1.1");
-    expect(shipped).not.toMatch(/\bRELEASED\b/u);
-    expect(read("CHANGELOG.md")).toContain("## 2.1.1 — SHIPPED TO MAIN");
+    const released = roadmap.slice(start, next);
+    for (const evidence of [
+      "52d3e8cb76948ab0698c0e4fda6d8ada81a5a9d2",
+      "d324e8ebc2752437db1702879b896430bc961f6d",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v2.1.1",
+      "https://www.npmjs.com/package/ruleblast/v/2.1.1",
+      "120,404",
+      "c736da718b54a6877d8c54167f06b199fcf9ac28cecb8c2e351c595eb4f56900",
+      "56b1c8210bd80dd6c7a877889db131ba305a650913f834451ea07de433e39e6c",
+      "sha512-eJFLnTidG0DrFabzNDktmh7QhypR29coKI69EZ2/JebsZML4I4aMnqNCaQdO+IlacLAhHye3X+tReWOgtWK56A==",
+      "gitHead is absent",
+      "registry download and GitHub Release asset both match",
+      "not facts inferred from this checkout",
+    ]) {
+      expect(released).toContain(evidence);
+    }
+    expect(released).toMatch(/which files inherit/iu);
+    expect(released).toContain("Kpoiut/ruleblast@v2.1.1");
+    expect(released).not.toMatch(/\bIN BUILD\b|remain conditional|publication.+incomplete/iu);
+    expect(read("CHANGELOG.md")).toContain("## 2.1.1 — RELEASED");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.1\.1 — SHIPPED TO MAIN/u);
     expect(read("which-files-inherit-agents-md.md")).toMatch(/Which files inherit a changed AGENTS.md/u);
     expect(read("llms.txt")).toContain("blast radius of AGENTS.md and CLAUDE.md");
     expect(read("action.yml")).toContain("uses: ./.github/actions/ruleblast");
+    expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.1.1`");
   });
 
   it("keeps release-state records outside the current package boundary", () => {

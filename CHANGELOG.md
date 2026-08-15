@@ -2,12 +2,18 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 2.1.1 — SHIPPED TO MAIN
+## 2.1.1 — RELEASED
 
 - Independent retrieval documents: problem page for which files inherit a changed `AGENTS.md`, `llms.txt`, and `CITATION.cff`. Same identity sentence. No keyword stuffing.
 - Root `action.yml` is a Marketplace-indexable wrapper of the nested composite. It still runs the published CLI. Not a hosted product.
 - `PROOF.md` title is the sealed phenomenon: 2 `AGENTS.md` lines → 206 Codex stacks.
 - No fifth action, no `--pack`, no fifth reality.
+
+### Release artifact
+
+- Signed tag object `52d3e8cb76948ab0698c0e4fda6d8ada81a5a9d2` targets commit `d324e8ebc2752437db1702879b896430bc961f6d`.
+- npm and the GitHub Release serve the same 120,404-byte tarball with SHA-256 `c736da718b54a6877d8c54167f06b199fcf9ac28cecb8c2e351c595eb4f56900`; the release manifest SHA-256 is `56b1c8210bd80dd6c7a877889db131ba305a650913f834451ea07de433e39e6c`.
+- [npm `ruleblast@2.1.1`](https://www.npmjs.com/package/ruleblast/v/2.1.1) reports integrity `sha512-eJFLnTidG0DrFabzNDktmh7QhypR29coKI69EZ2/JebsZML4I4aMnqNCaQdO+IlacLAhHye3X+tReWOgtWK56A==`; exact-tarball publication means registry `gitHead is absent` rather than invented.
 
 ## 2.1.0 — RELEASED
 
