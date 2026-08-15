@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "label": "gemini-probe-two-hop-after",
+  "entries": [
+    {"path": "GEMINI.md", "kind": "file", "executable": false, "base64": "QGEubWQK"},
+    {"path": "a.md", "kind": "file", "executable": false, "base64": "QGIubWQK"},
+    {"path": "b.md", "kind": "file", "executable": false, "base64": "VkFMVUVfQgo="},
+    {"path": "src/file.ts", "kind": "file", "executable": false, "base64": "dGFyZ2V0Cg=="}
+  ]
+}
