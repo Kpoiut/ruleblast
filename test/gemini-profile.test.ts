@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { analyzeDiff } from "../src/impact.js";
 import { parseArgs } from "../src/args.js";
 import { GOOGLE_GEMINI_CLI_PROFILE_ID } from "../src/model.js";
+import { claudeProfile } from "../src/profiles/claude.js";
+import { codexProfile } from "../src/profiles/codex.js";
 import {
   geminiProfile,
   parseGeminiFileNames,
@@ -112,6 +115,38 @@ describe("google/gemini-cli@1", () => {
     ]);
     expect(projection.normalizedPayloadUnits.length).toBeGreaterThan(0);
     expect(JSON.stringify(projection.normalizedPayloadUnits)).not.toContain("Context from");
+  });
+
+  it("includes a two-hop imported file in sourceDependencyPaths and diff sources", async () => {
+    const before = snapshot({
+      "GEMINI.md": "@a.md\n",
+      "a.md": "@b.md\n",
+      "b.md": "VALUE_A\n",
+      "src/file.ts": "target\n",
+    });
+    const after = snapshot({
+      "GEMINI.md": "@a.md\n",
+      "a.md": "@b.md\n",
+      "b.md": "VALUE_B\n",
+      "src/file.ts": "target\n",
+    });
+    const prepared = await geminiProfile.prepare(before);
+    expect(prepared.project("src/file.ts").sources.map((source) => source.path))
+      .toEqual(["GEMINI.md", "a.md", "b.md"]);
+    expect([...prepared.sourceDependencyPaths].sort()).toEqual(["GEMINI.md", "a.md", "b.md"]);
+
+    const diff = await analyzeDiff({
+      before,
+      after,
+      profiles: [claudeProfile, codexProfile, geminiProfile],
+    });
+    const changed = diff.changedInstructionSources.flatMap((change) =>
+      [change.beforePath, change.afterPath].filter((path): path is string => path !== null),
+    );
+    expect(changed).toContain("b.md");
+    const target = diff.paths.find((path) => path.path === "src/file.ts");
+    expect(target?.changedProfiles).toContain(GOOGLE_GEMINI_CLI_PROFILE_ID);
+    expect(target?.causes).toContain("b.md");
   });
 
   it("marks missing and absolute imports partial without guessing", async () => {

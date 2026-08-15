@@ -13,6 +13,7 @@ import {
 } from "./profile.js";
 import { GEMINI_EVIDENCE } from "./gemini-evidence.js";
 import {
+  GEMINI_IMPORT_DEPTH,
   expandGeminiDocument,
   listGeminiImportReferences,
   resolveGeminiImportPath,
@@ -176,12 +177,19 @@ export const geminiProfile: ProfileDefinition = {
     const sourceDependencyPaths = new Set(
       [...nodes.keys()].filter((path) => isGeminiInstructionPath(path, fileNames)),
     );
-    for (const path of [...sourceDependencyPaths]) {
-      const node = nodes.get(path);
+    const pending = [...sourceDependencyPaths].map((path) => ({ path, depth: 0 }));
+    const queued = new Set(sourceDependencyPaths);
+    while (pending.length > 0) {
+      const current = pending.shift();
+      if (current === undefined || current.depth >= GEMINI_IMPORT_DEPTH) continue;
+      const node = nodes.get(current.path);
       if (node === undefined) continue;
       for (const reference of listGeminiImportReferences(node.text)) {
-        const resolved = resolveGeminiImportPath(path, reference);
-        if (resolved !== null && nodes.has(resolved)) sourceDependencyPaths.add(resolved);
+        const resolved = resolveGeminiImportPath(current.path, reference);
+        if (resolved === null || !nodes.has(resolved) || queued.has(resolved)) continue;
+        queued.add(resolved);
+        sourceDependencyPaths.add(resolved);
+        pending.push({ path: resolved, depth: current.depth + 1 });
       }
     }
     return {
