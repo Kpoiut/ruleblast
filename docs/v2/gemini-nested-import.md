@@ -88,10 +88,17 @@ Gemini E2E for later:    two-hop
 
 Rationale: plan default for D2a is fix. Vendor loading already expands two hops (sources include `b.md`). Missing `b.md` from `sourceDependencyPaths` is RuleBlast attribution machinery, not a new vendor interpretation. Least reason to bump the vendor profile id.
 
-**`MIGRATION_BASE_SHA` is not written.** A correction commit does not exist yet. Increment 0.30 must create it.
-
 Preserve is **not** chosen. D2a preserve wording is unused.
 
-## Next
+## Increment 0.30 lock (after the correction commit existed)
 
-Increment 0.30: failing regression that `b.md` is a modeled import but absent from `sourceDependencyPaths` → smallest adapter capture fix → green suite → commit → then lock `MIGRATION_BASE_SHA`.
+```
+MIGRATION_BASE_SHA:     38cb0f50bd03bc39a0046426b6fa3004103d4f4a
+final profile id:       google/gemini-cli@1
+resolverRevision:       1
+fingerprint contract:   historical
+correction release:     bundled into 2.0.0 (not a 1.6.x release)
+```
+
+Failing test first (`includes a two-hop imported file in sourceDependencyPaths and diff sources`), then worklist walk to `GEMINI_IMPORT_DEPTH`. Default two-profile goldens unchanged. Measurement: [migration-base-benchmark.md](migration-base-benchmark.md).
+
