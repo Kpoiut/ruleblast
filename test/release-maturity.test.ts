@@ -441,14 +441,14 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.0.2 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.2 — SHIPPED TO MAIN/u);
     expect(read("package.json")).toContain("blast radius of AGENTS.md and CLAUDE.md");
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.1\.0"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.1\.1"/u);
     expect(released).toContain("Latest independently verified public npm distribution at that tag is `2.0.2`");
   });
 
   it("records the independently verified v2.1.0 release receipt", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **RELEASED** — `v2.1.0`: Many-Reality Diff";
-    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.1.1`: Retrievable problem documents");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -475,8 +475,25 @@ describe("public release maturity", () => {
     expect(released).not.toMatch(/Claude Desktop|Antigravity|Marketplace/iu);
     expect(read("CHANGELOG.md")).toContain("## 2.1.0 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.1\.0 — SHIPPED TO MAIN/u);
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.1\.0"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.1\.1"/u);
     expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.1.0`");
+  });
+
+  it("records v2.1.1 as retrievable problem documents without a new product", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v2.1.1`: Retrievable problem documents";
+    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toMatch(/which files inherit/iu);
+    expect(shipped).toContain("Kpoiut/ruleblast@v2.1.1");
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 2.1.1 — SHIPPED TO MAIN");
+    expect(read("which-files-inherit-agents-md.md")).toMatch(/Which files inherit a changed AGENTS.md/u);
+    expect(read("llms.txt")).toContain("blast radius of AGENTS.md and CLAUDE.md");
+    expect(read("action.yml")).toContain("uses: ./.github/actions/ruleblast");
   });
 
   it("keeps release-state records outside the current package boundary", () => {

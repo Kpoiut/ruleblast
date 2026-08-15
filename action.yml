@@ -1,0 +1,38 @@
+name: RuleBlast
+description: Shows the blast radius of AGENTS.md and CLAUDE.md changes. Read-only PR comment for which files inherit the edit. Not a hosted product.
+author: Kpoiut
+branding:
+  icon: zap
+  color: gray-dark
+inputs:
+  base:
+    description: Base Git ref. Defaults to the pull request base SHA, else HEAD~1.
+    required: false
+    default: ""
+  head:
+    description: After Git ref. Defaults to the pull request head SHA, else HEAD.
+    required: false
+    default: ""
+  version:
+    description: Exact published package to run.
+    required: false
+    default: "2.1.1"
+  reality:
+    description: Optional extra modeled reality. github/copilot-cli@1 or google/gemini-cli@1.
+    required: false
+    default: ""
+  github-token:
+    description: Token used only to post the pull request comment.
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: composite
+  steps:
+    - name: Delegate to nested composite
+      uses: ./.github/actions/ruleblast
+      with:
+        base: ${{ inputs.base }}
+        head: ${{ inputs.head }}
+        version: ${{ inputs.version }}
+        reality: ${{ inputs.reality }}
+        github-token: ${{ inputs.github-token }}

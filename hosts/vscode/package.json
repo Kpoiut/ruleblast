@@ -2,7 +2,7 @@
   "name": "ruleblast",
   "displayName": "RuleBlast",
   "description": "Read-only companion. Same four actions as the CLI. Shows the blast radius of AGENTS.md and CLAUDE.md changes.",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "publisher": "kpoiut",
   "private": true,
   "engines": {

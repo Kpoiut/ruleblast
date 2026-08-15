@@ -1,4 +1,4 @@
-# Proof: openai/codex 8fcf2ad → f0f483e
+# 2 AGENTS.md lines changed. 206 Codex instruction stacks moved.
 
 This is the sealed public comparison behind the README headline. It is not a claim about model compliance or response behavior.
 

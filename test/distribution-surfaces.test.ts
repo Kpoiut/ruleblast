@@ -14,7 +14,7 @@ describe("distribution surfaces", () => {
     const skill = read(skillPath);
     expect(skill).toMatch(/^---\r?\nname: ruleblast\r?\n/u);
     expect(skill).toContain("Use when");
-    expect(skill).toContain("npx --yes ruleblast@2.1.0");
+    expect(skill).toContain("npx --yes ruleblast@2.1.1");
     expect(skill).toContain("There is no `ruleblast scan` subcommand");
     expect(skill).toMatch(/RULEBLAST_AGENT_ALLOW|\.ruleblast-allow/u);
     expect(skill).toMatch(/ask/iu);
@@ -35,7 +35,7 @@ describe("distribution surfaces", () => {
     const codex = read(codexPath);
     expect(claude).toContain("There is no `ruleblast scan` subcommand");
     expect(claude).toContain(".ruleblast-allow");
-    expect(claude).toContain("npx --yes ruleblast@2.1.0");
+    expect(claude).toContain("npx --yes ruleblast@2.1.1");
     expect(claude).toContain(".claude/skills");
     expect(codex).toContain(".claude/skills");
     expect(read("AGENT_USAGE.md")).toContain(".claude/skills");
@@ -43,25 +43,52 @@ describe("distribution surfaces", () => {
     expect(read("README.md")).toContain("https://code.claude.com/docs/en/skills");
   });
 
-  it("wraps the published CLI in a nested composite action without a Marketplace root action", () => {
-    const actionPath = ".github/actions/ruleblast/action.yml";
-    expect(existsSync(join(repositoryRoot, "action.yml"))).toBe(false);
-    expect(existsSync(join(repositoryRoot, actionPath))).toBe(true);
-    const action = read(actionPath);
-    expect(action).toContain("using: composite");
-    expect(action).toContain('npx --yes "ruleblast@${RULEBLAST_VERSION}"');
-    expect(action).toContain("--receipt");
-    expect(action).toMatch(/default: "2\.1\.0"/u);
-    expect(action).not.toMatch(/default: "1\.6\.2"/u);
-    expect(action).toContain("reality:");
-    expect(action).not.toMatch(/ruleblast scan\b/u);
-    expect(action).toMatch(/not a hosted product|not a marketplace action/iu);
+  it("exposes the published CLI as a root Action that still delegates to the nested composite", () => {
+    const nestedPath = ".github/actions/ruleblast/action.yml";
+    expect(existsSync(join(repositoryRoot, "action.yml"))).toBe(true);
+    expect(existsSync(join(repositoryRoot, nestedPath))).toBe(true);
+    const root = read("action.yml");
+    const nested = read(nestedPath);
+    expect(root).toContain("using: composite");
+    expect(root).toContain("uses: ./.github/actions/ruleblast");
+    expect(root).toMatch(/blast radius of AGENTS.md and CLAUDE.md/u);
+    expect(root).toMatch(/not a hosted product/iu);
+    expect(root).not.toMatch(/ruleblast scan\b/u);
+    expect(nested).toContain('npx --yes "ruleblast@${RULEBLAST_VERSION}"');
+    expect(nested).toContain("--receipt");
+    expect(nested).toMatch(/default: "2\.1\.1"/u);
+    expect(nested).not.toMatch(/default: "1\.6\.2"/u);
     expect(read(".github/workflows/ruleblast-pr.yml")).toContain(
       "uses: ./.github/actions/ruleblast",
     );
-    expect(read("README.md")).toContain(
-      "uses: Kpoiut/ruleblast/.github/actions/ruleblast@main",
-    );
+    expect(read("README.md")).toContain("uses: Kpoiut/ruleblast@v2.1.1");
     expect(read("README.md")).not.toMatch(/uses: Kpoiut\/ruleblast@main\s*$/mu);
+  });
+
+  it("ships independent retrieval documents for problem queries, not brand queries", () => {
+    const problem = read("which-files-inherit-agents-md.md");
+    expect(problem).toMatch(/^# Which files inherit a changed AGENTS.md\?/u);
+    expect(problem).toMatch(/blast radius/iu);
+    expect(problem).toContain("CLAUDE.md");
+    expect(problem).toContain("206");
+    expect(problem).toContain("PROOF.md");
+    expect(problem).toContain("https://github.com/Kpoiut/ruleblast");
+    expect(problem).not.toMatch(/all agents|model compliance is proven/iu);
+    const llms = read("llms.txt");
+    expect(llms).toContain("blast radius of AGENTS.md and CLAUDE.md");
+    expect(llms).toContain("https://github.com/Kpoiut/ruleblast");
+    expect(llms).toContain("https://www.npmjs.com/package/ruleblast");
+    const citation = read("CITATION.cff");
+    expect(citation).toMatch(/^cff-version:/u);
+    expect(citation).toContain("RuleBlast");
+    expect(citation).toContain("blast radius");
+    expect(read("README.md")).toContain("which-files-inherit-agents-md.md");
+    const descriptor = JSON.parse(read("package.json")) as {
+      readonly files?: readonly string[];
+    };
+    expect(descriptor.files).not.toContain("which-files-inherit-agents-md.md");
+    expect(descriptor.files).not.toContain("llms.txt");
+    expect(descriptor.files).not.toContain("CITATION.cff");
+    expect(descriptor.files).not.toContain("action.yml");
   });
 });

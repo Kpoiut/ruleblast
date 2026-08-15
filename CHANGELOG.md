@@ -2,6 +2,13 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.1.1 — SHIPPED TO MAIN
+
+- Independent retrieval documents: problem page for which files inherit a changed `AGENTS.md`, `llms.txt`, and `CITATION.cff`. Same identity sentence. No keyword stuffing.
+- Root `action.yml` is a Marketplace-indexable wrapper of the nested composite. It still runs the published CLI. Not a hosted product.
+- `PROOF.md` title is the sealed phenomenon: 2 `AGENTS.md` lines → 206 Codex stacks.
+- No fifth action, no `--pack`, no fifth reality.
+
 ## 2.1.0 — RELEASED
 
 - Repeat `--reality` to add both bundled opt-in CLI surfaces on one invocation. Default two-profile JSON is unchanged when neither flag is passed.

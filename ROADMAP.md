@@ -278,6 +278,12 @@ That release is `2.1.0`. Latest independently verified public npm distribution a
 
 Compact N-way reveal from existing canonical projections. Repeat `--reality` to add both bundled opt-in CLI surfaces on one invocation. Profiles cluster only when pairwise payload relation is `SAME`. Incomplete, `INDETERMINATE`, `UNSPECIFIED`, and `RUNTIME_DECIDED` states stay unresolved and are never coerced into a named alignment. Pairwise projections remain the inspectable ground truth. Default two-profile `--json` is unchanged when neither flag is passed. No `--reality all`, no fifth action, no fifth reality, no extra host class.
 
+## **SHIPPED TO MAIN** — `v2.1.1`: Retrievable problem documents
+
+This tree is `2.1.1`. Latest independently verified public npm distribution remains `2.1.0` until an authorized `2.1.1` publication.
+
+GitHub and npm metadata were already correct. This patch adds independent crawlable documents so problem queries can resolve to RuleBlast: which files inherit a changed `AGENTS.md`, why `git diff` is insufficient, and the sealed 2→206 case title. A root Action wrapper makes `uses: Kpoiut/ruleblast@v2.1.1` a discoverable GitHub Action entity without a second engine. No fifth action, no extra host class, no keyword stuffing.
+
 ## **NEXT** — Offline evidence-revision reveal
 
 An offline run should be able to say that a pinned evidence revision may have drifted without contacting a network. That is a later gate, not a host or marketplace expansion.

@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+title: RuleBlast
+message: If you use RuleBlast to measure instruction inheritance, please cite this repository.
+abstract: >-
+  Git diff for repository instructions. Shows the blast radius of AGENTS.md
+  and CLAUDE.md changes across Codex, Claude Code, Gemini CLI, and Copilot CLI.
+authors:
+  - name: Kpoiut
+url: https://github.com/Kpoiut/ruleblast
+repository-code: https://github.com/Kpoiut/ruleblast
+license: Apache-2.0
+keywords:
+  - AGENTS.md
+  - CLAUDE.md
+  - blast radius
+  - repository instructions
+  - instruction inheritance
+version: 2.1.1
+date-released: "2026-08-15"

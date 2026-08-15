@@ -1,0 +1,13 @@
+# RuleBlast
+
+> Git diff for repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes across Codex, Claude Code, Gemini CLI, and Copilot CLI.
+
+RuleBlast answers the problem query: which files inherit a changed AGENTS.md or CLAUDE.md? Git shows the first diff. RuleBlast shows the second.
+
+- Repository: https://github.com/Kpoiut/ruleblast
+- npm: https://www.npmjs.com/package/ruleblast
+- Problem page: https://github.com/Kpoiut/ruleblast/blob/main/which-files-inherit-agents-md.md
+- Sealed case: 2 instruction-line edits → 206 Codex stacks — https://github.com/Kpoiut/ruleblast/blob/main/PROOF.md
+- CLI: npx --yes ruleblast@2.1.1 .
+
+Local. Read-only. Deterministic. Not a claim about model compliance.

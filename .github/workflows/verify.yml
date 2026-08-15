@@ -26,8 +26,8 @@ jobs:
       - run: npm run package:smoke
       - run: npm run install:smoke
       - name: Verify published registry upgrade
-        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/tags/v2.1.0'
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/tags/v2.1.1'
         env:
-          RULEBLAST_REGISTRY_SMOKE: ruleblast@2.1.0
+          RULEBLAST_REGISTRY_SMOKE: ruleblast@2.1.1
           RULEBLAST_REGISTRY_UPGRADE_FROM: ruleblast@1.5.1
         run: npm run install:smoke -- --registry
