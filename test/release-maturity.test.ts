@@ -403,6 +403,8 @@ describe("public release maturity", () => {
     const shipped = roadmap.slice(start, next);
     expect(shipped).toContain("1.6.2");
     expect(shipped).toContain("2.0.1");
+    expect(shipped).toContain("7ead43338441bfd541a88096587257189939a1b7");
+    expect(shipped).toContain("eddaf663ea489a3b5ab576a1763c9af42df43a82");
     expect(shipped).toMatch(/optional `reality` input/iu);
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.0.1 — SHIPPED TO MAIN");
