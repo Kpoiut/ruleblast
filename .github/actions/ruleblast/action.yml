@@ -16,7 +16,11 @@ inputs:
   version:
     description: Exact published package to run.
     required: false
-    default: "1.6.2"
+    default: "2.0.1"
+  reality:
+    description: Optional extra modeled reality. github/copilot-cli@1 or google/gemini-cli@1.
+    required: false
+    default: ""
   github-token:
     description: Token used only to post the pull request comment.
     required: false
@@ -34,6 +38,7 @@ runs:
         RULEBLAST_BASE: ${{ inputs.base }}
         RULEBLAST_HEAD: ${{ inputs.head }}
         RULEBLAST_VERSION: ${{ inputs.version }}
+        RULEBLAST_REALITY: ${{ inputs.reality }}
         PR_BASE: ${{ github.event.pull_request.base.sha }}
         PR_HEAD: ${{ github.event.pull_request.head.sha }}
       run: |
@@ -42,7 +47,11 @@ runs:
         head="${RULEBLAST_HEAD:-}"
         if [ -z "$base" ]; then base="${PR_BASE:-HEAD~1}"; fi
         if [ -z "$head" ]; then head="${PR_HEAD:-HEAD}"; fi
-        npx --yes "ruleblast@${RULEBLAST_VERSION}" diff "$base" --to "$head" --receipt --color=never | tee "$GITHUB_WORKSPACE/ruleblast-receipt.txt"
+        if [ -n "${RULEBLAST_REALITY:-}" ]; then
+          npx --yes "ruleblast@${RULEBLAST_VERSION}" diff "$base" --to "$head" --receipt --reality "$RULEBLAST_REALITY" --color=never | tee "$GITHUB_WORKSPACE/ruleblast-receipt.txt"
+        else
+          npx --yes "ruleblast@${RULEBLAST_VERSION}" diff "$base" --to "$head" --receipt --color=never | tee "$GITHUB_WORKSPACE/ruleblast-receipt.txt"
+        fi
     - name: Comment receipt
       if: github.event_name == 'pull_request'
       uses: actions/github-script@v7

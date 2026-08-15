@@ -235,7 +235,7 @@ That release is `1.6.2`. Latest independently verified public npm distribution a
 
 ## **RELEASED** — `v2.0.0`: Reality Packs
 
-This tree is `2.0.0`. Latest independently verified public npm distribution is `2.0.0`.
+That release is `2.0.0`. Latest independently verified public npm distribution at that tag is `2.0.0`.
 
 **Verified publication receipt.** Signed tag object `250f54ff2a1ae354581919f471d3bb48dd231db4` for [`v2.0.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.0.0) targets commit `bf51ada55b7e34db2b8f5b6c0eebd468b35c0382`. [npm `ruleblast@2.0.0`](https://www.npmjs.com/package/ruleblast/v/2.0.0) reports integrity `sha512-RLiS2/bBUlzzRPiEoypRYowa3fUvSutpDrpv6IoXUjl9/t5NwwIgDXaZpPVaYzwlIApjixSr3xYYbqscWQFrYg==`; exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download and GitHub Release asset both match the reviewed 118,042-byte tarball with SHA-256 `1059f9c02e474cb1f1376bb4664aee03f63ac13af8ac4817fcdb6fd7a94c0777`; the canonical manifest has SHA-256 `04b8fe547e684aef54af743ebdd1f6172a647834255d1ff3a4f11fa02087a52c`. These are independently verified external records, not facts inferred from this checkout.
 
@@ -255,6 +255,12 @@ A local, explicitly installed pack would contain:
 The reader must reject unknown operators and fail closed on traversal, escaping paths, unsafe symlinks, malformed evidence, or unsupported schema versions. It must never execute JavaScript or shell commands, contact a network, or auto-download a pack during analysis.
 
 Before external packs are admitted, the bundled profiles must migrate to the same representation with result-equivalent canonical bytes. This release may expose raw N-profile projections and basic aggregates; named reality clusters remain outside its boundary.
+
+## **SHIPPED TO MAIN** — `v2.0.1`: Honest PR engine pin
+
+This tree is `2.0.1`. Latest independently verified public npm distribution remains `2.0.0` until an authorized publication.
+
+The nested composite Action still defaulted to `1.6.2` after Reality Packs shipped, so pull-request receipts analyzed the previous engine. The default package pin is now `2.0.1`. An optional `reality` input forwards the existing `--reality` flag. Help names two default realities and two opt-in CLI surfaces. No fifth action, no `--pack`, no fifth reality.
 
 ## **NEXT** — `v2.1.0`: Many-Reality Diff
 

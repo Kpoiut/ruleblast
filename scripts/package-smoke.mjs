@@ -147,7 +147,7 @@ export async function runPackedPackageSmoke(packed, options = {}) {
     const help = await runInstalled(binTarget, ["--help"], temporaryRoot, env);
     const version = await runInstalled(binTarget, ["--version"], temporaryRoot, env);
     if (!help.toString("utf8").includes("Usage:") ||
-        !help.toString("utf8").includes("Two documented instruction realities")) {
+        !help.toString("utf8").includes("Two default realities")) {
       fail("Packed ruleblast --help did not expose semantic route guidance");
     }
     const expectedVersion = `ruleblast ${installedPackage.version}\n`;

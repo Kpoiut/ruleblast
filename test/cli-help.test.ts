@@ -44,6 +44,8 @@ describe("help path", () => {
     });
     expect(code).toBe(0);
     expect(stdout.join("")).toBe(renderCliHelp());
-    expect(stdout.join("")).toContain("Two documented instruction realities");
+    expect(stdout.join("")).toContain("Two default realities");
+    expect(stdout.join("")).toContain("opt-in");
+    expect(stdout.join("")).not.toContain("Two documented instruction realities");
   });
 });

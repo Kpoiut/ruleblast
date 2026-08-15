@@ -363,7 +363,7 @@ describe("public release maturity", () => {
   it("records the independently verified v2.0.0 release receipt", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **RELEASED** — `v2.0.0`: Reality Packs";
-    const next = roadmap.indexOf("## **NEXT** — `v2.1.0`: Many-Reality Diff");
+    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.0.1`: Honest PR engine pin");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -391,6 +391,23 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.0.0 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.0 — SHIPPED TO MAIN/u);
     expect(read("CONTRACT.md")).toContain("38cb0f50bd03bc39a0046426b6fa3004103d4f4a");
+  });
+
+  it("records v2.0.1 as the Action pin and honest help patch", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v2.0.1`: Honest PR engine pin";
+    const next = roadmap.indexOf("## **NEXT** — `v2.1.0`: Many-Reality Diff");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toContain("1.6.2");
+    expect(shipped).toContain("2.0.1");
+    expect(shipped).toMatch(/optional `reality` input/iu);
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 2.0.1 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.1 — RELEASED/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.0\.1"/u);
   });
 
   it("keeps release-state records outside the current package boundary", () => {

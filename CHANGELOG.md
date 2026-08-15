@@ -2,6 +2,13 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.0.1 — SHIPPED TO MAIN
+
+- Nested composite Action default package pin is `2.0.1`. After Reality Packs, the previous default `1.6.2` made PR receipts analyze the old engine.
+- Optional Action input `reality` forwards the existing `--reality` flag. Default JSON stays two-profile.
+- `--help` names two default realities and two opt-in CLI surfaces.
+- No fifth action, no `--pack`, no fifth reality.
+
 ## 2.0.0 — RELEASED
 
 - Bundled Reality Packs (`packs/bundled`) are the profile source of truth. The catalog loads four reviewed packs. No `--pack`, no fifth reality, no executable pack code.

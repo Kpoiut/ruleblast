@@ -72,7 +72,7 @@ export function routeCatalog(): readonly RouteCard[] {
 export function renderCliHelp(): string {
   return `RuleBlast — Git diff for invisible repository instructions.
 
-One Git tree. Two documented instruction realities.
+One Git tree. Two default realities. Two opt-in CLI surfaces.
 
   [path]     ${ROUTES[0]!.useWhen}
              ruleblast . --color=never
