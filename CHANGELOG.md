@@ -2,19 +2,20 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 2.0.0 — SHIPPED TO MAIN
+## 2.0.0 — RELEASED
 
 - Bundled Reality Packs (`packs/bundled`) are the profile source of truth. The catalog loads four reviewed packs. No `--pack`, no fifth reality, no executable pack code.
 - Gemini `sourceDependencyPaths` now includes nested `@import` targets up to the documented depth 5 (D2a). Detection was already correct; attribution was not. `google/gemini-cli@1` and `resolverRevision: 1` are unchanged.
 - `--witness` why-edges for Codex `SHADOWED` and Claude `EXCLUDED` come from pack presentation hints, not profile-id branches in `witness.ts`.
 - `npm run test:pack-schema` checks JSON Schema (dev) and the fail-closed TypeScript decoder. No runtime schema-validator dependency.
-- Not an npm publication. Default two-profile canonical goldens are unchanged.
+- Default two-profile canonical goldens are unchanged.
+- Public visual benchmark is a 1200×1200 scoreboard of the sealed 2→206 proof: split, why-this-path, CLI and companion surfaces, and the user-owned allow gate. It is not a second product UI.
 
 ### Release artifact
 
 - Signed tag object `250f54ff2a1ae354581919f471d3bb48dd231db4` targets commit `bf51ada55b7e34db2b8f5b6c0eebd468b35c0382`.
-- The GitHub Release serves the 118,042-byte tarball with SHA-256 `1059f9c02e474cb1f1376bb4664aee03f63ac13af8ac4817fcdb6fd7a94c0777`; the release manifest SHA-256 is `04b8fe547e684aef54af743ebdd1f6172a647834255d1ff3a4f11fa02087a52c`.
-- Registry `ruleblast@2.0.0` is not yet an independently verified npm record. Latest verified npm distribution remains `1.6.2`.
+- npm and the GitHub Release serve the same 118,042-byte tarball with SHA-256 `1059f9c02e474cb1f1376bb4664aee03f63ac13af8ac4817fcdb6fd7a94c0777`; the release manifest SHA-256 is `04b8fe547e684aef54af743ebdd1f6172a647834255d1ff3a4f11fa02087a52c`.
+- [npm `ruleblast@2.0.0`](https://www.npmjs.com/package/ruleblast/v/2.0.0) reports integrity `sha512-RLiS2/bBUlzzRPiEoypRYowa3fUvSutpDrpv6IoXUjl9/t5NwwIgDXaZpPVaYzwlIApjixSr3xYYbqscWQFrYg==`; exact-tarball publication means registry `gitHead is absent` rather than invented.
 
 ## 1.6.2 — RELEASED
 

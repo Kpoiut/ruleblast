@@ -100,5 +100,5 @@ fingerprint contract:   historical
 correction release:     bundled into 2.0.0 (not a 1.6.x release)
 ```
 
-Failing test first (`includes a two-hop imported file in sourceDependencyPaths and diff sources`), then worklist walk to `GEMINI_IMPORT_DEPTH`. Default two-profile goldens unchanged. Measurement: [migration-base-benchmark.md](migration-base-benchmark.md).
+Failing test first (`includes a two-hop imported file in sourceDependencyPaths and diff sources`), then worklist walk to `GEMINI_IMPORT_DEPTH`. Default two-profile goldens unchanged. Measurement: [migration-base-benchmark.md](../measurements/migration-base-benchmark.md).
 

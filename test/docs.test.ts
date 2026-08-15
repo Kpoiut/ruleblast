@@ -384,18 +384,18 @@ describe("repository documentation integrity", () => {
     expect(existsSync(join(repositoryRoot, "docs/superpowers"))).toBe(false);
     expect(existsSync(join(repositoryRoot, "docs/plans"))).toBe(false);
     expect(existsSync(join(repositoryRoot, "docs/v2"))).toBe(false);
+    expect(existsSync(join(repositoryRoot, "docs/README.md"))).toBe(false);
     const docsRoot = join(repositoryRoot, "docs");
     expect(existsSync(docsRoot)).toBe(true);
-    const names = readdirSync(docsRoot, { withFileTypes: true });
-    expect(names.every((entry) => entry.isFile() && entry.name.endsWith(".md"))).toBe(true);
-    expect(names.map((entry) => entry.name).sort()).toEqual([
-      "README.md",
-      "after-benchmark.md",
-      "baseline-benchmark.md",
-      "gemini-nested-import.md",
-      "migration-base-benchmark.md",
-      "representability.md",
-    ].sort());
+    const top = readdirSync(docsRoot, { withFileTypes: true });
+    expect(top.map((entry) => entry.name).sort()).toEqual(["evidence", "measurements"]);
+    expect(top.every((entry) => entry.isDirectory())).toBe(true);
+    for (const folder of ["evidence", "measurements"] as const) {
+      const names = readdirSync(join(docsRoot, folder), { withFileTypes: true });
+      expect(names.length).toBeGreaterThan(0);
+      expect(names.every((entry) => entry.isFile() && entry.name.endsWith(".md"))).toBe(true);
+      expect(names.some((entry) => entry.name === "README.md")).toBe(false);
+    }
   });
 
   it("keeps public claims restrained", () => {
@@ -418,9 +418,13 @@ describe("repository documentation integrity", () => {
 
   it("resolves every local Markdown link", () => {
     const extraDocs = existsSync(join(repositoryRoot, "docs"))
-      ? readdirSync(join(repositoryRoot, "docs"))
-        .filter((name) => name.endsWith(".md"))
-        .map((name) => `docs/${name}`)
+      ? readdirSync(join(repositoryRoot, "docs"), { withFileTypes: true }).flatMap((entry) => {
+        if (entry.isFile() && entry.name.endsWith(".md")) return [`docs/${entry.name}`];
+        if (!entry.isDirectory()) return [];
+        return readdirSync(join(repositoryRoot, "docs", entry.name))
+          .filter((name) => name.endsWith(".md"))
+          .map((name) => `docs/${entry.name}/${name}`);
+      })
       : [];
     for (const path of [...publicDocs, ...extraDocs]) {
       const base = dirname(path);

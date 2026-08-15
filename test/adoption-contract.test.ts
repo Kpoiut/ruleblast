@@ -170,7 +170,7 @@ describe("v2.0.0 adoption contract", () => {
     const security = read("SECURITY.md");
     expect(security).toMatch(/do not include exploit details in a public issue/iu);
     expect(security).toMatch(/no response-time or remediation-time guarantee/iu);
-    expect(security).toMatch(/latest published `1\.6\.x`/iu);
+    expect(security).toMatch(/latest published `2\.0\.x`/iu);
     expect(security).toMatch(/private vulnerability reporting is enabled/iu);
     expect(security).toMatch(/security\/advisories\/new/iu);
     expect(security).toMatch(/stay on your machine/iu);
@@ -184,8 +184,8 @@ describe("v2.0.0 adoption contract", () => {
     expect(conduct).toMatch(/protect/iu);
 
     const contributingLead = read("CONTRIBUTING.md").slice(0, 700);
-    expect(contributingLead).toContain("v1.6.2");
-    expect(contributingLead).toContain("1.6.2");
+    expect(contributingLead).toContain("v2.0.0");
+    expect(contributingLead).toContain("2.0.0");
     expect(contributingLead).toMatch(/you do not need a 25-commit/iu);
     expect(contributingLead).toMatch(/surprising result/iu);
 
@@ -384,10 +384,10 @@ describe("v2.0.0 adoption contract", () => {
     const bytes = readFileSync(join(repositoryRoot, asset));
     expect(bytes.subarray(1, 4).toString("ascii")).toBe("PNG");
     expect(bytes.readUInt32BE(16)).toBe(1_200);
-    expect(bytes.readUInt32BE(20)).toBe(240);
+    expect(bytes.readUInt32BE(20)).toBe(1_200);
     expect(statSync(join(repositoryRoot, asset)).size).toBeLessThanOrEqual(400_000);
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "ce23cc2f4de990c690da877e6d3e6da41959516ef7e8934551d8147652313b48",
+      "0f3f2627c647b63a3839c092c4137b17d98862885483f0df3931e1b3273d368e",
     );
     const descriptor = readJson<PackageDescriptor>("package.json");
     expect(descriptor.files).not.toContain(asset);

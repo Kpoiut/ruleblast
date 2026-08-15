@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>RuleBlast visual benchmark</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 1200px;
+      height: 1200px;
+      overflow: hidden;
+      background: #071018;
+      color: #d7e6ef;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+    }
+    .board {
+      width: 1200px;
+      height: 1200px;
+      padding: 36px 40px 32px;
+      background:
+        radial-gradient(1200px 700px at 12% -10%, rgba(34, 211, 197, 0.10), transparent 55%),
+        radial-gradient(900px 600px at 110% 110%, rgba(99, 102, 241, 0.12), transparent 50%),
+        #071018;
+      display: grid;
+      grid-template-rows: auto auto auto auto auto;
+      gap: 14px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .brand {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #f4fbff;
+    }
+    .brand span { color: #2dd4bf; }
+    .sub {
+      margin-top: 6px;
+      font-size: 20px;
+      color: #9fb3c3;
+    }
+    .pills { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .pill {
+      border: 1px solid #1f3a44;
+      background: #0c1820;
+      color: #8fd8cf;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 13px;
+    }
+    .row { display: grid; gap: 14px; }
+    .kpis { grid-template-columns: 1fr 1.4fr 1fr; }
+    .card {
+      background: #0c1520;
+      border: 1px solid #1b3340;
+      border-radius: 22px;
+      padding: 20px 22px;
+    }
+    .label {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      color: #6f8b99;
+      text-transform: uppercase;
+    }
+    .num {
+      margin-top: 8px;
+      font-size: 72px;
+      font-weight: 700;
+      line-height: 0.95;
+      color: #f5fbff;
+    }
+    .num.mint { color: #2dd4bf; }
+    .hint { margin-top: 8px; color: #9fb3c3; font-size: 18px; line-height: 1.35; }
+    .split .bar {
+      height: 10px;
+      border-radius: 999px;
+      background: #13222c;
+      margin: 10px 0 14px;
+      overflow: hidden;
+    }
+    .split .fill { height: 100%; background: #2dd4bf; }
+    .split .zero { width: 0; }
+    .pair { display: flex; justify-content: space-between; font-size: 22px; }
+    .pair b { font-family: "IBM Plex Mono", monospace; }
+    .why { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 14px; }
+    .src {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 16px;
+      color: #d9fff7;
+      margin-top: 10px;
+      word-break: break-all;
+    }
+    .meta { margin-top: 8px; color: #8aa0ae; font-size: 16px; }
+    .ctx {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chip {
+      background: #0a1c24;
+      border: 1px solid #1d3c46;
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+    .chip b { color: #2dd4bf; font-family: "IBM Plex Mono", monospace; }
+    .surfaces { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #7f96a4;
+      font-size: 16px;
+      border-top: 1px solid #16303a;
+      padding-top: 12px;
+    }
+    .foot-strong { color: #c6d8e2; }
+  </style>
+</head>
+<body>
+  <main class="board">
+    <header>
+      <div>
+        <div class="brand">RULE<span>BLAST</span></div>
+        <div class="sub">See the second diff. Local scoreboard for repository instruction projection.</div>
+      </div>
+      <div class="pills">
+        <div class="pill">v2.0.0</div>
+        <div class="pill">CLI + VS Code companion</div>
+        <div class="pill">user-owned allow gate</div>
+      </div>
+    </header>
+
+    <section class="row kpis">
+      <article class="card">
+        <div class="label">Git saw</div>
+        <div class="num">2</div>
+        <div class="hint">instruction-line edits<br>3 files · 6 deleted lines</div>
+      </article>
+      <article class="card">
+        <div class="label">RuleBlast found</div>
+        <div class="num mint">206</div>
+        <div class="hint">Codex stacks that inherited the nested <b>AGENTS.md</b></div>
+      </article>
+      <article class="card split">
+        <div class="label">The split</div>
+        <div class="pair"><span>CX Codex</span><b>206</b></div>
+        <div class="bar"><div class="fill" style="width:100%"></div></div>
+        <div class="pair"><span>CC Claude Code</span><b>0</b></div>
+        <div class="bar"><div class="fill zero"></div></div>
+        <div class="hint">Already DIFFERENT → DIFFERENT. No invented split.</div>
+      </article>
+    </section>
+
+    <section class="why">
+      <article class="card">
+        <div class="label">Why this path</div>
+        <div class="meta">Changed instruction source</div>
+        <div class="src">codex-rs/tui/src/bottom_pane/AGENTS.md</div>
+        <div class="meta" style="margin-top:16px">Example affected consumer — not a cause</div>
+        <div class="src">codex-rs/tui/src/bottom_pane/action_required_title.rs</div>
+        <div class="hint" style="margin-top:14px">Both endpoints COMPLETE. Payload relation DIFFERENT. 4,476 paths unchanged. Causes are evidence links; source counts can overlap. Packaged case is a different 33→106 receipt.</div>
+      </article>
+      <article class="card ctx">
+        <div class="label">Observable projection</div>
+        <div class="chip"><b>CX</b> STARTUP · cwd = dirname(target) · SELECTED</div>
+        <div class="chip"><b>CC</b> READ_TARGET · cwd = repository root · no inherit</div>
+        <div class="chip"><b>Allow</b> RULEBLAST_AGENT_ALLOW or .ruleblast-allow</div>
+        <div class="chip"><b>Opt-in</b> --receipt · --witness · --reality</div>
+        <div class="hint">Observe stacks and why-edges. Not live agent telemetry. Not model compliance.</div>
+      </article>
+    </section>
+
+    <section class="surfaces">
+      <article class="card">
+        <div class="label">CLI</div>
+        <div class="hint">scan · diff · explain · case<br>npx --yes ruleblast@2.0.0</div>
+      </article>
+      <article class="card">
+        <div class="label">IDE companion</div>
+        <div class="hint">Same four actions. Last result stays STALE after the worktree moves. Select Reality is a session option.</div>
+      </article>
+      <article class="card">
+        <div class="label">Uncertainty</div>
+        <div class="hint">0 partial · 0 unknown · 0 indeterminate<br>4,682 candidates · 4.40% hit</div>
+      </article>
+    </section>
+
+    <footer>
+      <div class="foot-strong">openai/codex 8fcf2ad → f0f483e · resolverRevision 1</div>
+      <div>p95 &lt; 2,000 ms on 10,000 paths · not a model-quality score</div>
+    </footer>
+  </main>
+</body>
+</html>

@@ -37,7 +37,7 @@ npx --yes ruleblast@2.0.0 diff HEAD~1
 ## What Git missed
 
 <div align="center">
-  <img src="assets/ruleblast-visual-benchmark.png?v=2.0.0" alt="What Git missed: 2 instruction lines, 206 Codex paths, 0 Claude Code paths" width="100%">
+  <img src="assets/ruleblast-visual-benchmark.png?v=2.0.0" alt="Square RuleBlast 2.0.0 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; why-this-path, CLI and IDE surfaces, user allow gate" width="100%">
 </div>
 
 Git shows the instruction edit. It does not show every repository path that inherits it.
@@ -250,6 +250,6 @@ Reality is not host. Four documented realities. Same result in the terminal or e
 
 How many rule realities are still hiding in it…?
 
-Read [ROADMAP.md](ROADMAP.md). Apache-2.0. [CHANGELOG.md](CHANGELOG.md).
+Read [ROADMAP.md](ROADMAP.md). Apache-2.0. [CHANGELOG.md](CHANGELOG.md). Measurements: [docs/measurements](docs/measurements/). Evidence inventories: [docs/evidence](docs/evidence/).
 
 [Code of conduct](CODE_OF_CONDUCT.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)

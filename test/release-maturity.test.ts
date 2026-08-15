@@ -328,7 +328,7 @@ describe("public release maturity", () => {
   it("records the independently verified v1.6.2 release receipt", () => {
     const roadmap = read("ROADMAP.md");
     const releasedHeading = "## **RELEASED** — `v1.6.2`: Last-Result Explain";
-    const nextHeading = "## **SHIPPED TO MAIN** — `v2.0.0`: Reality Packs";
+    const nextHeading = "## **RELEASED** — `v2.0.0`: Reality Packs";
     const releasedStart = roadmap.indexOf(releasedHeading);
     const nextStart = roadmap.indexOf(nextHeading);
 
@@ -360,25 +360,36 @@ describe("public release maturity", () => {
     );
   });
 
-  it("records v2.0.0 Reality Packs as shipped to main, not released", () => {
+  it("records the independently verified v2.0.0 release receipt", () => {
     const roadmap = read("ROADMAP.md");
-    const heading = "## **SHIPPED TO MAIN** — `v2.0.0`: Reality Packs";
+    const heading = "## **RELEASED** — `v2.0.0`: Reality Packs";
     const next = roadmap.indexOf("## **NEXT** — `v2.1.0`: Many-Reality Diff");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
-    const shipped = roadmap.slice(start, next);
-    expect(shipped).toContain("f9e6833aeadcb3e3f23753ebf0f761df68749f0a");
-    expect(shipped).toContain("38cb0f50bd03bc39a0046426b6fa3004103d4f4a");
-    expect(shipped).toContain("250f54ff2a1ae354581919f471d3bb48dd231db4");
-    expect(shipped).toContain("bf51ada55b7e34db2b8f5b6c0eebd468b35c0382");
-    expect(shipped).toContain("1059f9c02e474cb1f1376bb4664aee03f63ac13af8ac4817fcdb6fd7a94c0777");
-    expect(shipped).toContain("D2a");
-    expect(shipped).toMatch(/bundled into this 2\.0\.0 line/iu);
-    expect(shipped).toMatch(/No `--pack`/u);
-    expect(shipped).not.toMatch(/\bRELEASED\b/u);
-    expect(read("CHANGELOG.md")).toContain("## 2.0.0 — SHIPPED TO MAIN");
-    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.0 — RELEASED/u);
+    const released = roadmap.slice(start, next);
+    for (const evidence of [
+      "250f54ff2a1ae354581919f471d3bb48dd231db4",
+      "bf51ada55b7e34db2b8f5b6c0eebd468b35c0382",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v2.0.0",
+      "https://www.npmjs.com/package/ruleblast/v/2.0.0",
+      "118,042",
+      "1059f9c02e474cb1f1376bb4664aee03f63ac13af8ac4817fcdb6fd7a94c0777",
+      "04b8fe547e684aef54af743ebdd1f6172a647834255d1ff3a4f11fa02087a52c",
+      "sha512-RLiS2/bBUlzzRPiEoypRYowa3fUvSutpDrpv6IoXUjl9/t5NwwIgDXaZpPVaYzwlIApjixSr3xYYbqscWQFrYg==",
+      "gitHead is absent",
+      "registry download and GitHub Release asset both match",
+      "not facts inferred from this checkout",
+      "f9e6833aeadcb3e3f23753ebf0f761df68749f0a",
+      "38cb0f50bd03bc39a0046426b6fa3004103d4f4a",
+      "D2a",
+    ]) {
+      expect(released).toContain(evidence);
+    }
+    expect(released).toMatch(/No `--pack`/u);
+    expect(released).not.toMatch(/\bIN BUILD\b|remain conditional|publication.+incomplete/iu);
+    expect(read("CHANGELOG.md")).toContain("## 2.0.0 — RELEASED");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.0 — SHIPPED TO MAIN/u);
     expect(read("CONTRACT.md")).toContain("38cb0f50bd03bc39a0046426b6fa3004103d4f4a");
   });
 
