@@ -188,7 +188,7 @@ describe("v2.1.0 adoption contract", () => {
     const security = read("SECURITY.md");
     expect(security).toMatch(/do not include exploit details in a public issue/iu);
     expect(security).toMatch(/no response-time or remediation-time guarantee/iu);
-    expect(security).toMatch(/latest published `2\.0\.x`/iu);
+    expect(security).toMatch(/latest published `2\.1\.x`/iu);
     expect(security).toMatch(/private vulnerability reporting is enabled/iu);
     expect(security).toMatch(/security\/advisories\/new/iu);
     expect(security).toMatch(/stay on your machine/iu);
@@ -405,7 +405,7 @@ describe("v2.1.0 adoption contract", () => {
     expect(bytes.readUInt32BE(20)).toBe(1_200);
     expect(statSync(join(repositoryRoot, asset)).size).toBeLessThanOrEqual(400_000);
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "46ccbdb21b8bae07c0e327cafa115ca3ee202c8c24cec2e46151278207fb5c14",
+      "971cda7bdfe56b57432218ecdd66e43cdd2644a8a10c7018eb1f5dc4a626f656",
     );
     const descriptor = readJson<PackageDescriptor>("package.json");
     expect(descriptor.files).not.toContain(asset);

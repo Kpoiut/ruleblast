@@ -16,9 +16,9 @@ inputs:
   version:
     description: Exact published package to run.
     required: false
-    default: "2.0.2"
+    default: "2.1.0"
   reality:
-    description: Optional extra modeled reality. github/copilot-cli@1 or google/gemini-cli@1.
+    description: Optional extra modeled reality. github/copilot-cli@1 or google/gemini-cli@1. The published CLI also accepts both flags.
     required: false
     default: ""
   github-token:

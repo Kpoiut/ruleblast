@@ -51,7 +51,7 @@ describe("distribution surfaces", () => {
     expect(action).toContain("using: composite");
     expect(action).toContain('npx --yes "ruleblast@${RULEBLAST_VERSION}"');
     expect(action).toContain("--receipt");
-    expect(action).toMatch(/default: "2\.0\.2"/u);
+    expect(action).toMatch(/default: "2\.1\.0"/u);
     expect(action).not.toMatch(/default: "1\.6\.2"/u);
     expect(action).toContain("reality:");
     expect(action).not.toMatch(/ruleblast scan\b/u);

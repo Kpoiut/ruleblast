@@ -441,7 +441,7 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.0.2 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.2 — SHIPPED TO MAIN/u);
     expect(read("package.json")).toContain("blast radius of AGENTS.md and CLAUDE.md");
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.0\.2"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.1\.0"/u);
     expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.0.2`");
   });
 
@@ -460,6 +460,7 @@ describe("public release maturity", () => {
     expect(shipped).not.toMatch(/Claude Desktop|Antigravity|Marketplace/iu);
     expect(read("CHANGELOG.md")).toContain("## 2.1.0 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.1\.0 — RELEASED/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.1\.0"/u);
   });
 
   it("keeps release-state records outside the current package boundary", () => {
