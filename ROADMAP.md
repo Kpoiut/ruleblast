@@ -264,7 +264,7 @@ The nested composite Action still defaulted to `1.6.2` after Reality Packs shipp
 
 ## **SHIPPED TO MAIN** — `v2.0.2`: Retrievable identity and fail-closed pack load
 
-This tree is `2.0.2`. Latest independently verified public npm distribution remains `2.0.0` until an authorized publication.
+Signed tag object `7b0b169f49c6be0da5289b4afcb7bc0576607486` for [`v2.0.2`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.0.2) targets commit `1c926b6ee92915659c58cc140627a76480996b5b`. The GitHub Release serves the 118,836-byte tarball with SHA-256 `9cec50fa91cbd13b3326f5aee5cdf98e0c31421ef483231560e8290a1b97387a`; the release manifest SHA-256 is `9a123b870a581d88b72089e1b5e5dcfd0b51b2ee361d16e302098dabdce0a9c9`. Latest independently verified public npm distribution remains `2.0.0` until an authorized `2.0.2` publication.
 
 The npm description, README first fold, `--help`, companion blurb, agent skill frontmatter, and `AGENT_USAGE.md` now share one identity: blast radius of `AGENTS.md` / `CLAUDE.md` changes across the four modeled CLI surfaces. The first fold answers the problem query: which files inherit that change. Pack load rejects nested, drive-relative, and path-escaping directory names so a name such as `C:secret` cannot leave `packs/bundled`. Missing JSON and malformed JSON raise distinct `INVALID_PACK` errors. Catalog directories must match the pack id. No fifth action, no `--pack`, no fifth reality, no hosted discovery service.
 

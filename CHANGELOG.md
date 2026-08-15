@@ -10,6 +10,12 @@ All notable user-visible changes to RuleBlast are recorded here.
 - Decoder rejects empty claim-id strings and `:` in repository-relative names. Catalog directory names must match `vendor-product@rev` for the pack id.
 - No fifth action, no `--pack`, no fifth reality.
 
+### Release artifact
+
+- Signed tag object `7b0b169f49c6be0da5289b4afcb7bc0576607486` targets commit `1c926b6ee92915659c58cc140627a76480996b5b`.
+- The GitHub Release serves the 118,836-byte tarball with SHA-256 `9cec50fa91cbd13b3326f5aee5cdf98e0c31421ef483231560e8290a1b97387a`; the release manifest SHA-256 is `9a123b870a581d88b72089e1b5e5dcfd0b51b2ee361d16e302098dabdce0a9c9`.
+- npm `ruleblast@2.0.2` is staged as `8054bd9c-ea01-487c-bedb-7b8d04840471` until an authorized publication. Latest independently verified public npm distribution remains `2.0.0`.
+
 ## 2.0.1 — SHIPPED TO MAIN
 
 - Nested composite Action default package pin is `2.0.1`. After Reality Packs, the previous default `1.6.2` made PR receipts analyze the old engine.

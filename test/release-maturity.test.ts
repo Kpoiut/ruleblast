@@ -422,8 +422,14 @@ describe("public release maturity", () => {
     expect(shipped).toMatch(/blast radius/iu);
     expect(shipped).toContain("INVALID_PACK");
     expect(shipped).toMatch(/drive-relative|contained|unsafe pack directory/iu);
+    expect(shipped).toContain("7b0b169f49c6be0da5289b4afcb7bc0576607486");
+    expect(shipped).toContain("1c926b6ee92915659c58cc140627a76480996b5b");
+    expect(shipped).toContain("118,836");
+    expect(shipped).toContain("9cec50fa91cbd13b3326f5aee5cdf98e0c31421ef483231560e8290a1b97387a");
+    expect(shipped).toContain("9a123b870a581d88b72089e1b5e5dcfd0b51b2ee361d16e302098dabdce0a9c9");
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.0.2 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).toContain("8054bd9c-ea01-487c-bedb-7b8d04840471");
     expect(read("package.json")).toContain("blast radius of AGENTS.md and CLAUDE.md");
     expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.0\.2"/u);
   });
