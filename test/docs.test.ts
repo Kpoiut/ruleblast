@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
@@ -380,7 +380,14 @@ describe("public contract", () => {
 
 describe("repository documentation integrity", () => {
   it("keeps superseded design records outside the public repository tree", () => {
-    expect(existsSync(join(repositoryRoot, "docs"))).toBe(false);
+    expect(existsSync(join(repositoryRoot, "docs/superpowers"))).toBe(false);
+    expect(existsSync(join(repositoryRoot, "docs/plans"))).toBe(false);
+    const docsRoot = join(repositoryRoot, "docs");
+    if (!existsSync(docsRoot)) return;
+    const names = readdirSync(docsRoot, { withFileTypes: true });
+    expect(names.map((entry) => entry.name)).toEqual(["v2"]);
+    const v2 = join(docsRoot, "v2");
+    expect(readdirSync(v2).every((name) => name.endsWith(".md"))).toBe(true);
   });
 
   it("keeps public claims restrained", () => {
