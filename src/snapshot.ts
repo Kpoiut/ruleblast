@@ -13,6 +13,12 @@ export interface RepositorySnapshot {
   read(path: string): Promise<Uint8Array | null>;
 }
 
+export type GitStorageObjectFormat = "sha1" | "sha256";
+
+export interface GitObjectSnapshot extends RepositorySnapshot {
+  blobOid(path: string): string | null;
+}
+
 interface StoredEntry extends SnapshotEntry {
   readonly bytes: Uint8Array;
 }

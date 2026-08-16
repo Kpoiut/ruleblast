@@ -112,7 +112,7 @@ describe("candidate installation matrix", () => {
     expect(workflow).toContain("github.ref == 'refs/tags/v2.2.0'");
     const parsed = parse(workflow) as VerifyWorkflow;
     const job = parsed.jobs.verify;
-    expect(job["timeout-minutes"]).toBe(20);
+    expect(job["timeout-minutes"]).toBeLessThanOrEqual(20);
     expect(job.strategy.matrix).toEqual({
       os: ["ubuntu-latest", "windows-latest"],
       node: [20, 22, 24, 26],

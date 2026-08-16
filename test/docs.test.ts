@@ -376,6 +376,8 @@ describe("public contract", () => {
       "profile evidence boundary",
       "Product claims",
       "Non-claims",
+      "noncanonical presentation adjuncts",
+      "Adjunct unavailability cannot change canonical bytes",
     ]) {
       expect(contract).toContain(term);
     }

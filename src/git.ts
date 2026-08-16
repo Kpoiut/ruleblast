@@ -4,7 +4,12 @@ import { lstat, open, readFile, readlink } from "node:fs/promises";
 import { join } from "node:path";
 import { promisify } from "node:util";
 import type { SnapshotRef } from "./model.js";
-import type { RepositorySnapshot, SnapshotEntry } from "./snapshot.js";
+import type {
+  GitObjectSnapshot,
+  GitStorageObjectFormat,
+  RepositorySnapshot,
+  SnapshotEntry,
+} from "./snapshot.js";
 
 const execFileAsync = promisify(execFile);
 const MAX_GIT_OUTPUT_BYTES = 256 * 1024 * 1024;
@@ -100,7 +105,7 @@ function parseFullObjectId(output: Buffer): string {
   return oid;
 }
 
-class GitSnapshot implements RepositorySnapshot {
+class GitSnapshot implements GitObjectSnapshot {
   readonly #reference: SnapshotRef;
   readonly #entries: ReadonlyMap<string, TreeEntry>;
   readonly #paths: readonly string[];
@@ -120,6 +125,10 @@ class GitSnapshot implements RepositorySnapshot {
   public async entry(path: string): Promise<SnapshotEntry | null> {
     const entry = this.#entries.get(path);
     return entry === undefined ? null : { path: entry.path, kind: entry.kind, executable: entry.executable };
+  }
+
+  public blobOid(path: string): string | null {
+    return this.#entries.get(path)?.oid ?? null;
   }
 
   public async read(path: string): Promise<Uint8Array | null> {
@@ -143,7 +152,22 @@ export async function findRepositoryRoot(start: string): Promise<string> {
   }
 }
 
-export async function openGitSnapshot(root: string, ref: string): Promise<RepositorySnapshot> {
+export async function probeGitStorageFormat(
+  root: string,
+): Promise<GitStorageObjectFormat | null> {
+  try {
+    const printed = lineOutput(
+      await runGit(root, ["rev-parse", "--show-object-format=storage"]),
+    );
+    if (printed === "sha1" || printed === "sha256") return printed;
+    return null;
+  } catch (error: unknown) {
+    if (isGitCommandFailure(error)) return null;
+    throw error;
+  }
+}
+
+export async function openGitSnapshot(root: string, ref: string): Promise<GitObjectSnapshot> {
   let oid: string;
   try {
     oid = parseFullObjectId(await runGit(root, ["rev-parse", "--verify", "--end-of-options", `${ref}^{commit}`]));

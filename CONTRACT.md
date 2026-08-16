@@ -318,6 +318,8 @@ Text color, shell quoting, terminal labels, and explanatory metaphors are presen
 
 Hosts consume a shared explain presentation model derived from the canonical result. A host may not infer explanation semantics by parsing terminal text or by walking `CanonicalResult` with its own rules.
 
+The engine may additionally produce bounded noncanonical presentation adjuncts from the same prepared analysis pair. Hosts may render those adjuncts; they may not derive them. An adjunct belongs only to the prepared result that produced it and must not be persisted or restored independently from that result. Adjunct unavailability cannot change canonical bytes, canonical exit semantics, or the four action meanings.
+
 Analysis lifecycle (`READY`, `ANALYZING`, `CURRENT`, `STALE`, `ERROR`) is a host observation. Completeness (`COMPLETE`, `PARTIAL`, `UNKNOWN`) is a projection fact. The two axes are not a single enum: a result may be `CURRENT · PARTIAL` or `STALE · UNKNOWN`.
 
 ## Schema and resolver revisions

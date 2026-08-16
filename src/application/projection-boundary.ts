@@ -8,6 +8,8 @@ import type {
 } from "../model.js";
 import type { PreparedProfile } from "../profiles/profile.js";
 import type {
+  GitObjectSnapshot,
+  GitStorageObjectFormat,
   RepositorySnapshot,
   SnapshotEntry,
 } from "../snapshot.js";
@@ -162,6 +164,53 @@ export function cacheRepositorySnapshot(
       }
       const bytes = await pending;
       return bytes === null ? null : new Uint8Array(bytes);
+    },
+  });
+}
+
+const OID_LENGTH: Readonly<Record<GitStorageObjectFormat, number>> = {
+  sha1: 40,
+  sha256: 64,
+};
+
+function captureBlobOid(
+  value: string | null,
+  format: GitStorageObjectFormat,
+  path: string,
+): string | null {
+  if (value === null) return null;
+  if (typeof value !== "string") {
+    throw new TypeError(`Git blob oid for ${JSON.stringify(path)} must be a string`);
+  }
+  const oid = value.toLowerCase();
+  const expected = OID_LENGTH[format];
+  if (oid.length !== expected || !/^[0-9a-f]+$/u.test(oid)) {
+    throw new TypeError(`Git blob oid for ${JSON.stringify(path)} is not a ${format} object name`);
+  }
+  return oid;
+}
+
+export function cacheGitObjectSnapshot(
+  source: GitObjectSnapshot,
+  storageFormat: GitStorageObjectFormat,
+): GitObjectSnapshot {
+  const base = cacheRepositorySnapshot(source);
+  const oids = new Map<string, string | null>();
+  return Object.freeze({
+    get ref() {
+      return base.ref;
+    },
+    listPaths: () => base.listPaths(),
+    entry: (path: string) => base.entry(path),
+    read: (path: string) => base.read(path),
+    blobOid(path: string): string | null {
+      const canonicalPath = assertCanonicalRepositoryPath(path, "snapshot blob oid path");
+      let cached = oids.get(canonicalPath);
+      if (cached === undefined && !oids.has(canonicalPath)) {
+        cached = captureBlobOid(source.blobOid(canonicalPath), storageFormat, canonicalPath);
+        oids.set(canonicalPath, cached);
+      }
+      return cached ?? null;
     },
   });
 }
