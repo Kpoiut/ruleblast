@@ -96,7 +96,9 @@ One Git tree. Two default realities. Two opt-in CLI surfaces.
   --reality  github/copilot-cli@1 and/or google/gemini-cli@1. Repeat to add both. Default JSON stays two-profile.
 
 Skills   Codex .agents/skills · Claude Code .claude/skills
+         Cursor .cursor/skills · Windsurf .windsurf/skills · Kiro .kiro/skills
          Not node_modules. Agents default to ask.
+  --mcp      Stdio transport of the same four actions. Not a fifth action.
 
 Exits
   0  defensible result or no candidates — not "every path COMPLETE"
@@ -109,6 +111,7 @@ Usage:
   ruleblast diff [base] [--to <ref|WORKTREE>] [--json] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
   ruleblast explain <path> [--from <ref>] [--to <ref|WORKTREE>] [--json] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
   ruleblast case [--explain <path>] [--json] [--witness] [--receipt] [--color=auto|always|never]
+  ruleblast --mcp
   ruleblast --help
   ruleblast --version
 `;

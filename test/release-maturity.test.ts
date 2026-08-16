@@ -441,7 +441,7 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.0.2 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.2 — SHIPPED TO MAIN/u);
     expect(read("package.json")).toContain("blast radius of AGENTS.md and CLAUDE.md");
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.1\.1"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.2\.0"/u);
     expect(released).toContain("Latest independently verified public npm distribution at that tag is `2.0.2`");
   });
 
@@ -475,14 +475,14 @@ describe("public release maturity", () => {
     expect(released).not.toMatch(/Claude Desktop|Antigravity|Marketplace/iu);
     expect(read("CHANGELOG.md")).toContain("## 2.1.0 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.1\.0 — SHIPPED TO MAIN/u);
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.1\.1"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.2\.0"/u);
     expect(released).toContain("Latest independently verified public npm distribution at that tag is `2.1.0`");
   });
 
   it("records the independently verified v2.1.1 release receipt", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **RELEASED** — `v2.1.1`: Retrievable problem documents";
-    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const next = roadmap.indexOf("## **RELEASED** — `v2.2.0`: Compatible hosts");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -510,7 +510,29 @@ describe("public release maturity", () => {
     expect(read("which-files-inherit-agents-md.md")).toMatch(/Which files inherit a changed AGENTS.md/u);
     expect(read("llms.txt")).toContain("blast radius of AGENTS.md and CLAUDE.md");
     expect(read("action.yml")).toContain("uses: ./.github/actions/ruleblast");
-    expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.1.1`");
+    expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.2.0`");
+  });
+
+  it("records the independently verified v2.2.0 npm receipt", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **RELEASED** — `v2.2.0`: Compatible hosts";
+    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const released = roadmap.slice(start, next);
+    for (const evidence of [
+      "https://www.npmjs.com/package/ruleblast/v/2.2.0",
+      "128,262",
+      "0d2d9c56e54e032981492afc9e49bad727a26c71526d13a68e6896595622f823",
+      "sha512-ddfCo5MbaFjUyQa9eHr6D/pBzV9byQzhi30OzfkFSMnLmKdngHMHZsndIqAtNLPlHP6zs9fHeBSz+8lXVtuWZA==",
+    ]) {
+      expect(released).toContain(evidence);
+    }
+    expect(released).toMatch(/npx --yes ruleblast@2\.2\.0 --mcp/u);
+    expect(released).not.toMatch(/\bIN BUILD\b|remain conditional|publication.+incomplete/iu);
+    expect(read("CHANGELOG.md")).toContain("## 2.2.0 — RELEASED");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.2\.0 — IN BUILD/u);
   });
 
   it("keeps release-state records outside the current package boundary", () => {

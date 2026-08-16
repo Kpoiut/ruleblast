@@ -1,12 +1,12 @@
 <h1 align="center">RuleBlast — Git diff for invisible repository instructions</h1>
 
 <p align="center">
-  <img src="assets/ruleblast-hero.png?v=2.1.1" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
+  <img src="assets/ruleblast-hero.png?v=2.2.0" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
 </p>
 
 <p align="center">
   <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
-  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.1.1"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="package version 2.1.1"></a>
+  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.1.1"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="package version 2.2.0"></a>
   <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/ruleblast" alt="Apache-2.0 license"></a>
 </p>
@@ -23,13 +23,13 @@
 </p>
 
 <div align="center">
-  <img src="assets/ruleblast-causal-proof.gif?v=2.1.1" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
+  <img src="assets/ruleblast-causal-proof.gif?v=2.2.0" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
 </div>
 
 ```bash
 cd <your-git-repository>
-npx --yes ruleblast@2.1.1 .
-npx --yes ruleblast@2.1.1 diff HEAD~1
+npx --yes ruleblast@2.2.0 .
+npx --yes ruleblast@2.2.0 diff HEAD~1
 ```
 
 <p align="center"><sub>Local · read-only · deterministic · no network or model call</sub></p>
@@ -37,7 +37,7 @@ npx --yes ruleblast@2.1.1 diff HEAD~1
 ## What Git missed
 
 <div align="center">
-  <img src="assets/ruleblast-visual-benchmark.png?v=2.1.1" alt="Square RuleBlast 2.1.1 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; why-this-path, CLI and IDE surfaces, user allow gate" width="100%">
+  <img src="assets/ruleblast-visual-benchmark.png?v=2.2.0" alt="Square RuleBlast 2.2.0 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; why-this-path, CLI and IDE surfaces, user allow gate" width="100%">
 </div>
 
 Git shows the instruction edit. It does not show every repository path that inherits it.
@@ -56,12 +56,12 @@ ruleblast diff 8fcf2ad931b90589dd29a571f367e3185d26bbe0 --to f0f483e8b2a2630bf8d
 
 ## Install
 
-Published CLI is `ruleblast@2.1.1`. Node.js 20+. `npx` downloads and runs the pinned package.
+Published CLI is `ruleblast@2.2.0`. Node.js 20+. `npx` downloads and runs the pinned package.
 
 ```bash
 cd <your-git-repository>
-npx --yes ruleblast@2.1.1 .
-npx --yes ruleblast@2.1.1 diff HEAD~1
+npx --yes ruleblast@2.2.0 .
+npx --yes ruleblast@2.2.0 diff HEAD~1
 ```
 
 `NOT_REPOSITORY` means `cd` into a Git repo first. `REF_NOT_FOUND` means pick a real ref. On a permission error, use `npx` instead of elevating. Release CI is Windows and Linux.
@@ -71,30 +71,30 @@ npx --yes ruleblast@2.1.1 diff HEAD~1
 
 ```bash
 node --version
-npm view ruleblast@2.1.1 version
-npx --yes ruleblast@2.1.1 --help
-npm install --global ruleblast@2.1.1
+npm view ruleblast@2.2.0 version
+npx --yes ruleblast@2.2.0 --help
+npm install --global ruleblast@2.2.0
 ruleblast --version
 ruleblast --help
 ruleblast
-npm install --save-dev --save-exact ruleblast@2.1.1
+npm install --save-dev --save-exact ruleblast@2.2.0
 npx ruleblast --version
 npx ruleblast --help
 npx ruleblast
-npx --yes ruleblast@2.1.1 explain src/args.ts --from HEAD~1
-npx --yes ruleblast@2.1.1 case
+npx --yes ruleblast@2.2.0 explain src/args.ts --from HEAD~1
+npx --yes ruleblast@2.2.0 case
 ```
 
 A global install downloads the full CLI.
 
 ```bash
 npm uninstall --global ruleblast
-npm install --global ruleblast@2.1.1
+npm install --global ruleblast@2.2.0
 npm uninstall --save-dev ruleblast
-npm install --save-dev --save-exact ruleblast@2.1.1
+npm install --save-dev --save-exact ruleblast@2.2.0
 npm cache verify
-npx --yes ruleblast@2.1.1 --help
-git clone --branch v2.1.1 --depth 1 https://github.com/Kpoiut/ruleblast.git
+npx --yes ruleblast@2.2.0 --help
+git clone --branch v2.2.0 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
 npm ci --ignore-scripts
 npm run build
@@ -113,9 +113,9 @@ The `1.0.1 → 1.0.2` registry upgrade was verified by the guarded [eight-cell r
 Packaged teaching receipt: [`27d52e2…`](https://github.com/Kpoiut/ruleblast/commit/27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8) → [`e420008…`](https://github.com/Kpoiut/ruleblast/commit/e420008a1c10c5c328e506247560117f4d40b855). 33 instruction-line edits. 106 of 106 stacks moved. Zero current split, partial, unknown, or indeterminate paths. [Canonical receipt](cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json) core digest `1e907a88ed648ebbd68b4f588c3bd09058ab7714e8f85a3f2d4a1c60e5a40938`.
 
 ```bash
-npx --yes ruleblast@2.1.1 case
-npx --yes ruleblast@2.1.1 case --json
-npx --yes ruleblast@2.1.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@2.2.0 case
+npx --yes ruleblast@2.2.0 case --json
+npx --yes ruleblast@2.2.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 <details>
@@ -151,7 +151,7 @@ Scope: 106 tracked paths · repository-only · resolver revision 1
 ## Explain one path
 
 ```bash
-npx --yes ruleblast@2.1.1 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@2.2.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 Historical reproduction (needs both commits checked out):
@@ -179,48 +179,77 @@ Snapshot → evidence-pinned profile projection → compare payloads → render 
 
 Packed budget: 10,000 nested paths, p95 < 2,000 ms. `npm run benchmark`. Not a claim about model quality.
 
+This tree, dirty worktree versus `HEAD~1`: 237 tracked paths. Default Codex + Claude Code: 0 changed stacks, 0 split. The same diff plus both opt-in CLI surfaces stays 0 changed stacks; Copilot CLI is 0 complete and the N-way is 237 split / 237 partial / 237 indeterminate. That is current-state coverage, not a new instruction edit. Compact metrics: [docs/measurements/fresh-replay.md](docs/measurements/fresh-replay.md). The sealed openai/codex 2→206 proof is unchanged.
+
 ## Examples
 
 The optional path is only a filesystem starting point for repository discovery. Add `--witness` when you need why-edges. Add `--receipt` when you need a pasteable card. Add `--reality github/copilot-cli@1` and/or `--reality google/gemini-cli@1` when you need those documented surfaces. Repeat `--reality` for a four-surface N-way. Default `--json` stays the two-profile canonical result.
 
-| Surface | MODELED | HOSTED | DISCOVERABLE |
+| Surface | MODELED | HOST | DISCOVERABLE |
 |---|---|---|---|
-| Codex CLI | yes | terminal | `.agents/skills` |
-| Claude Code CLI | yes | terminal | `.claude/skills` |
+| Codex CLI | yes | terminal | `.agents/skills` + `.codex/config.toml` |
+| ChatGPT / Codex desktop | not a reality id | desktop MCP | `.codex/config.toml` |
+| Codex IDE extension | not a reality id | COMPATIBLE host | skill + `.codex/config.toml` |
+| Claude Code CLI | yes | terminal | `.claude/skills` + `.mcp.json` |
+| Claude Desktop | not a reality id | desktop MCP | paste `discovery/claude-desktop.mcp.json` |
 | GitHub Copilot CLI | yes, opt-in | terminal | — |
+| GitHub Copilot Chat / Agent | not a reality id | COMPATIBLE host | `.vscode/mcp.json` |
 | Gemini CLI | yes, opt-in | terminal | `.agents/skills` |
-| VS Code | not a reality id | companion | not claimed |
-| Cursor | not a reality id | compatible host | not claimed |
+| VS Code | not a reality id | HOSTED companion | `.vscode/mcp.json` |
+| Cursor | not a reality id | COMPATIBLE host | `.cursor/skills` + MCP |
+| Windsurf | not a reality id | COMPATIBLE host | `.windsurf/skills` |
+| Kiro | not a reality id | COMPATIBLE host | `.kiro/skills` + MCP |
+| Antigravity IDE | not a reality id | COMPATIBLE host | `.agents/mcp_config.json` |
+| Continue | not a reality id | COMPATIBLE host | `.continue/mcpServers` |
+| Cline | not a reality id | COMPATIBLE host | paste `discovery/cline.mcp.json` |
+| Trae | not a reality id | COMPATIBLE host | same companion |
+| Zed | not a reality id | desktop MCP | paste `discovery/zed-context-servers.json` |
 
 ```bash
-npx --yes ruleblast@2.1.1 .
-npx --yes ruleblast@2.1.1 packages/api/internal
-npx --yes ruleblast@2.1.1 diff HEAD~1
-npx --yes ruleblast@2.1.1 explain src/args.ts --from HEAD~1
-npx --yes ruleblast@2.1.1 diff HEAD~1 --json
+npx --yes ruleblast@2.2.0 .
+npx --yes ruleblast@2.2.0 packages/api/internal
+npx --yes ruleblast@2.2.0 diff HEAD~1
+npx --yes ruleblast@2.2.0 explain src/args.ts --from HEAD~1
+npx --yes ruleblast@2.2.0 diff HEAD~1 --json
 ```
 
 ## Open in the editor
 
-The VS Code-compatible companion lives at [`hosts/vscode`](hosts/vscode). It is a view of the same engine, not a second resolver.
+The VS Code-compatible companion lives at [`hosts/vscode`](hosts/vscode). It is a view of the same engine, not a second resolver. Install that one unpacked folder in VS Code (including GitHub Copilot Chat), Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, or Trae. Select Reality can add both opt-in CLI surfaces. Saving a file marks the last result stale. It does not start another analysis. Claude Desktop, ChatGPT/Codex desktop, and Zed use `--mcp`, not a second extension.
 
 ```bash
 npm run build
 npm run host:build
 ```
 
-Then install `hosts/vscode` as an unpacked extension. Commands: Scan Workspace, Diff From…, Explain Active File, Open Verified Case. Saving a file marks the last result stale. It does not start another analysis.
+Install the unpacked `hosts/vscode` folder, or the VSIX on the GitHub Release (`npm run host:pack`). Commands: Scan Workspace, Diff From…, Explain Active File, Open Verified Case. Marketplace / Open VSX listings are separate publisher operations; the VSIX is the installable extension form.
 
 ## Give your agent RuleBlast
 
-Codex discovers repository skills from `.agents/skills`. Claude Code discovers project skills from `.claude/skills` ([official skills docs](https://code.claude.com/docs/en/skills)). Neither reads `node_modules`.
+One skill body, copied to every official path. Neither `node_modules` nor a host is a modeled reality.
 
-Copy [`.agents/skills/ruleblast/SKILL.md`](.agents/skills/ruleblast/SKILL.md) for Codex and [`.claude/skills/ruleblast/SKILL.md`](.claude/skills/ruleblast/SKILL.md) for Claude Code. Same four routes. Agents still need your allow gate before they run.
+- Codex CLI / desktop / IDE: [`.agents/skills/ruleblast/SKILL.md`](.agents/skills/ruleblast/SKILL.md) ([official skills](https://learn.chatgpt.com/codex/build-skills))
+- Claude Code: [`.claude/skills/ruleblast/SKILL.md`](.claude/skills/ruleblast/SKILL.md) ([official skills](https://code.claude.com/docs/en/skills))
+- Cursor: [`.cursor/skills/ruleblast/SKILL.md`](.cursor/skills/ruleblast/SKILL.md)
+- Windsurf: [`.windsurf/skills/ruleblast/SKILL.md`](.windsurf/skills/ruleblast/SKILL.md)
+- Kiro: [`.kiro/skills/ruleblast/SKILL.md`](.kiro/skills/ruleblast/SKILL.md)
+
+MCP is the same four actions: `node dist/cli.js --mcp`.
+
+- GitHub Copilot in VS Code: [`.vscode/mcp.json`](.vscode/mcp.json)
+- Claude Code: [`.mcp.json`](.mcp.json)
+- Codex desktop / CLI / IDE: [`.codex/config.toml`](.codex/config.toml)
+- Continue: [`.continue/mcpServers/ruleblast.json`](.continue/mcpServers/ruleblast.json)
+- Claude Desktop: paste [discovery/claude-desktop.mcp.json](discovery/claude-desktop.mcp.json) into `claude_desktop_config.json`
+- Cline: paste [discovery/cline.mcp.json](discovery/cline.mcp.json)
+- Zed: merge [discovery/zed-context-servers.json](discovery/zed-context-servers.json)
+
+Agents still need your allow gate before they run. Copilot Chat using RuleBlast is HOST/DISCOVERABLE. It is not `github/copilot-cli@1` and not a new modeled editor reality.
 
 ```bash
 echo yes > .ruleblast-allow
 # or:  set RULEBLAST_AGENT_ALLOW=yes
-npx --yes ruleblast@2.1.1 . --receipt
+npx --yes ruleblast@2.2.0 . --receipt
 ```
 
 Off: `RULEBLAST_AGENT_ALLOW=off`. RuleBlast never writes the allow file.
@@ -233,10 +262,10 @@ Optional. Not a hosted product. The runner only executes the published CLI.
 - uses: actions/checkout@v4
   with:
     fetch-depth: 0
-- uses: Kpoiut/ruleblast@v2.1.1
+- uses: Kpoiut/ruleblast@v2.2.0
 ```
 
-Root Action `Kpoiut/ruleblast@v2.1.1` is a distribution surface of the same published CLI. It posts a `--receipt` comment for `base.sha → head.sha`. Pin a commit after you trust the workflow.
+Root Action `Kpoiut/ruleblast@v2.2.0` is a distribution surface of the same published CLI. It posts a `--receipt` comment for `base.sha → head.sha`. Pin a commit after you trust the workflow.
 
 ## Contribute a Blast Case
 
@@ -246,7 +275,7 @@ Promoted Blast Case: official evidence, retrieval date, manifests, expected JSON
 
 ## Roadmap
 
-Today: Codex, Claude Code, opt-in Copilot CLI, and opt-in Gemini CLI.
+Today: Codex, Claude Code, opt-in Copilot CLI, and opt-in Gemini CLI. Same companion in VS Code-family editors, including Copilot Chat. Same four actions over `--mcp` for Claude Desktop and Codex desktop.
 
 Reality is not host. Four documented realities. Same result in the terminal or editor.
 

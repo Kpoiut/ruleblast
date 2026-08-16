@@ -30,6 +30,8 @@ describe("route catalog", () => {
     expect(help).toContain("--reality");
     expect(help).toContain("github/copilot-cli@1");
     expect(help).toContain("Repeat to add both");
+    expect(help).toContain("--mcp");
+    expect(help).toContain("Not a fifth action");
     expect(help).toContain("Shows the blast radius of AGENTS.md and CLAUDE.md changes");
     expect(help).toContain("Git diff for repository instructions");
   });

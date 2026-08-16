@@ -4,7 +4,7 @@ Git diff for repository instructions. Shows the blast radius of AGENTS.md and CL
 
 Packaged routing guide. This is not a Codex skill and is not discovered from `node_modules`.
 
-OpenAI’s documented Codex skill locations do not include `node_modules`; repository skills are discovered from `.agents/skills`. Claude Code’s documented project skills live at `.claude/skills/<name>/SKILL.md` (https://code.claude.com/docs/en/skills). This file is not discovered from either tree.
+OpenAI’s documented Codex skill locations do not include `node_modules`; repository skills are discovered from `.agents/skills`. Claude Code’s documented project skills live at `.claude/skills/<name>/SKILL.md` (https://code.claude.com/docs/en/skills). Cursor loads `.cursor/skills`. Windsurf loads `.windsurf/skills`. Kiro loads `.kiro/skills`. Codex desktop and the IDE extension also read project `.codex/config.toml` MCP. GitHub Copilot Chat reads `.vscode/mcp.json`. Claude Desktop uses a user `claude_desktop_config.json` snippet under `discovery/`. This file is not discovered from those trees. `--mcp` is a stdio transport of the same four routes.
 
 ## Routes
 

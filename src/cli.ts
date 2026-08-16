@@ -24,6 +24,7 @@ import {
 import { analyzeCurrent, analyzeDiff } from "./impact.js";
 import { renderCliHelp } from "./cli-help.js";
 import { defaultProfileDefinitions } from "./application/authority.js";
+import { serveMcpStdio } from "./mcp-stdio.js";
 
 export {
   CliRuntimeError,
@@ -139,6 +140,12 @@ export async function runCli(
     if (args.action === "version") {
       writeLine(io.stdout, getVersionLine(dependencies.version));
       return 0;
+    }
+    if (args.action === "mcp") {
+      return serveMcpStdio(process.stdin, process.stdout, {
+        cwd: io.cwd(),
+        env: io.env,
+      });
     }
     return await runAnalysisAction(args, io, dependencies);
   } catch (error: unknown) {

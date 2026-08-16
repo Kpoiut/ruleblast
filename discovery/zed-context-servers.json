@@ -1,0 +1,9 @@
+{
+  "context_servers": {
+    "ruleblast": {
+      "command": "npx",
+      "args": ["--yes", "ruleblast@2.2.0", "--mcp"],
+      "env": {}
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "ruleblast": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["--yes", "ruleblast@2.2.0", "--mcp"]
+    }
+  }
+}

@@ -121,6 +121,7 @@ export {
   companionMarkStale,
   companionNoteDirty,
   companionScoreboard,
+  companionSetRealities,
   companionSetReality,
   companionStatusLine,
   companionSucceed,

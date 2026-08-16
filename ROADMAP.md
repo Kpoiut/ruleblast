@@ -22,7 +22,7 @@ A new feature may merge only when it answers YES to at least one question and st
 2. Does it make the blast radius easier to explain or prove?
 3. Does it make the blast radius more useful in a Git workflow without creating a second product?
 
-Cursor editor semantics, dashboards, linters, fixers, MCP servers, and generic plugin APIs currently fail this test. `google/gemini-cli@1` passed (1) as the final bundled reality. A VS Code-compatible companion may pass (2) later in this 1.6 line only as a renderer of the same canonical result.
+Cursor editor semantics, dashboards, linters, fixers, product MCP servers, and generic plugin APIs fail this test. A stdio transport of the four existing actions is not a product MCP server. `google/gemini-cli@1` passed (1) as the final bundled reality. A VS Code-compatible companion may pass (2) as a renderer of the same canonical result. Compatible VS Code-family editors share that one companion.
 
 ## **SHIPPED TO MAIN** — Ground-truth core
 
@@ -286,6 +286,18 @@ That release is `2.1.1`. Latest independently verified public npm distribution a
 
 GitHub and npm metadata were already correct. This patch adds independent crawlable documents so problem queries can resolve to RuleBlast: which files inherit a changed `AGENTS.md`, why `git diff` is insufficient, and the sealed 2→206 case title. A root Action wrapper makes `uses: Kpoiut/ruleblast@v2.1.1` a discoverable GitHub Action entity without a second engine. No fifth action, no extra host class, no keyword stuffing.
 
+## **RELEASED** — `v2.2.0`: Compatible hosts
+
+That release is `2.2.0`. Latest independently verified public npm distribution at that tag is `2.2.0`.
+
+**Verified publication receipt.** [npm `ruleblast@2.2.0`](https://www.npmjs.com/package/ruleblast/v/2.2.0) reports integrity `sha512-ddfCo5MbaFjUyQa9eHr6D/pBzV9byQzhi30OzfkFSMnLmKdngHMHZsndIqAtNLPlHP6zs9fHeBSz+8lXVtuWZA==`. The registry download is the 128,262-byte tarball with SHA-256 `0d2d9c56e54e032981492afc9e49bad727a26c71526d13a68e6896595622f823`. Registry `gitHead` at publish was `0e2059cf163bcec2cb5c9051be46c6ba68b54365` and is not the 2.2.0 source commit. A signed tag and GitHub Release are recorded when those external records exist.
+
+One companion adapter at `hosts/vscode` is HOSTED on VS Code and COMPATIBLE on GitHub Copilot Chat, Cursor, Windsurf, Kiro, Antigravity IDE, Codex IDE, Continue, Cline, and Trae. Claude Desktop, ChatGPT/Codex desktop, and Zed reach the same four actions through `--mcp`. Those surfaces are not modeled realities.
+
+Official Agent Skills copies share one canonical body. Workspace MCP configs launch `npx --yes ruleblast@2.2.0 --mcp`. Compact replay metrics compare the packaged 33→106 receipt and a current-worktree diff without adding a fifth action.
+
+No per-editor engine fork, no fifth reality, no product MCP server, no `cursor/editor@1`.
+
 ## **NEXT** — Offline evidence-revision reveal
 
 An offline run should be able to say that a pinned evidence revision may have drifted without contacting a network. That is a later gate, not a host or marketplace expansion.
@@ -312,7 +324,7 @@ Across every stage, RuleBlast remains:
 - free of a CI/CD product, security scanner, agent framework, and universal configuration registry;
 - capped at three runtime dependencies unless removing the cap is supported by measured, reviewable evidence;
 - capped at four bundled realities; no fifth before Reality Packs;
-- at most two host classes: the terminal reference host and one VS Code-compatible companion renderer.
+- at most two host classes: the terminal reference host and one VS Code-compatible companion renderer. Cursor, Windsurf, Kiro, and Antigravity share that companion. `--mcp` is a transport of the four actions, not a third host class.
 
 The 1.6 line admits one product dimension per release: 1.6.0 is the fourth reality, 1.6.1 is the companion host, 1.6.2 is last-result explain and shared visual presentation. A proposal that needs a fifth action, arbitrary executable extension, hidden network access, or host-specific resolver is a different project.
 

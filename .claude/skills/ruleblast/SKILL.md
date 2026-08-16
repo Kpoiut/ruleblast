@@ -24,20 +24,34 @@ There is no `ruleblast scan` subcommand. `diff` has no `--from`.
 
 ## Discovery
 
-- Codex: `.agents/skills/ruleblast/SKILL.md`
-- Claude Code: `.claude/skills/ruleblast/SKILL.md` — official project path, https://code.claude.com/docs/en/skills
-- Not discovered from `node_modules`
+Same skill body at every official path. Not discovered from `node_modules`.
+
+- Codex CLI / ChatGPT desktop / Codex IDE: `.agents/skills/ruleblast/SKILL.md` — https://learn.chatgpt.com/codex/build-skills
+- Claude Code: `.claude/skills/ruleblast/SKILL.md` — https://code.claude.com/docs/en/skills
+- Cursor: `.cursor/skills/ruleblast/SKILL.md` — https://cursor.com/docs/skills
+- Windsurf Cascade: `.windsurf/skills/ruleblast/SKILL.md`
+- Kiro: `.kiro/skills/ruleblast/SKILL.md` — https://kiro.dev/docs/skills
+
+VS Code-family companion: `hosts/vscode`. Same folder in VS Code, GitHub Copilot Chat, Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, Trae. Not a second engine. A host is not a modeled reality.
+
+MCP stdio: `ruleblast --mcp`. Four tools: scan, diff, explain, case.
+
+- Claude Code / Copilot Agent Host: `.mcp.json`
+- GitHub Copilot in VS Code: `.vscode/mcp.json`
+- Codex desktop / CLI / IDE: `.codex/config.toml`
+- Cursor, Kiro, Antigravity, Continue: workspace MCP JSON next to this skill
+- Claude Desktop, Cline, Zed: paste snippets in `discovery/`
 
 ## Routes
 
 | Symptom | Command |
 |---|---|
-| What does each pinned CLI project now? | `npx --yes ruleblast@2.1.1 . --color=never` |
-| Which stacks moved? | `npx --yes ruleblast@2.1.1 diff HEAD~1 --to HEAD --color=never` |
-| Why this path? | `npx --yes ruleblast@2.1.1 explain <path> --from HEAD~1 --to HEAD --json` |
-| Teaching receipt, no clone | `npx --yes ruleblast@2.1.1 case --color=never` |
+| What does each pinned CLI project now? | `npx --yes ruleblast@2.2.0 . --color=never` |
+| Which stacks moved? | `npx --yes ruleblast@2.2.0 diff HEAD~1 --to HEAD --color=never` |
+| Why this path? | `npx --yes ruleblast@2.2.0 explain <path> --from HEAD~1 --to HEAD --json` |
+| Teaching receipt, no clone | `npx --yes ruleblast@2.2.0 case --color=never` |
 
-Add `--receipt` for the compact scoreboard (per-profile inheritance, not live agent telemetry). Add `--witness` for why-edges. Add `--reality github/copilot-cli@1` or `--reality google/gemini-cli@1` only when that surface is requested. Default `--json` stays two-profile.
+Published CLI: `npx --yes ruleblast@2.2.0`. MCP stdio: `npx --yes ruleblast@2.2.0 --mcp`. Add `--receipt` for the compact scoreboard (per-profile inheritance, not live agent telemetry). Add `--witness` for why-edges. Add `--reality github/copilot-cli@1` or `--reality google/gemini-cli@1` only when that surface is requested. Repeat `--reality` for both. Default `--json` stays two-profile.
 
 ## Rules
 

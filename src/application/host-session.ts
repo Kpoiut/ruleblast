@@ -33,7 +33,7 @@ export interface CompanionState {
   readonly lifecycle: AnalysisLifecycle;
   readonly completeness: Completeness;
   readonly dirtyBuffer: boolean;
-  readonly reality: string | null;
+  readonly realities: readonly string[];
   readonly action: HostCommand | null;
   readonly result: RuleBlastResult | null;
   readonly explainView: ExplainView | null;
@@ -54,7 +54,7 @@ export function initialCompanionState(): CompanionState {
     lifecycle: "READY",
     completeness: "COMPLETE",
     dirtyBuffer: false,
-    reality: null,
+    realities: Object.freeze([]),
     action: null,
     result: null,
     explainView: null,
@@ -197,21 +197,34 @@ export function companionExplainFromResult(
   }
 }
 
-export function companionSetReality(
+export function companionSetRealities(
   state: CompanionState,
-  reality: string | null,
+  realities: readonly string[],
 ): CompanionState {
-  if (reality !== null && !isOptInReality(reality)) {
-    throw new TypeError(`Unknown opt-in reality: ${JSON.stringify(reality)}`);
+  const unique = [...new Set(realities)].sort();
+  for (const reality of unique) {
+    if (!isOptInReality(reality)) {
+      throw new TypeError(`Unknown opt-in reality: ${JSON.stringify(reality)}`);
+    }
   }
-  if (state.reality === reality) return state;
+  if (state.realities.length === unique.length &&
+      state.realities.every((id, index) => id === unique[index])) {
+    return state;
+  }
   const stale = state.result !== null &&
     (state.lifecycle === "CURRENT" || state.lifecycle === "STALE");
   return Object.freeze({
     ...state,
-    reality,
+    realities: Object.freeze(unique),
     lifecycle: stale ? "STALE" : state.lifecycle,
   });
+}
+
+export function companionSetReality(
+  state: CompanionState,
+  reality: string | null,
+): CompanionState {
+  return companionSetRealities(state, reality === null ? [] : [reality]);
 }
 
 export function companionFail(
@@ -236,10 +249,9 @@ export function companionScoreboard(state: CompanionState) {
   return state.result === null ? null : scoreboardView(state.result);
 }
 
-function realityLabel(reality: string | null): string {
-  return reality === null
-    ? "Reality default (Codex + Claude Code)"
-    : `Reality + ${presentationFor(reality).shortLabel}`;
+function realityLabel(realities: readonly string[]): string {
+  if (realities.length === 0) return "Reality default (Codex + Claude Code)";
+  return `Reality + ${realities.map((id) => presentationFor(id).shortLabel).join(" + ")}`;
 }
 
 function sourceNode(
@@ -258,7 +270,7 @@ export function companionTree(state: CompanionState): ScoreboardNode[] {
   const board = result === null ? null : scoreboardView(result);
   const nodes: ScoreboardNode[] = [
     { id: "status", label: companionStatusLine(state) },
-    { id: "reality", label: realityLabel(state.reality) },
+    { id: "reality", label: realityLabel(state.realities) },
   ];
   if (state.error !== null) {
     nodes.push({ id: "error", label: state.error.code, description: state.error.message });

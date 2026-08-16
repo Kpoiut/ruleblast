@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import type { CompanionState, ScoreboardNode } from "../../../dist/application/host-session.js";
-import { companionTree } from "../../../dist/application/host-session.js";
+import type { CompanionState, ScoreboardNode } from "../engine/application/host-session.js";
+import { companionTree } from "../engine/application/host-session.js";
 
 export type { ScoreboardNode };
 

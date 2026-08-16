@@ -2,13 +2,24 @@
   "name": "ruleblast",
   "displayName": "RuleBlast",
   "description": "Read-only companion. Same four actions as the CLI. Shows the blast radius of AGENTS.md and CLAUDE.md changes.",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "publisher": "kpoiut",
+  "license": "Apache-2.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kpoiut/ruleblast.git"
+  },
+  "homepage": "https://github.com/Kpoiut/ruleblast/tree/main/hosts/vscode",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": ["Other"],
+  "keywords": ["ruleblast", "agents.md", "claude.md", "cursor", "windsurf", "kiro"],
+  "extensionKind": ["workspace"],
+  "capabilities": {
+    "untrustedWorkspaces": { "supported": false }
+  },
   "activationEvents": [
     "onView:ruleblast.scoreboard",
     "onCommand:ruleblast.scanWorkspace",

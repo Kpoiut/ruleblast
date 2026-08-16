@@ -6,7 +6,7 @@ import {
   companionFail,
   companionMarkStale,
   companionNoteDirty,
-  companionSetReality,
+  companionSetRealities,
   companionStatusLine,
   companionSucceed,
   diffRepository,
@@ -24,7 +24,7 @@ import {
   toRepositoryRelativePath,
   type CompanionState,
   type HostWorkspace,
-} from "../../../dist/application/authority.js";
+} from "../engine/application/authority.js";
 import { RuleBlastTreeProvider } from "./tree.js";
 
 let state = initialCompanionState();
@@ -93,7 +93,7 @@ export function activate(context: vscode.ExtensionContext): void {
         const snapshot = await openTrackedWorktree(root);
         return companionSucceed(state, await scanRepository({
           snapshot,
-          reality: state.reality,
+          realities: state.realities,
         }));
       });
     }),
@@ -110,7 +110,7 @@ export function activate(context: vscode.ExtensionContext): void {
         return companionSucceed(state, await diffRepository({
           before,
           after,
-          reality: state.reality,
+          realities: state.realities,
         }));
       });
     }),
@@ -150,7 +150,7 @@ export function activate(context: vscode.ExtensionContext): void {
         const explained = await explainRepository({
           snapshot,
           path: relative,
-          reality: dirty.reality,
+          realities: dirty.realities,
         });
         const text = presentExplain(explained.explain);
         await vscode.window.showTextDocument(
@@ -162,17 +162,25 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand("ruleblast.selectReality", async () => {
       const picked = await vscode.window.showQuickPick(
         [
-          { label: "Default (Codex + Claude Code)", reality: null },
+          { label: "Default only (Codex + Claude Code)", id: "" },
           ...optInRealityIds().map((reality) => ({
             label: presentationLabel(reality),
             description: reality,
-            reality,
+            id: reality,
           })),
         ],
-        { title: "RuleBlast opt-in reality", placeHolder: "Adds one documented surface to the next scan or diff" },
+        {
+          title: "RuleBlast opt-in realities",
+          placeHolder: "Empty default, or add Copilot CLI and/or Gemini CLI",
+          canPickMany: true,
+        },
       );
       if (picked === undefined) return;
-      reveal(companionSetReality(state, picked.reality), tree, status);
+      const selected = Array.isArray(picked) ? picked : [picked];
+      const realities = selected.some((item) => item.id === "")
+        ? []
+        : selected.map((item) => item.id).filter((id) => id !== "");
+      reveal(companionSetRealities(state, realities), tree, status);
     }),
     vscode.commands.registerCommand("ruleblast.openVerifiedCase", async () => {
       await withRoot(tree, status, "case", async () =>

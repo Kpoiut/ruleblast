@@ -2,6 +2,19 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.2.0 — RELEASED
+
+- One VS Code-family companion covers VS Code (HOSTED) plus GitHub Copilot Chat, Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, and Trae (COMPATIBLE). No per-editor fork. A host is not a modeled reality.
+- Claude Desktop, ChatGPT/Codex desktop, and Zed use the same `--mcp` transport. Workspace MCP and skills call `npx --yes ruleblast@2.2.0 --mcp`.
+- Same skill body at the official Codex, Claude Code, Cursor, Windsurf, and Kiro paths.
+- `--mcp` is a stdio transport of scan, diff, explain, and case. Not a fifth action. Agents still need the allow gate.
+- Companion Select Reality can add both opt-in CLI surfaces on the next run.
+- Compact `ruleblast.replay.v1` metrics compare the packaged 33→106 receipt and a current-tree diff. The sealed openai/codex 2→206 proof is unchanged.
+
+### Release artifact
+
+- [npm `ruleblast@2.2.0`](https://www.npmjs.com/package/ruleblast/v/2.2.0) reports integrity `sha512-ddfCo5MbaFjUyQa9eHr6D/pBzV9byQzhi30OzfkFSMnLmKdngHMHZsndIqAtNLPlHP6zs9fHeBSz+8lXVtuWZA==`. The registry download is the 128,262-byte tarball with SHA-256 `0d2d9c56e54e032981492afc9e49bad727a26c71526d13a68e6896595622f823`. Registry `gitHead` at publish was `0e2059cf163bcec2cb5c9051be46c6ba68b54365` and is not the 2.2.0 source commit.
+
 ## 2.1.1 — RELEASED
 
 - Independent retrieval documents: problem page for which files inherit a changed `AGENTS.md`, `llms.txt`, and `CITATION.cff`. Same identity sentence. No keyword stuffing.

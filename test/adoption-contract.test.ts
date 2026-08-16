@@ -25,13 +25,13 @@ interface PackageLock {
   readonly packages: Readonly<Record<string, { readonly version?: string }>>;
 }
 
-describe("v2.1.1 adoption contract", () => {
+describe("v2.2.0 adoption contract", () => {
   it("locks the exact package identity and supported discovery metadata", () => {
     const descriptor = readJson<PackageDescriptor>("package.json");
     const lock = readJson<PackageLock>("package-lock.json");
 
     expect(descriptor).toMatchObject({
-      version: "2.1.1",
+      version: "2.2.0",
       description:
         "Git diff for repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes across Codex, Claude Code, Gemini CLI, and Copilot CLI.",
       repository: {
@@ -61,8 +61,8 @@ describe("v2.1.1 adoption contract", () => {
       "cli",
       "developer-tools",
     ]);
-    expect(lock.version).toBe("2.1.1");
-    expect(lock.packages[""]?.version).toBe("2.1.1");
+    expect(lock.version).toBe("2.2.0");
+    expect(lock.packages[""]?.version).toBe("2.2.0");
 
     expect(descriptor.description).toContain("blast radius");
     expect(descriptor.description).toContain("AGENTS.md");
@@ -116,7 +116,7 @@ describe("v2.1.1 adoption contract", () => {
   it("keeps the public onboarding on the verified case and product boundary", () => {
     const readme = read("README.md");
     expect(readme).toContain("## Run the verified case");
-    expect(readme).toContain("npx --yes ruleblast@2.1.1 case");
+    expect(readme).toContain("npx --yes ruleblast@2.2.0 case");
     expect(readme).not.toMatch(/ruleblast demo/iu);
     expect(readme).not.toContain("DEMO FIXTURE");
     expect(readme).not.toContain("remains conditional");
@@ -133,10 +133,10 @@ describe("v2.1.1 adoption contract", () => {
     const eyeHero = readme.indexOf("assets/ruleblast-hero.png");
     const tagline = readme.indexOf("Git shows the <code>AGENTS.md</code>");
     const causalProof = readme.indexOf("assets/ruleblast-causal-proof.gif");
-    const yourRepo = readme.indexOf("npx --yes ruleblast@2.1.1 .");
+    const yourRepo = readme.indexOf("npx --yes ruleblast@2.2.0 .");
     const missed = readme.indexOf("## What Git missed");
     const proof = readme.indexOf("PROOF.md");
-    const teachingCase = readme.indexOf("npx --yes ruleblast@2.1.1 case");
+    const teachingCase = readme.indexOf("npx --yes ruleblast@2.2.0 case");
     const install = readme.indexOf("## Install");
     expect(title).toBeGreaterThan(-1);
     expect(eyeHero).toBeGreaterThan(title);
@@ -188,7 +188,7 @@ describe("v2.1.1 adoption contract", () => {
     const security = read("SECURITY.md");
     expect(security).toMatch(/do not include exploit details in a public issue/iu);
     expect(security).toMatch(/no response-time or remediation-time guarantee/iu);
-    expect(security).toMatch(/latest published `2\.1\.x`/iu);
+    expect(security).toMatch(/latest published `2\.2\.x`/iu);
     expect(security).toMatch(/private vulnerability reporting is enabled/iu);
     expect(security).toMatch(/security\/advisories\/new/iu);
     expect(security).toMatch(/stay on your machine/iu);
@@ -202,8 +202,8 @@ describe("v2.1.1 adoption contract", () => {
     expect(conduct).toMatch(/protect/iu);
 
     const contributingLead = read("CONTRIBUTING.md").slice(0, 700);
-    expect(contributingLead).toContain("v2.1.1");
-    expect(contributingLead).toContain("2.1.1");
+    expect(contributingLead).toContain("v2.2.0");
+    expect(contributingLead).toContain("2.2.0");
     expect(contributingLead).toMatch(/you do not need a 25-commit/iu);
     expect(contributingLead).toMatch(/surprising result/iu);
 
@@ -383,7 +383,7 @@ describe("v2.1.1 adoption contract", () => {
     const asset = "assets/ruleblast-visual-benchmark.png";
     const image = readme.indexOf(asset);
     const install = readme.indexOf("## Install");
-    expect(heading).toBeGreaterThan(readme.indexOf("npx --yes ruleblast@2.1.1 ."));
+    expect(heading).toBeGreaterThan(readme.indexOf("npx --yes ruleblast@2.2.0 ."));
     expect(image).toBeGreaterThan(heading);
     expect(install).toBeGreaterThan(image);
     expect(readme).toContain("10,000 nested paths");

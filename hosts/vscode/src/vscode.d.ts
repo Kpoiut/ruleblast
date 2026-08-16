@@ -64,8 +64,8 @@ declare module "vscode" {
     showInputBox(options: { prompt: string; value?: string }): Promise<string | undefined>;
     showQuickPick<T extends { label: string }>(
       items: readonly T[],
-      options?: { title?: string; placeHolder?: string },
-    ): Promise<T | undefined>;
+      options?: { title?: string; placeHolder?: string; canPickMany?: boolean },
+    ): Promise<T | T[] | undefined>;
     showTextDocument(document: TextDocument): Promise<unknown>;
     createOutputChannel(name: string): OutputChannel;
     createStatusBarItem(alignment?: StatusBarAlignment, priority?: number): StatusBarItem;

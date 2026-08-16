@@ -62,6 +62,7 @@ describe("parseArgs", () => {
     [["case", "--explain", "packages\\api//./refund.ts", "--json"], {
       action: "case", explainPath: "packages/api/refund.ts", output: json, ...flags,
     }],
+    [["--mcp"], { action: "mcp" }],
     [["demo"], { action: "case", explainPath: null, output: text, ...flags }],
     [["demo", "--explain", "packages\\api//./refund.ts", "--json"], {
       action: "case", explainPath: "packages/api/refund.ts", output: json, ...flags,
@@ -106,6 +107,7 @@ describe("parseArgs", () => {
   });
 
   it.each([
+    [["--mcp", "."], "OPTION_CONFLICT"],
     [["--wat\nforge"], "UNKNOWN_OPTION"],
     [["diff", "HEAD", "extra"], "EXTRA_POSITIONAL"],
     [["demo", "extra"], "EXTRA_POSITIONAL"],

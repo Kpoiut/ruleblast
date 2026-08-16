@@ -130,7 +130,7 @@ async function requireTrackedPath(
 }
 
 export async function runAnalysisAction(
-  args: Exclude<CliArgs, { action: "help" | "version" }>,
+  args: Exclude<CliArgs, { action: "help" | "version" | "mcp" }>,
   io: CapturedCliIo,
   dependencies: CliDependencies,
 ): Promise<number> {

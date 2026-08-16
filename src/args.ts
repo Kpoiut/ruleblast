@@ -53,6 +53,7 @@ export interface CaseArgs extends CommonArgs {
 
 export interface HelpArgs { readonly action: "help"; }
 export interface VersionArgs { readonly action: "version"; }
+export interface McpArgs { readonly action: "mcp"; }
 
 export type CliArgs =
   | ScanArgs
@@ -60,7 +61,8 @@ export type CliArgs =
   | ExplainArgs
   | CaseArgs
   | HelpArgs
-  | VersionArgs;
+  | VersionArgs
+  | McpArgs;
 
 export type CliUsageErrorCode =
   | "INVALID_ARGUMENT_VECTOR"
@@ -376,6 +378,15 @@ export function parseArgs(argv: readonly string[]): CliArgs {
   }
   if (first === "--version" && tokens.length === 1) {
     return Object.freeze({ action: "version" });
+  }
+  if (first === "--mcp") {
+    if (tokens.length !== 1) {
+      return usage("OPTION_CONFLICT", "--mcp is a stdio transport and cannot combine with an action");
+    }
+    return Object.freeze({ action: "mcp" });
+  }
+  if (tokens.includes("--mcp")) {
+    return usage("OPTION_CONFLICT", "--mcp is a stdio transport and cannot combine with an action");
   }
   if (first === "diff") return parseDiff(tokens.slice(1));
   if (first === "explain") return parseExplain(tokens.slice(1));

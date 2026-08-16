@@ -7,6 +7,7 @@ import {
   companionFail,
   companionMarkStale,
   companionNoteDirty,
+  companionSetRealities,
   companionSetReality,
   companionStatusLine,
   companionSucceed,
@@ -137,10 +138,15 @@ describe("companion session", () => {
     });
     let state = companionSucceed(initialCompanionState(), result);
     state = companionSetReality(state, GOOGLE_GEMINI_CLI_PROFILE_ID);
-    expect(state.reality).toBe(GOOGLE_GEMINI_CLI_PROFILE_ID);
+    expect(state.realities).toEqual([GOOGLE_GEMINI_CLI_PROFILE_ID]);
     expect(state.lifecycle).toBe("STALE");
     expect(state.result).toBe(result);
     expect(() => companionSetReality(state, "cursor/editor@1")).toThrow(/opt-in reality/i);
+    const both = companionSetRealities(state, [
+      GOOGLE_GEMINI_CLI_PROFILE_ID,
+      "github/copilot-cli@1",
+    ]);
+    expect(both.realities).toEqual(["github/copilot-cli@1", GOOGLE_GEMINI_CLI_PROFILE_ID]);
   });
 
   it("puts last explain and source blast on the scoreboard tree", async () => {

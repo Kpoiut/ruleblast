@@ -14,7 +14,7 @@ describe("distribution surfaces", () => {
     const skill = read(skillPath);
     expect(skill).toMatch(/^---\r?\nname: ruleblast\r?\n/u);
     expect(skill).toContain("Use when");
-    expect(skill).toContain("npx --yes ruleblast@2.1.1");
+    expect(skill).toContain("npx --yes ruleblast@2.2.0");
     expect(skill).toContain("There is no `ruleblast scan` subcommand");
     expect(skill).toMatch(/RULEBLAST_AGENT_ALLOW|\.ruleblast-allow/u);
     expect(skill).toMatch(/ask/iu);
@@ -35,7 +35,7 @@ describe("distribution surfaces", () => {
     const codex = read(codexPath);
     expect(claude).toContain("There is no `ruleblast scan` subcommand");
     expect(claude).toContain(".ruleblast-allow");
-    expect(claude).toContain("npx --yes ruleblast@2.1.1");
+    expect(claude).toContain("npx --yes ruleblast@2.2.0");
     expect(claude).toContain(".claude/skills");
     expect(codex).toContain(".claude/skills");
     expect(read("AGENT_USAGE.md")).toContain(".claude/skills");
@@ -59,12 +59,12 @@ describe("distribution surfaces", () => {
     expect(root).not.toMatch(/ruleblast scan\b/u);
     expect(nested).toContain('npx --yes "ruleblast@${RULEBLAST_VERSION}"');
     expect(nested).toContain("--receipt");
-    expect(nested).toMatch(/default: "2\.1\.1"/u);
+    expect(nested).toMatch(/default: "2\.2\.0"/u);
     expect(nested).not.toMatch(/default: "1\.6\.2"/u);
     expect(read(".github/workflows/ruleblast-pr.yml")).toContain(
       "uses: ./.github/actions/ruleblast",
     );
-    expect(read("README.md")).toContain("uses: Kpoiut/ruleblast@v2.1.1");
+    expect(read("README.md")).toContain("uses: Kpoiut/ruleblast@v2.2.0");
     expect(read("README.md")).not.toMatch(/uses: Kpoiut\/ruleblast@main\s*$/mu);
   });
 
