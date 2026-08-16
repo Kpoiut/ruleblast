@@ -9,6 +9,11 @@ All notable user-visible changes to RuleBlast are recorded here.
 - Capture-case Windows 8.3 path uses `cmd %~sI` with the path in an env var and `windowsVerbatimArguments`. Node's default quoting produced `D:\"C:`. Timeouts stay 15s / 120s.
 - Published npm CLI remains `2.2.0`.
 
+### Release artifact
+
+- Signed tag object `aca42df18070b98c3ca2b52c5e3ea6b5ae83f76c` targets commit `2541576ebc9d8ea3db31bbd62e3df9b78d410c69`.
+- GitHub Release [`v2.2.1`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.2.1) serves the 115,113-byte `ruleblast-companion-2.2.1.vsix` with SHA-256 `eac0ccbcf4287de56c810481a78fe25597d99484310e5e9cfec9bf13f3dc8bd3`.
+
 ## 2.2.0 — RELEASED
 
 - One VS Code-family companion covers VS Code (HOSTED) plus GitHub Copilot Chat, Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, and Trae (COMPATIBLE). No per-editor fork. A host is not a modeled reality.
@@ -20,6 +25,7 @@ All notable user-visible changes to RuleBlast are recorded here.
 
 ### Release artifact
 
+- Signed tag object `b6c93afb91c0c7b12b97c163cb12dcd2b0b4a864` for [`v2.2.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.2.0) targets commit `6f3732fef48ba9a6c0ec4f7a6f9b7381786fb737`.
 - [npm `ruleblast@2.2.0`](https://www.npmjs.com/package/ruleblast/v/2.2.0) reports integrity `sha512-ddfCo5MbaFjUyQa9eHr6D/pBzV9byQzhi30OzfkFSMnLmKdngHMHZsndIqAtNLPlHP6zs9fHeBSz+8lXVtuWZA==`. The registry download is the 128,262-byte tarball with SHA-256 `0d2d9c56e54e032981492afc9e49bad727a26c71526d13a68e6896595622f823`. Registry `gitHead` at publish was `0e2059cf163bcec2cb5c9051be46c6ba68b54365` and is not the 2.2.0 source commit.
 
 ## 2.1.1 — RELEASED

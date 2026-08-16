@@ -525,6 +525,9 @@ describe("public release maturity", () => {
     const released = roadmap.slice(start, next);
     for (const evidence of [
       "https://www.npmjs.com/package/ruleblast/v/2.2.0",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v2.2.0",
+      "b6c93afb91c0c7b12b97c163cb12dcd2b0b4a864",
+      "6f3732fef48ba9a6c0ec4f7a6f9b7381786fb737",
       "128,262",
       "0d2d9c56e54e032981492afc9e49bad727a26c71526d13a68e6896595622f823",
       "sha512-ddfCo5MbaFjUyQa9eHr6D/pBzV9byQzhi30OzfkFSMnLmKdngHMHZsndIqAtNLPlHP6zs9fHeBSz+8lXVtuWZA==",
@@ -548,6 +551,11 @@ describe("public release maturity", () => {
     const shipped = roadmap.slice(start, next);
     expect(shipped).toContain("2.2.1");
     expect(shipped).toContain("2.2.0");
+    expect(shipped).toContain("aca42df18070b98c3ca2b52c5e3ea6b5ae83f76c");
+    expect(shipped).toContain("2541576ebc9d8ea3db31bbd62e3df9b78d410c69");
+    expect(shipped).toContain("https://github.com/Kpoiut/ruleblast/releases/tag/v2.2.1");
+    expect(shipped).toContain("115,113");
+    expect(shipped).toContain("eac0ccbcf4287de56c810481a78fe25597d99484310e5e9cfec9bf13f3dc8bd3");
     expect(shipped).toMatch(/128.?128/iu);
     expect(shipped).toContain("ruleblast-companion-2.2.1.vsix");
     expect(shipped).toMatch(/windowsVerbatimArguments|%~sI/u);
