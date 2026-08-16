@@ -23,8 +23,6 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run build
       - run: npm run check
-      - run: npm run package:smoke
-      - run: npm run install:smoke
       - name: Verify published registry upgrade
         if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/tags/v2.2.0'
         env:

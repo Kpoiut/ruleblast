@@ -74,14 +74,24 @@ describe("candidate installation matrix", () => {
       "npm ci --ignore-scripts",
       "npm run build",
       "npm run check",
-      "npm run package:smoke",
-      "npm run install:smoke",
     ]) {
       const position = workflow.indexOf(command, cursor);
       expect(position, `missing or out-of-order workflow command: ${command}`)
         .toBeGreaterThanOrEqual(cursor);
       cursor = position + command.length;
     }
+    expect(workflow).not.toMatch(/^\s+- run: npm run package:smoke\s*$/mu);
+    expect(workflow).not.toMatch(/^\s+- run: npm run install:smoke\s*$/mu);
+    const packageSmokeTest = await readFile(
+      new URL("./package-smoke.test.ts", import.meta.url),
+      "utf8",
+    );
+    const installMatrix = await readFile(
+      new URL("./install-matrix.test.ts", import.meta.url),
+      "utf8",
+    );
+    expect(packageSmokeTest).toContain("scripts/package-smoke.mjs");
+    expect(installMatrix).toContain("runInstallSmoke");
     expect(workflow).toContain("RULEBLAST_REGISTRY_SMOKE: ruleblast@2.2.0");
     expect(workflow).toContain(
       "RULEBLAST_REGISTRY_UPGRADE_FROM: ruleblast@1.5.1",
