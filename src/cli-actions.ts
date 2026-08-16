@@ -21,8 +21,16 @@ import type {
   DiffTextPresentationContext,
   ShellDialect,
 } from "./render-text.js";
-import type { RepositorySnapshot } from "./snapshot.js";
+import { isGitObjectSnapshot, type RepositorySnapshot } from "./snapshot.js";
 import { profilesForRealities } from "./application/authority.js";
+import { analyzePreparedDiff } from "./application/diff-analysis.js";
+import { cacheGitObjectSnapshot } from "./application/projection-boundary.js";
+import {
+  buildOverlayP1,
+  OVERLAY_UNAVAILABLE,
+  renderBlastOverlay,
+} from "./application/blast-overlay.js";
+import { probeGitStorageFormat } from "./git.js";
 import type { ProfileDefinition } from "./profiles/profile.js";
 
 function noDefensibleResult(
@@ -183,11 +191,24 @@ export async function runAnalysisAction(
     const before = await dependencies.openGitSnapshot(root, args.base.ref);
     const after = await openSelector(root, args.target, dependencies);
     assertDistinct(before, after);
-    const result = await dependencies.analyzeDiff({
-      before,
-      after,
-      profiles: analysisProfiles(args, dependencies),
-    });
+    const profiles = analysisProfiles(args, dependencies);
+    const admitP1 = args.output.kind !== "json" &&
+      isGitObjectSnapshot(before) &&
+      isGitObjectSnapshot(after);
+    const format = admitP1 ? await probeGitStorageFormat(root) : null;
+    const wrappedBefore = admitP1 && format !== null
+      ? cacheGitObjectSnapshot(before, format)
+      : null;
+    const wrappedAfter = admitP1 && format !== null && isGitObjectSnapshot(after)
+      ? cacheGitObjectSnapshot(after, format)
+      : null;
+    const result = wrappedBefore !== null && wrappedAfter !== null
+      ? await analyzePreparedDiff({
+          before: wrappedBefore,
+          after: wrappedAfter,
+          profiles,
+        })
+      : await dependencies.analyzeDiff({ before, after, profiles });
     present(
       result,
       args.output,
@@ -195,6 +216,12 @@ export async function runAnalysisAction(
       diffTextContext(args.base.ref, args.target, dependencies.shellDialect),
       presentationExtras(args),
     );
+    if (admitP1 && format === null) io.stdout(OVERLAY_UNAVAILABLE);
+    if (wrappedBefore !== null && wrappedAfter !== null) {
+      io.stdout(renderBlastOverlay(
+        await buildOverlayP1(wrappedBefore, wrappedAfter, result),
+      ));
+    }
     return noDefensibleResult(result) ? 2 : 0;
   }
 

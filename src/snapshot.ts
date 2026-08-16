@@ -19,6 +19,12 @@ export interface GitObjectSnapshot extends RepositorySnapshot {
   blobOid(path: string): string | null;
 }
 
+export function isGitObjectSnapshot(
+  snapshot: RepositorySnapshot,
+): snapshot is GitObjectSnapshot {
+  return typeof (snapshot as GitObjectSnapshot).blobOid === "function";
+}
+
 interface StoredEntry extends SnapshotEntry {
   readonly bytes: Uint8Array;
 }

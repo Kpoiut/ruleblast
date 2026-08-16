@@ -59,6 +59,15 @@ describe("blast overlay classifier", () => {
     expect(source).not.toMatch(/\.read\s*\(/u);
   });
 
+  it("admits the Git pair overlay only on human text", () => {
+    const source = readFileSync(new URL("../src/cli-actions.ts", import.meta.url), "utf8");
+    const admit = source.indexOf("const admitP1");
+    expect(admit).toBeGreaterThan(-1);
+    expect(source.slice(admit, admit + 240)).toContain('args.output.kind !== "json"');
+    expect(source.indexOf("probeGitStorageFormat", admit)).toBeGreaterThan(admit);
+    expect(source).not.toContain("buildOverlayP2");
+  });
+
   it("classifies DELETE as unresolved", () => {
     expect(classifyObserved("DELETE", transition(["p"], [], []))).toBe("UNRESOLVED");
     expect(classifyObserved("MODIFY", undefined)).toBe("UNRESOLVED");

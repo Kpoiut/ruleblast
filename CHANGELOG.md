@@ -2,6 +2,12 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.2.2 — SHIPPED TO MAIN
+
+- Human `ruleblast diff <git> --to <git>` can append OTHER TRACKED CHANGES (selected realities) from Git tree blob-object identity. Not a fifth action. `--json` is unchanged. `HEAD → WORKTREE` has no overlay. This is not `v2.3.0` and not an npm release.
+- Verify no longer repeats package/install smoke after `npm run check`; those bodies already run inside check.
+- Published npm CLI remains `2.2.0`.
+
 ## 2.2.1 — SHIPPED TO MAIN
 
 - Companion Marketplace icon is a 128×128 PNG. Upload `ruleblast-companion-2.2.1.vsix`. Do not overwrite Marketplace `2.2.0`.
