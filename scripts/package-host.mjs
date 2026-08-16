@@ -10,7 +10,7 @@ mkdirSync(outDir, { recursive: true });
 cpSync(resolve(root, "LICENSE"), resolve(host, "LICENSE"));
 const result = spawnSync(
   "npx",
-  ["--yes", "@vscode/vsce@3.6.0", "package", "-o", resolve(outDir, "ruleblast-companion-2.2.0.vsix")],
+  ["--yes", "@vscode/vsce@3.6.0", "package", "-o", resolve(outDir, "ruleblast-companion-2.2.1.vsix")],
   { cwd: host, stdio: "inherit", shell: true },
 );
 process.exit(result.status ?? 1);

@@ -298,6 +298,14 @@ Official Agent Skills copies share one canonical body. Workspace MCP configs lau
 
 No per-editor engine fork, no fifth reality, no product MCP server, no `cursor/editor@1`.
 
+## **SHIPPED TO MAIN** — `v2.2.1`: Companion icon and Windows verify
+
+Companion version is `2.2.1`. Latest independently verified public npm distribution remains `2.2.0`. Do not overwrite Marketplace `2.2.0`. Upload `ruleblast-companion-2.2.1.vsix`.
+
+The companion ships a 128×128 PNG Marketplace icon. Verify builds once before `npm run check`. Candidate install smoke reuses `dist/cli.js` instead of compiling again. Capture-case Windows 8.3 resolution uses `cmd %~sI` with the path in an env var and `windowsVerbatimArguments`. Node's default quoting produced `D:\"C:`. Timeouts stay 15s / 120s. No fifth action, no second engine, no new npm CLI.
+
+A signed tag and GitHub Release VSIX are recorded when those external records exist.
+
 ## **NEXT** — Offline evidence-revision reveal
 
 An offline run should be able to say that a pinned evidence revision may have drifted without contacting a network. That is a later gate, not a host or marketplace expansion.

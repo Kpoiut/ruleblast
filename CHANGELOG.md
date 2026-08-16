@@ -2,6 +2,13 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.2.1 — SHIPPED TO MAIN
+
+- Companion Marketplace icon is a 128×128 PNG. Upload `ruleblast-companion-2.2.1.vsix`. Do not overwrite Marketplace `2.2.0`.
+- Verify builds once before `npm run check`. Candidate install smoke reuses `dist/cli.js` instead of compiling again.
+- Capture-case Windows 8.3 path uses `cmd %~sI` with the path in an env var and `windowsVerbatimArguments`. Node's default quoting produced `D:\"C:`. Timeouts stay 15s / 120s.
+- Published npm CLI remains `2.2.0`.
+
 ## 2.2.0 — RELEASED
 
 - One VS Code-family companion covers VS Code (HOSTED) plus GitHub Copilot Chat, Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, and Trae (COMPATIBLE). No per-editor fork. A host is not a modeled reality.

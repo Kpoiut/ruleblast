@@ -72,8 +72,8 @@ describe("candidate installation matrix", () => {
     let cursor = 0;
     for (const command of [
       "npm ci --ignore-scripts",
-      "npm run check",
       "npm run build",
+      "npm run check",
       "npm run package:smoke",
       "npm run install:smoke",
     ]) {
@@ -87,6 +87,27 @@ describe("candidate installation matrix", () => {
       "RULEBLAST_REGISTRY_UPGRADE_FROM: ruleblast@1.5.1",
     );
     expect(workflow).toContain("npm run install:smoke -- --registry");
+    expect(workflow.indexOf("npm run build")).toBeLessThan(workflow.indexOf("npm run check"));
+  });
+
+  it("does not compile again when dist/cli.js is already present", async () => {
+    const moduleUrl = new URL("../scripts/install-smoke.mjs", import.meta.url).href;
+    const smoke = await import(moduleUrl) as {
+      candidateHasCompiledCli(root: string): boolean;
+    };
+    const root = await mkdtemp(join(tmpdir(), "ruleblast-compiled-cli-"));
+    try {
+      expect(smoke.candidateHasCompiledCli(root)).toBe(false);
+      await mkdir(join(root, "dist"));
+      await writeFile(join(root, "dist", "cli.js"), "export {};\n");
+      expect(smoke.candidateHasCompiledCli(root)).toBe(true);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("keeps the registry upgrade cell on the signed 2.2.0 tag", async () => {
+    const workflow = await readFile(new URL("../.github/workflows/verify.yml", import.meta.url), "utf8");
     expect(workflow).toContain("github.event_name == 'workflow_dispatch'");
     expect(workflow).toContain("github.ref == 'refs/tags/v2.2.0'");
     const parsed = parse(workflow) as VerifyWorkflow;

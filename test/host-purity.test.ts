@@ -30,6 +30,18 @@ describe("witness domain purity", () => {
 });
 
 describe("companion host purity", () => {
+  it("ships a 128x128 PNG Marketplace icon", () => {
+    const icon = readFileSync(join(repositoryRoot, "hosts/vscode/media/icon.png"));
+    const manifest = JSON.parse(
+      readFileSync(join(repositoryRoot, "hosts/vscode/package.json"), "utf8"),
+    ) as { readonly icon?: string; readonly version: string };
+    expect(icon.subarray(1, 4).toString("ascii")).toBe("PNG");
+    expect(icon.readUInt32BE(16)).toBe(128);
+    expect(icon.readUInt32BE(20)).toBe(128);
+    expect(manifest.icon).toBe("media/icon.png");
+    expect(manifest.version).toBe("2.2.1");
+  });
+
   it("keeps the VS Code adapter off the npm analysis package", () => {
     const descriptor = JSON.parse(readFileSync(join(repositoryRoot, "package.json"), "utf8")) as {
       readonly files?: readonly string[];

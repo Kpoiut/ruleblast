@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
-  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.1.1"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="package version 2.2.0"></a>
+  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.2.0"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="package version 2.2.0"></a>
   <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/ruleblast" alt="Apache-2.0 license"></a>
 </p>
@@ -222,7 +222,7 @@ npm run build
 npm run host:build
 ```
 
-Install the unpacked `hosts/vscode` folder, or the VSIX on the GitHub Release (`npm run host:pack`). Commands: Scan Workspace, Diff From…, Explain Active File, Open Verified Case. Marketplace / Open VSX listings are separate publisher operations; the VSIX is the installable extension form.
+Install the unpacked `hosts/vscode` folder, or `ruleblast-companion-2.2.1.vsix` on the GitHub Release (`npm run host:pack`). That VSIX carries a 128×128 PNG icon. Do not overwrite Marketplace `2.2.0`. Commands: Scan Workspace, Diff From…, Explain Active File, Open Verified Case. Marketplace / Open VSX listings are separate publisher operations; the VSIX is the installable extension form.
 
 ## Give your agent RuleBlast
 

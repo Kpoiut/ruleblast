@@ -44,6 +44,10 @@ const CONTROLLED_NPM_KEYS = new Set([
   "ruleblast_lifecycle_sentinel",
 ]);
 
+export function candidateHasCompiledCli(root = REPOSITORY_ROOT) {
+  return existsSync(join(root, "dist", "cli.js"));
+}
+
 export function npmEnvironment(cache, inherited = process.env) {
   const environment = Object.fromEntries(
     Object.entries(inherited).filter(([key]) => !CONTROLLED_NPM_KEYS.has(key.toLowerCase())),
@@ -165,10 +169,12 @@ export async function runInstallSmoke(options = {}) {
       dependencies = [];
     } else {
       const buildEnv = npmEnvironment(buildCache, inheritedEnvironment);
-      await runNpm(["run", "build"], REPOSITORY_ROOT, {
-        env: buildEnv,
-        timeoutMs: COMMAND_TIMEOUT_MS,
-      });
+      if (!candidateHasCompiledCli(REPOSITORY_ROOT)) {
+        await runNpm(["run", "build"], REPOSITORY_ROOT, {
+          env: buildEnv,
+          timeoutMs: COMMAND_TIMEOUT_MS,
+        });
+      }
       const packed = await packPackage(
         REPOSITORY_ROOT,
         packDirectory,

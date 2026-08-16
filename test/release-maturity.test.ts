@@ -516,7 +516,9 @@ describe("public release maturity", () => {
   it("records the independently verified v2.2.0 npm receipt", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **RELEASED** — `v2.2.0`: Compatible hosts";
-    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const next = roadmap.indexOf(
+      "## **SHIPPED TO MAIN** — `v2.2.1`: Companion icon and Windows verify",
+    );
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -533,6 +535,33 @@ describe("public release maturity", () => {
     expect(released).not.toMatch(/\bIN BUILD\b|remain conditional|publication.+incomplete/iu);
     expect(read("CHANGELOG.md")).toContain("## 2.2.0 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.2\.0 — IN BUILD/u);
+  });
+
+  it("records v2.2.1 as the companion icon and Windows verify patch", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading =
+      "## **SHIPPED TO MAIN** — `v2.2.1`: Companion icon and Windows verify";
+    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toContain("2.2.1");
+    expect(shipped).toContain("2.2.0");
+    expect(shipped).toMatch(/128.?128/iu);
+    expect(shipped).toContain("ruleblast-companion-2.2.1.vsix");
+    expect(shipped).toMatch(/windowsVerbatimArguments|%~sI/u);
+    expect(shipped).toMatch(/dist\/cli\.js/u);
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 2.2.1 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.2\.1 — RELEASED/u);
+    expect(read("CHANGELOG.md")).toMatch(/Timeouts stay 15s \/ 120s/u);
+    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.2.1`");
+    expect(read("CONTRIBUTING.md")).toContain(
+      "Latest independently verified public npm release is `v2.2.0`",
+    );
+    expect(read("README.md")).toContain("ruleblast-companion-2.2.1.vsix");
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.2.1"');
   });
 
   it("keeps release-state records outside the current package boundary", () => {

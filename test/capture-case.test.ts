@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import {
   cpSync,
   existsSync,
@@ -22,6 +22,25 @@ const temporaryRoots: string[] = [];
 let producerRoot = "";
 let producerCommit = "";
 let captureModuleUrl = "";
+
+function windowsShortPath(root: string): string {
+  // Node's default Win32 quoting doubles embedded quotes and yields D:\"C:...
+  const printed = spawnSync(
+    join(process.env.SystemRoot ?? "C:\\Windows", "System32", "cmd.exe"),
+    ["/d", "/s", "/c", 'for %I in ("%RULEBLAST_ALIAS_ROOT%") do @echo %~sI'],
+    {
+      encoding: "utf8",
+      env: { ...process.env, RULEBLAST_ALIAS_ROOT: root },
+      windowsHide: true,
+      windowsVerbatimArguments: true,
+    },
+  );
+  const alias = printed.stdout.trim();
+  if (printed.status !== 0 || alias.includes('"') || !existsSync(alias)) {
+    throw new Error(`Windows 8.3 path is not a real directory: ${JSON.stringify(alias)}`);
+  }
+  return alias;
+}
 
 interface CaptureOptions {
   readonly checkout: string;
@@ -506,6 +525,16 @@ describe("captureCase", () => {
     await expect(assertCleanProducer(producerRoot)).resolves.toBe(producerCommit);
   }, 15_000);
 
+  it("resolves a Windows 8.3 alias without embedding cmd quotes", () => {
+    if (process.platform !== "win32") return;
+    const root = mkdtempSync(join(tmpdir(), "ruleblast short path "));
+    temporaryRoots.push(root);
+    const alias = windowsShortPath(root);
+    expect(alias.includes('"')).toBe(false);
+    expect(existsSync(alias)).toBe(true);
+    expect(statSync(alias).isDirectory()).toBe(true);
+  });
+
   it("binds transitive build and runtime dependency bytes into producer provenance", async () => {
     const producer = await captureProducer();
     const digestDependencyClosure = producer.digestDependencyClosure as
@@ -570,21 +599,7 @@ describe("captureCase", () => {
 
     let dependencyRoot = root;
     if (process.platform === "win32") {
-      dependencyRoot = execFileSync(
-        join(
-          process.env.SystemRoot ?? "C:\\Windows",
-          "System32", "WindowsPowerShell", "v1.0", "powershell.exe",
-        ),
-        [
-          "-NoLogo", "-NoProfile", "-NonInteractive", "-Command",
-          "(New-Object -ComObject Scripting.FileSystemObject).GetFolder($env:RULEBLAST_ALIAS_ROOT).ShortPath",
-        ],
-        {
-          encoding: "utf8",
-          env: { ...process.env, RULEBLAST_ALIAS_ROOT: root },
-          windowsHide: true,
-        },
-      ).trim();
+      dependencyRoot = windowsShortPath(root);
     }
 
     const first = await digestDependencyClosure!(dependencyRoot, lockBytes);
