@@ -441,7 +441,7 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.0.2 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.2 — SHIPPED TO MAIN/u);
     expect(read("package.json")).toContain("blast radius of AGENTS.md and CLAUDE.md");
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.2\.0"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.3\.0"/u);
     expect(released).toContain("Latest independently verified public npm distribution at that tag is `2.0.2`");
   });
 
@@ -475,7 +475,7 @@ describe("public release maturity", () => {
     expect(released).not.toMatch(/Claude Desktop|Antigravity|Marketplace/iu);
     expect(read("CHANGELOG.md")).toContain("## 2.1.0 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.1\.0 — SHIPPED TO MAIN/u);
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.2\.0"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.3\.0"/u);
     expect(released).toContain("Latest independently verified public npm distribution at that tag is `2.1.0`");
   });
 
@@ -510,7 +510,7 @@ describe("public release maturity", () => {
     expect(read("which-files-inherit-agents-md.md")).toMatch(/Which files inherit a changed AGENTS.md/u);
     expect(read("llms.txt")).toContain("blast radius of AGENTS.md and CLAUDE.md");
     expect(read("action.yml")).toContain("uses: ./.github/actions/ruleblast");
-    expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.2.0`");
+    expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.3.0`");
   });
 
   it("records the independently verified v2.2.0 npm receipt", () => {
@@ -544,7 +544,9 @@ describe("public release maturity", () => {
     const roadmap = read("ROADMAP.md");
     const heading =
       "## **SHIPPED TO MAIN** — `v2.2.1`: Companion icon and Windows verify";
-    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const next = roadmap.indexOf(
+      "## **SHIPPED TO MAIN** — `v2.2.2`: Git-pair overlay",
+    );
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -564,12 +566,64 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.2.1 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.2\.1 — RELEASED/u);
     expect(read("CHANGELOG.md")).toMatch(/Timeouts stay 15s \/ 120s/u);
-    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.2.1`");
+    expect(read("README.md")).toMatch(/Do not overwrite Marketplace `2\.2\.0` or `2\.2\.1`/u);
+    expect(read("CHANGELOG.md")).toContain("ruleblast-companion-2.2.1.vsix");
+  });
+
+  it("records v2.2.2 as the Git-pair overlay adjunct", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v2.2.2`: Git-pair overlay";
+    const next = roadmap.indexOf("## **RELEASED** — `v2.3.0`:");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toContain("OTHER TRACKED CHANGES");
+    expect(shipped).toMatch(/Git storage blob-object identity/iu);
+    expect(shipped).toContain("--json");
+    expect(shipped).toMatch(/WORKTREE/u);
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(shipped).toContain("2.2.0");
+    expect(read("CHANGELOG.md")).toContain("## 2.2.2 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.2\.2 — RELEASED/u);
+    expect(read("scripts/package-host.mjs")).toContain("ruleblast-companion-${version}.vsix");
+    const exploring = roadmap.slice(roadmap.indexOf("## **EXPLORING**"));
+    expect(exploring).toMatch(/Git storage blob-object identity/iu);
+  });
+
+  it("records the independently verified v2.3.0 npm receipt", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **RELEASED** — `v2.3.0`: Overlay, work map, and companion control";
+    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const released = roadmap.slice(start, next);
+    for (const evidence of [
+      "https://www.npmjs.com/package/ruleblast/v/2.3.0",
+      "sha512-1G1yAOUMnMQUfVX64YoLbBVKPNrFsX7ivIZ8OhJwL5YQUFyC6EyWYk4mNokyDIh+q7KqeLt9djgQSXxlQ2fn2Q==",
+      "138,135",
+      "1672bdd9133f960d8658e003b8d7cb77a13b3fbd79c9238a2b009abf2839ba2e",
+      "67280fd8b43a53cd262d68058e3b4680410c8d2d",
+    ]) {
+      expect(released).toContain(evidence);
+    }
+    expect(released).toContain("WORK MAP");
+    expect(released).toContain("CHANGE ALIGNMENT");
+    expect(released).toContain("ruleblast-companion-2.3.0.vsix");
+    expect(released).toContain("no signed `v2.3.0` source tag");
+    expect(read("ROADMAP.md")).toContain("## **HORIZON** — `v4`: Stack debugger, still one product");
+    expect(read("CHANGELOG.md")).toContain("## 2.3.0 — RELEASED");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.3\.0 — SHIPPED TO MAIN/u);
+    expect(read("CHANGELOG.md")).toContain("ALIGNED");
+    expect(read("package.json")).toContain('"version": "2.3.0"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.3.0"');
+    expect(read("action.yml")).toMatch(/default: "2\.3\.0"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.3\.0"/u);
+    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.3.0`");
     expect(read("CONTRIBUTING.md")).toContain(
-      "Latest independently verified public npm release is `v2.2.0`",
+      "Latest independently verified public npm release is `v2.3.0`",
     );
-    expect(read("README.md")).toContain("ruleblast-companion-2.2.1.vsix");
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.2.1"');
   });
 
   it("keeps release-state records outside the current package boundary", () => {

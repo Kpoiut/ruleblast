@@ -4,6 +4,7 @@ import { lstat, open, readFile, readlink } from "node:fs/promises";
 import { join } from "node:path";
 import { promisify } from "node:util";
 import type { SnapshotRef } from "./model.js";
+import { gitBlobOid } from "./domain/git-blob-identity.js";
 import type {
   GitObjectSnapshot,
   GitStorageObjectFormat,
@@ -337,6 +338,26 @@ class WorktreeSnapshot implements RepositorySnapshot {
   public async listPaths(): Promise<readonly string[]> { return [...this.#paths]; }
   public async entry(path: string): Promise<SnapshotEntry | null> { const entry = this.#entries.get(path); return entry === undefined ? null : { path: entry.path, kind: entry.kind, executable: entry.executable }; }
   public async read(path: string): Promise<Uint8Array | null> { const entry = this.#entries.get(path); return entry === undefined ? null : new Uint8Array(entry.bytes); }
+  public withObjectIdentity(format: GitStorageObjectFormat): GitObjectSnapshot {
+    const oids = new Map<string, string>();
+    for (const [path, entry] of this.#entries) oids.set(path, gitBlobOid(entry.bytes, format));
+    const entries = this.#entries;
+    const paths = this.#paths;
+    const ref = this.ref;
+    return {
+      get ref() { return ref; },
+      listPaths: async () => [...paths],
+      async entry(path) {
+        const entry = entries.get(path);
+        return entry === undefined ? null : { path: entry.path, kind: entry.kind, executable: entry.executable };
+      },
+      async read(path) {
+        const entry = entries.get(path);
+        return entry === undefined ? null : new Uint8Array(entry.bytes);
+      },
+      blobOid(path) { return oids.get(path) ?? null; },
+    };
+  }
 }
 
 export async function openTrackedWorktree(root: string): Promise<RepositorySnapshot> {

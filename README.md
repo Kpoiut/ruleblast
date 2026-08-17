@@ -1,12 +1,12 @@
 <h1 align="center">RuleBlast — Git diff for invisible repository instructions</h1>
 
 <p align="center">
-  <img src="assets/ruleblast-hero.png?v=2.2.0" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
+  <img src="assets/ruleblast-hero.png?v=2.3.0" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
 </p>
 
 <p align="center">
   <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
-  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.2.1"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="package version 2.2.0"></a>
+  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.3.0"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.3.0"></a>
   <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/ruleblast" alt="Apache-2.0 license"></a>
 </p>
@@ -23,13 +23,13 @@
 </p>
 
 <div align="center">
-  <img src="assets/ruleblast-causal-proof.gif?v=2.2.0" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
+  <img src="assets/ruleblast-causal-proof.gif?v=2.3.0" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
 </div>
 
 ```bash
 cd <your-git-repository>
-npx --yes ruleblast@2.2.0 .
-npx --yes ruleblast@2.2.0 diff HEAD~1
+npx --yes ruleblast@2.3.0 .
+npx --yes ruleblast@2.3.0 diff HEAD~1
 ```
 
 <p align="center"><sub>Local · read-only · deterministic · no network or model call</sub></p>
@@ -37,7 +37,7 @@ npx --yes ruleblast@2.2.0 diff HEAD~1
 ## What Git missed
 
 <div align="center">
-  <img src="assets/ruleblast-visual-benchmark.png?v=2.2.0" alt="Square RuleBlast 2.2.0 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; why-this-path, CLI and IDE surfaces, user allow gate" width="100%">
+  <img src="assets/ruleblast-visual-benchmark.png?v=2.3.0" alt="Square RuleBlast 2.3.0 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; why-this-path, CLI and IDE surfaces, user allow gate" width="100%">
 </div>
 
 Git shows the instruction edit. It does not show every repository path that inherits it.
@@ -54,14 +54,20 @@ Not a synthetic fixture. Public [`openai/codex`](https://github.com/openai/codex
 ruleblast diff 8fcf2ad931b90589dd29a571f367e3185d26bbe0 --to f0f483e8b2a2630bf8dfa5f8451e81eba20def6c
 ```
 
+## Other tracked changes
+
+This tree is `2.3.0`. The strongest addition is not a fifth action. Human `diff` Git→Git and Git→WORKTREE can append **OTHER TRACKED CHANGES** from Git storage blob-object identity, then a **WORK MAP** and a deterministic **CHANGE ALIGNMENT**: `ALIGNED`, `MIXED`, `DIVERGENT`, or `UNRESOLVED`. The adjunct also names the identity law, other-path kinds (added / modified / deleted), and an operational gloss. That restates membership. It is not actor telemetry and not model compliance. `--json` stays the canonical result.
+
+Companion Diff From renders the prepared adjunct. Keys: `Ctrl+Alt+R` then `S` scan · `D` diff · `E` explain · `C` case.
+
 ## Install
 
-Published CLI is `ruleblast@2.2.0`. Node.js 20+. `npx` downloads and runs the pinned package.
+Published CLI is `ruleblast@2.3.0`. Node.js 20+. `npx` downloads and runs the pinned package.
 
 ```bash
 cd <your-git-repository>
-npx --yes ruleblast@2.2.0 .
-npx --yes ruleblast@2.2.0 diff HEAD~1
+npx --yes ruleblast@2.3.0 .
+npx --yes ruleblast@2.3.0 diff HEAD~1
 ```
 
 `NOT_REPOSITORY` means `cd` into a Git repo first. `REF_NOT_FOUND` means pick a real ref. On a permission error, use `npx` instead of elevating. Release CI is Windows and Linux.
@@ -71,30 +77,30 @@ npx --yes ruleblast@2.2.0 diff HEAD~1
 
 ```bash
 node --version
-npm view ruleblast@2.2.0 version
-npx --yes ruleblast@2.2.0 --help
-npm install --global ruleblast@2.2.0
+npm view ruleblast@2.3.0 version
+npx --yes ruleblast@2.3.0 --help
+npm install --global ruleblast@2.3.0
 ruleblast --version
 ruleblast --help
 ruleblast
-npm install --save-dev --save-exact ruleblast@2.2.0
+npm install --save-dev --save-exact ruleblast@2.3.0
 npx ruleblast --version
 npx ruleblast --help
 npx ruleblast
-npx --yes ruleblast@2.2.0 explain src/args.ts --from HEAD~1
-npx --yes ruleblast@2.2.0 case
+npx --yes ruleblast@2.3.0 explain src/args.ts --from HEAD~1
+npx --yes ruleblast@2.3.0 case
 ```
 
 A global install downloads the full CLI.
 
 ```bash
 npm uninstall --global ruleblast
-npm install --global ruleblast@2.2.0
+npm install --global ruleblast@2.3.0
 npm uninstall --save-dev ruleblast
-npm install --save-dev --save-exact ruleblast@2.2.0
+npm install --save-dev --save-exact ruleblast@2.3.0
 npm cache verify
-npx --yes ruleblast@2.2.0 --help
-git clone --branch v2.2.0 --depth 1 https://github.com/Kpoiut/ruleblast.git
+npx --yes ruleblast@2.3.0 --help
+git clone --branch v2.3.0 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
 npm ci --ignore-scripts
 npm run build
@@ -113,9 +119,9 @@ The `1.0.1 → 1.0.2` registry upgrade was verified by the guarded [eight-cell r
 Packaged teaching receipt: [`27d52e2…`](https://github.com/Kpoiut/ruleblast/commit/27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8) → [`e420008…`](https://github.com/Kpoiut/ruleblast/commit/e420008a1c10c5c328e506247560117f4d40b855). 33 instruction-line edits. 106 of 106 stacks moved. Zero current split, partial, unknown, or indeterminate paths. [Canonical receipt](cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json) core digest `1e907a88ed648ebbd68b4f588c3bd09058ab7714e8f85a3f2d4a1c60e5a40938`.
 
 ```bash
-npx --yes ruleblast@2.2.0 case
-npx --yes ruleblast@2.2.0 case --json
-npx --yes ruleblast@2.2.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@2.3.0 case
+npx --yes ruleblast@2.3.0 case --json
+npx --yes ruleblast@2.3.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 <details>
@@ -151,7 +157,7 @@ Scope: 106 tracked paths · repository-only · resolver revision 1
 ## Explain one path
 
 ```bash
-npx --yes ruleblast@2.2.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@2.3.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 Historical reproduction (needs both commits checked out):
@@ -206,11 +212,11 @@ The optional path is only a filesystem starting point for repository discovery. 
 | Zed | not a reality id | desktop MCP | paste `discovery/zed-context-servers.json` |
 
 ```bash
-npx --yes ruleblast@2.2.0 .
-npx --yes ruleblast@2.2.0 packages/api/internal
-npx --yes ruleblast@2.2.0 diff HEAD~1
-npx --yes ruleblast@2.2.0 explain src/args.ts --from HEAD~1
-npx --yes ruleblast@2.2.0 diff HEAD~1 --json
+npx --yes ruleblast@2.3.0 .
+npx --yes ruleblast@2.3.0 packages/api/internal
+npx --yes ruleblast@2.3.0 diff HEAD~1
+npx --yes ruleblast@2.3.0 explain src/args.ts --from HEAD~1
+npx --yes ruleblast@2.3.0 diff HEAD~1 --json
 ```
 
 ## Open in the editor
@@ -222,7 +228,7 @@ npm run build
 npm run host:build
 ```
 
-Install the unpacked `hosts/vscode` folder, or `ruleblast-companion-2.2.1.vsix` on the GitHub Release (`npm run host:pack`). That VSIX carries a 128×128 PNG icon. Do not overwrite Marketplace `2.2.0`. Commands: Scan Workspace, Diff From…, Explain Active File, Open Verified Case. Marketplace / Open VSX listings are separate publisher operations; the VSIX is the installable extension form.
+Install the unpacked `hosts/vscode` folder. This tree packs `ruleblast-companion-2.3.0.vsix` with `npm run host:pack`. The activity bar uses a themed SVG; the Marketplace PNG stays 128×128. Do not overwrite Marketplace `2.2.0` or `2.2.1`. Commands: Scan Workspace, Diff From…, Explain Active File, Open Verified Case. Keys: `Ctrl+Alt+R` then `S`/`D`/`E`/`C`. Marketplace / Open VSX listings are separate publisher operations; the VSIX is the installable extension form.
 
 ## Give your agent RuleBlast
 
@@ -249,7 +255,7 @@ Agents still need your allow gate before they run. Copilot Chat using RuleBlast 
 ```bash
 echo yes > .ruleblast-allow
 # or:  set RULEBLAST_AGENT_ALLOW=yes
-npx --yes ruleblast@2.2.0 . --receipt
+npx --yes ruleblast@2.3.0 . --receipt
 ```
 
 Off: `RULEBLAST_AGENT_ALLOW=off`. RuleBlast never writes the allow file.
@@ -262,10 +268,10 @@ Optional. Not a hosted product. The runner only executes the published CLI.
 - uses: actions/checkout@v4
   with:
     fetch-depth: 0
-- uses: Kpoiut/ruleblast@v2.2.0
+- uses: Kpoiut/ruleblast@v2.3.0
 ```
 
-Root Action `Kpoiut/ruleblast@v2.2.0` is a distribution surface of the same published CLI. It posts a `--receipt` comment for `base.sha → head.sha`. Pin a commit after you trust the workflow.
+Root Action `Kpoiut/ruleblast@v2.3.0` is a distribution surface of the same published CLI. It posts a `--receipt` comment for `base.sha → head.sha`. Pin a commit after you trust the workflow.
 
 ## Contribute a Blast Case
 
@@ -275,11 +281,15 @@ Promoted Blast Case: official evidence, retrieval date, manifests, expected JSON
 
 ## Roadmap
 
+This tree is `2.3.0`: overlay, work map, change alignment, companion control.
+
 Today: Codex, Claude Code, opt-in Copilot CLI, and opt-in Gemini CLI. Same companion in VS Code-family editors, including Copilot Chat. Same four actions over `--mcp` for Claude Desktop and Codex desktop.
 
 Reality is not host. Four documented realities. Same result in the terminal or editor.
 
 How many rule realities are still hiding in it…?
+
+Horizon `v3` proves overlay at corpus scale. Horizon `v4` is a stack debugger that still has four actions, no dashboard, and no model score.
 
 Canonical landing: [kpoiut.github.io/ruleblast](https://kpoiut.github.io/ruleblast/). Read [ROADMAP.md](ROADMAP.md). Apache-2.0. [CHANGELOG.md](CHANGELOG.md). Measurements: [docs/measurements](docs/measurements/). Evidence inventories: [docs/evidence](docs/evidence/).
 

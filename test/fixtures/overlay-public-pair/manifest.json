@@ -1,0 +1,28 @@
+{
+  "license": "Apache-2.0",
+  "repository": "https://github.com/openai/codex",
+  "before": "2651980bdf803ec3dd7d7540648de286e4de2ec2",
+  "after": "58e8f75b276bbc6bae5bde633137ceee399db6d9",
+  "beforeBlobs": {
+    "AGENTS.md": "9c14089e5f869f4cfe54c8189db86d0e5b5b26e1",
+    "codex-rs/tui/src/bottom_pane/chat_composer.rs": "de3af3e844ba4f527a666c3d75504c8dba1e32b7",
+    "codex-rs/tui/src/bottom_pane/paste_burst.rs": "96ed095b8f306264f3eb48cd25efb29db8af2cda",
+    "codex-rs/tui/src/bottom_pane/textarea.rs": "f2ed40758dab3a27e4e9b8e337a68d38f16ceb55",
+    "codex-rs/tui2/src/bottom_pane/chat_composer.rs": "c7e8af0c2ba6023a1b1023e53c6881f2cc2fb80e",
+    "codex-rs/tui2/src/bottom_pane/paste_burst.rs": "96ed095b8f306264f3eb48cd25efb29db8af2cda",
+    "codex-rs/tui2/src/bottom_pane/textarea.rs": "f2ed40758dab3a27e4e9b8e337a68d38f16ceb55"
+  },
+  "afterBlobs": {
+    "AGENTS.md": "9c14089e5f869f4cfe54c8189db86d0e5b5b26e1",
+    "codex-rs/tui/src/bottom_pane/AGENTS.md": "32d2037c13bae5a09c2563cc4fe607da819f3892",
+    "codex-rs/tui2/src/bottom_pane/AGENTS.md": "44fac8e50af8c2279e19c0eb9788f7ac97c663c2",
+    "codex-rs/tui/src/bottom_pane/chat_composer.rs": "7b8a8f215f7d566b32e7fe31ccca5ffeb19705dc",
+    "codex-rs/tui/src/bottom_pane/paste_burst.rs": "ae0234f1a73e31e95a429ff7f1d13278fffd1ecb",
+    "codex-rs/tui/src/bottom_pane/textarea.rs": "903ebe9f82b54173a9a0c5fe5119fd481f7bc0ce",
+    "codex-rs/tui2/src/bottom_pane/chat_composer.rs": "cf823b132bff1b820420191bbe47df500491371e",
+    "codex-rs/tui2/src/bottom_pane/paste_burst.rs": "ae0234f1a73e31e95a429ff7f1d13278fffd1ecb",
+    "codex-rs/tui2/src/bottom_pane/textarea.rs": "903ebe9f82b54173a9a0c5fe5119fd481f7bc0ce",
+    ".markdownlint-cli2.yaml": "15b472c61cb73bf14f6c327266e479229f555eca",
+    "docs/tui-chat-composer.md": "cc3beb17fe1f5531789f16c6da65326e1a4c777f"
+  }
+}

@@ -5,19 +5,21 @@ import {
   type CurrentExplainResult,
   type DiffExplainResult,
 } from "../cli-output.js";
-import { summarizeSourceBlasts } from "../domain/source-blast.js";
 import type {
   Completeness,
   RuleBlastResult,
 } from "../model.js";
 import type { ExplainView } from "./explain-view.js";
 import {
-  analysisState,
-  formatAnalysisState,
   type AnalysisLifecycle,
 } from "./analysis-state.js";
-import { isOptInReality, presentationFor, presentationLabel } from "./profile-catalog.js";
+import { isOptInReality } from "./profile-catalog.js";
 import { completenessFromResult, scoreboardView } from "./scoreboard-view.js";
+import type { BlastOverlayView } from "./blast-overlay.js";
+import type { ControlIntent } from "./control-keys.js";
+import { companionStatusLine, companionTree } from "./scoreboard-tree.js";
+
+export { companionStatusLine, companionTree };
 
 export type HostCommand = "scan" | "diff" | "explain" | "case";
 
@@ -36,16 +38,48 @@ export interface CompanionState {
   readonly realities: readonly string[];
   readonly action: HostCommand | null;
   readonly result: RuleBlastResult | null;
+  readonly overlay: BlastOverlayView | null;
+  readonly overlayUnavailable: boolean;
   readonly explainView: ExplainView | null;
   readonly explainText: string | null;
   readonly canonicalJson: string | null;
   readonly error: { readonly code: string; readonly message: string } | null;
 }
 
+export type ScoreboardKind =
+  | "status"
+  | "control"
+  | "reality"
+  | "error"
+  | "counts"
+  | "profile"
+  | "uncertainty"
+  | "instruction-source"
+  | "affected-path"
+  | "explain"
+  | "observation"
+  | "group";
+
+export type ScoreboardIntent = ControlIntent | "EXPLAIN_PATH" | "OPEN_PATH" | "SELECT_REALITY";
+
+export type ScoreboardMark =
+  | "affected"
+  | "unchanged"
+  | "split"
+  | "uncertain"
+  | "inherited"
+  | "independent"
+  | "unclassified";
+
 export interface ScoreboardNode {
   readonly id: string;
+  readonly kind: ScoreboardKind;
   readonly label: string;
   readonly description?: string;
+  readonly path?: string;
+  readonly intent?: ScoreboardIntent;
+  readonly mark?: ScoreboardMark;
+  readonly badge?: string;
   readonly children?: readonly ScoreboardNode[];
 }
 
@@ -57,6 +91,8 @@ export function initialCompanionState(): CompanionState {
     realities: Object.freeze([]),
     action: null,
     result: null,
+    overlay: null,
+    overlayUnavailable: false,
     explainView: null,
     explainText: null,
     canonicalJson: null,
@@ -143,12 +179,18 @@ export function companionBegin(
 export function companionSucceed(
   state: CompanionState,
   result: RuleBlastResult,
+  adjunct: {
+    readonly overlay?: BlastOverlayView | null;
+    readonly overlayUnavailable?: boolean;
+  } = {},
 ): CompanionState {
   return Object.freeze({
     ...state,
     lifecycle: "CURRENT",
     completeness: completenessFromResult(result),
     result,
+    overlay: adjunct.overlay ?? null,
+    overlayUnavailable: adjunct.overlayUnavailable === true,
     explainView: null,
     explainText: null,
     canonicalJson: canonicalJson(result),
@@ -239,105 +281,6 @@ export function companionFail(
   });
 }
 
-export function companionStatusLine(state: CompanionState): string {
-  const core = formatAnalysisState(analysisState(state.lifecycle, state.completeness));
-  if (state.dirtyBuffer) return `${core} · unsaved editor buffer is not in the snapshot`;
-  return core;
-}
-
 export function companionScoreboard(state: CompanionState) {
   return state.result === null ? null : scoreboardView(state.result);
-}
-
-function realityLabel(realities: readonly string[]): string {
-  if (realities.length === 0) return "Reality default (Codex + Claude Code)";
-  return `Reality + ${realities.map((id) => presentationFor(id).shortLabel).join(" + ")}`;
-}
-
-function sourceNode(
-  profile: string,
-  source: { readonly path: string; readonly disposition: string; readonly changed: boolean },
-): ScoreboardNode {
-  const node: ScoreboardNode = {
-    id: `source:${profile}:${source.path}`,
-    label: `${source.disposition} ${source.path}`,
-  };
-  return source.changed ? { ...node, description: "changed" } : node;
-}
-
-export function companionTree(state: CompanionState): ScoreboardNode[] {
-  const result = state.result;
-  const board = result === null ? null : scoreboardView(result);
-  const nodes: ScoreboardNode[] = [
-    { id: "status", label: companionStatusLine(state) },
-    { id: "reality", label: realityLabel(state.realities) },
-  ];
-  if (state.error !== null) {
-    nodes.push({ id: "error", label: state.error.code, description: state.error.message });
-  }
-  if (result === null || board === null) {
-    nodes.push({ id: "empty", label: "Run Scan Workspace, Diff From…, or Open Verified Case" });
-    return nodes;
-  }
-  nodes.push({
-    id: "counts",
-    label: `${board.candidatePathCount} tracked paths`,
-    description: board.changedStackPathCount === null
-      ? `${board.currentSplitPathCount} split`
-      : `${board.changedStackPathCount} changed`,
-  });
-  nodes.push({
-    id: "profiles",
-    label: "Profiles",
-    children: board.profiles.map((profile) => ({
-      id: `profile:${profile.profile}`,
-      label: `${profile.badge} ${profile.shortLabel}`,
-      description: profile.changedStackPathCount === null
-        ? `${profile.completePathCount} complete`
-        : `${profile.changedStackPathCount} changed`,
-    })),
-  });
-  nodes.push({
-    id: "uncertainty",
-    label: "Uncertainty",
-    description: `${board.partialPathCount} partial · ${board.unknownPathCount} unknown · ${board.findingCount} findings`,
-  });
-  if (state.explainView !== null) {
-    const view = state.explainView;
-    const explain: ScoreboardNode = {
-      id: "explain",
-      label: `Explain ${view.path}`,
-      children: view.profiles.map((profile) => ({
-        id: `explain:${profile.profile}`,
-        label: `${profile.badge} ${profile.shortLabel}`,
-        description: profile.affected === true
-          ? "affected"
-          : profile.affected === false
-            ? "unchanged"
-            : profile.completeness.toLowerCase(),
-        children: profile.sources.map((source) => sourceNode(profile.profile, source)),
-      })),
-    };
-    nodes.push(view.relation === null ? explain : { ...explain, description: view.relation });
-  }
-  if (result.mode === "diff") {
-    const blasts = summarizeSourceBlasts(result);
-    if (blasts.length > 0) {
-      nodes.push({
-        id: "blast",
-        label: "Changed sources",
-        children: blasts.map((blast) => ({
-          id: `blast:${blast.sourcePath}`,
-          label: blast.sourcePath,
-          description: `${blast.changedStackPathCount} paths`,
-          children: blast.byProfile.map((row) => ({
-            id: `blast:${blast.sourcePath}:${row.profile}`,
-            label: presentationLabel(row.profile),
-            description: `${row.affectedPathCount} affected`,
-          })),
-        })),
-      });
-    }
-  }
-  return nodes;
 }

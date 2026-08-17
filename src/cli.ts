@@ -19,6 +19,7 @@ import {
   GitSnapshotError,
   openGitSnapshot,
   openTrackedWorktree,
+  probeGitStorageFormat,
   type GitSnapshotErrorCode,
 } from "./git.js";
 import { analyzeCurrent, analyzeDiff } from "./impact.js";
@@ -47,6 +48,7 @@ const DEFAULT_DEPENDENCIES: CliDependencies = Object.freeze({
   resolvePath: resolve,
   findRepositoryRoot,
   openGitSnapshot,
+  probeGitStorageFormat,
   openTrackedWorktree,
   analyzeCurrent,
   analyzeDiff,

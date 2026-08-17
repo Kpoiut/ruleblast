@@ -15,7 +15,7 @@ OpenAI’s documented Codex skill locations do not include `node_modules`; repos
 | Why this path | `ruleblast explain src/args.ts --json` |
 | Zero-clone teaching receipt | `ruleblast case --color=never` |
 
-`[path]` only starts Git discovery. There is no `ruleblast scan` subcommand. `diff` has no `--from`. `--witness` prints why-edges. `--receipt` prints the compact scoreboard box (opt-in). `--reality github/copilot-cli@1` and `--reality google/gemini-cli@1` add those documented surfaces. Repeat `--reality` to compare both. Default `--json` remains the two-profile canonical result.
+`[path]` only starts Git discovery. There is no `ruleblast scan` subcommand. `diff` has no `--from`. `--witness` prints why-edges. `--receipt` prints the compact scoreboard box (opt-in). `--reality github/copilot-cli@1` and `--reality google/gemini-cli@1` add those documented surfaces. Repeat `--reality` to compare both. Default `--json` remains the two-profile canonical result. Human Git-pair and Git→WORKTREE `diff` text may append OTHER TRACKED CHANGES, a WORK MAP, and CHANGE ALIGNMENT with an operational gloss. Other-path kinds are added, modified, or deleted. That restates membership. It is not actor telemetry.
 
 Agents default to **ask**. A human enables them with `RULEBLAST_AGENT_ALLOW=yes` or a user-created `.ruleblast-allow` containing `yes`. RuleBlast never writes that file. The scoreboard reports inherited profile stacks. It does not record live agent tool calls.
 

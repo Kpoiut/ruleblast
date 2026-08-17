@@ -71,7 +71,17 @@ describe("prepared diff core", () => {
     );
     expect(fields).toContain("analyzeCurrent");
     expect(fields).toContain("analyzeDiff");
+    expect(fields).toContain("openGitSnapshot");
+    expect(fields).toContain("probeGitStorageFormat");
     expect(fields).not.toContain("analyzePreparedDiff");
+    expect(runtime).toContain("Promise<GitObjectSnapshot>");
+    const actions = read("src/cli-actions.ts");
+    expect(actions).toContain("dependencies.probeGitStorageFormat");
+    expect(actions).not.toMatch(/as GitObjectSnapshot/u);
+    expect(actions).not.toMatch(/from ["']\.\/git\.js["']/u);
+    expect(actions).toContain("analyzeOverlayPair");
+    expect(actions).not.toContain("cacheGitObjectSnapshot");
+    expect(actions).not.toContain("analyzePreparedDiff");
   });
 
   it("matches analyzeDiff canonical bytes when callers wrap once", async () => {

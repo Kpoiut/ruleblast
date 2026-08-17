@@ -31,6 +31,6 @@ The same Git tree can project different instruction stacks. Codex, Claude Code, 
 [RuleBlast](https://github.com/Kpoiut/ruleblast) is a local, read-only Git CLI. It shows the blast radius of `AGENTS.md` and `CLAUDE.md` changes across those four CLI surfaces. No network or model call during analysis.
 
 ```bash
-npx --yes ruleblast@2.2.0 .
-npx --yes ruleblast@2.2.0 diff HEAD~1
+npx --yes ruleblast@2.3.0 .
+npx --yes ruleblast@2.3.0 diff HEAD~1
 ```

@@ -11,6 +11,7 @@ declare module "vscode" {
   export interface StatusBarItem extends Disposable {
     text: string;
     tooltip?: string;
+    command?: string;
     show(): void;
   }
   export interface Event<T> { (listener: (e: T) => void): Disposable; }
@@ -24,6 +25,10 @@ declare module "vscode" {
     description?: string;
     tooltip?: string;
     collapsibleState?: number;
+    command?: { command: string; title: string; arguments?: unknown[] };
+    contextValue?: string;
+    resourceUri?: Uri;
+    iconPath?: ThemeIcon;
   }
   export class TreeItem {
     constructor(label: string, collapsibleState?: number);
@@ -31,6 +36,18 @@ declare module "vscode" {
     description?: string;
     tooltip?: string;
     collapsibleState?: number;
+    command?: { command: string; title: string; arguments?: unknown[] };
+    contextValue?: string;
+    resourceUri?: Uri;
+    iconPath?: ThemeIcon;
+  }
+  export class ThemeIcon {
+    constructor(id: string);
+    readonly id: string;
+  }
+  export class Uri {
+    readonly fsPath: string;
+    static file(path: string): Uri;
   }
   export enum TreeItemCollapsibleState { None = 0, Collapsed = 1, Expanded = 2 }
   export enum StatusBarAlignment { Left = 1, Right = 2 }

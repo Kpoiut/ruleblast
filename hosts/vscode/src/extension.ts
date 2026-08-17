@@ -9,7 +9,7 @@ import {
   companionSetRealities,
   companionStatusLine,
   companionSucceed,
-  diffRepository,
+  diffRepositoryWithAdjunct,
   explainRepository,
   findRepositoryRoot,
   gateWorkspace,
@@ -18,6 +18,7 @@ import {
   openGitSnapshot,
   openPackagedCase,
   openTrackedWorktree,
+  probeGitStorageFormat,
   presentExplain,
   presentationLabel,
   scanRepository,
@@ -28,6 +29,12 @@ import {
 import { RuleBlastTreeProvider } from "./tree.js";
 
 let state = initialCompanionState();
+
+function fsPathOf(resource: unknown): string | undefined {
+  if (typeof resource !== "object" || resource === null) return undefined;
+  if (!("fsPath" in resource) || typeof resource.fsPath !== "string") return undefined;
+  return resource.fsPath;
+}
 
 function workspaceGate(): HostWorkspace {
   const folders = (vscode.workspace.workspaceFolders ?? []).map((folder) => folder.uri.fsPath);
@@ -42,11 +49,17 @@ function workspaceGate(): HostWorkspace {
   };
 }
 
+function currentRoot(): string | undefined {
+  const gate = gateWorkspace(workspaceGate());
+  return gate.ok ? gate.root : undefined;
+}
+
 function reveal(next: CompanionState, tree: RuleBlastTreeProvider, status: vscode.StatusBarItem): void {
   state = next;
-  tree.refresh(state);
+  tree.refresh(state, currentRoot());
   status.text = `RB ${state.lifecycle}`;
   status.tooltip = state.error?.message ?? companionStatusLine(state);
+  status.command = "ruleblast.scoreboard.focus";
   status.show();
 }
 
@@ -107,16 +120,33 @@ export function activate(context: vscode.ExtensionContext): void {
         const root = await findRepositoryRoot(folder);
         const before = await openGitSnapshot(root, base.trim());
         const after = await openTrackedWorktree(root);
-        return companionSucceed(state, await diffRepository({
+        const pair = await diffRepositoryWithAdjunct({
           before,
           after,
           realities: state.realities,
-        }));
+          format: await probeGitStorageFormat(root),
+        });
+        return companionSucceed(state, pair.result, {
+          overlay: pair.overlay,
+          overlayUnavailable: pair.unavailable,
+        });
       });
     }),
-    vscode.commands.registerCommand("ruleblast.explainActiveFile", async () => {
-      const editor = vscode.window.activeTextEditor;
-      if (editor === undefined) {
+    vscode.commands.registerCommand("ruleblast.explainScoreboardPath", async (path: unknown) => {
+      if (typeof path !== "string" || path === "") return;
+      const next = companionExplainFromResult(state, path, presentExplain);
+      if (next.explainText !== null) {
+        await vscode.window.showTextDocument(
+          await vscode.workspace.openTextDocument({ content: next.explainText, language: "markdown" }),
+        );
+      } else {
+        vscode.window.showErrorMessage(next.error?.message ?? "Last result has no path.");
+      }
+      reveal(next, tree, status);
+    }),
+    vscode.commands.registerCommand("ruleblast.explainActiveFile", async (resource?: unknown) => {
+      const fsPath = fsPathOf(resource) ?? vscode.window.activeTextEditor?.document.uri.fsPath;
+      if (fsPath === undefined) {
         vscode.window.showErrorMessage("Open a file to explain.");
         return;
       }
@@ -127,12 +157,15 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
       }
       const root = await findRepositoryRoot(gate.root);
-      const relative = toRepositoryRelativePath(root, editor.document.uri.fsPath);
+      const relative = toRepositoryRelativePath(root, fsPath);
       if (relative === null) {
         reveal(companionFail(state, "INVALID_PATH", "Active file is outside the selected repository."), tree, status);
         return;
       }
-      const dirty = companionNoteDirty(state, editor.document.isDirty);
+      const dirty = companionNoteDirty(
+        state,
+        vscode.window.activeTextEditor?.document.isDirty === true,
+      );
       if (dirty.result !== null) {
         const next = companionExplainFromResult(dirty, relative, presentExplain);
         if (next.explainText !== null) {

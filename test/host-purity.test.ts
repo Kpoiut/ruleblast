@@ -39,7 +39,24 @@ describe("companion host purity", () => {
     expect(icon.readUInt32BE(16)).toBe(128);
     expect(icon.readUInt32BE(20)).toBe(128);
     expect(manifest.icon).toBe("media/icon.png");
-    expect(manifest.version).toBe("2.2.1");
+    expect(manifest.version).toBe("2.3.0");
+  });
+
+  it("uses a currentColor SVG on the activity bar instead of the opaque marketplace PNG", () => {
+    const manifest = JSON.parse(
+      readFileSync(join(repositoryRoot, "hosts/vscode/package.json"), "utf8"),
+    ) as {
+      readonly contributes: {
+        readonly viewsContainers: { readonly activitybar: readonly { readonly icon: string }[] };
+        readonly viewsWelcome?: readonly { readonly view: string; readonly contents: string }[];
+      };
+    };
+    expect(manifest.contributes.viewsContainers.activitybar[0]?.icon).toBe("media/icon.svg");
+    const svg = readFileSync(join(repositoryRoot, "hosts/vscode/media/icon.svg"), "utf8");
+    expect(svg).toContain("currentColor");
+    expect(svg).not.toContain("#C5C5C5");
+    expect(manifest.contributes.viewsWelcome?.[0]?.view).toBe("ruleblast.scoreboard");
+    expect(manifest.contributes.viewsWelcome?.[0]?.contents).toContain("command:ruleblast.scanWorkspace");
   });
 
   it("keeps the VS Code adapter off the npm analysis package", () => {
@@ -55,13 +72,17 @@ describe("companion host purity", () => {
       readFileSync(join(repositoryRoot, "hosts/vscode/package.json"), "utf8"),
     ) as { readonly contributes: { readonly commands: readonly { readonly command: string }[] } };
     const commands = manifest.contributes.commands.map((item) => item.command);
-    const analysis = commands.filter((command) => command !== "ruleblast.selectReality");
+    const analysis = commands.filter((command) =>
+      command !== "ruleblast.selectReality" &&
+      command !== "ruleblast.explainScoreboardPath"
+    );
     expect(analysis.sort()).toEqual([
       "ruleblast.diffFrom",
       "ruleblast.explainActiveFile",
       "ruleblast.openVerifiedCase",
       "ruleblast.scanWorkspace",
     ]);
+    expect(commands).toContain("ruleblast.explainScoreboardPath");
     for (const command of commands) {
       expect(command.startsWith("ruleblast.")).toBe(true);
     }

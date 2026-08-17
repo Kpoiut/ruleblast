@@ -2,3 +2,7 @@
 *.gif -text
 *.png -text
 *.webp -text
+test/fixtures/overlay-public-pair/** -text
+test/fixtures/overlay-206/** -text
+artifacts/** export-ignore
+EXTRACTION_REVIEWS.json export-ignore

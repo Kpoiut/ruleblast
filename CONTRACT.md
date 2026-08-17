@@ -2,7 +2,7 @@
 
 This document is the public behavior and result contract for RuleBlast v1. It defines what a result means, which bytes are in scope, how uncertainty survives analysis, and what the product may claim. Implementation details may change while this contract and the canonical JSON remain compatible.
 
-The v1 result schema remains `schemaVersion: 1` and `resolverRevision: 1`. This tree’s package version is `2.2.0`. Latest independently verified public npm distribution is `2.2.0`. An authorized distribution binds a published npm version to a signed source tag; registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
+The v1 result schema remains `schemaVersion: 1` and `resolverRevision: 1`. This tree’s package version is `2.3.0`. An authorized distribution binds a published npm version to a signed source tag; registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
 
 v2.0 Reality Packs are a reviewed **bundled** representation and contributor format under `packs/bundled/`. Arbitrary third-party runtime pack loading (`--pack`) is not admitted. No fifth bundled reality is admitted in `2.0.0`. Catalog admission (default vs opt-in) is product policy, not a pack field. The four bundled packs are the profile source of truth; named engines reproduce the `MIGRATION_BASE_SHA` `38cb0f50bd03bc39a0046426b6fa3004103d4f4a` adapter oracle, including the Gemini two-hop `sourceDependencyPaths` correction (D2a).
 
@@ -318,7 +318,7 @@ Text color, shell quoting, terminal labels, and explanatory metaphors are presen
 
 Hosts consume a shared explain presentation model derived from the canonical result. A host may not infer explanation semantics by parsing terminal text or by walking `CanonicalResult` with its own rules.
 
-The engine may additionally produce bounded noncanonical presentation adjuncts from the same prepared analysis pair. Hosts may render those adjuncts; they may not derive them. An adjunct belongs only to the prepared result that produced it and must not be persisted or restored independently from that result. Adjunct unavailability cannot change canonical bytes, canonical exit semantics, or the four action meanings.
+The engine may additionally produce bounded noncanonical presentation adjuncts from the same prepared analysis pair. Hosts may render those adjuncts; they may not derive them. An adjunct belongs only to the prepared result that produced it and must not be persisted or restored independently from that result. Adjunct unavailability cannot change canonical bytes, canonical exit semantics, or the four action meanings. The human overlay adjunct uses Git storage blob-object identity on a Git pair, and the same blob identity of captured worktree bytes on Git→WORKTREE. It may name that identity law, count other-path kinds (ADD/MODIFY/DELETE), restate membership as a work map, and name a deterministic change alignment (`ALIGNED`, `MIXED`, `DIVERGENT`, `UNRESOLVED`) with an operational gloss. The restatement cannot change canonical bytes or exits. Hosts may render a prepared overlay adjunct; they may not derive it.
 
 Analysis lifecycle (`READY`, `ANALYZING`, `CURRENT`, `STALE`, `ERROR`) is a host observation. Completeness (`COMPLETE`, `PARTIAL`, `UNKNOWN`) is a projection fact. The two axes are not a single enum: a result may be `CURRENT · PARTIAL` or `STALE · UNKNOWN`.
 

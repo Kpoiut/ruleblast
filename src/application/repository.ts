@@ -3,6 +3,7 @@ export {
   GitSnapshotError,
   openGitSnapshot,
   openTrackedWorktree,
+  probeGitStorageFormat,
   type GitSnapshotErrorCode,
 } from "../git.js";
 export {

@@ -25,6 +25,16 @@ export function isGitObjectSnapshot(
   return typeof (snapshot as GitObjectSnapshot).blobOid === "function";
 }
 
+export interface WorktreeIdentitySource extends RepositorySnapshot {
+  withObjectIdentity(format: GitStorageObjectFormat): GitObjectSnapshot;
+}
+
+export function isWorktreeIdentitySource(
+  snapshot: RepositorySnapshot,
+): snapshot is WorktreeIdentitySource {
+  return typeof (snapshot as WorktreeIdentitySource).withObjectIdentity === "function";
+}
+
 interface StoredEntry extends SnapshotEntry {
   readonly bytes: Uint8Array;
 }

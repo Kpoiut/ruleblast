@@ -43,6 +43,34 @@ describe("Git object snapshot", () => {
     expect("blobOid" in cacheRepositorySnapshot(snapshot)).toBe(false);
   });
 
+  it("rejects a blob oid that is not a storage object name", async () => {
+    const root = initRepo();
+    const snapshot = await openGitSnapshot(root, "HEAD");
+    const cached = cacheGitObjectSnapshot({
+      get ref() { return snapshot.ref; },
+      listPaths: () => snapshot.listPaths(),
+      entry: (path) => snapshot.entry(path),
+      read: (path) => snapshot.read(path),
+      blobOid: () => "not-an-object-name",
+    }, "sha1");
+    expect(() => cached.blobOid("tracked.txt")).toThrow(/sha1 object name/u);
+  });
+
+  it("normalizes uppercase hex blob oids to the storage object name", async () => {
+    const root = initRepo();
+    const snapshot = await openGitSnapshot(root, "HEAD");
+    const oid = snapshot.blobOid("tracked.txt");
+    expect(oid).toMatch(/^[0-9a-f]{40}$/u);
+    const cached = cacheGitObjectSnapshot({
+      get ref() { return snapshot.ref; },
+      listPaths: () => snapshot.listPaths(),
+      entry: (path) => snapshot.entry(path),
+      read: (path) => snapshot.read(path),
+      blobOid: (path) => snapshot.blobOid(path)?.toUpperCase() ?? null,
+    }, "sha1");
+    expect(cached.blobOid("tracked.txt")).toBe(oid);
+  });
+
   it("pins --no-replace-objects on every git spawn", async () => {
     const source = await import("node:fs/promises").then(async () =>
       (await import("node:fs")).readFileSync(

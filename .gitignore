@@ -7,6 +7,11 @@ hosts/vscode/LICENSE
 coverage/
 *.tgz
 /artifacts/release/
+/artifacts/*.vsix
+/artifacts/*.tgz
+/artifacts/plan-step-log.md
+/artifacts/verify-*/
+/artifacts/preserved/
 
 # Local development state
 .worktrees/

@@ -2,9 +2,15 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.3.0 — RELEASED
+
+- Overlay join: Git↔Git and Git→WORKTREE human `diff` append OTHER TRACKED CHANGES from Git storage blob-object identity, then WORK MAP and a deterministic CHANGE ALIGNMENT (`ALIGNED` / `MIXED` / `DIVERGENT` / `UNRESOLVED`) with an operational gloss. The adjunct names the identity law and other-path kinds (added / modified / deleted). Companion Diff From renders that prepared adjunct, including work-map cues. `--json` stays canonical.
+- Control: `Ctrl+Alt+R` then `S`/`D`/`E`/`C`. Welcome surface, toolbar, explorer/editor explain. Activity bar is `currentColor` SVG; Marketplace PNG stays 128×128.
+- [npm `ruleblast@2.3.0`](https://www.npmjs.com/package/ruleblast/v/2.3.0) reports integrity `sha512-1G1yAOUMnMQUfVX64YoLbBVKPNrFsX7ivIZ8OhJwL5YQUFyC6EyWYk4mNokyDIh+q7KqeLt9djgQSXxlQ2fn2Q==`. The registry download is the 138,135-byte tarball with SHA-256 `1672bdd9133f960d8658e003b8d7cb77a13b3fbd79c9238a2b009abf2839ba2e`. Registry `gitHead` at publish was `67280fd8b43a53cd262d68058e3b4680410c8d2d`. Pack `ruleblast-companion-2.3.0.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
 ## 2.2.2 — SHIPPED TO MAIN
 
-- Human `ruleblast diff <git> --to <git>` can append OTHER TRACKED CHANGES (selected realities) from Git tree blob-object identity. Not a fifth action. `--json` is unchanged. `HEAD → WORKTREE` has no overlay. This is not `v2.3.0` and not an npm release.
+- Human `ruleblast diff` Git→Git and Git→WORKTREE can append OTHER TRACKED CHANGES (selected realities) from Git storage blob-object identity, then restate membership as a WORK MAP (inherited / independent / unclassified / already-split). Companion Diff From renders that prepared adjunct and can explain a listed path. Companion and CLI share one control chord: `Ctrl+Alt+R` then `S`/`D`/`E`/`C`. Scoreboard nodes carry kind, mark, and intent so the host can bind keys, toolbar, and context menus. The activity bar uses a `currentColor` SVG; the Marketplace PNG stays 128×128. Empty scoreboard uses the native welcome surface. Pack `ruleblast-companion-2.2.2.vsix` with `npm run host:pack`. Do not overwrite Marketplace `2.2.0` or `2.2.1`. Not actor telemetry. Not a fifth action. `--json` is unchanged. If Git blob identity cannot be established, the adjunct prints unavailable and keeps today's canonical exit. This is not `v2.3.0` and not an npm release.
 - Verify no longer repeats package/install smoke after `npm run check`; those bodies already run inside check.
 - Published npm CLI remains `2.2.0`.
 

@@ -304,9 +304,48 @@ Signed tag object `aca42df18070b98c3ca2b52c5e3ea6b5ae83f76c` for [`v2.2.1`](http
 
 The companion ships a 128×128 PNG Marketplace icon. Verify builds once before `npm run check`. Candidate install smoke reuses `dist/cli.js` instead of compiling again. Capture-case Windows 8.3 resolution uses `cmd %~sI` with the path in an env var and `windowsVerbatimArguments`. Node's default quoting produced `D:\"C:`. Timeouts stay 15s / 120s. No fifth action, no second engine, no new npm CLI.
 
+## **SHIPPED TO MAIN** — `v2.2.2`: Git-pair overlay
+
+Human `ruleblast diff` Git→Git and Git→WORKTREE can append OTHER TRACKED CHANGES (selected realities) from Git storage blob-object identity, then restate membership as a WORK MAP so later work can tell inherited stacks from independent Git motion, unclassified paths, and already-split surfaces. Companion Diff From renders the prepared adjunct and can explain a listed path. It does not derive overlay membership. Companion and CLI share one control chord (`Ctrl+Alt+R` then `S`/`D`/`E`/`C`) with view-title buttons and explorer/editor explain menus. Scoreboard order is status → control → facts → overlay → sources → explain. The activity bar icon is a `currentColor` SVG so it tints with the workbench; the 128×128 PNG stays the Marketplace icon. Companion version in this increment was `2.2.2`. Not actor telemetry. Not a fifth action. `--json` stays canonical. Probe failure prints an unavailable adjunct line and keeps today's canonical exit.
+
+Verify no longer repeats package or install smoke after `npm run check`; those bodies already run inside check. Published npm CLI remains `2.2.0`. Companion Diff From stays Git→WORKTREE and renders the prepared overlay adjunct.
+
+## **RELEASED** — `v2.3.0`: Overlay, work map, and companion control
+
+That release is `2.3.0`. Latest independently verified public npm distribution is `2.3.0`. Companion version is `2.3.0`. Pack `ruleblast-companion-2.3.0.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+**Verified publication receipt.** [npm `ruleblast@2.3.0`](https://www.npmjs.com/package/ruleblast/v/2.3.0) reports integrity `sha512-1G1yAOUMnMQUfVX64YoLbBVKPNrFsX7ivIZ8OhJwL5YQUFyC6EyWYk4mNokyDIh+q7KqeLt9djgQSXxlQ2fn2Q==`. The registry download is the 138,135-byte tarball with SHA-256 `1672bdd9133f960d8658e003b8d7cb77a13b3fbd79c9238a2b009abf2839ba2e`. Registry `gitHead` at publish was `67280fd8b43a53cd262d68058e3b4680410c8d2d`. There is no signed `v2.3.0` source tag. These are independently verified external records, not facts inferred from this checkout.
+
+Human `diff` Git↔Git and Git→WORKTREE join Git storage blob-object identity with selected-realities stack delta. The adjunct names that identity law, other-path kinds (added / modified / deleted), WORK MAP membership, and CHANGE ALIGNMENT (`ALIGNED`, `MIXED`, `DIVERGENT`, or `UNRESOLVED`) with an operational gloss. Companion renders the prepared adjunct, themed SVG activity icon, welcome scan/diff/explain/case, toolbar, and `Ctrl+Alt+R` then `S`/`D`/`E`/`C`. Hosts do not derive overlay. `--json` stays canonical. Full-tree replay of 2651980→58e8f75 remains unsealed.
+
 ## **NEXT** — Offline evidence-revision reveal
 
 An offline run should be able to say that a pinned evidence revision may have drifted without contacting a network. That is a later gate, not a host or marketplace expansion.
+
+## **HORIZON** — `v3`: Prove the overlay at corpus scale
+
+Ordered product direction after `v2.3.0`. Not current support.
+
+- **`v3.0`** — Offline evidence-revision reveal. A pinned pack or profile evidence digest that can be stale without a network fetch.
+- **`v3.1`** — Sealed full-tree public overlay replay of a licensed pair (the 2651980→58e8f75 shape, not a changed-set subset). Fail closed if OTHER disagrees with the Git identity oracle.
+- **`v3.2`** — Recomputable overlay card: same prepared pair, same adjunct bytes, never an independent authority. Canonical JSON stays adjunct-free.
+- **`v3.3`** — Instruction-pressure corpus: N instruction-line edits → M inherited OTHER paths, each row a Blast Case, no model-quality claim.
+
+Each step must still answer the feature admission test. A corpus that needs a hosted index or a fifth action waits outside.
+
+## **HORIZON** — `v4`: Stack debugger, still one product
+
+Crazier, still inside the firewall. Not a calendar. Not a promise that editor magic already exists.
+
+- **`v4.0`** — Time-travel explain: one path, two immutable refs, selected realities, from Git bytes only. No claim that a model would have answered the same way.
+- **`v4.1`** — Public identity-oracle adjunct: prove OTHER equals `git diff-tree --raw` minus same-OID mode/type and gitlinks, without the engine calling `diff-tree` on the analysis path.
+- **`v4.2`** — First data-only external Reality Pack that reproduces a bundled golden without an executable escape hatch. Still no fifth bundled reality before packs.
+- **`v4.3`** — Multi-worktree join: two tracked worktrees, one storage format, one overlay, no network.
+- **`v4.4`** — Companion as stack debugger: from the last result, select an instruction source line and list inherited consumers. Last-result explain, not a fifth action, not a WebView dashboard.
+- **`v4.5`** — User-owned signed overlay witness, offline, no telemetry, discarded when the prepared pair is gone.
+- **`v4.6`** — “What would this path have inherited” at an arbitrary historical commit, Git-only, uncertainty preserved.
+
+A `v4` idea that needs actor attribution, quality scores, auto-fix, or a hosted graph is a different project.
 
 ## **EXPLORING** — Questions before commitments
 
@@ -317,6 +356,7 @@ These are unresolved questions, not current support or promised work:
 - How should an offline run reveal that a pinned evidence revision may have drifted without making a network request?
 - Can a licensed corpus of Blast Cases cover monorepos, nested instructions, imports, exclusions, and uncertain order without publishing sensitive content?
 - How many documented rule realities are genuinely distinct once equivalent projections are clustered by evidence rather than brand?
+- Can a Git storage blob-object identity join with selected-realities stack delta be admitted as a public product dimension? Human Git-pair and Git→WORKTREE overlay plus CHANGE ALIGNMENT are in `v2.3.0` RELEASED. Full-tree replay of 2651980→58e8f75 is still unsealed.
 
 `--reality github/copilot-cli@1` and `--reality google/gemini-cli@1` are the admitted opt-in surfaces. Copilot VS Code, hosted Copilot, Gemini Code Assist, and Cursor editor semantics remain examples only. CLI, editor, and hosted modes remain distinct surfaces whenever their documented loading semantics differ. A host that can run RuleBlast is not thereby MODELED.
 

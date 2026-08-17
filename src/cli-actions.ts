@@ -21,16 +21,17 @@ import type {
   DiffTextPresentationContext,
   ShellDialect,
 } from "./render-text.js";
-import { isGitObjectSnapshot, type RepositorySnapshot } from "./snapshot.js";
-import { profilesForRealities } from "./application/authority.js";
-import { analyzePreparedDiff } from "./application/diff-analysis.js";
-import { cacheGitObjectSnapshot } from "./application/projection-boundary.js";
 import {
-  buildOverlayP1,
+  isGitObjectSnapshot,
+  isWorktreeIdentitySource,
+  type RepositorySnapshot,
+} from "./snapshot.js";
+import { profilesForRealities } from "./application/authority.js";
+import {
   OVERLAY_UNAVAILABLE,
   renderBlastOverlay,
 } from "./application/blast-overlay.js";
-import { probeGitStorageFormat } from "./git.js";
+import { analyzeOverlayPair } from "./application/overlay-pair.js";
 import type { ProfileDefinition } from "./profiles/profile.js";
 
 function noDefensibleResult(
@@ -192,37 +193,48 @@ export async function runAnalysisAction(
     const after = await openSelector(root, args.target, dependencies);
     assertDistinct(before, after);
     const profiles = analysisProfiles(args, dependencies);
-    const admitP1 = args.output.kind !== "json" &&
+    const admitOverlay = args.output.kind !== "json" &&
       isGitObjectSnapshot(before) &&
-      isGitObjectSnapshot(after);
-    const format = admitP1 ? await probeGitStorageFormat(root) : null;
-    const wrappedBefore = admitP1 && format !== null
-      ? cacheGitObjectSnapshot(before, format)
+      (isGitObjectSnapshot(after) || isWorktreeIdentitySource(after));
+    const format = admitOverlay
+      ? await dependencies.probeGitStorageFormat(root)
       : null;
-    const wrappedAfter = admitP1 && format !== null && isGitObjectSnapshot(after)
-      ? cacheGitObjectSnapshot(after, format)
-      : null;
-    const result = wrappedBefore !== null && wrappedAfter !== null
-      ? await analyzePreparedDiff({
-          before: wrappedBefore,
-          after: wrappedAfter,
+    const pair = admitOverlay
+      ? await analyzeOverlayPair({
+          before,
+          after,
           profiles,
+          format,
+          analyzeDiff: dependencies.analyzeDiff,
         })
-      : await dependencies.analyzeDiff({ before, after, profiles });
+      : {
+          result: await dependencies.analyzeDiff({ before, after, profiles }),
+          overlay: null,
+          unavailable: false,
+        };
     present(
-      result,
+      pair.result,
       args.output,
       io,
       diffTextContext(args.base.ref, args.target, dependencies.shellDialect),
       presentationExtras(args),
     );
-    if (admitP1 && format === null) io.stdout(OVERLAY_UNAVAILABLE);
-    if (wrappedBefore !== null && wrappedAfter !== null) {
-      io.stdout(renderBlastOverlay(
-        await buildOverlayP1(wrappedBefore, wrappedAfter, result),
-      ));
+    if (pair.unavailable) io.stdout(OVERLAY_UNAVAILABLE);
+    if (pair.overlay !== null) {
+      io.stdout(renderBlastOverlay(pair.overlay, {
+        from: args.base.ref,
+        to: selectorLabel(args.target),
+        instructionLineEdits:
+          pair.result.diffStats.addedLineCount +
+          pair.result.diffStats.deletedLineCount +
+          pair.result.diffStats.editedLineCount,
+        changedStackPathCount: pair.result.counts.changedStackPathCount,
+        identityLaw: isWorktreeIdentitySource(after)
+          ? "worktree-captured"
+          : "git-storage",
+      }));
     }
-    return noDefensibleResult(result) ? 2 : 0;
+    return noDefensibleResult(pair.result) ? 2 : 0;
   }
 
   const after = await openSelector(root, args.target, dependencies);

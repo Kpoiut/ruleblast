@@ -1,0 +1,18 @@
+{
+  "license": "Apache-2.0",
+  "repository": "https://github.com/openai/codex",
+  "before": "8fcf2ad931b90589dd29a571f367e3185d26bbe0",
+  "after": "f0f483e8b2a2630bf8dfa5f8451e81eba20def6c",
+  "beforeBlobs": {
+    "codex-rs/tui/src/bottom_pane/AGENTS.md": "b5328217db73ae2e60c4ccb9aa1ceac7d3925334",
+    "codex-rs/tui/src/bottom_pane/chat_composer.rs": "9fc03764da9541c6a7e35c0f7892f012e9cf9eb1",
+    "codex-rs/tui/src/bottom_pane/paste_burst.rs": "44e3898db65618e02e5988a41716672928e88a90",
+    "AGENTS.md": "4714b1b8aa43ee7e6621a1542287c0cfcd900148"
+  },
+  "afterBlobs": {
+    "codex-rs/tui/src/bottom_pane/AGENTS.md": "b07fa2eca8d566939def6860774eb3237f6fdc1a",
+    "codex-rs/tui/src/bottom_pane/chat_composer.rs": "e62cab9e865ff28c3d3aae51ba29a01bb5abd8ef",
+    "codex-rs/tui/src/bottom_pane/paste_burst.rs": "4ea8310c35d487a466fff61405a1e956ae4a5b54",
+    "AGENTS.md": "4714b1b8aa43ee7e6621a1542287c0cfcd900148"
+  }
+}

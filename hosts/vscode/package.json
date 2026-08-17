@@ -2,7 +2,7 @@
   "name": "ruleblast",
   "displayName": "RuleBlast",
   "description": "Read-only companion. Same four actions as the CLI. Shows the blast radius of AGENTS.md and CLAUDE.md changes.",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "publisher": "kpoiut",
   "license": "Apache-2.0",
   "icon": "media/icon.png",
@@ -26,6 +26,7 @@
     "onCommand:ruleblast.scanWorkspace",
     "onCommand:ruleblast.diffFrom",
     "onCommand:ruleblast.explainActiveFile",
+    "onCommand:ruleblast.explainScoreboardPath",
     "onCommand:ruleblast.openVerifiedCase",
     "onCommand:ruleblast.selectReality"
   ],
@@ -33,18 +34,42 @@
   "type": "module",
   "contributes": {
     "commands": [
-      { "command": "ruleblast.scanWorkspace", "title": "RuleBlast: Scan Workspace" },
-      { "command": "ruleblast.diffFrom", "title": "RuleBlast: Diff From…" },
-      { "command": "ruleblast.explainActiveFile", "title": "RuleBlast: Explain Active File" },
-      { "command": "ruleblast.openVerifiedCase", "title": "RuleBlast: Open Verified Case" },
+      { "command": "ruleblast.scanWorkspace", "title": "RuleBlast: Scan Workspace", "shortTitle": "Scan", "icon": "$(search)", "enablement": "workspaceFolderCount > 0" },
+      { "command": "ruleblast.diffFrom", "title": "RuleBlast: Diff From…", "shortTitle": "Diff", "icon": "$(diff)", "enablement": "workspaceFolderCount > 0" },
+      { "command": "ruleblast.explainActiveFile", "title": "RuleBlast: Explain Active File", "shortTitle": "Explain", "icon": "$(info)", "enablement": "workspaceFolderCount > 0" },
+      { "command": "ruleblast.explainScoreboardPath", "title": "RuleBlast: Explain Scoreboard Path" },
+      { "command": "ruleblast.openVerifiedCase", "title": "RuleBlast: Open Verified Case", "shortTitle": "Case", "icon": "$(book)" },
       { "command": "ruleblast.selectReality", "title": "RuleBlast: Select Reality…" }
     ],
+    "keybindings": [
+      { "command": "ruleblast.scanWorkspace", "key": "ctrl+alt+r s", "when": "workspaceFolderCount > 0" },
+      { "command": "ruleblast.diffFrom", "key": "ctrl+alt+r d", "when": "workspaceFolderCount > 0" },
+      { "command": "ruleblast.explainActiveFile", "key": "ctrl+alt+r e", "when": "workspaceFolderCount > 0" },
+      { "command": "ruleblast.openVerifiedCase", "key": "ctrl+alt+r c", "when": "workspaceFolderCount > 0" }
+    ],
+    "menus": {
+      "commandPalette": [
+        { "command": "ruleblast.explainScoreboardPath", "when": "false" }
+      ],
+      "view/title": [
+        { "command": "ruleblast.scanWorkspace", "when": "view == ruleblast.scoreboard", "group": "navigation@1" },
+        { "command": "ruleblast.diffFrom", "when": "view == ruleblast.scoreboard", "group": "navigation@2" },
+        { "command": "ruleblast.explainActiveFile", "when": "view == ruleblast.scoreboard", "group": "navigation@3" },
+        { "command": "ruleblast.openVerifiedCase", "when": "view == ruleblast.scoreboard", "group": "navigation@4" }
+      ],
+      "explorer/context": [
+        { "command": "ruleblast.explainActiveFile", "when": "resourceScheme == file", "group": "ruleblast@1" }
+      ],
+      "editor/context": [
+        { "command": "ruleblast.explainActiveFile", "when": "resourceScheme == file", "group": "ruleblast@1" }
+      ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
           "id": "ruleblast",
           "title": "RuleBlast",
-          "icon": "media/icon.png"
+          "icon": "media/icon.svg"
         }
       ]
     },
@@ -52,9 +77,16 @@
       "ruleblast": [
         {
           "id": "ruleblast.scoreboard",
-          "name": "Scoreboard"
+          "name": "Scoreboard",
+          "icon": "media/icon.svg"
         }
       ]
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "ruleblast.scoreboard",
+        "contents": "Git diff for repository instructions.\n[Scan now](command:ruleblast.scanWorkspace)\n[Diff from HEAD](command:ruleblast.diffFrom)\n[Explain active file](command:ruleblast.explainActiveFile)\n[Open verified case](command:ruleblast.openVerifiedCase)\nCtrl+Alt+R then S · D · E · C"
+      }
+    ]
   }
 }

@@ -3,7 +3,11 @@ import type {
   CurrentRuleBlastResult,
   DiffRuleBlastResult,
 } from "../model.js";
-import type { RepositorySnapshot } from "../snapshot.js";
+import type { GitStorageObjectFormat, RepositorySnapshot } from "../snapshot.js";
+import {
+  analyzeOverlayPair,
+  type OverlayPairAnalysis,
+} from "./overlay-pair.js";
 import {
   currentExplain,
   diffExplain,
@@ -64,6 +68,18 @@ export async function diffRepository(
     before: input.before,
     after: input.after,
     profiles: profilesForRealities(selectedRealities(input)),
+  });
+}
+
+export async function diffRepositoryWithAdjunct(
+  input: AuthorityDiffInput & { readonly format: GitStorageObjectFormat | null },
+): Promise<OverlayPairAnalysis> {
+  return analyzeOverlayPair({
+    before: input.before,
+    after: input.after,
+    profiles: profilesForRealities(selectedRealities(input)),
+    format: input.format,
+    analyzeDiff,
   });
 }
 
@@ -137,9 +153,11 @@ export type {
   ScoreboardNode,
 } from "./host-session.js";
 export { renderScoreboard, scoreboardView } from "./scoreboard-view.js";
+export { CONTROL_BINDINGS, CONTROL_CHORD } from "./control-keys.js";
 export {
   findRepositoryRoot,
   openGitSnapshot,
   openPackagedCase,
   openTrackedWorktree,
+  probeGitStorageFormat,
 } from "./repository.js";

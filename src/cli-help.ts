@@ -1,3 +1,4 @@
+import { CONTROL_BINDINGS, CONTROL_CHORD } from "./application/control-keys.js";
 import { parseArgs } from "./args.js";
 import { IDENTITY_BLAST, IDENTITY_TITLE } from "./package-identity.js";
 
@@ -99,6 +100,9 @@ Skills   Codex .agents/skills · Claude Code .claude/skills
          Cursor .cursor/skills · Windsurf .windsurf/skills · Kiro .kiro/skills
          Not node_modules. Agents default to ask.
   --mcp      Stdio transport of the same four actions. Not a fifth action.
+
+Control  ${CONTROL_CHORD} then ${CONTROL_BINDINGS.map((row) => `${row.token} ${row.id}`).join(" · ")}
+         Companion keybindings. CLI uses the same four tokens: ${CONTROL_BINDINGS.map((row) => row.cli).join("  ")}
 
 Exits
   0  defensible result or no candidates — not "every path COMPLETE"

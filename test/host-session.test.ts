@@ -167,10 +167,130 @@ describe("companion session", () => {
       .toContain("src/a.ts");
   });
 
+  it("renders a prepared overlay adjunct without deriving it", async () => {
+    const result = await scanRepository({
+      snapshot: snapshot({ "AGENTS.md": "root", "src/a.ts": "code" }),
+      reality: null,
+    });
+    const overlay = {
+      observedPathCount: 2,
+      inBlastCount: 1,
+      outsideBlastCount: 1,
+      unresolvedCount: 0,
+      splitObservedPathCount: 0,
+      observedPaths: [
+        { path: "src/in.ts", kind: "MODIFY" as const, relation: "IN_BLAST" as const },
+        { path: "docs/out.md", kind: "MODIFY" as const, relation: "OUTSIDE_BLAST" as const },
+      ],
+    };
+    const state = companionSucceed(initialCompanionState(), result, { overlay });
+    const tree = companionTree(state);
+    const node = tree.find((item) => item.id === "overlay");
+    expect(node?.description).toBe("MIXED · 2 paths");
+    expect(node?.children?.find((item) => item.id === "overlay:alignment")).toMatchObject({
+      label: "Change alignment",
+      description: "MIXED",
+    });
+    expect(
+      node?.children?.find((item) => item.id === "overlay:alignment")?.children?.[0]?.label,
+    ).toBe("other tracked motion is not one inherited class");
+    expect(node?.children?.find((item) => item.id === "overlay:kinds")?.label)
+      .toBe("0 added · 2 modified · 0 deleted");
+    expect(node?.children?.find((item) => item.id === "overlay:work-map")?.children).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "overlay:work-map:inherited-stack",
+          label: "Inherited stack",
+          description: "1",
+          path: "src/in.ts",
+          intent: "EXPLAIN_PATH",
+          mark: "inherited",
+        }),
+        expect.objectContaining({
+          id: "overlay:work-map:independent-git",
+          label: "Independent Git work",
+          description: "1",
+          path: "docs/out.md",
+          intent: "EXPLAIN_PATH",
+          mark: "independent",
+        }),
+      ]),
+    );
+    const inherited = node?.children?.find((item) => item.id === "overlay:in");
+    expect(inherited?.children?.[0]).toMatchObject({
+      path: "src/in.ts",
+      intent: "EXPLAIN_PATH",
+      kind: "observation",
+      mark: "inherited",
+    });
+    const unavailable = companionSucceed(initialCompanionState(), result, {
+      overlayUnavailable: true,
+    });
+    expect(companionTree(unavailable).find((item) => item.id === "overlay")?.description)
+      .toBe("unavailable");
+  });
+
+  it("restates instruction-line edits from the prepared diff result", async () => {
+    const before = snapshot({
+      "AGENTS.md": "root\n",
+      "src/in.ts": "in\n",
+      "docs/out.md": "out\n",
+    });
+    const after = snapshot({
+      "AGENTS.md": "root changed\n",
+      "src/in.ts": "in changed\n",
+      "docs/out.md": "out changed\n",
+    });
+    const result = await diffRepository({ before, after, reality: null });
+    const overlay = {
+      observedPathCount: 2,
+      inBlastCount: 1,
+      outsideBlastCount: 1,
+      unresolvedCount: 0,
+      splitObservedPathCount: 0,
+      observedPaths: [
+        { path: "src/in.ts", kind: "MODIFY" as const, relation: "IN_BLAST" as const },
+        { path: "docs/out.md", kind: "MODIFY" as const, relation: "OUTSIDE_BLAST" as const },
+      ],
+    };
+    const tree = companionTree(companionSucceed(initialCompanionState(), result, { overlay }));
+    const node = tree.find((item) => item.id === "overlay");
+    const edits = result.diffStats.addedLineCount +
+      result.diffStats.deletedLineCount +
+      result.diffStats.editedLineCount;
+    expect(node?.children?.find((item) => item.id === "overlay:edits")).toMatchObject({
+      label: `${edits} instruction-line edits`,
+      description: `${result.counts.changedStackPathCount} changed stacks · 1 inherited other paths`,
+    });
+    expect(node?.children?.some((item) => item.id === "overlay:law")).toBe(false);
+  });
+
+  it("leaves the empty scoreboard to the host welcome surface", () => {
+    expect(companionTree(initialCompanionState())).toEqual([]);
+    const analyzing = companionBegin(initialCompanionState(), "scan");
+    expect(companionTree(analyzing).map((node) => node.id)).toEqual(["status"]);
+  });
+
+  it("orders a current scoreboard as status, control, then facts", async () => {
+    const result = await scanRepository({
+      snapshot: snapshot({ "AGENTS.md": "root", "src/a.ts": "code" }),
+      reality: null,
+    });
+    const tree = companionTree(companionSucceed(initialCompanionState(), result));
+    expect(tree.slice(0, 3).map((node) => node.id)).toEqual([
+      "status", "control", "reality",
+    ]);
+    expect(tree.every((node) => typeof node.kind === "string")).toBe(true);
+    const controls = tree.find((node) => node.id === "control")?.children ?? [];
+    expect(controls.map((node) => node.description)).toEqual(["S", "D", "E", "C"]);
+    expect(controls.every((node) => node.intent === undefined)).toBe(true);
+  });
+
   it("keeps errors on the lifecycle axis", () => {
     const state = companionFail(initialCompanionState(), "UNTRUSTED", "no");
     expect(state.lifecycle).toBe("ERROR");
     expect(state.error?.code).toBe("UNTRUSTED");
+    expect(companionTree(state).map((node) => node.id)).toEqual(["status", "error"]);
   });
 });
 

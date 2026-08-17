@@ -9,7 +9,11 @@ import type {
 } from "./model.js";
 import type { ProfileDefinition } from "./profiles/profile.js";
 import type { ShellDialect } from "./render-text.js";
-import type { RepositorySnapshot } from "./snapshot.js";
+import type {
+  GitObjectSnapshot,
+  GitStorageObjectFormat,
+  RepositorySnapshot,
+} from "./snapshot.js";
 
 export interface CliIo {
   readonly stdout: (text: string) => void;
@@ -28,7 +32,10 @@ export interface CliDependencies {
   readonly openGitSnapshot: (
     root: string,
     ref: string,
-  ) => Promise<RepositorySnapshot>;
+  ) => Promise<GitObjectSnapshot>;
+  readonly probeGitStorageFormat: (
+    root: string,
+  ) => Promise<GitStorageObjectFormat | null>;
   readonly openTrackedWorktree: (root: string) => Promise<RepositorySnapshot>;
   readonly analyzeCurrent: (
     input: AnalysisInput,
@@ -67,8 +74,8 @@ export interface CapturedInvocation {
 
 const DEPENDENCY_FIELDS = [
   "version", "shellDialect", "profiles", "resolvePath", "findRepositoryRoot",
-  "openGitSnapshot", "openTrackedWorktree", "analyzeCurrent", "analyzeDiff",
-  "openCase",
+  "openGitSnapshot", "probeGitStorageFormat", "openTrackedWorktree",
+  "analyzeCurrent", "analyzeDiff", "openCase",
 ] as const;
 
 function captureDataRecord(
@@ -189,6 +196,7 @@ function captureDependencies(value: CliDependencies): CliDependencies {
   const resolvePath = dataValue(descriptors, "resolvePath");
   const findRoot = dataValue(descriptors, "findRepositoryRoot");
   const openGit = dataValue(descriptors, "openGitSnapshot");
+  const probeFormat = dataValue(descriptors, "probeGitStorageFormat");
   const openWorktree = dataValue(descriptors, "openTrackedWorktree");
   const current = dataValue(descriptors, "analyzeCurrent");
   const diff = dataValue(descriptors, "analyzeDiff");
@@ -197,6 +205,7 @@ function captureDependencies(value: CliDependencies): CliDependencies {
       (shellDialect !== "posix" && shellDialect !== "powershell") ||
       typeof resolvePath !== "function" ||
       typeof findRoot !== "function" || typeof openGit !== "function" ||
+      typeof probeFormat !== "function" ||
       typeof openWorktree !== "function" || typeof current !== "function" ||
       typeof diff !== "function" || typeof openCase !== "function") {
     throw new TypeError("CliDependencies fields have invalid types");
@@ -211,7 +220,9 @@ function captureDependencies(value: CliDependencies): CliDependencies {
     findRepositoryRoot: (start: string) =>
       findRoot.call(value, start) as Promise<string>,
     openGitSnapshot: (root: string, ref: string) =>
-      openGit.call(value, root, ref) as Promise<RepositorySnapshot>,
+      openGit.call(value, root, ref) as Promise<GitObjectSnapshot>,
+    probeGitStorageFormat: (root: string) =>
+      probeFormat.call(value, root) as Promise<GitStorageObjectFormat | null>,
     openTrackedWorktree: (root: string) =>
       openWorktree.call(value, root) as Promise<RepositorySnapshot>,
     analyzeCurrent: (input: AnalysisInput) =>

@@ -16,7 +16,7 @@ import type {
   DiffRuleBlastResult,
   SnapshotRef,
 } from "../src/model.js";
-import type { RepositorySnapshot } from "../src/snapshot.js";
+import type { GitObjectSnapshot, RepositorySnapshot } from "../src/snapshot.js";
 import {
   CliRuntimeError,
   isDirectEntry,
@@ -31,6 +31,7 @@ import {
   GitSnapshotError,
   openGitSnapshot,
   openTrackedWorktree,
+  probeGitStorageFormat,
 } from "../src/git.js";
 import { claudeProfile } from "../src/profiles/claude.js";
 import { codexProfile } from "../src/profiles/codex.js";
@@ -126,16 +127,32 @@ function addCompleteUnrelatedDiff(
   return result;
 }
 
-function snapshot(ref: SnapshotRef): RepositorySnapshot {
+function fileAccess() {
   return {
-    ref,
     async listPaths() { return ["src/index.ts"]; },
-    async entry(path) {
+    async entry(path: string) {
       return path === "src/index.ts"
-        ? { path, kind: "file", executable: false }
+        ? { path, kind: "file" as const, executable: false }
         : null;
     },
-    async read(path) { return path === "src/index.ts" ? new Uint8Array() : null; },
+    async read(path: string) {
+      return path === "src/index.ts" ? new Uint8Array() : null;
+    },
+  };
+}
+
+function snapshot(ref: SnapshotRef): GitObjectSnapshot {
+  return {
+    ref,
+    ...fileAccess(),
+    blobOid() { return null; },
+  };
+}
+
+function worktreeSnapshot(): RepositorySnapshot {
+  return {
+    ref: worktreeRef,
+    ...fileAccess(),
   };
 }
 
@@ -149,7 +166,7 @@ function harness(overrides: Partial<CliDependencies> = {}) {
     env: {},
     stdoutIsTTY: true,
   };
-  const worktree = snapshot(worktreeRef);
+  const worktree = worktreeSnapshot();
   const before = snapshot(gitRef("a".repeat(40)));
   const after = snapshot(gitRef("b".repeat(40)));
   const dependencies: CliDependencies = {
@@ -159,6 +176,7 @@ function harness(overrides: Partial<CliDependencies> = {}) {
     resolvePath: (...parts) => parts.join("/"),
     findRepositoryRoot: vi.fn(async () => "C:\\workspace"),
     openGitSnapshot: vi.fn(async (_root, ref) => ref === "BASE" ? before : after),
+    probeGitStorageFormat: vi.fn(async () => null),
     openTrackedWorktree: vi.fn(async () => worktree),
     analyzeCurrent: vi.fn(async ({ snapshot: selected }) => currentResult(selected.ref)),
     analyzeDiff: vi.fn(async ({ before: left, after: right }) => diffResult(left.ref, right.ref)),
@@ -532,7 +550,7 @@ describe("runCli", () => {
     result.paths[0]!.projections[0]!.context.targetPath = result.paths[0]!.path;
     const base = harness({ analyzeCurrent: vi.fn(async () => result) });
     const controlSnapshot: RepositorySnapshot = {
-      ...snapshot(worktreeRef),
+      ...worktreeSnapshot(),
       async listPaths() { return [result.paths[0]!.path]; },
       async entry(path) {
         return path === result.paths[0]!.path
@@ -671,8 +689,8 @@ describe("runCli", () => {
     const dependencies: CliDependencies = {
       version: "test", profiles: [claudeProfile, codexProfile], resolvePath: join,
       shellDialect: "posix",
-      findRepositoryRoot, openGitSnapshot, openTrackedWorktree,
-      analyzeCurrent, analyzeDiff,
+      findRepositoryRoot, openGitSnapshot, probeGitStorageFormat,
+      openTrackedWorktree, analyzeCurrent, analyzeDiff,
       openCase: async () => { throw new Error("not used"); },
     };
     expect(await runCli([".", "--json"], io, dependencies)).toBe(0);

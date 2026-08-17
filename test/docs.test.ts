@@ -97,15 +97,18 @@ describe("README story contract", () => {
       "img.shields.io/github/package-json/v/Kpoiut/ruleblast",
       "Git shows the <code>AGENTS.md</code>",
       "assets/ruleblast-causal-proof.gif",
-      "npx --yes ruleblast@2.2.0 .",
+      "npx --yes ruleblast@2.3.0 .",
       "## What Git missed",
       "assets/ruleblast-visual-benchmark.png",
       "which-files-inherit-agents-md.md",
       "codex-rs/tui/src/bottom_pane/action_required_title.rs",
       "PROOF.md",
+      "## Other tracked changes",
+      "OTHER TRACKED CHANGES",
+      "CHANGE ALIGNMENT",
       "## Install",
       "## Run the verified case",
-      "npx --yes ruleblast@2.2.0 case --json",
+      "npx --yes ruleblast@2.3.0 case --json",
       "Exact packaged-case terminal transcript",
       "## Explain one path",
       "## Scope",
@@ -189,21 +192,21 @@ describe("README story contract", () => {
   it("documents one-command, global, local, maintenance, and source installs", () => {
     for (const command of [
       "node --version",
-      "npm view ruleblast@2.2.0 version",
-      "npx --yes ruleblast@2.2.0",
-      "npx --yes ruleblast@2.2.0 --help",
+      "npm view ruleblast@2.3.0 version",
+      "npx --yes ruleblast@2.3.0",
+      "npx --yes ruleblast@2.3.0 --help",
       "cd <your-git-repository>",
-      "npm install --global ruleblast@2.2.0",
+      "npm install --global ruleblast@2.3.0",
       "ruleblast --version",
       "ruleblast --help",
       "ruleblast",
-      "npm install --save-dev --save-exact ruleblast@2.2.0",
+      "npm install --save-dev --save-exact ruleblast@2.3.0",
       "npx ruleblast --version",
       "npx ruleblast --help",
       "npm uninstall --global ruleblast",
       "npm uninstall --save-dev ruleblast",
       "npm cache verify",
-      "git clone --branch v2.2.0 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v2.3.0 --depth 1 https://github.com/Kpoiut/ruleblast.git",
       "npm ci --ignore-scripts",
       "npm run build",
       "node dist/cli.js --version",
@@ -212,10 +215,10 @@ describe("README story contract", () => {
       expect(readme).toContain(command);
     }
     for (const action of [
-      "npx --yes ruleblast@2.2.0 .",
-      "npx --yes ruleblast@2.2.0 diff HEAD~1",
-      "npx --yes ruleblast@2.2.0 explain src/args.ts --from HEAD~1",
-      "npx --yes ruleblast@2.2.0 case",
+      "npx --yes ruleblast@2.3.0 .",
+      "npx --yes ruleblast@2.3.0 diff HEAD~1",
+      "npx --yes ruleblast@2.3.0 explain src/args.ts --from HEAD~1",
+      "npx --yes ruleblast@2.3.0 case",
     ]) {
       expect(readme).toContain(action);
     }
@@ -378,6 +381,8 @@ describe("public contract", () => {
       "Non-claims",
       "noncanonical presentation adjuncts",
       "Adjunct unavailability cannot change canonical bytes",
+      "restate membership as a work map",
+      "deterministic change alignment",
     ]) {
       expect(contract).toContain(term);
     }
@@ -416,6 +421,10 @@ describe("repository documentation integrity", () => {
     }
     expect(body).not.toContain("docs/superpowers/plans/");
     expect(body).not.toContain("ruleblast-v1-implementation");
+    expect(read(".gitignore")).toContain("/artifacts/plan-step-log.md");
+    expect(read(".gitignore")).toContain("/artifacts/*.vsix");
+    expect(read(".gitattributes")).toContain("artifacts/** export-ignore");
+    expect(read(".gitattributes")).toContain("EXTRACTION_REVIEWS.json export-ignore");
     expect(body).not.toMatch(
       /npm (?:release )?(?:is )?not published|npm release does not exist|pending release command/iu,
     );
@@ -486,6 +495,10 @@ describe("repository documentation integrity", () => {
       "v2.1.1",
       "v2.2.0",
       "v2.2.1",
+      "v2.2.2",
+      "v2.3.0",
+      "v3.0",
+      "v4.0",
     ]) {
       expect(roadmap).toContain(heading);
     }
