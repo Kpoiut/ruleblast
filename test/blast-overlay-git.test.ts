@@ -9,7 +9,7 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { analyzePreparedDiff } from "../src/application/diff-analysis.js";
 import {
   buildOverlayP1,
@@ -648,6 +648,9 @@ describe("blast overlay on Git storage blob identity", () => {
 });
 
 describe("CLI Git pair overlay", () => {
+  let pair!: { root: string; beforeRef: string; afterRef: string };
+  let dirty!: { root: string; beforeRef: string };
+
   function cliAt(
     root: string,
     overrides: Partial<CliDependencies> = {},
@@ -677,12 +680,25 @@ describe("CLI Git pair overlay", () => {
     return { io, dependencies, stdout };
   }
 
-  it("prints the overlay on human Git-to-Git text and omits it from JSON", async () => {
+  beforeAll(() => {
     const root = initRepo();
-    const { beforeRef, afterRef } = seedScopedPair(root);
-    const text = cliAt(root);
+    pair = { root, ...seedScopedPair(root) };
+    const dirtyRoot = initRepo();
+    write(dirtyRoot, "AGENTS.md", "root rules\n");
+    write(dirtyRoot, "packages/api/AGENTS.md", "api before\n");
+    write(dirtyRoot, "packages/api/in.ts", "in\n");
+    write(dirtyRoot, "docs/out.md", "out\n");
+    const beforeRef = commit(dirtyRoot, "seed");
+    write(dirtyRoot, "packages/api/AGENTS.md", "api after\n");
+    write(dirtyRoot, "packages/api/in.ts", "in changed\n");
+    write(dirtyRoot, "docs/out.md", "out changed\n");
+    dirty = { root: dirtyRoot, beforeRef };
+  });
+
+  it("prints the overlay on human Git-to-Git text", async () => {
+    const text = cliAt(pair.root);
     expect(await runCli(
-      ["diff", beforeRef, "--to", afterRef, "--color=never"],
+      ["diff", pair.beforeRef, "--to", pair.afterRef, "--color=never"],
       text.io,
       text.dependencies,
     )).toBe(0);
@@ -696,27 +712,26 @@ describe("CLI Git pair overlay", () => {
     expect(printed).toContain("next: ruleblast explain");
     expect(printed).toContain("packages/api/in.ts");
     expect(printed).toContain("docs/out.md");
+  });
 
-    const json = cliAt(root);
+  it("omits the overlay from Git-to-Git JSON", async () => {
+    const json = cliAt(pair.root);
     expect(await runCli(
-      ["diff", beforeRef, "--to", afterRef, "--json"],
+      ["diff", pair.beforeRef, "--to", pair.afterRef, "--json"],
       json.io,
       json.dependencies,
     )).toBe(0);
     expect(json.stdout.join("")).not.toContain("OTHER TRACKED CHANGES");
     expect(json.stdout.join("")).not.toContain("CHANGE ALIGNMENT");
     expect(json.stdout.join("")).not.toContain("WORK MAP");
-    const parsed = JSON.parse(json.stdout.join("")) as { readonly schemaVersion: number };
-    expect(parsed.schemaVersion).toBe(1);
+    expect(JSON.parse(json.stdout.join(""))).toMatchObject({ schemaVersion: 1 });
   });
 
   it("probes Git storage format once on a human Git pair", async () => {
-    const root = initRepo();
-    const { beforeRef, afterRef } = seedScopedPair(root);
     const probe = vi.fn(probeGitStorageFormat);
-    const once = cliAt(root, { probeGitStorageFormat: probe });
+    const once = cliAt(pair.root, { probeGitStorageFormat: probe });
     expect(await runCli(
-      ["diff", beforeRef, "--to", afterRef, "--color=never"],
+      ["diff", pair.beforeRef, "--to", pair.afterRef, "--color=never"],
       once.io,
       once.dependencies,
     )).toBe(0);
@@ -724,30 +739,32 @@ describe("CLI Git pair overlay", () => {
     expect(once.stdout.join("")).toContain("OTHER TRACKED CHANGES (selected realities)");
   });
 
-  it("keeps receipt and witness text overlay-bearing and JSON overlay-free", async () => {
-    const root = initRepo();
-    const { beforeRef, afterRef } = seedScopedPair(root);
-    const receipt = cliAt(root);
+  it("keeps receipt text overlay-bearing", async () => {
+    const receipt = cliAt(pair.root);
     expect(await runCli(
-      ["diff", beforeRef, "--to", afterRef, "--receipt", "--color=never"],
+      ["diff", pair.beforeRef, "--to", pair.afterRef, "--receipt", "--color=never"],
       receipt.io,
       receipt.dependencies,
     )).toBe(0);
     expect(receipt.stdout.join("")).toContain("RULEBLAST PROOF");
     expect(receipt.stdout.join("")).toContain("OTHER TRACKED CHANGES (selected realities)");
+  });
 
-    const witness = cliAt(root);
+  it("keeps witness text overlay-bearing", async () => {
+    const witness = cliAt(pair.root);
     expect(await runCli(
-      ["diff", beforeRef, "--to", afterRef, "--witness", "--color=never"],
+      ["diff", pair.beforeRef, "--to", pair.afterRef, "--witness", "--color=never"],
       witness.io,
       witness.dependencies,
     )).toBe(0);
     expect(witness.stdout.join("")).toContain("WHY this resolution");
     expect(witness.stdout.join("")).toContain("OTHER TRACKED CHANGES (selected realities)");
+  });
 
-    const witnessJson = cliAt(root);
+  it("keeps witness JSON overlay-free", async () => {
+    const witnessJson = cliAt(pair.root);
     expect(await runCli(
-      ["diff", beforeRef, "--to", afterRef, "--json", "--witness"],
+      ["diff", pair.beforeRef, "--to", pair.afterRef, "--json", "--witness"],
       witnessJson.io,
       witnessJson.dependencies,
     )).toBe(0);
@@ -779,19 +796,13 @@ describe("CLI Git pair overlay", () => {
   });
 
   it("does not probe or print overlay on explain of a Git pair", async () => {
-    const root = initRepo();
-    write(root, "AGENTS.md", "root\n");
-    write(root, "src/app.ts", "app\n");
-    const beforeRef = commit(root, "seed");
-    write(root, "src/app.ts", "app changed\n");
-    const afterRef = commit(root, "edit");
     const probe = vi.fn(async () => {
       throw new Error("explain must not probe storage format");
     });
-    const run = cliAt(root, { probeGitStorageFormat: probe });
+    const run = cliAt(pair.root, { probeGitStorageFormat: probe });
     expect(await runCli(
       [
-        "explain", "src/app.ts", "--from", beforeRef, "--to", afterRef,
+        "explain", "packages/api/in.ts", "--from", pair.beforeRef, "--to", pair.afterRef,
         "--color=never",
       ],
       run.io,
@@ -802,26 +813,17 @@ describe("CLI Git pair overlay", () => {
   });
 
   it("binds dirty worktree bytes to Git blob identity without reading during overlay", async () => {
-    const root = initRepo();
-    write(root, "AGENTS.md", "root rules\n");
-    write(root, "packages/api/AGENTS.md", "api before\n");
-    write(root, "packages/api/in.ts", "in\n");
-    write(root, "docs/out.md", "out\n");
-    const beforeRef = commit(root, "seed");
-    write(root, "packages/api/AGENTS.md", "api after\n");
-    write(root, "packages/api/in.ts", "in changed\n");
-    write(root, "docs/out.md", "out changed\n");
-    const before = await openGitSnapshot(root, beforeRef);
-    const worktree = await openTrackedWorktree(root);
+    const before = await openGitSnapshot(dirty.root, dirty.beforeRef);
+    const worktree = await openTrackedWorktree(dirty.root);
     expect(isWorktreeIdentitySource(worktree)).toBe(true);
     if (!isWorktreeIdentitySource(worktree)) return;
-    const format = await probeGitStorageFormat(root);
+    const format = await probeGitStorageFormat(dirty.root);
     expect(format).toBe("sha1");
     const after = worktree.withObjectIdentity(format!);
-    const dirtyIn = readFileSync(join(root, "packages/api/in.ts"));
+    const dirtyIn = readFileSync(join(dirty.root, "packages/api/in.ts"));
     expect(after.blobOid("packages/api/in.ts")).toBe(gitBlobOid(dirtyIn, "sha1"));
     expect(after.blobOid("packages/api/in.ts")).toBe(
-      execFileSync("git", ["-C", root, "hash-object", "packages/api/in.ts"], {
+      execFileSync("git", ["-C", dirty.root, "hash-object", "packages/api/in.ts"], {
         encoding: "utf8",
       }).trim(),
     );
@@ -843,18 +845,9 @@ describe("CLI Git pair overlay", () => {
     ]);
   });
 
-  it("prints the overlay on human Git-to-WORKTREE text and omits it from JSON", async () => {
-    const root = initRepo();
-    write(root, "AGENTS.md", "root rules\n");
-    write(root, "packages/api/AGENTS.md", "api before\n");
-    write(root, "packages/api/in.ts", "in\n");
-    write(root, "docs/out.md", "out\n");
-    commit(root, "seed");
-    write(root, "packages/api/AGENTS.md", "api after\n");
-    write(root, "packages/api/in.ts", "in changed\n");
-    write(root, "docs/out.md", "out changed\n");
+  it("prints the overlay on human Git-to-WORKTREE text", async () => {
     const probe = vi.fn(probeGitStorageFormat);
-    const text = cliAt(root, { probeGitStorageFormat: probe });
+    const text = cliAt(dirty.root, { probeGitStorageFormat: probe });
     expect(await runCli(["diff", "--color=never"], text.io, text.dependencies)).toBe(0);
     expect(probe).toHaveBeenCalledOnce();
     const printed = text.stdout.join("");
@@ -866,8 +859,10 @@ describe("CLI Git pair overlay", () => {
     expect(printed).toContain("docs/out.md");
     expect(printed).toContain("later work here inherits the instruction edit");
     expect(printed).toContain("later work here does not inherit the instruction edit");
+  });
 
-    const json = cliAt(root);
+  it("omits the overlay from Git-to-WORKTREE JSON", async () => {
+    const json = cliAt(dirty.root);
     expect(await runCli(["diff", "--json"], json.io, json.dependencies)).toBe(0);
     expect(json.stdout.join("")).not.toContain("OTHER TRACKED CHANGES");
     expect(json.stdout.join("")).not.toContain("CHANGE ALIGNMENT");
@@ -876,18 +871,12 @@ describe("CLI Git pair overlay", () => {
   });
 
   it("does not probe storage format on --json", async () => {
-    const root = initRepo();
-    write(root, "AGENTS.md", "root\n");
-    write(root, "src/app.ts", "app\n");
-    const beforeRef = commit(root, "seed");
-    write(root, "src/app.ts", "app changed\n");
-    const afterRef = commit(root, "edit");
     const probe = vi.fn(async () => {
       throw new Error("json must not probe storage format");
     });
-    const json = cliAt(root, { probeGitStorageFormat: probe });
+    const json = cliAt(pair.root, { probeGitStorageFormat: probe });
     expect(await runCli(
-      ["diff", beforeRef, "--to", afterRef, "--json"],
+      ["diff", pair.beforeRef, "--to", pair.afterRef, "--json"],
       json.io,
       json.dependencies,
     )).toBe(0);
@@ -897,17 +886,15 @@ describe("CLI Git pair overlay", () => {
   });
 
   it("prints unavailable and keeps exit 0 when blob identity cannot be established", async () => {
-    const root = initRepo();
-    const { beforeRef, afterRef } = seedScopedPair(root);
     const probe = vi.fn(async (_root: string) => null);
-    const run = cliAt(root, { probeGitStorageFormat: probe });
+    const run = cliAt(pair.root, { probeGitStorageFormat: probe });
     expect(await runCli(
-      ["diff", beforeRef, "--to", afterRef, "--color=never"],
+      ["diff", pair.beforeRef, "--to", pair.afterRef, "--color=never"],
       run.io,
       run.dependencies,
     )).toBe(0);
     expect(probe).toHaveBeenCalledOnce();
-    expect(sameDirectory(String(probe.mock.calls[0]?.[0]), root)).toBe(true);
+    expect(sameDirectory(String(probe.mock.calls[0]?.[0]), pair.root)).toBe(true);
     const printed = run.stdout.join("");
     const overlay = printed.slice(printed.indexOf("OTHER TRACKED CHANGES"));
     expect(overlay).toContain(OVERLAY_UNAVAILABLE.trim());
