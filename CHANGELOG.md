@@ -6,7 +6,12 @@ All notable user-visible changes to RuleBlast are recorded here.
 
 - Overlay join: Git↔Git and Git→WORKTREE human `diff` append OTHER TRACKED CHANGES from Git storage blob-object identity, then WORK MAP and a deterministic CHANGE ALIGNMENT (`ALIGNED` / `MIXED` / `DIVERGENT` / `UNRESOLVED`) with an operational gloss. The adjunct names the identity law and other-path kinds (added / modified / deleted). Companion Diff From renders that prepared adjunct, including work-map cues. `--json` stays canonical.
 - Control: `Ctrl+Alt+R` then `S`/`D`/`E`/`C`. Welcome surface, toolbar, explorer/editor explain. Activity bar is `currentColor` SVG; Marketplace PNG stays 128×128.
-- [npm `ruleblast@2.3.0`](https://www.npmjs.com/package/ruleblast/v/2.3.0) reports integrity `sha512-1G1yAOUMnMQUfVX64YoLbBVKPNrFsX7ivIZ8OhJwL5YQUFyC6EyWYk4mNokyDIh+q7KqeLt9djgQSXxlQ2fn2Q==`. The registry download is the 138,135-byte tarball with SHA-256 `1672bdd9133f960d8658e003b8d7cb77a13b3fbd79c9238a2b009abf2839ba2e`. Registry `gitHead` at publish was `67280fd8b43a53cd262d68058e3b4680410c8d2d`. Pack `ruleblast-companion-2.3.0.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+- [npm `ruleblast@2.3.0`](https://www.npmjs.com/package/ruleblast/v/2.3.0) reports integrity `sha512-1G1yAOUMnMQUfVX64YoLbBVKPNrFsX7ivIZ8OhJwL5YQUFyC6EyWYk4mNokyDIh+q7KqeLt9djgQSXxlQ2fn2Q==`. The registry download is the 138,135-byte tarball with SHA-256 `1672bdd9133f960d8658e003b8d7cb77a13b3fbd79c9238a2b009abf2839ba2e`. Registry `gitHead` at publish was `67280fd8b43a53cd262d68058e3b4680410c8d2d` and is not the 2.3.0 source commit. Pack `ruleblast-companion-2.3.0.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+### Release artifact
+
+- Signed tag object `73e0fdf25f68c18380c9db5b459406419f72fc06` for [`v2.3.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.3.0) targets commit `7ca69ba262f3250e6e33630ca05c205d9f01e14c`.
+- npm and the GitHub Release serve the same 138,135-byte tarball with SHA-256 `1672bdd9133f960d8658e003b8d7cb77a13b3fbd79c9238a2b009abf2839ba2e`. The GitHub Release also serves the 125,885-byte `ruleblast-companion-2.3.0.vsix` with SHA-256 `40aca6dbb59bf2b5d19938788f0454baa80abb806802290429aff8c3f255ab60`.
 
 ## 2.2.2 — SHIPPED TO MAIN
 

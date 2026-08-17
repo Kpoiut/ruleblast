@@ -228,7 +228,7 @@ npm run build
 npm run host:build
 ```
 
-Install the unpacked `hosts/vscode` folder. This tree packs `ruleblast-companion-2.3.0.vsix` with `npm run host:pack`. The activity bar uses a themed SVG; the Marketplace PNG stays 128×128. Do not overwrite Marketplace `2.2.0` or `2.2.1`. Commands: Scan Workspace, Diff From…, Explain Active File, Open Verified Case. Keys: `Ctrl+Alt+R` then `S`/`D`/`E`/`C`. Marketplace / Open VSX listings are separate publisher operations; the VSIX is the installable extension form.
+Install the unpacked `hosts/vscode` folder. This tree packs `ruleblast-companion-2.3.0.vsix` with `npm run host:pack`. The GitHub Release serves `ruleblast-companion-2.3.0.vsix`. The activity bar uses a themed SVG; the Marketplace PNG stays 128×128. Do not overwrite Marketplace `2.2.0` or `2.2.1`. Commands: Scan Workspace, Diff From…, Explain Active File, Open Verified Case. Keys: `Ctrl+Alt+R` then `S`/`D`/`E`/`C`. Marketplace / Open VSX listings are separate publisher operations; the VSIX is the installable extension form.
 
 ## Give your agent RuleBlast
 

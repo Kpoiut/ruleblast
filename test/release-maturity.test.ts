@@ -601,17 +601,22 @@ describe("public release maturity", () => {
     const released = roadmap.slice(start, next);
     for (const evidence of [
       "https://www.npmjs.com/package/ruleblast/v/2.3.0",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v2.3.0",
+      "73e0fdf25f68c18380c9db5b459406419f72fc06",
+      "7ca69ba262f3250e6e33630ca05c205d9f01e14c",
       "sha512-1G1yAOUMnMQUfVX64YoLbBVKPNrFsX7ivIZ8OhJwL5YQUFyC6EyWYk4mNokyDIh+q7KqeLt9djgQSXxlQ2fn2Q==",
       "138,135",
       "1672bdd9133f960d8658e003b8d7cb77a13b3fbd79c9238a2b009abf2839ba2e",
       "67280fd8b43a53cd262d68058e3b4680410c8d2d",
+      "125,885",
+      "40aca6dbb59bf2b5d19938788f0454baa80abb806802290429aff8c3f255ab60",
     ]) {
       expect(released).toContain(evidence);
     }
     expect(released).toContain("WORK MAP");
     expect(released).toContain("CHANGE ALIGNMENT");
     expect(released).toContain("ruleblast-companion-2.3.0.vsix");
-    expect(released).toContain("no signed `v2.3.0` source tag");
+    expect(released).not.toMatch(/no signed `v2\.3\.0` source tag/u);
     expect(read("ROADMAP.md")).toContain("## **HORIZON** — `v4`: Stack debugger, still one product");
     expect(read("CHANGELOG.md")).toContain("## 2.3.0 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.3\.0 — SHIPPED TO MAIN/u);
