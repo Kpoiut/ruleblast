@@ -5,7 +5,7 @@ All notable user-visible changes to RuleBlast are recorded here.
 ## 2.3.1 — SHIPPED TO MAIN
 
 - Identity fixtures commit the staged index. `git add -A` after `update-index --chmod` / `--cacheinfo` restored the worktree and produced an empty commit on Linux Git, so Verify never proved same-OID mode/kind or gitlink exclusion against real tree objects.
-- `findRepositoryRoot` returns the real path of Git's toplevel so Windows 8.3 (`RUNNER~1`) and the long checkout path name one directory. Overlay probe and snapshot share that root.
+- `findRepositoryRoot` returns the real path of Git's toplevel. Windows 8.3 (`RUNNER~1`) and the long checkout path are the same directory; tests compare `dev`/`ino`, not path spelling. Overlay probe and snapshot share that root.
 - Overlay OTHER membership uses one blob-object identity function and a merge of the two sorted path lists. `--json` stays canonical.
 - Companion scoreboard control rows run the four actions. Status names CHANGE ALIGNMENT. Overlay marks tint the tree. Editor title can explain the active file. Welcome names the inheritance question. CLI `--help` states the human overlay adjunct. Public `npx` stays `ruleblast@2.3.0`. Pack `ruleblast-companion-2.3.1.vsix`. Not a fifth action.
 

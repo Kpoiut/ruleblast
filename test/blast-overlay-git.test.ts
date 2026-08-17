@@ -6,7 +6,6 @@ import {
   mkdtempSync,
   readdirSync,
   readFileSync,
-  realpathSync,
   statSync,
   writeFileSync,
 } from "node:fs";
@@ -130,6 +129,12 @@ function stage(root: string, path: string): void {
 
 function treeRecord(root: string, ref: string, path: string): string {
   return git(root, ["ls-tree", "-r", "--full-tree", ref, "--", path]);
+}
+
+function sameDirectory(left: string, right: string): boolean {
+  const a = statSync(left, { bigint: true });
+  const b = statSync(right, { bigint: true });
+  return a.dev === b.dev && a.ino === b.ino;
 }
 
 function expectObservedMatchesGitIdentity(
@@ -952,7 +957,7 @@ describe("CLI Git pair overlay", () => {
       run.dependencies,
     )).toBe(0);
     expect(probe).toHaveBeenCalledOnce();
-    expect(realpathSync(String(probe.mock.calls[0]?.[0]))).toBe(realpathSync(root));
+    expect(sameDirectory(String(probe.mock.calls[0]?.[0]), root)).toBe(true);
     const printed = run.stdout.join("");
     const overlay = printed.slice(printed.indexOf("OTHER TRACKED CHANGES"));
     expect(overlay).toContain(OVERLAY_UNAVAILABLE.trim());
