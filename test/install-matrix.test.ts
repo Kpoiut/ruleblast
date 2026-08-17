@@ -208,7 +208,7 @@ describe("candidate installation matrix", () => {
       /npm uninstall --save-dev ruleblast[\s\S]+npm install --save-dev --save-exact ruleblast@2\.3\.0/u,
     );
     expect(readme).toContain(
-      "git clone --branch v2.3.0 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v2.3.1 --depth 1 https://github.com/Kpoiut/ruleblast.git",
     );
     expect(readme).toMatch(/Windows.+Linux/isu);
     expect(readme).not.toMatch(/Windows.+macOS.+Linux/isu);

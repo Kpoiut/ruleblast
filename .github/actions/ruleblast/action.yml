@@ -1,5 +1,5 @@
 name: RuleBlast
-description: Shows the blast radius of AGENTS.md and CLAUDE.md changes. Comment a published-CLI instruction blast for a Git range. Read-only analysis on the runner. Not a hosted product and not a Marketplace Action.
+description: Shows the blast radius of AGENTS.md and CLAUDE.md changes. Comments which files inherited the edit. Read-only. Not a hosted product.
 author: Kpoiut
 branding:
   icon: zap

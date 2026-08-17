@@ -91,14 +91,14 @@
     <h1>Which files inherit a changed AGENTS.md?</h1>
     <p class="lead">
       Git shows the <code>AGENTS.md</code> and <code>CLAUDE.md</code> edit.
-      RuleBlast shows the blast radius of those repository instructions across
-      Codex, Claude Code, Gemini CLI, and Copilot CLI.
+      RuleBlast shows the blast radius — which files now inherit that change
+      across Codex, Claude Code, Gemini CLI, and Copilot CLI.
     </p>
     <section class="card">
-      <p><span class="num">2</span> instruction-line edits.</p>
-      <p><span class="num">206</span> Codex stacks inherited a nested <code>AGENTS.md</code>.</p>
-      <p><span class="num">0</span> Claude Code stacks. <span class="num">4,476</span> paths unchanged.</p>
-      <p>That second diff is instruction inheritance, not the first Git diff.</p>
+      <p>A tiny <code>AGENTS.md</code> pull request can move instruction stacks Git does not list.</p>
+      <p><strong>OTHER TRACKED CHANGES</strong> · <strong>WORK MAP</strong> · <strong>CHANGE ALIGNMENT</strong></p>
+      <p><code>ALIGNED</code> · <code>MIXED</code> · <code>DIVERGENT</code> · <code>UNRESOLVED</code></p>
+      <p><span class="num">2</span> instruction-line edits. <span class="num">206</span> Codex stacks. <span class="num">0</span> Claude Code. <span class="num">4,476</span> unchanged.</p>
     </section>
     <pre><code>npx --yes ruleblast@2.3.0 .
 npx --yes ruleblast@2.3.0 diff HEAD~1</code></pre>
@@ -107,7 +107,7 @@ npx --yes ruleblast@2.3.0 diff HEAD~1</code></pre>
       <a href="https://www.npmjs.com/package/ruleblast">npm</a>
       <a href="https://github.com/Kpoiut/ruleblast/blob/main/PROOF.md">Verified case</a>
       <a href="https://github.com/Kpoiut/ruleblast/blob/main/which-files-inherit-agents-md.md">Inheritance notes</a>
-      <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.3.0">v2.3.0</a>
+      <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.3.1">v2.3.1</a>
       <a href="https://github.com/Kpoiut/ruleblast/releases">Releases</a>
     </nav>
   </main>

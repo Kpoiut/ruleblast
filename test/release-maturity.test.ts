@@ -566,7 +566,7 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.2.1 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.2\.1 — RELEASED/u);
     expect(read("CHANGELOG.md")).toMatch(/Timeouts stay 15s \/ 120s/u);
-    expect(read("README.md")).toMatch(/Do not overwrite Marketplace `2\.2\.0` or `2\.2\.1`/u);
+    expect(read("CHANGELOG.md")).toMatch(/Do not overwrite Marketplace `2\.2\.0`/u);
     expect(read("CHANGELOG.md")).toContain("ruleblast-companion-2.2.1.vsix");
   });
 
@@ -650,7 +650,7 @@ describe("public release maturity", () => {
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.3.1"');
     expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.3.1`");
     expect(read("README.md")).toContain("ruleblast-companion-2.3.1.vsix");
-    expect(read("README.md")).toContain("ruleblast-companion-2.3.0.vsix");
+    expect(read("CHANGELOG.md")).toContain("ruleblast-companion-2.3.0.vsix");
   });
 
   it("keeps release-state records outside the current package boundary", () => {

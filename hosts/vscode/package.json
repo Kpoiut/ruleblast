@@ -1,7 +1,7 @@
 {
   "name": "ruleblast",
   "displayName": "RuleBlast",
-  "description": "Read-only companion. Same four actions as the CLI. Shows the blast radius of AGENTS.md and CLAUDE.md changes.",
+  "description": "Change AGENTS.md. See every file that inherits it. Same four actions as the CLI. Shows the blast radius of AGENTS.md and CLAUDE.md changes.",
   "version": "2.3.1",
   "publisher": "kpoiut",
   "license": "Apache-2.0",
@@ -102,7 +102,7 @@
     "viewsWelcome": [
       {
         "view": "ruleblast.scoreboard",
-        "contents": "Which files inherit an AGENTS.md or CLAUDE.md edit?\n[Scan now](command:ruleblast.scanWorkspace)\n[Diff from HEAD](command:ruleblast.diffFrom)\n[Explain active file](command:ruleblast.explainActiveFile)\n[Open verified case](command:ruleblast.openVerifiedCase)\nCtrl+Alt+R then S · D · E · C\nSame four actions as the CLI. A host is not a modeled reality."
+        "contents": "Change AGENTS.md. See every file that now inherits a different instruction.\n[Scan now](command:ruleblast.scanWorkspace)\n[Diff from HEAD](command:ruleblast.diffFrom)\n[Explain active file](command:ruleblast.explainActiveFile)\n[Open verified case](command:ruleblast.openVerifiedCase)\nCtrl+Alt+R then S · D · E · C"
       }
     ]
   }

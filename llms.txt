@@ -9,6 +9,6 @@ RuleBlast answers the problem query: which files inherit a changed AGENTS.md or 
 - Problem page: https://github.com/Kpoiut/ruleblast/blob/main/which-files-inherit-agents-md.md
 - Sealed case: 2 instruction-line edits → 206 Codex stacks — https://github.com/Kpoiut/ruleblast/blob/main/PROOF.md
 - CLI: npx --yes ruleblast@2.3.0 .
-- This tree is 2.3.1: OTHER TRACKED CHANGES, WORK MAP, CHANGE ALIGNMENT on human Git-pair and Git→WORKTREE diff. Not actor telemetry. Published npm remains 2.3.0.
+- This tree is 2.3.1. Published CLI is ruleblast@2.3.0. Human diff adds OTHER TRACKED CHANGES, a WORK MAP, and CHANGE ALIGNMENT. Which files now inherit different AI instructions?
 
 Local. Read-only. Deterministic. Not a claim about model compliance.

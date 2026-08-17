@@ -1,12 +1,12 @@
 <h1 align="center">RuleBlast — Git diff for invisible repository instructions</h1>
 
 <p align="center">
-  <img src="assets/ruleblast-hero.png?v=2.3.0" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
+  <img src="assets/ruleblast-hero.png?v=2.3.1" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
 </p>
 
 <p align="center">
   <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
-  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.3.0"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.3.0"></a>
+  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.3.1"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.3.1"></a>
   <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/ruleblast" alt="Apache-2.0 license"></a>
 </p>
@@ -16,14 +16,14 @@
 </p>
 
 <p align="center">
-  You changed 2 instruction lines.<br>
-  Git sees 2 lines. RuleBlast finds 206 Codex stacks that inherited them.<br>
-  <strong>Codex: 206 · Claude Code: 0</strong><br>
-  Why did only one agent inherit that nested <code>AGENTS.md</code>?
+  You changed the rule. Git lists the files you touched.<br>
+  RuleBlast adds <strong>OTHER TRACKED CHANGES</strong>, a <strong>WORK MAP</strong>, and <strong>CHANGE ALIGNMENT</strong>:<br>
+  <code>ALIGNED</code> · <code>MIXED</code> · <code>DIVERGENT</code> · <code>UNRESOLVED</code><br>
+  Inherited stacks versus independent Git motion. Later work on an inherited path gets the new instruction. Other Git motion did not.
 </p>
 
 <div align="center">
-  <img src="assets/ruleblast-causal-proof.gif?v=2.3.0" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
+  <img src="assets/ruleblast-causal-proof.gif?v=2.3.1" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
 </div>
 
 ```bash
@@ -32,12 +32,12 @@ npx --yes ruleblast@2.3.0 .
 npx --yes ruleblast@2.3.0 diff HEAD~1
 ```
 
-<p align="center"><sub>Local · read-only · deterministic · no network or model call</sub></p>
+<p align="center"><sub>This tree is 2.3.1. Published CLI is ruleblast@2.3.0. Local · read-only · deterministic · no network or model call</sub></p>
 
 ## What Git missed
 
 <div align="center">
-  <img src="assets/ruleblast-visual-benchmark.png?v=2.3.0" alt="Square RuleBlast 2.3.0 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; why-this-path, CLI and IDE surfaces, user allow gate" width="100%">
+  <img src="assets/ruleblast-visual-benchmark.png?v=2.3.1" alt="Square RuleBlast 2.3.1 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; why-this-path, CLI and IDE surfaces, user allow gate" width="100%">
 </div>
 
 Git shows the instruction edit. It does not show every repository path that inherits it.
@@ -46,7 +46,7 @@ Git shows the instruction edit. It does not show every repository path that inhe
 
 ## Real repository. Reproducible result.
 
-Not a synthetic fixture. Public [`openai/codex`](https://github.com/openai/codex/compare/8fcf2ad931b90589dd29a571f367e3185d26bbe0...f0f483e8b2a2630bf8dfa5f8451e81eba20def6c) `8fcf2ad` → `f0f483e`: 2 instruction-line edits, 206 tracked paths changed stack for Codex, 0 for Claude Code. 4,476 tracked paths remained unchanged. One affected path: [`codex-rs/tui/src/bottom_pane/action_required_title.rs`](https://github.com/openai/codex/blob/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c/codex-rs/tui/src/bottom_pane/action_required_title.rs) inheriting the changed nested [`AGENTS.md`](https://github.com/openai/codex/blob/8fcf2ad931b90589dd29a571f367e3185d26bbe0/codex-rs/tui/src/bottom_pane/AGENTS.md). Which other path inherited the same source?
+Not a synthetic fixture. Public [`openai/codex`](https://github.com/openai/codex/compare/8fcf2ad931b90589dd29a571f367e3185d26bbe0...f0f483e8b2a2630bf8dfa5f8451e81eba20def6c) `8fcf2ad` → `f0f483e`: 2 instruction-line edits, 206 tracked paths changed stack for Codex, 0 for Claude Code. **Codex: 206 · Claude Code: 0**. 4,476 tracked paths remained unchanged. One affected path: [`codex-rs/tui/src/bottom_pane/action_required_title.rs`](https://github.com/openai/codex/blob/f0f483e8b2a2630bf8dfa5f8451e81eba20def6c/codex-rs/tui/src/bottom_pane/action_required_title.rs) inheriting the changed nested [`AGENTS.md`](https://github.com/openai/codex/blob/8fcf2ad931b90589dd29a571f367e3185d26bbe0/codex-rs/tui/src/bottom_pane/AGENTS.md). Which other path inherited the same source?
 
 [Inspect the evidence →](PROOF.md)
 
@@ -54,11 +54,9 @@ Not a synthetic fixture. Public [`openai/codex`](https://github.com/openai/codex
 ruleblast diff 8fcf2ad931b90589dd29a571f367e3185d26bbe0 --to f0f483e8b2a2630bf8dfa5f8451e81eba20def6c
 ```
 
-## Other tracked changes
+A pull request that only edits `AGENTS.md` can look tiny in Git. Human `diff` then answers the review question: which other tracked paths inherited that stack, and which Git motion is independent? `--json` stays the canonical result. It is not actor telemetry.
 
-This tree is `2.3.1`. The strongest addition is not a fifth action. Human `diff` Git→Git and Git→WORKTREE can append **OTHER TRACKED CHANGES** from Git storage blob-object identity, then a **WORK MAP** and a deterministic **CHANGE ALIGNMENT**: `ALIGNED`, `MIXED`, `DIVERGENT`, or `UNRESOLVED`. The adjunct also names the identity law, other-path kinds (added / modified / deleted), and an operational gloss. That restates membership. It is not actor telemetry and not model compliance. `--json` stays the canonical result.
-
-Companion Diff From renders the prepared adjunct. Keys: `Ctrl+Alt+R` then `S` scan · `D` diff · `E` explain · `C` case.
+Companion Diff From renders that prepared adjunct. Keys: `Ctrl+Alt+R` then `S` scan · `D` diff · `E` explain · `C` case.
 
 ## Install
 
@@ -100,7 +98,7 @@ npm uninstall --save-dev ruleblast
 npm install --save-dev --save-exact ruleblast@2.3.0
 npm cache verify
 npx --yes ruleblast@2.3.0 --help
-git clone --branch v2.3.0 --depth 1 https://github.com/Kpoiut/ruleblast.git
+git clone --branch v2.3.1 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
 npm ci --ignore-scripts
 npm run build
@@ -221,14 +219,16 @@ npx --yes ruleblast@2.3.0 diff HEAD~1 --json
 
 ## Open in the editor
 
-The VS Code-compatible companion lives at [`hosts/vscode`](hosts/vscode). It is a view of the same engine, not a second resolver. Install that one unpacked folder in VS Code (including GitHub Copilot Chat), Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, or Trae. Select Reality can add both opt-in CLI surfaces. Saving a file marks the last result stale. It does not start another analysis. Claude Desktop, ChatGPT/Codex desktop, and Zed use `--mcp`, not a second extension.
+Change `AGENTS.md`. See every file that now inherits a different instruction stack.
+
+The companion at [`hosts/vscode`](hosts/vscode) is the same four actions as the CLI: Scan, Diff, Explain, Case. One folder for VS Code (including GitHub Copilot Chat), Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, or Trae. Keys: `Ctrl+Alt+R` then `S`/`D`/`E`/`C`.
 
 ```bash
 npm run build
 npm run host:build
 ```
 
-Install the unpacked `hosts/vscode` folder. This tree packs `ruleblast-companion-2.3.1.vsix` with `npm run host:pack`. The GitHub Release still serves `ruleblast-companion-2.3.0.vsix`. The activity bar uses a themed SVG; the Marketplace PNG stays 128×128. Do not overwrite Marketplace `2.2.0` or `2.2.1`. Commands: Scan Workspace, Diff From…, Explain Active File, Open Verified Case. Keys: `Ctrl+Alt+R` then `S`/`D`/`E`/`C`. Marketplace / Open VSX listings are separate publisher operations; the VSIX is the installable extension form.
+Install the unpacked `hosts/vscode` folder, or pack `ruleblast-companion-2.3.1.vsix` with `npm run host:pack`. Saving a file marks the last result stale; it does not start another analysis. Claude Desktop, ChatGPT/Codex desktop, and Zed use `--mcp`. Marketplace / Open VSX listings are separate publisher operations.
 
 ## Give your agent RuleBlast
 
@@ -262,16 +262,16 @@ Off: `RULEBLAST_AGENT_ALLOW=off`. RuleBlast never writes the allow file.
 
 ## Show a blast on a pull request
 
-Optional. Not a hosted product. The runner only executes the published CLI.
+A pull request that only edits `AGENTS.md` can look small in Git. The Action comments which tracked files now inherit a different instruction stack. Reviewers see the blast before merge. Not a hosted product. The runner only executes the published CLI.
 
 ```yaml
 - uses: actions/checkout@v4
   with:
     fetch-depth: 0
-- uses: Kpoiut/ruleblast@v2.3.0
+- uses: Kpoiut/ruleblast@v2.3.1
 ```
 
-Root Action `Kpoiut/ruleblast@v2.3.0` is a distribution surface of the same published CLI. It posts a `--receipt` comment for `base.sha → head.sha`. Pin a commit after you trust the workflow.
+Root Action `Kpoiut/ruleblast@v2.3.1` posts a `--receipt` for `base.sha → head.sha`. It still runs published `ruleblast@2.3.0`. Pin a commit after you trust the workflow.
 
 ## Contribute a Blast Case
 
@@ -281,15 +281,13 @@ Promoted Blast Case: official evidence, retrieval date, manifests, expected JSON
 
 ## Roadmap
 
-This tree is `2.3.1`: overlay, work map, change alignment, companion control. Published npm remains `2.3.0`.
+This tree is `2.3.1`. Published CLI is `ruleblast@2.3.0`. The product is overlay, work map, and change alignment — which files now receive different AI instructions.
 
 Today: Codex, Claude Code, opt-in Copilot CLI, and opt-in Gemini CLI. Same companion in VS Code-family editors, including Copilot Chat. Same four actions over `--mcp` for Claude Desktop and Codex desktop.
 
 Reality is not host. Four documented realities. Same result in the terminal or editor.
 
 How many rule realities are still hiding in it…?
-
-Horizon `v3` proves overlay at corpus scale. Horizon `v4` is a stack debugger that still has four actions, no dashboard, and no model score.
 
 Canonical landing: [kpoiut.github.io/ruleblast](https://kpoiut.github.io/ruleblast/). Read [ROADMAP.md](ROADMAP.md). Apache-2.0. [CHANGELOG.md](CHANGELOG.md). Measurements: [docs/measurements](docs/measurements/). Evidence inventories: [docs/evidence](docs/evidence/).
 
