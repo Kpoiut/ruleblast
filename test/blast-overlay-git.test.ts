@@ -1,10 +1,7 @@
 import { execFileSync } from "node:child_process";
-import { createHash } from "node:crypto";
 import {
-  copyFileSync,
   mkdirSync,
   mkdtempSync,
-  readdirSync,
   readFileSync,
   statSync,
   writeFileSync,
@@ -38,6 +35,7 @@ import { openPackagedCase } from "../src/case.js";
 import { claudeProfile } from "../src/profiles/claude.js";
 import { codexProfile } from "../src/profiles/codex.js";
 import type { GitObjectSnapshot, GitStorageObjectFormat } from "../src/snapshot.js";
+import { gitBlobOid } from "../src/domain/git-blob-identity.js";
 import { compareCodePoints } from "../src/domain/repository-path.js";
 import { identityDeltaFromGit } from "./git-identity-oracle.js";
 
@@ -49,13 +47,6 @@ function write(root: string, relative: string, content: string): void {
   const path = join(root, ...relative.split("/"));
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, content);
-}
-
-function gitBlobSha1(bytes: Buffer): string {
-  return createHash("sha1")
-    .update(`blob ${bytes.length}\0`)
-    .update(bytes)
-    .digest("hex");
 }
 
 type PublicManifest = {
@@ -76,29 +67,17 @@ function bindFixtureBytes(
   side: "before" | "after",
   blobs: Readonly<Record<string, string>>,
 ): void {
-  for (const [path, oid] of Object.entries(blobs)) {
-    const file = join(fixture, side, ...path.split("/"));
-    const bytes = readFileSync(file);
-    expect(gitBlobSha1(bytes), `sha1 ${side} ${path}`).toBe(oid);
-    expect(
-      execFileSync("git", ["hash-object", file], { encoding: "utf8" }).trim(),
-      `hash-object ${side} ${path}`,
-    ).toBe(oid);
+  const rows = Object.entries(blobs);
+  const files = rows.map(([path]) => join(fixture, side, ...path.split("/")));
+  for (const [index, [path, oid]] of rows.entries()) {
+    expect(gitBlobOid(readFileSync(files[index]!), "sha1"), `sha1 ${side} ${path}`).toBe(oid);
   }
-}
-
-function copyTree(from: string, to: string): void {
-  for (const name of readdirSync(from)) {
-    const source = join(from, name);
-    const destination = join(to, name);
-    if (statSync(source).isDirectory()) {
-      mkdirSync(destination, { recursive: true });
-      copyTree(source, destination);
-      continue;
-    }
-    mkdirSync(dirname(destination), { recursive: true });
-    copyFileSync(source, destination);
-  }
+  const hashed = execFileSync("git", ["hash-object", "--", ...files], {
+    encoding: "utf8",
+  })
+    .trim()
+    .split(/\r?\n/u);
+  expect(hashed, `hash-object ${side}`).toEqual(rows.map(([, oid]) => oid));
 }
 
 function initRepo(objectFormat?: GitStorageObjectFormat): string {
@@ -107,10 +86,40 @@ function initRepo(objectFormat?: GitStorageObjectFormat): string {
     ? ["init"]
     : ["init", `--object-format=${objectFormat}`];
   git(root, init);
-  git(root, ["config", "user.email", "overlay@example.test"]);
-  git(root, ["config", "user.name", "overlay"]);
-  git(root, ["config", "core.autocrlf", "false"]);
+  writeFileSync(
+    join(root, ".git", "config"),
+    `${readFileSync(join(root, ".git", "config"), "utf8").trimEnd()}
+[user]
+	email = overlay@example.test
+	name = overlay
+[core]
+	autocrlf = false
+`,
+  );
   return root;
+}
+
+function commitWorktree(root: string, workTree: string, message: string): string {
+  git(root, ["--work-tree", workTree, "add", "-A"]);
+  return commitStaged(root, message);
+}
+
+function seedFixturePair(name: string): {
+  readonly fixture: string;
+  readonly manifest: PublicManifest;
+  readonly root: string;
+  readonly beforeRef: string;
+  readonly afterRef: string;
+} {
+  const { root: fixture, manifest } = publicFixture(name);
+  const root = initRepo();
+  return {
+    fixture,
+    manifest,
+    root,
+    beforeRef: commitWorktree(root, join(fixture, "before"), `${name} before`),
+    afterRef: commitWorktree(root, join(fixture, "after"), `${name} after`),
+  };
 }
 
 function commit(root: string, message: string): string {
@@ -357,20 +366,7 @@ describe("blast overlay on Git storage blob identity", () => {
   });
 
   it("joins public paste-burst bytes through real Git storage object identity", async () => {
-    const fixture = join(
-      dirname(fileURLToPath(import.meta.url)),
-      "fixtures",
-      "overlay-public-pair",
-    );
-    const manifest = JSON.parse(readFileSync(join(fixture, "manifest.json"), "utf8")) as {
-      readonly beforeBlobs: Readonly<Record<string, string>>;
-      readonly afterBlobs: Readonly<Record<string, string>>;
-    };
-    const root = initRepo();
-    copyTree(join(fixture, "before"), root);
-    const beforeRef = commit(root, "public before bytes");
-    copyTree(join(fixture, "after"), root);
-    const afterRef = commit(root, "public after bytes");
+    const { root, beforeRef, afterRef, manifest } = seedFixturePair("overlay-public-pair");
     const { overlay, before, after, sources } = await overlayBetween(
       root,
       beforeRef,
@@ -410,55 +406,14 @@ describe("blast overlay on Git storage blob identity", () => {
     ]);
   });
 
-  it("binds public fixture bytes to SHA-1, git hash-object, and tree blob oids", async () => {
-    const fixture = join(
-      dirname(fileURLToPath(import.meta.url)),
-      "fixtures",
-      "overlay-public-pair",
-    );
-    const manifest = JSON.parse(readFileSync(join(fixture, "manifest.json"), "utf8")) as {
-      readonly beforeBlobs: Readonly<Record<string, string>>;
-      readonly afterBlobs: Readonly<Record<string, string>>;
-    };
-    const check = (side: "before" | "after", blobs: Readonly<Record<string, string>>) => {
-      for (const [path, oid] of Object.entries(blobs)) {
-        const file = join(fixture, side, ...path.split("/"));
-        const bytes = readFileSync(file);
-        expect(gitBlobSha1(bytes), `sha1 ${side} ${path}`).toBe(oid);
-        expect(
-          execFileSync("git", ["hash-object", file], { encoding: "utf8" }).trim(),
-          `hash-object ${side} ${path}`,
-        ).toBe(oid);
-      }
-    };
-    check("before", manifest.beforeBlobs);
-    check("after", manifest.afterBlobs);
-    const root = initRepo();
-    copyTree(join(fixture, "before"), root);
-    const beforeRef = commit(root, "before");
-    copyTree(join(fixture, "after"), root);
-    const afterRef = commit(root, "after");
-    const { overlay, before, after, sources } = await overlayBetween(root, beforeRef, afterRef);
-    expectObservedMatchesGitIdentity(overlay, sources, root, beforeRef, afterRef);
-    for (const [path, oid] of Object.entries(manifest.beforeBlobs)) {
-      expect(before.blobOid(path), `tree ${path}`).toBe(oid);
-    }
-    for (const [path, oid] of Object.entries(manifest.afterBlobs)) {
-      expect(after.blobOid(path), `tree ${path}`).toBe(oid);
-    }
+  it("binds public fixture bytes to SHA-1 and git hash-object", () => {
+    const { root: fixture, manifest } = publicFixture("overlay-public-pair");
+    bindFixtureBytes(fixture, "before", manifest.beforeBlobs);
+    bindFixtureBytes(fixture, "after", manifest.afterBlobs);
   });
 
   it("keeps public-byte pair overlay wall inside the locked budget", async () => {
-    const fixture = join(
-      dirname(fileURLToPath(import.meta.url)),
-      "fixtures",
-      "overlay-public-pair",
-    );
-    const root = initRepo();
-    copyTree(join(fixture, "before"), root);
-    const beforeRef = commit(root, "before");
-    copyTree(join(fixture, "after"), root);
-    const afterRef = commit(root, "after");
+    const { root, beforeRef, afterRef } = seedFixturePair("overlay-public-pair");
     const format = await probeGitStorageFormat(root);
     if (format === null) throw new Error("storage format unavailable");
     await expectOverlayWall(
@@ -492,21 +447,16 @@ describe("blast overlay on Git storage blob identity", () => {
   });
 
   it("joins 2→206 public bytes through real Git and keeps OUTSIDE 0", async () => {
-    const { root: fixture, manifest } = publicFixture("overlay-206");
+    const { fixture, manifest, root, beforeRef, afterRef } = seedFixturePair("overlay-206");
     bindFixtureBytes(fixture, "before", manifest.beforeBlobs);
     bindFixtureBytes(fixture, "after", manifest.afterBlobs);
     expect(manifest.beforeBlobs["AGENTS.md"]).toBe(manifest.afterBlobs["AGENTS.md"]);
-    const repo = initRepo();
-    copyTree(join(fixture, "before"), repo);
-    const beforeRef = commit(repo, "206 before");
-    copyTree(join(fixture, "after"), repo);
-    const afterRef = commit(repo, "206 after");
     const { overlay, before, after, sources } = await overlayBetween(
-      repo,
+      root,
       beforeRef,
       afterRef,
     );
-    expectObservedMatchesGitIdentity(overlay, sources, repo, beforeRef, afterRef);
+    expectObservedMatchesGitIdentity(overlay, sources, root, beforeRef, afterRef);
     for (const [path, oid] of Object.entries(manifest.beforeBlobs)) {
       expect(before.blobOid(path), path).toBe(oid);
     }
@@ -869,7 +819,7 @@ describe("CLI Git pair overlay", () => {
     expect(format).toBe("sha1");
     const after = worktree.withObjectIdentity(format!);
     const dirtyIn = readFileSync(join(root, "packages/api/in.ts"));
-    expect(after.blobOid("packages/api/in.ts")).toBe(gitBlobSha1(dirtyIn));
+    expect(after.blobOid("packages/api/in.ts")).toBe(gitBlobOid(dirtyIn, "sha1"));
     expect(after.blobOid("packages/api/in.ts")).toBe(
       execFileSync("git", ["-C", root, "hash-object", "packages/api/in.ts"], {
         encoding: "utf8",
