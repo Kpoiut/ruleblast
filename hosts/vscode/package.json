@@ -2,7 +2,7 @@
   "name": "ruleblast",
   "displayName": "RuleBlast",
   "description": "Read-only companion. Same four actions as the CLI. Shows the blast radius of AGENTS.md and CLAUDE.md changes.",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "publisher": "kpoiut",
   "license": "Apache-2.0",
   "icon": "media/icon.png",
@@ -16,7 +16,21 @@
     "vscode": "^1.85.0"
   },
   "categories": ["Other"],
-  "keywords": ["ruleblast", "agents.md", "claude.md", "cursor", "windsurf", "kiro"],
+  "keywords": [
+    "ruleblast",
+    "agents.md",
+    "claude.md",
+    "vscode",
+    "github-copilot",
+    "cursor",
+    "windsurf",
+    "kiro",
+    "antigravity",
+    "codex",
+    "continue",
+    "cline",
+    "trae"
+  ],
   "extensionKind": ["workspace"],
   "capabilities": {
     "untrustedWorkspaces": { "supported": false }
@@ -42,10 +56,10 @@
       { "command": "ruleblast.selectReality", "title": "RuleBlast: Select Reality…" }
     ],
     "keybindings": [
-      { "command": "ruleblast.scanWorkspace", "key": "ctrl+alt+r s", "when": "workspaceFolderCount > 0" },
-      { "command": "ruleblast.diffFrom", "key": "ctrl+alt+r d", "when": "workspaceFolderCount > 0" },
-      { "command": "ruleblast.explainActiveFile", "key": "ctrl+alt+r e", "when": "workspaceFolderCount > 0" },
-      { "command": "ruleblast.openVerifiedCase", "key": "ctrl+alt+r c", "when": "workspaceFolderCount > 0" }
+      { "command": "ruleblast.scanWorkspace", "key": "ctrl+alt+r s", "mac": "ctrl+alt+r s", "when": "workspaceFolderCount > 0" },
+      { "command": "ruleblast.diffFrom", "key": "ctrl+alt+r d", "mac": "ctrl+alt+r d", "when": "workspaceFolderCount > 0" },
+      { "command": "ruleblast.explainActiveFile", "key": "ctrl+alt+r e", "mac": "ctrl+alt+r e", "when": "workspaceFolderCount > 0" },
+      { "command": "ruleblast.openVerifiedCase", "key": "ctrl+alt+r c", "mac": "ctrl+alt+r c", "when": "workspaceFolderCount > 0" }
     ],
     "menus": {
       "commandPalette": [
@@ -61,6 +75,9 @@
         { "command": "ruleblast.explainActiveFile", "when": "resourceScheme == file", "group": "ruleblast@1" }
       ],
       "editor/context": [
+        { "command": "ruleblast.explainActiveFile", "when": "resourceScheme == file", "group": "ruleblast@1" }
+      ],
+      "editor/title/context": [
         { "command": "ruleblast.explainActiveFile", "when": "resourceScheme == file", "group": "ruleblast@1" }
       ]
     },
@@ -85,7 +102,7 @@
     "viewsWelcome": [
       {
         "view": "ruleblast.scoreboard",
-        "contents": "Git diff for repository instructions.\n[Scan now](command:ruleblast.scanWorkspace)\n[Diff from HEAD](command:ruleblast.diffFrom)\n[Explain active file](command:ruleblast.explainActiveFile)\n[Open verified case](command:ruleblast.openVerifiedCase)\nCtrl+Alt+R then S · D · E · C"
+        "contents": "Which files inherit an AGENTS.md or CLAUDE.md edit?\n[Scan now](command:ruleblast.scanWorkspace)\n[Diff from HEAD](command:ruleblast.diffFrom)\n[Explain active file](command:ruleblast.explainActiveFile)\n[Open verified case](command:ruleblast.openVerifiedCase)\nCtrl+Alt+R then S · D · E · C\nSame four actions as the CLI. A host is not a modeled reality."
       }
     ]
   }

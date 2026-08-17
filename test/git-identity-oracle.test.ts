@@ -69,13 +69,18 @@ describe("git identity oracle", () => {
     git(root, ["add", "-A"]);
     git(root, ["commit", "-m", "seed"]);
     const before = git(root, ["rev-parse", "HEAD"]);
+    const modeBlob = git(root, ["rev-parse", "HEAD:mode.sh"]);
+    const kindBlob = git(root, ["rev-parse", "HEAD:kind.txt"]);
     git(root, ["update-index", "--chmod=+x", "mode.sh"]);
-    const blob = git(root, ["rev-parse", "HEAD:kind.txt"]);
-    git(root, ["update-index", "--add", "--cacheinfo", `120000,${blob},kind.txt`]);
+    git(root, ["update-index", "--add", "--cacheinfo", `120000,${kindBlob},kind.txt`]);
     write("changed.txt", "after\n");
-    git(root, ["add", "-A"]);
+    git(root, ["add", "--", "changed.txt"]);
     git(root, ["commit", "-m", "mode kind and content"]);
     const after = git(root, ["rev-parse", "HEAD"]);
+    const tree = (path: string) =>
+      git(root, ["ls-tree", "-r", "--full-tree", after, "--", path]);
+    expect(tree("mode.sh")).toBe(`100755 blob ${modeBlob}\tmode.sh`);
+    expect(tree("kind.txt")).toBe(`120000 blob ${kindBlob}\tkind.txt`);
     expect(identityDeltaFromGit(root, before, after)).toEqual([
       { path: "changed.txt", kind: "MODIFY" },
     ]);

@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { constants, type BigIntStats } from "node:fs";
-import { lstat, open, readFile, readlink } from "node:fs/promises";
+import { lstat, open, readFile, readlink, realpath } from "node:fs/promises";
 import { join } from "node:path";
 import { promisify } from "node:util";
 import type { SnapshotRef } from "./model.js";
@@ -146,7 +146,8 @@ class GitSnapshot implements GitObjectSnapshot {
 
 export async function findRepositoryRoot(start: string): Promise<string> {
   try {
-    return lineOutput(await runGit(start, ["rev-parse", "--show-toplevel"]));
+    const toplevel = lineOutput(await runGit(start, ["rev-parse", "--show-toplevel"]));
+    return await realpath(toplevel);
   } catch (error: unknown) {
     if (isGitCommandFailure(error)) throw new GitSnapshotError("NOT_REPOSITORY");
     throw error;

@@ -82,6 +82,8 @@ One Git tree. Two default realities. Two opt-in CLI surfaces.
 
   diff       ${ROUTES[1]!.useWhen}
              ruleblast diff HEAD~1 --to HEAD --color=never
+             Human Git-pair and Git→WORKTREE text may append OTHER TRACKED CHANGES,
+             WORK MAP, and CHANGE ALIGNMENT. --json stays canonical.
 
   explain    ${ROUTES[2]!.useWhen}
              ruleblast explain src/args.ts --json

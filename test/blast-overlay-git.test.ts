@@ -6,6 +6,7 @@ import {
   mkdtempSync,
   readdirSync,
   readFileSync,
+  realpathSync,
   statSync,
   writeFileSync,
 } from "node:fs";
@@ -115,8 +116,20 @@ function initRepo(objectFormat?: GitStorageObjectFormat): string {
 
 function commit(root: string, message: string): string {
   git(root, ["add", "-A"]);
+  return commitStaged(root, message);
+}
+
+function commitStaged(root: string, message: string): string {
   git(root, ["commit", "-m", message]);
   return git(root, ["rev-parse", "HEAD"]);
+}
+
+function stage(root: string, path: string): void {
+  git(root, ["add", "--", path]);
+}
+
+function treeRecord(root: string, ref: string, path: string): string {
+  return git(root, ["ls-tree", "-r", "--full-tree", ref, "--", path]);
 }
 
 function expectObservedMatchesGitIdentity(
@@ -568,7 +581,9 @@ describe("blast overlay on Git storage blob identity", () => {
     const commitOid = git(root, ["rev-parse", "HEAD"]);
     git(root, ["update-index", "--add", "--cacheinfo", `160000,${commitOid},vendor/lib`]);
     write(root, "docs/out.md", "out changed\n");
-    const afterRef = commit(root, "gitlink plus outside");
+    stage(root, "docs/out.md");
+    const afterRef = commitStaged(root, "gitlink plus outside");
+    expect(treeRecord(root, afterRef, "vendor/lib")).toMatch(/^160000 commit /u);
     const { overlay, sources } = await overlayBetween(root, beforeRef, afterRef);
     expectObservedMatchesGitIdentity(overlay, sources, root, beforeRef, afterRef);
     expect(overlay.observedPaths.map((row) => row.path)).toEqual(["docs/out.md"]);
@@ -626,10 +641,13 @@ describe("blast overlay on Git storage blob identity", () => {
     write(root, "mode.sh", "echo hi\n");
     write(root, "kind.txt", "hello");
     const beforeRef = commit(root, "seed");
+    const modeBlob = git(root, ["rev-parse", "HEAD:mode.sh"]);
+    const kindBlob = git(root, ["rev-parse", "HEAD:kind.txt"]);
     git(root, ["update-index", "--chmod=+x", "mode.sh"]);
-    const blob = git(root, ["rev-parse", "HEAD:kind.txt"]);
-    git(root, ["update-index", "--add", "--cacheinfo", `120000,${blob},kind.txt`]);
-    const afterRef = commit(root, "mode and kind same oid");
+    git(root, ["update-index", "--add", "--cacheinfo", `120000,${kindBlob},kind.txt`]);
+    const afterRef = commitStaged(root, "mode and kind same oid");
+    expect(treeRecord(root, afterRef, "mode.sh")).toBe(`100755 blob ${modeBlob}\tmode.sh`);
+    expect(treeRecord(root, afterRef, "kind.txt")).toBe(`120000 blob ${kindBlob}\tkind.txt`);
     const { overlay, before, after, sources } = await overlayBetween(root, beforeRef, afterRef);
     expectObservedMatchesGitIdentity(overlay, sources, root, beforeRef, afterRef);
     expect(before.blobOid("mode.sh")).toBe(after.blobOid("mode.sh"));
@@ -934,8 +952,7 @@ describe("CLI Git pair overlay", () => {
       run.dependencies,
     )).toBe(0);
     expect(probe).toHaveBeenCalledOnce();
-    expect(String(probe.mock.calls[0]?.[0]).replaceAll("\\", "/"))
-      .toBe(root.replaceAll("\\", "/"));
+    expect(realpathSync(String(probe.mock.calls[0]?.[0]))).toBe(realpathSync(root));
     const printed = run.stdout.join("");
     const overlay = printed.slice(printed.indexOf("OTHER TRACKED CHANGES"));
     expect(overlay).toContain(OVERLAY_UNAVAILABLE.trim());

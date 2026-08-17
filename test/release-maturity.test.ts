@@ -594,7 +594,7 @@ describe("public release maturity", () => {
   it("records the independently verified v2.3.0 npm receipt", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **RELEASED** — `v2.3.0`: Overlay, work map, and companion control";
-    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.3.1`:");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -621,14 +621,36 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.3.0 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.3\.0 — SHIPPED TO MAIN/u);
     expect(read("CHANGELOG.md")).toContain("ALIGNED");
-    expect(read("package.json")).toContain('"version": "2.3.0"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.3.0"');
     expect(read("action.yml")).toMatch(/default: "2\.3\.0"/u);
     expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.3\.0"/u);
-    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.3.0`");
     expect(read("CONTRIBUTING.md")).toContain(
       "Latest independently verified public npm release is `v2.3.0`",
     );
+  });
+
+  it("records v2.3.1 as the identity-fixture and Windows-root patch", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v2.3.1`: Identity fixture and Windows root";
+    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toContain("2.3.1");
+    expect(shipped).toContain("2.3.0");
+    expect(shipped).toMatch(/realpath|8\.3|RUNNER~1/iu);
+    expect(shipped).toContain("blobIdentityKind");
+    expect(shipped).toContain("unionSortedPaths");
+    expect(shipped).toMatch(/ls-tree/u);
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 2.3.1 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.3\.1 — RELEASED/u);
+    expect(read("CHANGELOG.md")).toMatch(/git add -A/u);
+    expect(read("package.json")).toContain('"version": "2.3.1"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.3.1"');
+    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.3.1`");
+    expect(read("README.md")).toContain("ruleblast-companion-2.3.1.vsix");
+    expect(read("README.md")).toContain("ruleblast-companion-2.3.0.vsix");
   });
 
   it("keeps release-state records outside the current package boundary", () => {

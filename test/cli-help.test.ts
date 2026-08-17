@@ -34,6 +34,9 @@ describe("route catalog", () => {
     expect(help).toContain("Not a fifth action");
     expect(help).toContain("Shows the blast radius of AGENTS.md and CLAUDE.md changes");
     expect(help).toContain("Git diff for repository instructions");
+    expect(help).toContain("OTHER TRACKED CHANGES");
+    expect(help).toContain("CHANGE ALIGNMENT");
+    expect(help).toContain("--json stays canonical");
   });
 });
 

@@ -56,7 +56,7 @@ ruleblast diff 8fcf2ad931b90589dd29a571f367e3185d26bbe0 --to f0f483e8b2a2630bf8d
 
 ## Other tracked changes
 
-This tree is `2.3.0`. The strongest addition is not a fifth action. Human `diff` Git→Git and Git→WORKTREE can append **OTHER TRACKED CHANGES** from Git storage blob-object identity, then a **WORK MAP** and a deterministic **CHANGE ALIGNMENT**: `ALIGNED`, `MIXED`, `DIVERGENT`, or `UNRESOLVED`. The adjunct also names the identity law, other-path kinds (added / modified / deleted), and an operational gloss. That restates membership. It is not actor telemetry and not model compliance. `--json` stays the canonical result.
+This tree is `2.3.1`. The strongest addition is not a fifth action. Human `diff` Git→Git and Git→WORKTREE can append **OTHER TRACKED CHANGES** from Git storage blob-object identity, then a **WORK MAP** and a deterministic **CHANGE ALIGNMENT**: `ALIGNED`, `MIXED`, `DIVERGENT`, or `UNRESOLVED`. The adjunct also names the identity law, other-path kinds (added / modified / deleted), and an operational gloss. That restates membership. It is not actor telemetry and not model compliance. `--json` stays the canonical result.
 
 Companion Diff From renders the prepared adjunct. Keys: `Ctrl+Alt+R` then `S` scan · `D` diff · `E` explain · `C` case.
 
@@ -228,7 +228,7 @@ npm run build
 npm run host:build
 ```
 
-Install the unpacked `hosts/vscode` folder. This tree packs `ruleblast-companion-2.3.0.vsix` with `npm run host:pack`. The GitHub Release serves `ruleblast-companion-2.3.0.vsix`. The activity bar uses a themed SVG; the Marketplace PNG stays 128×128. Do not overwrite Marketplace `2.2.0` or `2.2.1`. Commands: Scan Workspace, Diff From…, Explain Active File, Open Verified Case. Keys: `Ctrl+Alt+R` then `S`/`D`/`E`/`C`. Marketplace / Open VSX listings are separate publisher operations; the VSIX is the installable extension form.
+Install the unpacked `hosts/vscode` folder. This tree packs `ruleblast-companion-2.3.1.vsix` with `npm run host:pack`. The GitHub Release still serves `ruleblast-companion-2.3.0.vsix`. The activity bar uses a themed SVG; the Marketplace PNG stays 128×128. Do not overwrite Marketplace `2.2.0` or `2.2.1`. Commands: Scan Workspace, Diff From…, Explain Active File, Open Verified Case. Keys: `Ctrl+Alt+R` then `S`/`D`/`E`/`C`. Marketplace / Open VSX listings are separate publisher operations; the VSIX is the installable extension form.
 
 ## Give your agent RuleBlast
 
@@ -281,7 +281,7 @@ Promoted Blast Case: official evidence, retrieval date, manifests, expected JSON
 
 ## Roadmap
 
-This tree is `2.3.0`: overlay, work map, change alignment, companion control.
+This tree is `2.3.1`: overlay, work map, change alignment, companion control. Published npm remains `2.3.0`.
 
 Today: Codex, Claude Code, opt-in Copilot CLI, and opt-in Gemini CLI. Same companion in VS Code-family editors, including Copilot Chat. Same four actions over `--mcp` for Claude Desktop and Codex desktop.
 

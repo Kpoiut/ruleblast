@@ -44,6 +44,7 @@ describe("control keys", () => {
           readonly "view/title"?: readonly { readonly command: string }[];
           readonly "explorer/context"?: readonly { readonly command: string }[];
           readonly "editor/context"?: readonly { readonly command: string }[];
+          readonly "editor/title/context"?: readonly { readonly command: string }[];
         };
       };
     };
@@ -67,6 +68,9 @@ describe("control keys", () => {
       (row) => row.command === "ruleblast.explainActiveFile",
     )).toBe(true);
     expect(manifest.contributes.menus?.["editor/context"]?.some(
+      (row) => row.command === "ruleblast.explainActiveFile",
+    )).toBe(true);
+    expect(manifest.contributes.menus?.["editor/title/context"]?.some(
       (row) => row.command === "ruleblast.explainActiveFile",
     )).toBe(true);
     expect(manifest.contributes.menus?.commandPalette).toContainEqual({

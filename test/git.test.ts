@@ -1,4 +1,4 @@
-import { chmodSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readlinkSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
+import { chmodSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readlinkSync, realpathSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -123,6 +123,7 @@ describe("Git commit snapshots", () => {
     const expected = statSync(root, { bigint: true });
     expect({ dev: actual.dev, ino: actual.ino })
       .toEqual({ dev: expected.dev, ino: expected.ino });
+    expect(await findRepositoryRoot(nested)).toBe(realpathSync(root));
   });
 
   it("classifies an actual Git non-repository failure", async () => {

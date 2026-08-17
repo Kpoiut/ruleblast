@@ -41,8 +41,12 @@ declare module "vscode" {
     resourceUri?: Uri;
     iconPath?: ThemeIcon;
   }
-  export class ThemeIcon {
+  export class ThemeColor {
     constructor(id: string);
+    readonly id: string;
+  }
+  export class ThemeIcon {
+    constructor(id: string, color?: ThemeColor);
     readonly id: string;
   }
   export class Uri {
@@ -78,7 +82,12 @@ declare module "vscode" {
     activeTextEditor: TextEditor | undefined;
     showErrorMessage(message: string): void;
     showInformationMessage(message: string): void;
-    showInputBox(options: { prompt: string; value?: string }): Promise<string | undefined>;
+    showInputBox(options: {
+      title?: string;
+      prompt: string;
+      value?: string;
+      placeHolder?: string;
+    }): Promise<string | undefined>;
     showQuickPick<T extends { label: string }>(
       items: readonly T[],
       options?: { title?: string; placeHolder?: string; canPickMany?: boolean },
@@ -86,7 +95,10 @@ declare module "vscode" {
     showTextDocument(document: TextDocument): Promise<unknown>;
     createOutputChannel(name: string): OutputChannel;
     createStatusBarItem(alignment?: StatusBarAlignment, priority?: number): StatusBarItem;
-    createTreeView(viewId: string, options: { treeDataProvider: TreeDataProvider<unknown> }): Disposable;
+    createTreeView(viewId: string, options: {
+      treeDataProvider: TreeDataProvider<unknown>;
+      showCollapseAll?: boolean;
+    }): Disposable;
   };
   export const commands: {
     registerCommand(command: string, callback: (...args: unknown[]) => unknown): Disposable;

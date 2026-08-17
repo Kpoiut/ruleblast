@@ -318,6 +318,12 @@ That release is `2.3.0`. Latest independently verified public npm distribution i
 
 Human `diff` Git↔Git and Git→WORKTREE join Git storage blob-object identity with selected-realities stack delta. The adjunct names that identity law, other-path kinds (added / modified / deleted), WORK MAP membership, and CHANGE ALIGNMENT (`ALIGNED`, `MIXED`, `DIVERGENT`, or `UNRESOLVED`) with an operational gloss. Companion renders the prepared adjunct, themed SVG activity icon, welcome scan/diff/explain/case, toolbar, and `Ctrl+Alt+R` then `S`/`D`/`E`/`C`. Hosts do not derive overlay. `--json` stays canonical. Full-tree replay of 2651980→58e8f75 remains unsealed.
 
+## **SHIPPED TO MAIN** — `v2.3.1`: Identity fixture and Windows root
+
+This tree is `2.3.1`. Latest independently verified public npm distribution remains `2.3.0`. Companion version is `2.3.1`. Pack `ruleblast-companion-2.3.1.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`. Not an npm release.
+
+Staged-index commits prove same-OID mode/kind and gitlink exclusion against `ls-tree`. Repository root is the realpath of `--show-toplevel`, so Windows 8.3 and the long path are one directory. Overlay join uses `blobIdentityKind` and `unionSortedPaths`. Scoreboard control rows are the four actions. Status names CHANGE ALIGNMENT. `--json` stays canonical.
+
 ## **NEXT** — Offline evidence-revision reveal
 
 An offline run should be able to say that a pinned evidence revision may have drifted without contacting a network. That is a later gate, not a host or marketplace expansion.

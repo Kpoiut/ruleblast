@@ -3,6 +3,7 @@ import type {
   CompanionState,
   ScoreboardIntent,
   ScoreboardKind,
+  ScoreboardMark,
   ScoreboardNode,
 } from "../engine/application/host-session.js";
 import { companionTree } from "../engine/application/host-session.js";
@@ -23,6 +24,16 @@ const KIND_ICON: Readonly<Record<ScoreboardKind, string>> = {
   explain: "info",
   observation: "eye",
   group: "folder",
+};
+
+const MARK_COLOR: Readonly<Partial<Record<ScoreboardMark, string>>> = {
+  inherited: "charts.green",
+  independent: "charts.blue",
+  unclassified: "charts.yellow",
+  split: "charts.orange",
+  affected: "charts.red",
+  unchanged: "descriptionForeground",
+  uncertain: "charts.yellow",
 };
 
 const INTENT_COMMAND: Readonly<Record<ScoreboardIntent, string>> = {
@@ -59,7 +70,10 @@ export class RuleBlastTreeProvider implements vscode.TreeDataProvider<Scoreboard
     item.description = element.description;
     item.tooltip = tooltipFor(element);
     item.contextValue = element.kind;
-    item.iconPath = new vscode.ThemeIcon(KIND_ICON[element.kind]);
+    const tint = element.mark === undefined ? undefined : MARK_COLOR[element.mark];
+    item.iconPath = tint === undefined
+      ? new vscode.ThemeIcon(KIND_ICON[element.kind])
+      : new vscode.ThemeIcon(KIND_ICON[element.kind], new vscode.ThemeColor(tint));
     if (element.path !== undefined && this.root !== null) {
       item.resourceUri = vscode.Uri.file(
         `${this.root.replace(/[\\/]+$/u, "")}/${element.path}`,

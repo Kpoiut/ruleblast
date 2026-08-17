@@ -283,7 +283,28 @@ describe("companion session", () => {
     expect(tree.every((node) => typeof node.kind === "string")).toBe(true);
     const controls = tree.find((node) => node.id === "control")?.children ?? [];
     expect(controls.map((node) => node.description)).toEqual(["S", "D", "E", "C"]);
-    expect(controls.every((node) => node.intent === undefined)).toBe(true);
+    expect(controls.map((node) => node.intent)).toEqual([
+      "RUN_SCAN", "RUN_DIFF", "RUN_EXPLAIN", "RUN_CASE",
+    ]);
+  });
+
+  it("names CHANGE ALIGNMENT on the status line from a prepared overlay", async () => {
+    const result = await scanRepository({
+      snapshot: snapshot({ "AGENTS.md": "root", "src/a.ts": "code" }),
+      reality: null,
+    });
+    const overlay = {
+      observedPathCount: 1,
+      inBlastCount: 1,
+      outsideBlastCount: 0,
+      unresolvedCount: 0,
+      splitObservedPathCount: 0,
+      observedPaths: [
+        { path: "src/in.ts", kind: "MODIFY" as const, relation: "IN_BLAST" as const },
+      ],
+    };
+    const state = companionSucceed(initialCompanionState(), result, { overlay });
+    expect(companionStatusLine(state)).toContain("ALIGNED");
   });
 
   it("keeps errors on the lifecycle axis", () => {

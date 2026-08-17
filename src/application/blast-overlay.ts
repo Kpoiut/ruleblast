@@ -1,5 +1,6 @@
 import type { DiffRuleBlastResult, PathTransition } from "../model.js";
-import { compareCodePoints } from "../domain/repository-path.js";
+import { blobIdentityKind } from "../domain/git-blob-identity.js";
+import { compareCodePoints, unionSortedPaths } from "../domain/repository-path.js";
 import type { GitObjectSnapshot } from "../snapshot.js";
 
 export const OVERLAY_SAMPLE_CAP = 8;
@@ -300,23 +301,14 @@ export async function buildOverlayP1(
   after: GitObjectSnapshot,
   result: DiffRuleBlastResult,
 ): Promise<BlastOverlayView> {
-  const beforePaths = new Set(await before.listPaths());
-  const afterPaths = new Set(await after.listPaths());
+  const beforePaths = [...await before.listPaths()].sort(compareCodePoints);
+  const afterPaths = [...await after.listPaths()].sort(compareCodePoints);
   const transitions = new Map(result.paths.map((row) => [row.path, row]));
   const sources = sourcePaths(result);
   const observed: ObservedChange[] = [];
-  const names = [...new Set([...beforePaths, ...afterPaths])].sort(compareCodePoints);
-  for (const path of names) {
+  for (const path of unionSortedPaths(beforePaths, afterPaths)) {
     if (sources.has(path)) continue;
-    const beforeOid = before.blobOid(path);
-    const afterOid = after.blobOid(path);
-    const kind: ObservedKind | null = beforeOid === null && afterOid !== null
-      ? "ADD"
-      : beforeOid !== null && afterOid === null
-        ? "DELETE"
-        : beforeOid !== null && afterOid !== null && beforeOid !== afterOid
-          ? "MODIFY"
-          : null;
+    const kind = blobIdentityKind(before.blobOid(path), after.blobOid(path));
     if (kind === null) continue;
     observed.push({
       path,

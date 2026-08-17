@@ -3,6 +3,7 @@ import {
   analysisState,
   formatAnalysisState,
 } from "./analysis-state.js";
+import { classifyChangeAlignment } from "./blast-overlay.js";
 import { CONTROL_BINDINGS, CONTROL_CHORD } from "./control-keys.js";
 import { adjunctRenderContext, overlayNodes } from "./overlay-tree.js";
 import { presentationFor, presentationLabel } from "./profile-catalog.js";
@@ -14,8 +15,13 @@ import type {
 
 export function companionStatusLine(state: CompanionState): string {
   const core = formatAnalysisState(analysisState(state.lifecycle, state.completeness));
-  if (state.dirtyBuffer) return `${core} · unsaved editor buffer is not in the snapshot`;
-  return core;
+  const parts = [core];
+  if (state.overlay !== null && !state.overlayUnavailable) {
+    const alignment = classifyChangeAlignment(state.overlay);
+    if (alignment !== null) parts.push(alignment);
+  }
+  if (state.dirtyBuffer) parts.push("unsaved editor buffer is not in the snapshot");
+  return parts.join(" · ");
 }
 
 function realityLabel(realities: readonly string[]): string {
@@ -50,6 +56,7 @@ function controlNodes(): ScoreboardNode {
       kind: "control",
       label: binding.label,
       description: binding.token,
+      intent: binding.intent,
     })),
   };
 }

@@ -57,7 +57,7 @@ function currentRoot(): string | undefined {
 function reveal(next: CompanionState, tree: RuleBlastTreeProvider, status: vscode.StatusBarItem): void {
   state = next;
   tree.refresh(state, currentRoot());
-  status.text = `RB ${state.lifecycle}`;
+  status.text = `RB · ${companionStatusLine(state)}`;
   status.tooltip = state.error?.message ?? companionStatusLine(state);
   status.command = "ruleblast.scoreboard.focus";
   status.show();
@@ -99,7 +99,10 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     status,
     watcher,
-    vscode.window.createTreeView("ruleblast.scoreboard", { treeDataProvider: tree }),
+    vscode.window.createTreeView("ruleblast.scoreboard", {
+      treeDataProvider: tree,
+      showCollapseAll: true,
+    }),
     vscode.commands.registerCommand("ruleblast.scanWorkspace", async () => {
       await withRoot(tree, status, "scan", async (folder) => {
         const root = await findRepositoryRoot(folder);
@@ -112,7 +115,9 @@ export function activate(context: vscode.ExtensionContext): void {
     }),
     vscode.commands.registerCommand("ruleblast.diffFrom", async () => {
       const base = await vscode.window.showInputBox({
-        prompt: "Diff base ref",
+        title: "RuleBlast Diff From",
+        prompt: "Git ref to compare with the tracked worktree",
+        placeHolder: "HEAD",
         value: "HEAD",
       });
       if (base === undefined || base.trim() === "") return;
