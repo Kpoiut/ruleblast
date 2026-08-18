@@ -663,6 +663,9 @@ describe("public release maturity", () => {
     expect(released).not.toMatch(/100%\s*trust|<15ms|mathematically defensible/iu);
     for (const evidence of [
       "https://www.npmjs.com/package/ruleblast/v/2.4.0",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.0",
+      "430115f28b62a90bc5838fc696cc5747d46f9ab5",
+      "82514d7dc03614094001ec737a7d2bb13402d45a",
       "sha512-s1K6hIOMOR/q+/+z+JN/6SAmYWq1CResaKSs3Y+J/ztzjRw6tUEbeR62yqcaAcIwDIGXLiL+gtKbmX5T9210oA==",
       "144,516",
       "bbc35dfb12e0c5557dba288f2208c4763e8aab52f2c04ece126fab24f17d8755",

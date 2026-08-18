@@ -12,6 +12,11 @@ All notable user-visible changes to RuleBlast are recorded here.
 - GitHub-facing README leads with that same disclosure: one-line glance, compare, `PROOF`. Install lists, host map, and replay sit behind `<details>`.
 - [npm `ruleblast@2.4.0`](https://www.npmjs.com/package/ruleblast/v/2.4.0) reports integrity `sha512-s1K6hIOMOR/q+/+z+JN/6SAmYWq1CResaKSs3Y+J/ztzjRw6tUEbeR62yqcaAcIwDIGXLiL+gtKbmX5T9210oA==`. The registry download is the 144,516-byte tarball with SHA-256 `bbc35dfb12e0c5557dba288f2208c4763e8aab52f2c04ece126fab24f17d8755`. Registry `gitHead` at publish was `a0848463a493516eba64d5d73aecf0ea3b097e07`. Pack `ruleblast-companion-2.4.0.vsix` (137,302 bytes, SHA-256 `e4032b708cd98a92ac0dd17bcf7b35f1dec73ff7ca129ee7a8731eacb1988c50`). Do not overwrite Marketplace `2.2.0` or `2.2.1`.
 
+### Release artifact
+
+- Signed tag object `430115f28b62a90bc5838fc696cc5747d46f9ab5` for [`v2.4.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.0) targets commit `82514d7dc03614094001ec737a7d2bb13402d45a`.
+- npm and the GitHub Release serve the same 144,516-byte tarball with SHA-256 `bbc35dfb12e0c5557dba288f2208c4763e8aab52f2c04ece126fab24f17d8755`. The GitHub Release also serves the 137,302-byte `ruleblast-companion-2.4.0.vsix` with SHA-256 `e4032b708cd98a92ac0dd17bcf7b35f1dec73ff7ca129ee7a8731eacb1988c50`.
+
 ## 2.3.1 — SHIPPED TO MAIN
 
 - Identity fixtures commit the staged index. `git add -A` after `update-index --chmod` / `--cacheinfo` restored the worktree and produced an empty commit on Linux Git, so Verify never proved same-OID mode/kind or gitlink exclusion against real tree objects.
