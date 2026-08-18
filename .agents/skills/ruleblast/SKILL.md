@@ -1,9 +1,9 @@
 ---
 name: ruleblast
-description: Shows the blast radius of AGENTS.md and CLAUDE.md changes. Use when Git cannot show which agent inherited the edit, a Codex vs Claude Code split, or why one path inherited a stack.
+description: Git diff for AI agent repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes. Use when Git cannot show which agent inherited the edit, a Codex vs Claude Code split, or why one path inherited a stack.
 ---
 
-# RuleBlast
+# RuleBlast — Git diff for AI agent repository instructions
 
 Local, read-only Git CLI. No network or model call during analysis.
 

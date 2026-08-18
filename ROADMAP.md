@@ -328,7 +328,7 @@ Staged-index commits prove same-OID mode/kind and gitlink exclusion against `ls-
 
 That increment shipped glance, `--paths-only`, `explain --compare`, and explain `PROOF`. Signed tag object `430115f28b62a90bc5838fc696cc5747d46f9ab5` for [`v2.4.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.0) targets commit `82514d7dc03614094001ec737a7d2bb13402d45a`. The npm version `2.4.0` was unpublished on 18 August 2026 because its tarball README still advertised `ruleblast@2.3.0`; npm does not allow that version number to be reused. Install `ruleblast@2.4.1`. The GitHub tag remains.
 
-Human CLI and the companion renderer project the same canonical result at increasing depth: one-line glance, `--paths-only`, `explain --compare`, then explain `PROOF`. `--json` is unchanged. No fifth action, no dashboard, no latency or absolute-trust product claim. Peripheral awareness stays in the editor adapter.
+Human CLI and the companion renderer project the same canonical result at increasing depth: one-line glance, `--paths-only`, `explain --compare`, then explain `PROOF`. `--json` is unchanged. Glance lives in the editor adapter.
 
 ## **RELEASED** — `v2.4.1`: Republished progressive disclosure
 
@@ -337,6 +337,12 @@ This tree is `2.4.1`. Latest independently verified public npm distribution is `
 **Verified publication receipt.** Signed tag object `b26859f3a31bd4b1c3985f966d70bf32432d174f` for [`v2.4.1`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.1) targets commit `f80b0d0fb2af6ab0c37d703b1d36a094c9a0cc58`. [npm `ruleblast@2.4.1`](https://www.npmjs.com/package/ruleblast/v/2.4.1) reports integrity `sha512-MTTZpr2qhuMaR4BN9z5LsMe1pORPkbDeNV5Gr8f2GXb0jLI3MoPYaM5rX1CQqtyMePcNEfU4JdHXFYQWiGglOA==`. The registry download is the 144,495-byte tarball with SHA-256 `6c89d285e938fae0e9f5aa717fc0a6403fc48f57d825c1b7310ea01c52231483`. The GitHub Release serves that same tarball and the 137,302-byte `ruleblast-companion-2.4.1.vsix` with SHA-256 `29efd185756292c136312f900eb89115b7a7707b8d30a3d58adc8534f654ebf6`. These are independently verified external records, not facts inferred from this checkout.
 
 Same disclosure as `v2.4.0`, packaged so the tarball README, Action default, and skills advertise `ruleblast@2.4.1`. The GitHub README leads with that disclosure and keeps install, host map, and replay behind details.
+
+## **SHIPPED TO MAIN** — `v2.4.2`: One public descriptor
+
+This tree is `2.4.2`. The independently verified public npm package remains `2.4.1`. The companion version is `2.4.2`. Pack `ruleblast-companion-2.4.2.vsix`. Marketplace listings `2.2.0` and `2.2.1` stay as they are. This increment is on main; people still install `ruleblast@2.4.1`.
+
+Every surface RuleBlast owns now introduces itself the same way: **RuleBlast — Git diff for AI agent repository instructions**. The package, repository, and Marketplace id stay `ruleblast`.
 
 ## **NEXT** — Offline evidence-revision reveal
 

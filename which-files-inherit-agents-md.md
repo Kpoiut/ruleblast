@@ -1,5 +1,7 @@
 # Which files inherit a changed AGENTS.md?
 
+RuleBlast — Git diff for AI agent repository instructions.
+
 Git shows the `AGENTS.md` or `CLAUDE.md` edit. It does not show every tracked path that inherits that change.
 
 That missing second diff is the blast radius of repository instructions.
@@ -28,7 +30,7 @@ The same Git tree can project different instruction stacks. Codex, Claude Code, 
 
 ## RuleBlast
 
-[RuleBlast](https://github.com/Kpoiut/ruleblast) is a local, read-only Git CLI. It shows the blast radius of `AGENTS.md` and `CLAUDE.md` changes across those four CLI surfaces. No network or model call during analysis. This tree is `2.4.1`. Published CLI is `ruleblast@2.4.1`.
+[RuleBlast](https://github.com/Kpoiut/ruleblast) is a local, read-only Git CLI. It shows the blast radius of `AGENTS.md` and `CLAUDE.md` changes across those four CLI surfaces. No network or model call during analysis. This tree is `2.4.2`. Published CLI is `ruleblast@2.4.1`.
 
 ```bash
 npx --yes ruleblast@2.4.1 .

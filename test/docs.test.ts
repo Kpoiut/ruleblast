@@ -89,7 +89,7 @@ describe("README story contract", () => {
 
   it("leads with the exact first command, then verified evidence and install detail", () => {
     expect(readme).toMatch(
-      /^<h1 align="center">RuleBlast — Git diff for invisible repository instructions<\/h1>\s/u,
+      /^<h1 align="center">RuleBlast — Git diff for AI agent repository instructions<\/h1>\s/u,
     );
     expectOrdered(readme, [
       "assets/ruleblast-hero.png",
@@ -122,7 +122,7 @@ describe("README story contract", () => {
       "## Roadmap",
     ]);
 
-    const marker = readme.indexOf("invisible repository instructions</h1>");
+    const marker = readme.indexOf("AI agent repository instructions</h1>");
     for (const metric of ["2", "206", "4,476"]) {
       expect(readme.indexOf(metric)).toBeGreaterThan(marker);
     }
@@ -169,7 +169,7 @@ describe("README story contract", () => {
   it("embeds the branding hero in the first fold without packaging it", () => {
     const asset = "assets/ruleblast-hero.png";
     expect(readme.indexOf(asset)).toBeGreaterThan(
-      readme.indexOf("invisible repository instructions</h1>"),
+      readme.indexOf("AI agent repository instructions</h1>"),
     );
     expect(readme.indexOf(asset)).toBeLessThan(
       readme.indexOf("actions/workflows/verify.yml/badge.svg"),
@@ -206,7 +206,7 @@ describe("README story contract", () => {
       "npm uninstall --global ruleblast",
       "npm uninstall --save-dev ruleblast",
       "npm cache verify",
-      "git clone --branch v2.4.1 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v2.4.2 --depth 1 https://github.com/Kpoiut/ruleblast.git",
       "npm ci --ignore-scripts",
       "npm run build",
       "node dist/cli.js --version",
@@ -502,6 +502,7 @@ describe("repository documentation integrity", () => {
       "v2.3.1",
       "v2.4.0",
       "v2.4.1",
+      "v2.4.2",
       "v3.0",
       "v4.0",
     ]) {

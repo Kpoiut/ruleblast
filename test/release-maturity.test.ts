@@ -673,7 +673,7 @@ describe("public release maturity", () => {
   it("records v2.4.1 as the replacement published package", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **RELEASED** — `v2.4.1`: Republished progressive disclosure";
-    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.4.2`:");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -695,15 +695,34 @@ describe("public release maturity", () => {
       expect(released).toContain(evidence);
     }
     expect(read("CHANGELOG.md")).toContain("## 2.4.1 — RELEASED");
-    expect(read("package.json")).toContain('"version": "2.4.1"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.4.1"');
-    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.4.1`");
-    expect(read("README.md")).toContain("ruleblast-companion-2.4.1.vsix");
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.4.1"',
     );
     expect(read("action.yml")).toMatch(/default: "2\.4\.1"/u);
     expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.4\.1"/u);
+  });
+
+  it("records v2.4.2 as one public descriptor without a rename", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v2.4.2`: One public descriptor";
+    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toContain("2.4.2");
+    expect(shipped).toContain("2.4.1");
+    expect(shipped).toContain("Git diff for AI agent repository instructions");
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(shipped).toContain("stay `ruleblast`");
+    expect(read("CHANGELOG.md")).toContain("## 2.4.2 — SHIPPED TO MAIN");
+    expect(read("package.json")).toContain('"version": "2.4.2"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.4.2"');
+    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.4.2`");
+    expect(read("README.md")).toContain("ruleblast-companion-2.4.2.vsix");
+    expect(read("README.md")).toContain(
+      "RuleBlast — Git diff for AI agent repository instructions",
+    );
   });
 
   it("keeps release-state records outside the current package boundary", () => {

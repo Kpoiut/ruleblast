@@ -1,5 +1,5 @@
 name: RuleBlast
-description: Shows the blast radius of AGENTS.md and CLAUDE.md changes. Comments which files inherited the edit. Read-only. Not a hosted product.
+description: Comments the blast radius of AGENTS.md and CLAUDE.md on the pull-request runner.
 author: Kpoiut
 branding:
   icon: zap

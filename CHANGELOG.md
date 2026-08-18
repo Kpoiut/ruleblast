@@ -2,6 +2,13 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.4.2 — SHIPPED TO MAIN
+
+- Titles, listings, and social cards now introduce the tool the same way: **RuleBlast — Git diff for AI agent repository instructions**.
+- The npm package, GitHub repository, and Marketplace id remain `ruleblast`.
+- README, CLI help, package metadata, companion listing, Action blurb, landing page, `llms.txt`, citation, and official skills share that line and the blast-radius sentence.
+- The published CLI people install is still `ruleblast@2.4.1`.
+
 ## 2.4.1 — RELEASED
 
 - Replacement npm package after `ruleblast@2.4.0` was unpublished. npm does not allow that version number to be reused. Same progressive disclosure as `2.4.0`. Published `npx` is `ruleblast@2.4.1`.

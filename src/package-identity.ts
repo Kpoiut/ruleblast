@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-export const IDENTITY_TITLE = "Git diff for repository instructions";
+export const IDENTITY_TITLE = "Git diff for AI agent repository instructions";
 export const IDENTITY_BLAST =
   "Shows the blast radius of AGENTS.md and CLAUDE.md changes";
 

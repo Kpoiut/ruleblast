@@ -20,7 +20,7 @@ const ROUTES: readonly RouteCard[] = Object.freeze([
     precondition: "repository",
     exampleArgv: Object.freeze([".", "--color=never"]),
     interpretation: "Current scan. The optional path only starts Git discovery.",
-    nonClaim: "Not a path filter and not a fifth action named scan.",
+    nonClaim: "The optional path only starts Git discovery.",
   }),
   Object.freeze({
     id: "diff",
@@ -107,7 +107,7 @@ EVIDENCE
              User toggle: RULEBLAST_AGENT_ALLOW or .ruleblast-allow.
 
 TRANSPORT
-  --mcp      Stdio transport of the same four actions. Not a fifth action.
+  --mcp      Stdio transport of scan, diff, explain, and case.
 
 SKILLS
   Skills     Codex .agents/skills · Claude Code .claude/skills

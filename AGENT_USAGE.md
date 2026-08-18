@@ -1,6 +1,6 @@
 # AGENT_USAGE
 
-Git diff for repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes.
+Git diff for AI agent repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes.
 
 Packaged routing guide. This is not a Codex skill and is not discovered from `node_modules`.
 

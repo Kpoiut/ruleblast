@@ -24,3 +24,5 @@ Independent web-search snapshot. Not a claim that Search Console or every crawle
 GitHub internal search already returns `Kpoiut/ruleblast`. Direct URL fetch works. External web index and problem-query association do not yet.
 
 Re-run the same queries after the canonical landing `https://kpoiut.github.io/ruleblast/` is live and after any independent technical mention. A first win is the official GitHub or npm URL appearing for `ruleblast github` or `"Kpoiut/ruleblast"`.
+
+`2.4.2` standardizes the public signature to `RuleBlast — Git diff for AI agent repository instructions`. That is a presentation change, not a claim that ranking already moved.

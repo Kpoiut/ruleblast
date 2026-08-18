@@ -52,7 +52,7 @@ describe("distribution surfaces", () => {
     expect(root).toContain("using: composite");
     expect(root).toContain("uses: ./.github/actions/ruleblast");
     expect(root).toMatch(/blast radius of AGENTS.md and CLAUDE.md/u);
-    expect(root).toMatch(/not a hosted product/iu);
+    expect(root).toMatch(/pull-request runner/iu);
     const rootDescription = /^description:\s*(.+)$/mu.exec(root)?.[1] ?? "";
     expect(rootDescription.length).toBeGreaterThan(0);
     expect(rootDescription.length).toBeLessThan(125);
@@ -64,7 +64,7 @@ describe("distribution surfaces", () => {
     expect(read(".github/workflows/ruleblast-pr.yml")).toContain(
       "uses: ./.github/actions/ruleblast",
     );
-    expect(read("README.md")).toContain("uses: Kpoiut/ruleblast@v2.4.1");
+    expect(read("README.md")).toContain("uses: Kpoiut/ruleblast@v2.4.2");
     expect(read("README.md")).not.toMatch(/uses: Kpoiut\/ruleblast@main\s*$/mu);
   });
 
