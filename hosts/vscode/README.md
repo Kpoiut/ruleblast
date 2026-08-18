@@ -1,6 +1,6 @@
 # RuleBlast companion
 
-Change `AGENTS.md`. See every file that now inherits a different instruction stack. Companion version `2.4.0`. Published npm CLI is `2.3.0`. Status Bar follows the active file. Compare selected realities opens two stacks.
+Change `AGENTS.md`. See every file that now inherits a different instruction stack. Companion version `2.4.0`. Published npm CLI is `2.4.0`. Status Bar follows the active file. Compare selected realities opens two stacks.
 
 Scan, Diff, Explain, and Case — the same four actions as the CLI. One adapter for VS Code, GitHub Copilot Chat, Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, and Trae.
 

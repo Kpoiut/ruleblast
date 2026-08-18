@@ -324,9 +324,11 @@ That increment is `2.3.1`. Latest independently verified public npm distribution
 
 Staged-index commits prove same-OID mode/kind and gitlink exclusion against `ls-tree`. Repository root is the realpath of `--show-toplevel`, so Windows 8.3 and the long path are one directory. Overlay join uses `blobIdentityKind` and `unionSortedPaths`. Scoreboard control rows are the four actions. Status names CHANGE ALIGNMENT. `--json` stays canonical.
 
-## **SHIPPED TO MAIN** — `v2.4.0`: Progressive disclosure
+## **RELEASED** — `v2.4.0`: Progressive disclosure
 
-This tree is `2.4.0`. Latest independently verified public npm distribution remains `2.3.0`. Companion version is `2.4.0`. Pack `ruleblast-companion-2.4.0.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`. Not an npm release.
+That release is `2.4.0`. Latest independently verified public npm distribution is `2.4.0`. Companion version is `2.4.0`. Pack `ruleblast-companion-2.4.0.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+**Verified publication receipt.** [npm `ruleblast@2.4.0`](https://www.npmjs.com/package/ruleblast/v/2.4.0) reports integrity `sha512-s1K6hIOMOR/q+/+z+JN/6SAmYWq1CResaKSs3Y+J/ztzjRw6tUEbeR62yqcaAcIwDIGXLiL+gtKbmX5T9210oA==`. The registry download is the 144,516-byte tarball with SHA-256 `bbc35dfb12e0c5557dba288f2208c4763e8aab52f2c04ece126fab24f17d8755`. Registry `gitHead` at publish was `a0848463a493516eba64d5d73aecf0ea3b097e07` and is not this documentation commit. The companion pack is the 137,302-byte `ruleblast-companion-2.4.0.vsix` with SHA-256 `e4032b708cd98a92ac0dd17bcf7b35f1dec73ff7ca129ee7a8731eacb1988c50`. These are independently verified external records, not facts inferred from this checkout.
 
 Human CLI and the companion renderer project the same canonical result at increasing depth: one-line glance, `--paths-only`, `explain --compare`, then explain `PROOF`. `--json` is unchanged. No fifth action, no dashboard, no latency or absolute-trust product claim. Peripheral awareness stays in the editor adapter. The GitHub README leads with that disclosure and keeps install, host map, and replay behind details.
 

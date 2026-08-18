@@ -2,14 +2,15 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 2.4.0 — SHIPPED TO MAIN
+## 2.4.0 — RELEASED
 
-- Progressive disclosure of the same canonical result. Not a fifth action. `--json` stays canonical. Published `npx` stays `ruleblast@2.3.0`.
+- Progressive disclosure of the same canonical result. Not a fifth action. `--json` stays canonical. Published `npx` is `ruleblast@2.4.0`.
 - `--paths-only` prints one attention path per line (diff and case: changed stacks; scan: current splits) for Unix pipes. Not `--json`.
 - `explain --compare` prints two selected-reality source stacks as a text compare. Companion CodeLens opens the same stacks in `vscode.diff`.
 - Explain text leads with a `PROOF` line derived from existing causes or sources. Same repository snapshot, profile, resolution rules, and configuration produce the same computed result. Not a model-compliance claim.
 - Companion Status Bar morphs to the active file from the last result. Peripheral glance is a host projection, not a second engine.
-- GitHub-facing README leads with that same disclosure: one-line glance, compare, `PROOF`. Install lists, host map, and replay sit behind `<details>`. Published `npx` stays `ruleblast@2.3.0` until an authorized npm release.
+- GitHub-facing README leads with that same disclosure: one-line glance, compare, `PROOF`. Install lists, host map, and replay sit behind `<details>`.
+- [npm `ruleblast@2.4.0`](https://www.npmjs.com/package/ruleblast/v/2.4.0) reports integrity `sha512-s1K6hIOMOR/q+/+z+JN/6SAmYWq1CResaKSs3Y+J/ztzjRw6tUEbeR62yqcaAcIwDIGXLiL+gtKbmX5T9210oA==`. The registry download is the 144,516-byte tarball with SHA-256 `bbc35dfb12e0c5557dba288f2208c4763e8aab52f2c04ece126fab24f17d8755`. Registry `gitHead` at publish was `a0848463a493516eba64d5d73aecf0ea3b097e07`. Pack `ruleblast-companion-2.4.0.vsix` (137,302 bytes, SHA-256 `e4032b708cd98a92ac0dd17bcf7b35f1dec73ff7ca129ee7a8731eacb1988c50`). Do not overwrite Marketplace `2.2.0` or `2.2.1`.
 
 ## 2.3.1 — SHIPPED TO MAIN
 

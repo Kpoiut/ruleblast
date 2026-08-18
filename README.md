@@ -28,11 +28,11 @@
 
 ```bash
 cd <your-git-repository>
-npx --yes ruleblast@2.3.0 .
-npx --yes ruleblast@2.3.0 diff HEAD~1
+npx --yes ruleblast@2.4.0 .
+npx --yes ruleblast@2.4.0 diff HEAD~1
 ```
 
-<p align="center"><sub>This tree is 2.4.0. Published CLI is ruleblast@2.3.0. Local · read-only · deterministic · no network or model call</sub></p>
+<p align="center"><sub>This tree is 2.4.0. Published CLI is ruleblast@2.4.0. Local · read-only · deterministic · no network or model call</sub></p>
 
 <p align="center">
   A Status Bar can say <code>Δ206</code> before anyone opens RuleBlast.<br>
@@ -66,12 +66,12 @@ Companion Diff From renders that prepared adjunct. Keys: `Ctrl+Alt+R` then `S` s
 
 ## Install
 
-Published CLI is `ruleblast@2.3.0`. Node.js 20+. `npx` downloads and runs the pinned package.
+Published CLI is `ruleblast@2.4.0`. Node.js 20+. `npx` downloads and runs the pinned package.
 
 ```bash
 cd <your-git-repository>
-npx --yes ruleblast@2.3.0 .
-npx --yes ruleblast@2.3.0 diff HEAD~1
+npx --yes ruleblast@2.4.0 .
+npx --yes ruleblast@2.4.0 diff HEAD~1
 ```
 
 `NOT_REPOSITORY` means `cd` into a Git repo first. `REF_NOT_FOUND` means pick a real ref. On a permission error, use `npx` instead of elevating. Release CI is Windows and Linux.
@@ -81,29 +81,29 @@ npx --yes ruleblast@2.3.0 diff HEAD~1
 
 ```bash
 node --version
-npm view ruleblast@2.3.0 version
-npx --yes ruleblast@2.3.0 --help
-npm install --global ruleblast@2.3.0
+npm view ruleblast@2.4.0 version
+npx --yes ruleblast@2.4.0 --help
+npm install --global ruleblast@2.4.0
 ruleblast --version
 ruleblast --help
 ruleblast
-npm install --save-dev --save-exact ruleblast@2.3.0
+npm install --save-dev --save-exact ruleblast@2.4.0
 npx ruleblast --version
 npx ruleblast --help
 npx ruleblast
-npx --yes ruleblast@2.3.0 explain src/args.ts --from HEAD~1
-npx --yes ruleblast@2.3.0 case
+npx --yes ruleblast@2.4.0 explain src/args.ts --from HEAD~1
+npx --yes ruleblast@2.4.0 case
 ```
 
 A global install downloads the full CLI.
 
 ```bash
 npm uninstall --global ruleblast
-npm install --global ruleblast@2.3.0
+npm install --global ruleblast@2.4.0
 npm uninstall --save-dev ruleblast
-npm install --save-dev --save-exact ruleblast@2.3.0
+npm install --save-dev --save-exact ruleblast@2.4.0
 npm cache verify
-npx --yes ruleblast@2.3.0 --help
+npx --yes ruleblast@2.4.0 --help
 git clone --branch v2.4.0 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
 npm ci --ignore-scripts
@@ -125,9 +125,9 @@ The `1.0.1 → 1.0.2` registry upgrade was verified by the guarded [eight-cell r
 Packaged teaching receipt: [`27d52e2…`](https://github.com/Kpoiut/ruleblast/commit/27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8) → [`e420008…`](https://github.com/Kpoiut/ruleblast/commit/e420008a1c10c5c328e506247560117f4d40b855). 33 instruction-line edits. 106 of 106 stacks moved. Zero current split, partial, unknown, or indeterminate paths. [Canonical receipt](cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json) core digest `1e907a88ed648ebbd68b4f588c3bd09058ab7714e8f85a3f2d4a1c60e5a40938`.
 
 ```bash
-npx --yes ruleblast@2.3.0 case
-npx --yes ruleblast@2.3.0 case --json
-npx --yes ruleblast@2.3.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@2.4.0 case
+npx --yes ruleblast@2.4.0 case --json
+npx --yes ruleblast@2.4.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 <details>
@@ -165,7 +165,7 @@ Scope: 106 tracked paths · repository-only · resolver revision 1
 ## Explain one path
 
 ```bash
-npx --yes ruleblast@2.3.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
+npx --yes ruleblast@2.4.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 ```
 
 Historical reproduction (needs both commits checked out):
@@ -189,7 +189,7 @@ Unresolved stays `PARTIAL`, `UNKNOWN`, or `INDETERMINATE`. Contract: [CONTRACT.m
 
 Snapshot → evidence-pinned profile projection → compare payloads → render the blast. Bundled Reality Packs declare the four realities; named engines own vendor rules. The analysis engine is the authority; the CLI is the reference host. Impact stays profile-neutral.
 
-This tree discloses that same result in layers: one-line glance, `--paths-only`, `explain --compare`, then a `PROOF` line. Published `2.3.0` does not include those presentation flags.
+This tree discloses that same result in layers: one-line glance, `--paths-only`, `explain --compare`, then a `PROOF` line. Published `2.4.0` includes those presentation flags.
 
 ## Performance
 
@@ -207,11 +207,11 @@ This tree, dirty worktree versus `HEAD~1`: 237 tracked paths. Default Codex + Cl
 The optional path is only a filesystem starting point for repository discovery. Add `--witness` when you need why-edges. Add `--receipt` when you need a pasteable card. Add `--reality github/copilot-cli@1` and/or `--reality google/gemini-cli@1` when you need those documented surfaces. Repeat `--reality` for a four-surface N-way. Default `--json` stays the two-profile canonical result.
 
 ```bash
-npx --yes ruleblast@2.3.0 .
-npx --yes ruleblast@2.3.0 packages/api/internal
-npx --yes ruleblast@2.3.0 diff HEAD~1
-npx --yes ruleblast@2.3.0 explain src/args.ts --from HEAD~1
-npx --yes ruleblast@2.3.0 diff HEAD~1 --json
+npx --yes ruleblast@2.4.0 .
+npx --yes ruleblast@2.4.0 packages/api/internal
+npx --yes ruleblast@2.4.0 diff HEAD~1
+npx --yes ruleblast@2.4.0 explain src/args.ts --from HEAD~1
+npx --yes ruleblast@2.4.0 diff HEAD~1 --json
 ```
 
 <details>
@@ -282,7 +282,7 @@ Agents still need your allow gate before they run. Copilot Chat using RuleBlast 
 ```bash
 echo yes > .ruleblast-allow
 # or:  set RULEBLAST_AGENT_ALLOW=yes
-npx --yes ruleblast@2.3.0 . --receipt
+npx --yes ruleblast@2.4.0 . --receipt
 ```
 
 Off: `RULEBLAST_AGENT_ALLOW=off`. RuleBlast never writes the allow file.
@@ -298,7 +298,7 @@ A pull request that only edits `AGENTS.md` can look small in Git. The Action com
 - uses: Kpoiut/ruleblast@v2.4.0
 ```
 
-Root Action `Kpoiut/ruleblast@v2.4.0` posts a `--receipt` for `base.sha → head.sha`. It still runs published `ruleblast@2.3.0`. Pin a commit after you trust the workflow.
+Root Action `Kpoiut/ruleblast@v2.4.0` posts a `--receipt` for `base.sha → head.sha`. It runs published `ruleblast@2.4.0`. Pin a commit after you trust the workflow.
 
 ## Contribute a Blast Case
 
@@ -308,7 +308,7 @@ Promoted Blast Case: official evidence, retrieval date, manifests, expected JSON
 
 ## Roadmap
 
-This tree is `2.4.0`. Published CLI is `ruleblast@2.3.0`. The product is overlay, work map, and change alignment — which files now receive different AI instructions. This tree can disclose that same result as `--paths-only`, `explain --compare`, or a `PROOF` line. Published `2.3.0` does not include those presentation flags.
+This tree is `2.4.0`. Published CLI is `ruleblast@2.4.0`. The product is overlay, work map, and change alignment — which files now receive different AI instructions. Glance, `--paths-only`, `explain --compare`, and a `PROOF` line disclose that same result.
 
 Today: Codex, Claude Code, opt-in Copilot CLI, and opt-in Gemini CLI. Same companion in VS Code-family editors, including Copilot Chat. Same four actions over `--mcp` for Claude Desktop and Codex desktop.
 

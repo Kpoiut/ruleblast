@@ -100,7 +100,7 @@ describe("README story contract", () => {
       "WORK MAP",
       "CHANGE ALIGNMENT",
       "assets/ruleblast-causal-proof.gif",
-      "npx --yes ruleblast@2.3.0 .",
+      "npx --yes ruleblast@2.4.0 .",
       "## What Git missed",
       "assets/ruleblast-visual-benchmark.png",
       "which-files-inherit-agents-md.md",
@@ -108,7 +108,7 @@ describe("README story contract", () => {
       "PROOF.md",
       "## Install",
       "## Run the verified case",
-      "npx --yes ruleblast@2.3.0 case --json",
+      "npx --yes ruleblast@2.4.0 case --json",
       "Exact packaged-case terminal transcript",
       "## Explain one path",
       "## Scope",
@@ -192,15 +192,15 @@ describe("README story contract", () => {
   it("documents one-command, global, local, maintenance, and source installs", () => {
     for (const command of [
       "node --version",
-      "npm view ruleblast@2.3.0 version",
-      "npx --yes ruleblast@2.3.0",
-      "npx --yes ruleblast@2.3.0 --help",
+      "npm view ruleblast@2.4.0 version",
+      "npx --yes ruleblast@2.4.0",
+      "npx --yes ruleblast@2.4.0 --help",
       "cd <your-git-repository>",
-      "npm install --global ruleblast@2.3.0",
+      "npm install --global ruleblast@2.4.0",
       "ruleblast --version",
       "ruleblast --help",
       "ruleblast",
-      "npm install --save-dev --save-exact ruleblast@2.3.0",
+      "npm install --save-dev --save-exact ruleblast@2.4.0",
       "npx ruleblast --version",
       "npx ruleblast --help",
       "npm uninstall --global ruleblast",
@@ -217,10 +217,10 @@ describe("README story contract", () => {
       expect(readme).toContain(command);
     }
     for (const action of [
-      "npx --yes ruleblast@2.3.0 .",
-      "npx --yes ruleblast@2.3.0 diff HEAD~1",
-      "npx --yes ruleblast@2.3.0 explain src/args.ts --from HEAD~1",
-      "npx --yes ruleblast@2.3.0 case",
+      "npx --yes ruleblast@2.4.0 .",
+      "npx --yes ruleblast@2.4.0 diff HEAD~1",
+      "npx --yes ruleblast@2.4.0 explain src/args.ts --from HEAD~1",
+      "npx --yes ruleblast@2.4.0 case",
     ]) {
       expect(readme).toContain(action);
     }
