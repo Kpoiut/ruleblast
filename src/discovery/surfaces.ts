@@ -342,7 +342,7 @@ export function invokesRuleblastMcp(text: string, format: McpConfigFormat): bool
   if (!text.includes("--mcp")) return false;
   if (format === "codexToml") {
     return text.includes("[mcp_servers.ruleblast]") &&
-      text.includes("ruleblast@2.4.0") &&
+      text.includes("ruleblast@2.4.1") &&
       text.includes("--mcp");
   }
   if (format === "vscodeServers") {

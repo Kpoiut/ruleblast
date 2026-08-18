@@ -2,7 +2,7 @@
   "name": "ruleblast",
   "displayName": "RuleBlast",
   "description": "Change AGENTS.md. See every file that inherits it. Same four actions as the CLI. Shows the blast radius of AGENTS.md and CLAUDE.md changes.",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "publisher": "kpoiut",
   "license": "Apache-2.0",
   "icon": "media/icon.png",

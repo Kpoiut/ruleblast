@@ -326,11 +326,15 @@ Staged-index commits prove same-OID mode/kind and gitlink exclusion against `ls-
 
 ## **RELEASED** — `v2.4.0`: Progressive disclosure
 
-That release is `2.4.0`. Latest independently verified public npm distribution is `2.4.0`. Companion version is `2.4.0`. Pack `ruleblast-companion-2.4.0.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+That increment shipped glance, `--paths-only`, `explain --compare`, and explain `PROOF`. Signed tag object `430115f28b62a90bc5838fc696cc5747d46f9ab5` for [`v2.4.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.0) targets commit `82514d7dc03614094001ec737a7d2bb13402d45a`. The npm version `2.4.0` was unpublished on 18 August 2026 because its tarball README still advertised `ruleblast@2.3.0`; npm does not allow that version number to be reused. Install `ruleblast@2.4.1`. The GitHub tag remains.
 
-**Verified publication receipt.** Signed tag object `430115f28b62a90bc5838fc696cc5747d46f9ab5` for [`v2.4.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.0) targets commit `82514d7dc03614094001ec737a7d2bb13402d45a`. [npm `ruleblast@2.4.0`](https://www.npmjs.com/package/ruleblast/v/2.4.0) reports integrity `sha512-s1K6hIOMOR/q+/+z+JN/6SAmYWq1CResaKSs3Y+J/ztzjRw6tUEbeR62yqcaAcIwDIGXLiL+gtKbmX5T9210oA==`. The registry download is the 144,516-byte tarball with SHA-256 `bbc35dfb12e0c5557dba288f2208c4763e8aab52f2c04ece126fab24f17d8755`. Registry `gitHead` at publish was `a0848463a493516eba64d5d73aecf0ea3b097e07` and is not the `v2.4.0` documentation commit. The GitHub Release serves that same tarball and the 137,302-byte `ruleblast-companion-2.4.0.vsix` with SHA-256 `e4032b708cd98a92ac0dd17bcf7b35f1dec73ff7ca129ee7a8731eacb1988c50`. These are independently verified external records, not facts inferred from this checkout.
+Human CLI and the companion renderer project the same canonical result at increasing depth: one-line glance, `--paths-only`, `explain --compare`, then explain `PROOF`. `--json` is unchanged. No fifth action, no dashboard, no latency or absolute-trust product claim. Peripheral awareness stays in the editor adapter.
 
-Human CLI and the companion renderer project the same canonical result at increasing depth: one-line glance, `--paths-only`, `explain --compare`, then explain `PROOF`. `--json` is unchanged. No fifth action, no dashboard, no latency or absolute-trust product claim. Peripheral awareness stays in the editor adapter. The GitHub README leads with that disclosure and keeps install, host map, and replay behind details.
+## **RELEASED** — `v2.4.1`: Republished progressive disclosure
+
+This tree is `2.4.1`. Latest independently verified public npm distribution is `2.4.1`. Companion version is `2.4.1`. Pack `ruleblast-companion-2.4.1.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+Same disclosure as `v2.4.0`, packaged so the tarball README, Action default, and skills advertise `ruleblast@2.4.1`. The GitHub README leads with that disclosure and keeps install, host map, and replay behind details.
 
 ## **NEXT** — Offline evidence-revision reveal
 

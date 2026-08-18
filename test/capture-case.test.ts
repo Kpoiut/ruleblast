@@ -318,11 +318,11 @@ describe("captureCase", () => {
       resolverRevision: 1,
       producer: {
         gitCommit: producerCommit,
-        packageVersion: "2.4.0",
+        packageVersion: "2.4.1",
         dependencyClosureDigest: expect.stringMatching(/^[0-9a-f]{64}$/u),
       },
       releaseReproductionCommand:
-        `npx ruleblast@2.4.0 diff ${fixture.base} --to ${fixture.head} --json`,
+        `npx ruleblast@2.4.1 diff ${fixture.base} --to ${fixture.head} --json`,
       resultCore: {
         mode: "diff",
         before: { kind: "git", label: fixture.base, oid: fixture.base },

@@ -8,7 +8,7 @@ RuleBlast answers the problem query: which files inherit a changed AGENTS.md or 
 - npm: https://www.npmjs.com/package/ruleblast
 - Problem page: https://github.com/Kpoiut/ruleblast/blob/main/which-files-inherit-agents-md.md
 - Sealed case: 2 instruction-line edits → 206 Codex stacks — https://github.com/Kpoiut/ruleblast/blob/main/PROOF.md
-- CLI: npx --yes ruleblast@2.4.0 .
-- This tree is 2.4.0. Published CLI is ruleblast@2.4.0. Human diff adds OTHER TRACKED CHANGES, a WORK MAP, and CHANGE ALIGNMENT. The same result can print --paths-only, explain --compare, and a PROOF line. Which files now inherit different AI instructions?
+- CLI: npx --yes ruleblast@2.4.1 .
+- This tree is 2.4.1. Published CLI is ruleblast@2.4.1. Human diff adds OTHER TRACKED CHANGES, a WORK MAP, and CHANGE ALIGNMENT. The same result can print --paths-only, explain --compare, and a PROOF line. Which files now inherit different AI instructions?
 
 Local. Read-only. Deterministic. Not a claim about model compliance.

@@ -2,20 +2,26 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.4.1 — RELEASED
+
+- Replacement npm package after `ruleblast@2.4.0` was unpublished. npm does not allow that version number to be reused. Same progressive disclosure as `2.4.0`. Published `npx` is `ruleblast@2.4.1`.
+- `--paths-only`, `explain --compare`, explain `PROOF`, and the companion file glance are in this package. `--json` stays canonical. Not a fifth action.
+
 ## 2.4.0 — RELEASED
 
-- Progressive disclosure of the same canonical result. Not a fifth action. `--json` stays canonical. Published `npx` is `ruleblast@2.4.0`.
+- Progressive disclosure of the same canonical result. Not a fifth action. `--json` stays canonical.
+- The npm version `2.4.0` was unpublished on 2026-08-18 because its tarball README still advertised `ruleblast@2.3.0`. That version number cannot be reused. Install `ruleblast@2.4.1`. The GitHub tag [`v2.4.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.0) remains.
 - `--paths-only` prints one attention path per line (diff and case: changed stacks; scan: current splits) for Unix pipes. Not `--json`.
 - `explain --compare` prints two selected-reality source stacks as a text compare. Companion CodeLens opens the same stacks in `vscode.diff`.
 - Explain text leads with a `PROOF` line derived from existing causes or sources. Same repository snapshot, profile, resolution rules, and configuration produce the same computed result. Not a model-compliance claim.
 - Companion Status Bar morphs to the active file from the last result. Peripheral glance is a host projection, not a second engine.
 - GitHub-facing README leads with that same disclosure: one-line glance, compare, `PROOF`. Install lists, host map, and replay sit behind `<details>`.
-- [npm `ruleblast@2.4.0`](https://www.npmjs.com/package/ruleblast/v/2.4.0) reports integrity `sha512-s1K6hIOMOR/q+/+z+JN/6SAmYWq1CResaKSs3Y+J/ztzjRw6tUEbeR62yqcaAcIwDIGXLiL+gtKbmX5T9210oA==`. The registry download is the 144,516-byte tarball with SHA-256 `bbc35dfb12e0c5557dba288f2208c4763e8aab52f2c04ece126fab24f17d8755`. Registry `gitHead` at publish was `a0848463a493516eba64d5d73aecf0ea3b097e07`. Pack `ruleblast-companion-2.4.0.vsix` (137,302 bytes, SHA-256 `e4032b708cd98a92ac0dd17bcf7b35f1dec73ff7ca129ee7a8731eacb1988c50`). Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+- The first npm tarball at `2.4.0` had integrity `sha512-s1K6hIOMOR/q+/+z+JN/6SAmYWq1CResaKSs3Y+J/ztzjRw6tUEbeR62yqcaAcIwDIGXLiL+gtKbmX5T9210oA==` (144,516 bytes, SHA-256 `bbc35dfb12e0c5557dba288f2208c4763e8aab52f2c04ece126fab24f17d8755`, `gitHead` `a0848463a493516eba64d5d73aecf0ea3b097e07`). That version is no longer on the registry.
 
 ### Release artifact
 
 - Signed tag object `430115f28b62a90bc5838fc696cc5747d46f9ab5` for [`v2.4.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.0) targets commit `82514d7dc03614094001ec737a7d2bb13402d45a`.
-- npm and the GitHub Release serve the same 144,516-byte tarball with SHA-256 `bbc35dfb12e0c5557dba288f2208c4763e8aab52f2c04ece126fab24f17d8755`. The GitHub Release also serves the 137,302-byte `ruleblast-companion-2.4.0.vsix` with SHA-256 `e4032b708cd98a92ac0dd17bcf7b35f1dec73ff7ca129ee7a8731eacb1988c50`.
+- The GitHub Release still serves the 137,302-byte `ruleblast-companion-2.4.0.vsix` with SHA-256 `e4032b708cd98a92ac0dd17bcf7b35f1dec73ff7ca129ee7a8731eacb1988c50`. Do not install unpublished `ruleblast@2.4.0`.
 
 ## 2.3.1 — SHIPPED TO MAIN
 
