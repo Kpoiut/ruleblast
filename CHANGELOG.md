@@ -6,6 +6,12 @@ All notable user-visible changes to RuleBlast are recorded here.
 
 - Replacement npm package after `ruleblast@2.4.0` was unpublished. npm does not allow that version number to be reused. Same progressive disclosure as `2.4.0`. Published `npx` is `ruleblast@2.4.1`.
 - `--paths-only`, `explain --compare`, explain `PROOF`, and the companion file glance are in this package. `--json` stays canonical. Not a fifth action.
+- [npm `ruleblast@2.4.1`](https://www.npmjs.com/package/ruleblast/v/2.4.1) reports integrity `sha512-MTTZpr2qhuMaR4BN9z5LsMe1pORPkbDeNV5Gr8f2GXb0jLI3MoPYaM5rX1CQqtyMePcNEfU4JdHXFYQWiGglOA==`. The registry download is the 144,495-byte tarball with SHA-256 `6c89d285e938fae0e9f5aa717fc0a6403fc48f57d825c1b7310ea01c52231483`. Pack `ruleblast-companion-2.4.1.vsix` (137,302 bytes, SHA-256 `29efd185756292c136312f900eb89115b7a7707b8d30a3d58adc8534f654ebf6`). Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+### Release artifact
+
+- Signed tag object `b26859f3a31bd4b1c3985f966d70bf32432d174f` for [`v2.4.1`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.1) targets commit `f80b0d0fb2af6ab0c37d703b1d36a094c9a0cc58`.
+- npm and the GitHub Release serve the same 144,495-byte tarball with SHA-256 `6c89d285e938fae0e9f5aa717fc0a6403fc48f57d825c1b7310ea01c52231483`. The GitHub Release also serves the 137,302-byte `ruleblast-companion-2.4.1.vsix` with SHA-256 `29efd185756292c136312f900eb89115b7a7707b8d30a3d58adc8534f654ebf6`.
 
 ## 2.4.0 — RELEASED
 

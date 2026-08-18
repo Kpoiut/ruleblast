@@ -681,6 +681,19 @@ describe("public release maturity", () => {
     expect(released).toContain("2.4.1");
     expect(released).toContain("ruleblast@2.4.1");
     expect(released).toContain("ruleblast-companion-2.4.1.vsix");
+    for (const evidence of [
+      "https://www.npmjs.com/package/ruleblast/v/2.4.1",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.1",
+      "b26859f3a31bd4b1c3985f966d70bf32432d174f",
+      "f80b0d0fb2af6ab0c37d703b1d36a094c9a0cc58",
+      "sha512-MTTZpr2qhuMaR4BN9z5LsMe1pORPkbDeNV5Gr8f2GXb0jLI3MoPYaM5rX1CQqtyMePcNEfU4JdHXFYQWiGglOA==",
+      "144,495",
+      "6c89d285e938fae0e9f5aa717fc0a6403fc48f57d825c1b7310ea01c52231483",
+      "137,302",
+      "29efd185756292c136312f900eb89115b7a7707b8d30a3d58adc8534f654ebf6",
+    ]) {
+      expect(released).toContain(evidence);
+    }
     expect(read("CHANGELOG.md")).toContain("## 2.4.1 — RELEASED");
     expect(read("package.json")).toContain('"version": "2.4.1"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.4.1"');

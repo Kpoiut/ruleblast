@@ -334,6 +334,8 @@ Human CLI and the companion renderer project the same canonical result at increa
 
 This tree is `2.4.1`. Latest independently verified public npm distribution is `2.4.1`. Companion version is `2.4.1`. Pack `ruleblast-companion-2.4.1.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
 
+**Verified publication receipt.** Signed tag object `b26859f3a31bd4b1c3985f966d70bf32432d174f` for [`v2.4.1`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.1) targets commit `f80b0d0fb2af6ab0c37d703b1d36a094c9a0cc58`. [npm `ruleblast@2.4.1`](https://www.npmjs.com/package/ruleblast/v/2.4.1) reports integrity `sha512-MTTZpr2qhuMaR4BN9z5LsMe1pORPkbDeNV5Gr8f2GXb0jLI3MoPYaM5rX1CQqtyMePcNEfU4JdHXFYQWiGglOA==`. The registry download is the 144,495-byte tarball with SHA-256 `6c89d285e938fae0e9f5aa717fc0a6403fc48f57d825c1b7310ea01c52231483`. The GitHub Release serves that same tarball and the 137,302-byte `ruleblast-companion-2.4.1.vsix` with SHA-256 `29efd185756292c136312f900eb89115b7a7707b8d30a3d58adc8534f654ebf6`. These are independently verified external records, not facts inferred from this checkout.
+
 Same disclosure as `v2.4.0`, packaged so the tarball README, Action default, and skills advertise `ruleblast@2.4.1`. The GitHub README leads with that disclosure and keeps install, host map, and replay behind details.
 
 ## **NEXT** — Offline evidence-revision reveal
