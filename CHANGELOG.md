@@ -2,6 +2,13 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.4.3 — SHIPPED TO MAIN
+
+- Records the domain capability ladder this product is built for: find instruction files, compute inheritance, resolve each modeled agent, name the two-state blast, compare selected realities with provenance and uncertainty, then emit a deterministic evidence-pinned canonical result.
+- Product-breadth scores (CLI → harness → platform) are reference-only and do not grade this checkout.
+- On that domain axis the current public product sits near L6, read as L5.5–L6 because vendor loading rules can move.
+- Horizon stays a sharper knife in the same slice. The published CLI people install is still `ruleblast@2.4.1`.
+
 ## 2.4.2 — SHIPPED TO MAIN
 
 - Titles, listings, and social cards now introduce the tool the same way: **RuleBlast — Git diff for AI agent repository instructions**.

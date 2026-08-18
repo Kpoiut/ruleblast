@@ -161,7 +161,7 @@ describe("candidate installation matrix", () => {
       local: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 2.4.2",
+        version: "ruleblast 2.4.3",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,
@@ -174,7 +174,7 @@ describe("candidate installation matrix", () => {
       global: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 2.4.2",
+        version: "ruleblast 2.4.3",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,
@@ -208,7 +208,7 @@ describe("candidate installation matrix", () => {
       /npm uninstall --save-dev ruleblast[\s\S]+npm install --save-dev --save-exact ruleblast@2\.4\.1/u,
     );
     expect(readme).toContain(
-      "git clone --branch v2.4.2 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v2.4.3 --depth 1 https://github.com/Kpoiut/ruleblast.git",
     );
     expect(readme).toMatch(/Windows.+Linux/isu);
     expect(readme).not.toMatch(/Windows.+macOS.+Linux/isu);

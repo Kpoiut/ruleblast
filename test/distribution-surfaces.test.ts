@@ -64,7 +64,7 @@ describe("distribution surfaces", () => {
     expect(read(".github/workflows/ruleblast-pr.yml")).toContain(
       "uses: ./.github/actions/ruleblast",
     );
-    expect(read("README.md")).toContain("uses: Kpoiut/ruleblast@v2.4.2");
+    expect(read("README.md")).toContain("uses: Kpoiut/ruleblast@v2.4.3");
     expect(read("README.md")).not.toMatch(/uses: Kpoiut\/ruleblast@main\s*$/mu);
   });
 

@@ -24,6 +24,31 @@ A new feature may merge only when it answers YES to at least one question and st
 
 Cursor editor semantics, dashboards, linters, fixers, product MCP servers, and generic plugin APIs fail this test. A stdio transport of the four existing actions is not a product MCP server. `google/gemini-cli@1` passed (1) as the final bundled reality. A VS Code-compatible companion may pass (2) as a renderer of the same canonical result. Compatible VS Code-family editors share that one companion.
 
+## How to read capability layers
+
+This section is a reference map for the problem RuleBlast exists to solve. It is not a quality score of the checkout, not a star or marketplace rank, and not a plan to grow into a wider product.
+
+The product-breadth ladder (CLI → tool → framework → harness → ecosystem → platform) is the wrong axis. RuleBlast keeps one analysis engine, four actions, and a local read-only deterministic contract on purpose. A later number on that other ladder does not grade this repository, and this roadmap does not treat the checkout as “at L4” on it.
+
+The domain axis is narrower: how strong is instruction-semantics, instruction-inheritance, and blast-radius analysis of a repository?
+
+| Layer | Capability on that domain |
+|---|---|
+| **L1** | Find instruction files. |
+| **L2** | Compute directory scope and inheritance. |
+| **L3** | Resolve according to each modeled agent's documented semantics. |
+| **L4** | Diff two repository states and name the affected paths. |
+| **L5** | Compare selected realities, carry provenance, preserve uncertainty, and explain the result. |
+| **L6** | Deterministic, evidence-pinned semantic impact: same snapshot bytes, profiles, projection context, and resolver revision yield the same canonical core on every host, usable as ground truth or as a tool primitive. |
+
+A general-purpose harness can read a repo, run commands, and coordinate agents and still lose this measurement: commit A → commit B; which tracked paths inherited a different stack under Codex CLI versus Claude Code; which sources caused it; where the result is `PARTIAL`, `UNKNOWN`, `UNSPECIFIED`, or `INDETERMINATE`; and whether the canonical bytes reproduce. That is the same category error as asking whether a kernel finds a regex faster than a specialized searcher.
+
+On this domain ladder the current public product sits near **L6**, read as **L5.5–L6** because vendor loading rules can move and every resolver has to keep proving fidelity. That reservation is the only reason this document does not stamp an absolute L6. Breadth stays deliberately narrow. Depth is the work.
+
+Numbers past L6 on this same axis, if they exist, are still a sharper knife in the same slice: stronger evidence, more sealed overlays, deeper replay. An L10 on a harness or platform map is reference-only speculation from another category, not a destination.
+
+When a harness needs an exact instruction-stack delta, the intended relationship is that it calls this primitive. RuleBlast does not sit “under” that harness on a product ladder.
+
 ## **SHIPPED TO MAIN** — Ground-truth core
 
 The proof-bearing path from repository bytes to an explainable terminal result includes:
@@ -340,9 +365,15 @@ Same disclosure as `v2.4.0`, packaged so the tarball README, Action default, and
 
 ## **SHIPPED TO MAIN** — `v2.4.2`: One public descriptor
 
-This tree is `2.4.2`. The independently verified public npm package remains `2.4.1`. The companion version is `2.4.2`. Pack `ruleblast-companion-2.4.2.vsix`. Marketplace listings `2.2.0` and `2.2.1` stay as they are. This increment is on main; people still install `ruleblast@2.4.1`.
+That increment is `2.4.2`. The independently verified public npm package remains `2.4.1`. The companion version is `2.4.2`. Pack `ruleblast-companion-2.4.2.vsix`. Marketplace listings `2.2.0` and `2.2.1` stay as they are. This increment is on main; people still install `ruleblast@2.4.1`.
 
 Every surface RuleBlast owns now introduces itself the same way: **RuleBlast — Git diff for AI agent repository instructions**. The package, repository, and Marketplace id stay `ruleblast`.
+
+## **SHIPPED TO MAIN** — `v2.4.3`: Domain capability layers
+
+This tree is `2.4.3`. The independently verified public npm package remains `2.4.1`. The companion version is `2.4.3`. Pack `ruleblast-companion-2.4.3.vsix`. Marketplace listings `2.2.0` and `2.2.1` stay as they are. This increment is on main; people still install `ruleblast@2.4.1`.
+
+The roadmap now states the domain ladder this product is built for — instruction files, inheritance, per-agent resolvers, two-state blast, multi-reality provenance, then a deterministic evidence-pinned canonical result. Product-breadth scores are reference-only and do not grade this checkout. On that domain axis the current public product sits near L6, read as L5.5–L6 because vendor loading rules can move.
 
 ## **NEXT** — Offline evidence-revision reveal
 
@@ -350,7 +381,7 @@ An offline run should be able to say that a pinned evidence revision may have dr
 
 ## **HORIZON** — `v3`: Prove the overlay at corpus scale
 
-Ordered product direction after `v2.3.0`. Not current support.
+Ordered product direction after `v2.3.0`. Not current support. Each step sharpens the same instruction-semantics knife. None of these is a climb toward a harness, dashboard, or platform.
 
 - **`v3.0`** — Offline evidence-revision reveal. A pinned pack or profile evidence digest that can be stale without a network fetch.
 - **`v3.1`** — Sealed full-tree public overlay replay of a licensed pair (the 2651980→58e8f75 shape, not a changed-set subset). Fail closed if OTHER disagrees with the Git identity oracle.
@@ -361,7 +392,7 @@ Each step must still answer the feature admission test. A corpus that needs a ho
 
 ## **HORIZON** — `v4`: Stack debugger, still one product
 
-Crazier, still inside the firewall. Not a calendar. Not a promise that editor magic already exists.
+Crazier, still the same small knife: deeper replay and last-result explain, not a wider product. Not a calendar. Not a promise that editor magic already exists.
 
 - **`v4.0`** — Time-travel explain: one path, two immutable refs, selected realities, from Git bytes only. No claim that a model would have answered the same way.
 - **`v4.1`** — Public identity-oracle adjunct: prove OTHER equals `git diff-tree --raw` minus same-OID mode/type and gitlinks, without the engine calling `diff-tree` on the analysis path.
@@ -383,6 +414,8 @@ These are unresolved questions, not current support or promised work:
 - Can a licensed corpus of Blast Cases cover monorepos, nested instructions, imports, exclusions, and uncertain order without publishing sensitive content?
 - How many documented rule realities are genuinely distinct once equivalent projections are clustered by evidence rather than brand?
 - Can a Git storage blob-object identity join with selected-realities stack delta be admitted as a public product dimension? Human Git-pair and Git→WORKTREE overlay plus CHANGE ALIGNMENT are in `v2.3.0` RELEASED. Full-tree replay of 2651980→58e8f75 is still unsealed.
+- How should a pinned resolver keep proving fidelity after a vendor loading change without treating the old pin as current truth?
+- When a general-purpose harness needs an exact instruction-stack delta between two Git states, is the right move to call this analysis primitive rather than re-derive it?
 
 `--reality github/copilot-cli@1` and `--reality google/gemini-cli@1` are the admitted opt-in surfaces. Copilot VS Code, hosted Copilot, Gemini Code Assist, and Cursor editor semantics remain examples only. CLI, editor, and hosted modes remain distinct surfaces whenever their documented loading semantics differ. A host that can run RuleBlast is not thereby MODELED.
 
