@@ -153,6 +153,7 @@ declare module "vscode" {
   };
   export const window: {
     activeTextEditor: TextEditor | undefined;
+    onDidChangeActiveTextEditor(listener: (editor: TextEditor | undefined) => void): Disposable;
     showErrorMessage(message: string, ...items: string[]): Promise<string | undefined>;
     showInformationMessage(message: string, ...items: string[]): Promise<string | undefined>;
     showInputBox(options: {
