@@ -1,9 +1,12 @@
 RULEBLAST · HEAD → WORKTREE
 
-No tracked instruction sources changed.
+  Δ STACK CHANGED          0
+  ≠ NEWLY SPLIT            0
+  ? UNRESOLVED             0
 
-0
-tracked paths changed stack.
+0 tracked paths changed stack.
+
+No tracked instruction sources changed.
 
 No paths newly split across profiles.
 

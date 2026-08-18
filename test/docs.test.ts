@@ -206,11 +206,13 @@ describe("README story contract", () => {
       "npm uninstall --global ruleblast",
       "npm uninstall --save-dev ruleblast",
       "npm cache verify",
-      "git clone --branch v2.3.1 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v2.4.0 --depth 1 https://github.com/Kpoiut/ruleblast.git",
       "npm ci --ignore-scripts",
       "npm run build",
       "node dist/cli.js --version",
       "node dist/cli.js --help",
+      "node dist/cli.js diff HEAD --paths-only",
+      "node dist/cli.js explain src/args.ts --compare",
     ]) {
       expect(readme).toContain(command);
     }
@@ -498,6 +500,7 @@ describe("repository documentation integrity", () => {
       "v2.2.2",
       "v2.3.0",
       "v2.3.1",
+      "v2.4.0",
       "v3.0",
       "v4.0",
     ]) {

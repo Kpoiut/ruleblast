@@ -19,12 +19,14 @@ import {
 import { renderExplain } from "./render-explain.js";
 import {
   compareText,
+  dimText,
   displayText,
   formatCount,
   heading,
   plural,
   repositoryPathToken,
   shellToken,
+  warnText,
 } from "./render-format.js";
 
 export { displayText } from "./render-format.js";
@@ -263,54 +265,67 @@ function diffExplainCommand(
   return `ruleblast explain ${path} --from ${source}${target}`;
 }
 
+function metricLine(
+  glyph: string,
+  label: string,
+  value: number,
+  paint: (text: string, color: boolean) => string,
+  color: boolean,
+): string {
+  const line = `  ${glyph} ${label.padEnd(16)}${formatCount(value).padStart(8)}`;
+  return paint(line, color);
+}
+
 function renderDiff(
   result: DiffRuleBlastResult,
   context: DiffTextPresentationContext,
   color: boolean,
 ): string {
-  const lines = [diffHeading(context, color), ""];
+  const changed = result.counts.changedStackPathCount;
+  const split = result.counts.newlySplitPathCount;
+  const unresolved = result.paths.filter((path) =>
+    path.before.some((row) => row.status !== "COMPLETE") ||
+    path.after.some((row) => row.status !== "COMPLETE"),
+  ).length;
+  const lines = [
+    diffHeading(context, color),
+    "",
+    metricLine("Δ", "STACK CHANGED", changed, heading, color),
+    metricLine("≠", "NEWLY SPLIT", split, warnText, color),
+    metricLine("?", "UNRESOLVED", unresolved, warnText, color),
+    "",
+    `${formatCount(changed)} tracked ${plural(changed, "path")} changed stack.`,
+    "",
+  ];
   if (result.changedInstructionSources.length === 0) {
-    lines.push("No tracked instruction sources changed.");
+    lines.push("No tracked instruction sources changed.", "");
   } else {
     const edits = result.diffStats.editedLineCount;
-    lines.push(
+    lines.push(dimText(
       `${formatCount(edits)} instruction-line ${plural(edits, "edit")}.`,
-    );
+      color,
+    ));
   }
-  const changed = result.counts.changedStackPathCount;
-  lines.push(
-    "",
-    formatCount(changed),
-    `tracked ${plural(changed, "path")} changed stack.`,
-    "",
-  );
   const sources = summarizeSourceBlasts(result);
   if (sources.length === 1) {
-    lines.push("CHANGED SOURCE", sources[0]!.sourcePath);
+    lines.push("SOURCE", `  ${sources[0]!.sourcePath}`);
     for (const row of sources[0]!.byProfile) {
       lines.push(
-        `  ${presentationLabel(row.profile)}  ${formatCount(row.affectedPathCount)} affected ${plural(row.affectedPathCount, "path")}`,
+        `    ${presentationLabel(row.profile).padEnd(16)}${formatCount(row.affectedPathCount).padStart(8)}`,
       );
     }
-    if (sources[0]!.examplePaths.length > 0) {
-      lines.push("  Examples");
-      for (const example of sources[0]!.examplePaths) {
-        lines.push(`    ${displayText(example)}`);
-      }
-    }
   } else if (sources.length > 1) {
-    lines.push("CHANGED SOURCES");
+    lines.push("SOURCE");
     for (const source of sources) {
-      lines.push(source.sourcePath);
+      lines.push(`  ${source.sourcePath}`);
       for (const row of source.byProfile) {
         lines.push(
-          `  ${presentationLabel(row.profile)}  ${formatCount(row.affectedPathCount)} affected ${plural(row.affectedPathCount, "path")}`,
+          `    ${presentationLabel(row.profile).padEnd(16)}${formatCount(row.affectedPathCount).padStart(8)}`,
         );
       }
     }
   }
 
-  const split = result.counts.newlySplitPathCount;
   const nway = result.counts.byProfile.length > 2;
   lines.push(split > 0
     ? nway
@@ -340,7 +355,7 @@ function renderDiff(
   if ((changed > 0 || split > 0) && sample !== null) {
     lines.push(
       "",
-      "Pick one path. See every source:",
+      "EXPLAIN",
       `  ${diffExplainCommand(sample, context)}`,
     );
   }

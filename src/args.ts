@@ -26,6 +26,7 @@ interface CommonArgs {
   readonly witness: boolean;
   readonly receipt: boolean;
   readonly realities: readonly string[];
+  readonly pathsOnly: boolean;
 }
 
 export interface ScanArgs extends CommonArgs {
@@ -44,6 +45,7 @@ export interface ExplainArgs extends CommonArgs {
   readonly path: string;
   readonly from: GitSelector | null;
   readonly target: SnapshotSelector;
+  readonly compare: boolean;
 }
 
 export interface CaseArgs extends CommonArgs {
@@ -93,9 +95,17 @@ interface ParsedTokens {
   readonly realities: readonly string[];
   readonly witness: boolean;
   readonly receipt: boolean;
+  readonly pathsOnly: boolean;
+  readonly compare: boolean;
 }
 
-const NO_VALUE_OPTIONS = new Set(["--json", "--witness", "--receipt"]);
+const NO_VALUE_OPTIONS = new Set([
+  "--json",
+  "--witness",
+  "--receipt",
+  "--paths-only",
+  "--compare",
+]);
 const WINDOWS_DRIVE_PATH = /^[A-Za-z]:/;
 
 function usage(code: CliUsageErrorCode, message: string): never {
@@ -166,6 +176,8 @@ function parseTokens(
   let json = false;
   let witness = false;
   let receipt = false;
+  let pathsOnly = false;
+  let compare = false;
   let color: ColorMode = "auto";
   let colorSeen = false;
   for (let index = 0; index < tokens.length; index += 1) {
@@ -186,6 +198,16 @@ function parseTokens(
     if (token === "--receipt") {
       if (receipt) return usage("DUPLICATE_OPTION", "--receipt may be specified only once");
       receipt = true;
+      continue;
+    }
+    if (token === "--paths-only") {
+      if (pathsOnly) return usage("DUPLICATE_OPTION", "--paths-only may be specified only once");
+      pathsOnly = true;
+      continue;
+    }
+    if (token === "--compare") {
+      if (compare) return usage("DUPLICATE_OPTION", "--compare may be specified only once");
+      compare = true;
       continue;
     }
     if (token.startsWith("--color=")) {
@@ -229,6 +251,15 @@ function parseTokens(
       "--json cannot be combined with --color=always",
     );
   }
+  if (pathsOnly && (json || witness || receipt || compare)) {
+    return usage(
+      "OPTION_CONFLICT",
+      "--paths-only cannot combine with --json, --witness, --receipt, or --compare",
+    );
+  }
+  if (compare && json) {
+    return usage("OPTION_CONFLICT", "--compare cannot be combined with --json");
+  }
   return Object.freeze({
     positionals: Object.freeze(positionals),
     output: Object.freeze({ kind: json ? "json" : "text", color }),
@@ -236,6 +267,8 @@ function parseTokens(
     realities: Object.freeze(realities),
     witness,
     receipt,
+    pathsOnly,
+    compare,
   });
 }
 
@@ -314,6 +347,9 @@ function parsedRealities(
 function parseScan(tokens: readonly string[]): ScanArgs {
   const parsed = parseTokens(tokens, new Set(["--reality"]));
   onlyPositionals(parsed, 1);
+  if (parsed.compare) {
+    return usage("OPTION_CONFLICT", "--compare applies only to explain");
+  }
   return Object.freeze({
     action: "scan",
     startPath: scanPath(parsed.positionals[0]),
@@ -321,6 +357,7 @@ function parseScan(tokens: readonly string[]): ScanArgs {
     witness: parsed.witness,
     receipt: parsed.receipt,
     realities: parsedRealities(parsed, true),
+    pathsOnly: parsed.pathsOnly,
   });
 }
 
@@ -332,10 +369,14 @@ function parseDiff(tokens: readonly string[]): DiffArgs {
   if (target.kind === "git" && base.ref === target.ref) {
     return usage("IDENTICAL_ENDPOINTS", "Diff endpoints must be different");
   }
+  if (parsed.compare) {
+    return usage("OPTION_CONFLICT", "--compare applies only to explain");
+  }
   return Object.freeze({
     action: "diff", base, target, output: parsed.output,
     witness: parsed.witness, receipt: parsed.receipt,
     realities: parsedRealities(parsed, true),
+    pathsOnly: parsed.pathsOnly,
   });
 }
 
@@ -349,10 +390,15 @@ function parseExplain(tokens: readonly string[]): ExplainArgs {
   if (from !== null && target.kind === "git" && from.ref === target.ref) {
     return usage("IDENTICAL_ENDPOINTS", "Explain endpoints must be different");
   }
+  if (parsed.pathsOnly) {
+    return usage("OPTION_CONFLICT", "--paths-only cannot be used with explain");
+  }
   return Object.freeze({
     action: "explain", path, from, target, output: parsed.output,
     witness: parsed.witness, receipt: parsed.receipt,
     realities: parsedRealities(parsed, true),
+    pathsOnly: false,
+    compare: parsed.compare,
   });
 }
 
@@ -360,6 +406,12 @@ function parseCase(tokens: readonly string[]): CaseArgs {
   const parsed = parseTokens(tokens, new Set(["--explain", "--reality"]));
   onlyPositionals(parsed, 0);
   const explainValue = parsed.options.get("--explain");
+  if (parsed.compare) {
+    return usage("OPTION_CONFLICT", "--compare applies only to explain");
+  }
+  if (parsed.pathsOnly && explainValue !== undefined) {
+    return usage("OPTION_CONFLICT", "--paths-only cannot combine with case --explain");
+  }
   return Object.freeze({
     action: "case",
     explainPath: explainValue === undefined ? null : repositoryPath(explainValue),
@@ -367,6 +419,7 @@ function parseCase(tokens: readonly string[]): CaseArgs {
     witness: parsed.witness,
     receipt: parsed.receipt,
     realities: parsedRealities(parsed, false),
+    pathsOnly: parsed.pathsOnly,
   });
 }
 

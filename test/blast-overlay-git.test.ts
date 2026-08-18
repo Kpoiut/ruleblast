@@ -662,6 +662,7 @@ describe("CLI Git pair overlay", () => {
       cwd: () => root,
       env: {},
       stdoutIsTTY: false,
+      stderrIsTTY: false,
     };
     const dependencies: CliDependencies = {
       version: "test",

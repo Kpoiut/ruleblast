@@ -21,6 +21,7 @@ export interface CliIo {
   readonly cwd: () => string;
   readonly env: Readonly<Record<string, string | undefined>>;
   readonly stdoutIsTTY: boolean;
+  readonly stderrIsTTY: boolean;
 }
 
 export interface CliDependencies {
@@ -65,6 +66,7 @@ export class CliRuntimeError extends Error {
 
 export interface CapturedCliIo extends OutputIo {
   readonly cwd: () => string;
+  readonly stderrIsTTY: boolean;
 }
 
 export interface CapturedInvocation {
@@ -137,16 +139,18 @@ function captureEnvironment(
 function captureIo(value: CliIo): CapturedCliIo {
   const descriptors = captureDataRecord(
     value,
-    ["stdout", "stderr", "cwd", "env", "stdoutIsTTY"],
+    ["stdout", "stderr", "cwd", "env", "stdoutIsTTY", "stderrIsTTY"],
     "CliIo",
   );
   const stdout = dataValue(descriptors, "stdout");
   const stderr = dataValue(descriptors, "stderr");
   const cwd = dataValue(descriptors, "cwd");
   const stdoutIsTTY = dataValue(descriptors, "stdoutIsTTY");
+  const stderrIsTTY = dataValue(descriptors, "stderrIsTTY");
   if (typeof stdout !== "function" || typeof stderr !== "function" ||
-      typeof cwd !== "function" || typeof stdoutIsTTY !== "boolean") {
-    throw new TypeError("CliIo callbacks and stdoutIsTTY have invalid types");
+      typeof cwd !== "function" || typeof stdoutIsTTY !== "boolean" ||
+      typeof stderrIsTTY !== "boolean") {
+    throw new TypeError("CliIo callbacks, stdoutIsTTY, and stderrIsTTY have invalid types");
   }
   return Object.freeze({
     stdout: (text: string) => stdout.call(value, text),
@@ -160,6 +164,7 @@ function captureIo(value: CliIo): CapturedCliIo {
     },
     env: captureEnvironment(dataValue(descriptors, "env")),
     stdoutIsTTY,
+    stderrIsTTY,
   });
 }
 

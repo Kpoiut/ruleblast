@@ -139,6 +139,8 @@ describe("source-centric blast attribution", () => {
     }));
     const summaries = summarizeSourceBlasts(full);
     expect(summaries).toHaveLength(3);
+    expect(summarizeSourceBlasts(full, undefined, { limit: Number.POSITIVE_INFINITY }))
+      .toHaveLength(4);
     expect(summaries.map((item) => item.sourcePath)).toEqual([
       "AGENTS.md",
       "a.md",

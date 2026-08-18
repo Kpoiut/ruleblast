@@ -64,7 +64,7 @@ describe("distribution surfaces", () => {
     expect(read(".github/workflows/ruleblast-pr.yml")).toContain(
       "uses: ./.github/actions/ruleblast",
     );
-    expect(read("README.md")).toContain("uses: Kpoiut/ruleblast@v2.3.1");
+    expect(read("README.md")).toContain("uses: Kpoiut/ruleblast@v2.4.0");
     expect(read("README.md")).not.toMatch(/uses: Kpoiut\/ruleblast@main\s*$/mu);
   });
 
@@ -104,7 +104,7 @@ describe("distribution surfaces", () => {
     expect(html).toContain("https://github.com/Kpoiut/ruleblast");
     expect(html).toContain("https://www.npmjs.com/package/ruleblast");
     expect(html).toContain("npx --yes ruleblast@2.3.0 .");
-    expect(html).toContain("https://github.com/Kpoiut/ruleblast/releases/tag/v2.3.1");
+    expect(html).toContain("https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.0");
     expect(html).toContain("SoftwareSourceCode");
     expect(html).toContain("og:title");
     expect(read("site/robots.txt")).toContain("Sitemap: https://kpoiut.github.io/ruleblast/sitemap.xml");

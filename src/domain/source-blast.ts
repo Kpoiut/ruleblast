@@ -28,6 +28,7 @@ export function sourcePathOf(change: InstructionSourceChange): string {
 export function summarizeSourceBlasts(
   result: DiffRuleBlastResult,
   profiles?: readonly ProfileId[],
+  options?: { readonly limit?: number },
 ): SourceBlastSummary[] {
   const known = new Set<ProfileId>(profiles ?? []);
   if (profiles === undefined) {
@@ -58,10 +59,10 @@ export function summarizeSourceBlasts(
       changedStackPathCount: hits.length,
     });
   }
-  return summaries
-    .sort((left, right) =>
-      right.changedStackPathCount - left.changedStackPathCount ||
-      compareCodePoints(left.sourcePath, right.sourcePath)
-    )
-    .slice(0, RENDER_LIMIT);
+  const ordered = summaries.sort((left, right) =>
+    right.changedStackPathCount - left.changedStackPathCount ||
+    compareCodePoints(left.sourcePath, right.sourcePath)
+  );
+  const limit = options?.limit ?? RENDER_LIMIT;
+  return Number.isFinite(limit) ? ordered.slice(0, limit) : ordered;
 }

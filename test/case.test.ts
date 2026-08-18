@@ -26,6 +26,7 @@ function capturedIo() {
     cwd: () => join(tmpdir(), "ruleblast-case-outside-git"),
     env: {},
     stdoutIsTTY: false,
+    stderrIsTTY: false,
   };
   return { io, stdout, stderr };
 }

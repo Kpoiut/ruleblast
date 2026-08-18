@@ -1,5 +1,7 @@
 import * as vscode from "vscode";
 import {
+  PresentationSession,
+  comparePathStacks,
   companionBegin,
   companionExplain,
   companionExplainFromResult,
@@ -7,28 +9,45 @@ import {
   companionMarkStale,
   companionNoteDirty,
   companionSetRealities,
-  companionStatusLine,
   companionSucceed,
   diffRepositoryWithAdjunct,
   explainRepository,
   findRepositoryRoot,
   gateWorkspace,
   initialCompanionState,
-  optInRealityIds,
   openGitSnapshot,
   openPackagedCase,
   openTrackedWorktree,
-  probeGitStorageFormat,
+  optInRealityIds,
   presentExplain,
   presentationLabel,
+  probeGitStorageFormat,
   scanRepository,
   toRepositoryRelativePath,
   type CompanionState,
   type HostWorkspace,
+  type PresentationSnapshot,
+  type ScoreboardNode,
 } from "../engine/application/authority.js";
 import { RuleBlastTreeProvider } from "./tree.js";
+import { RuleBlastDecorationProvider } from "./decorations.js";
+import {
+  ExplainDocumentProvider,
+  EXPLAIN_URI,
+  REALITY_LEFT_URI,
+  REALITY_RIGHT_URI,
+  compareUri,
+} from "./explain-provider.js";
+import { InstructionLensProvider } from "./codelens.js";
 
 let state = initialCompanionState();
+const session = new PresentationSession();
+let treeView: vscode.TreeView<ScoreboardNode> | undefined;
+
+const tree = new RuleBlastTreeProvider();
+const decorations = new RuleBlastDecorationProvider();
+const documents = new ExplainDocumentProvider();
+const lensProvider = new InstructionLensProvider();
 
 function fsPathOf(resource: unknown): string | undefined {
   if (typeof resource !== "object" || resource === null) return undefined;
@@ -54,44 +73,166 @@ function currentRoot(): string | undefined {
   return gate.ok ? gate.root : undefined;
 }
 
-function reveal(next: CompanionState, tree: RuleBlastTreeProvider, status: vscode.StatusBarItem): void {
-  state = next;
-  tree.refresh(state, currentRoot());
-  status.text = `RB · ${companionStatusLine(state)}`;
-  status.tooltip = state.error?.message ?? companionStatusLine(state);
+function editorContext(): { relativePath: string | null; dirty: boolean } {
+  const root = currentRoot();
+  const active = vscode.window.activeTextEditor;
+  const relativePath = root && active
+    ? toRepositoryRelativePath(root, active.document.uri.fsPath)
+    : null;
+  return { relativePath, dirty: active?.document.isDirty === true };
+}
+
+function paint(snapshot: PresentationSnapshot, status: vscode.StatusBarItem): void {
+  const root = currentRoot();
+  tree.refresh(state, root);
+  decorations.refresh(snapshot, root);
+  lensProvider.refresh(snapshot, root);
+  const glance = snapshot.workspaceTruth.glance;
+  status.text = glance.statusLineText;
+  status.tooltip = new vscode.MarkdownString(glance.tooltipMarkdown);
+  status.accessibilityInformation = { label: glance.accessibleStatusText };
   status.command = "ruleblast.scoreboard.focus";
   status.show();
+  if (treeView) {
+    treeView.badge = glance.treeViewBadge === undefined
+      ? undefined
+      : { value: glance.treeViewBadge, tooltip: "changed stacks" };
+    treeView.description = glance.treeViewDescription;
+  }
+  if (state.explainText !== null) {
+    documents.update(state.explainText, snapshot.explainPolicy.freshness === "stale");
+  }
+}
+
+function commitPresentation(
+  next: CompanionState,
+  status: vscode.StatusBarItem,
+  generation?: number,
+): boolean {
+  const ctx = editorContext();
+  const snapshot = generation === undefined
+    ? session.replace(next, ctx.relativePath, ctx.dirty)
+    : session.commit(next, generation, ctx.relativePath, ctx.dirty);
+  if (snapshot === null) return false;
+  state = next;
+  paint(snapshot, status);
+  return true;
+}
+
+async function showExplainDocument(text: string, isStale = false): Promise<void> {
+  documents.update(text, isStale);
+  let doc = await vscode.workspace.openTextDocument(EXPLAIN_URI);
+  if (doc.languageId !== "markdown") {
+    doc = await vscode.languages.setTextDocumentLanguage(doc, "markdown");
+  }
+  await vscode.window.showTextDocument(doc, { preview: false, preserveFocus: false });
+}
+
+async function loadCompareText(root: string, ref: string, path: string): Promise<string> {
+  const snapshot = await openGitSnapshot(root, ref);
+  const bytes = await snapshot.read(path);
+  return bytes === null ? "" : new TextDecoder().decode(bytes);
+}
+
+async function openInstructionSource(path: string): Promise<void> {
+  const root = currentRoot();
+  const snapshot = session.snapshot;
+  if (root === undefined || snapshot === null) return;
+  const fileUri = vscode.Uri.file(`${root.replace(/[\\/]+$/u, "")}/${path}`);
+  const compare = snapshot.compare;
+  const staleWorktree = snapshot.workspaceTruth.phase === "stale" &&
+    compare?.afterKind === "worktree";
+  if (compare === null || compare.beforeRef === null || staleWorktree) {
+    await vscode.window.showTextDocument(await vscode.workspace.openTextDocument(fileUri));
+    return;
+  }
+  try {
+    const left = compareUri("before", path);
+    documents.setCompare(`before:${path}`, await loadCompareText(root, compare.beforeRef, path));
+    if (compare.afterKind === "worktree") {
+      await vscode.commands.executeCommand("vscode.diff", left, fileUri, `${path} · before ↔ worktree`);
+      return;
+    }
+    if (compare.afterRef !== null) {
+      const right = compareUri("after", path);
+      documents.setCompare(`after:${path}`, await loadCompareText(root, compare.afterRef, path));
+      await vscode.commands.executeCommand("vscode.diff", left, right, `${path} · before ↔ after`);
+      return;
+    }
+  } catch {
+    await vscode.window.showTextDocument(await vscode.workspace.openTextDocument(fileUri));
+  }
 }
 
 async function withRoot(
-  tree: RuleBlastTreeProvider,
   status: vscode.StatusBarItem,
   action: "scan" | "diff" | "explain" | "case",
   run: (root: string) => Promise<CompanionState>,
 ): Promise<void> {
   const gate = gateWorkspace(workspaceGate());
   if (!gate.ok) {
-    reveal(companionFail(state, gate.code, gate.message), tree, status);
+    commitPresentation(companionFail(state, gate.code, gate.message), status);
     vscode.window.showErrorMessage(gate.message);
     return;
   }
-  reveal(companionBegin(state, action), tree, status);
+  const generation = session.begin();
+  commitPresentation(companionBegin(state, action), status);
   try {
-    reveal(await run(gate.root), tree, status);
+    const next = await vscode.window.withProgress(
+      { location: { viewId: "ruleblast.scoreboard" } },
+      async () => run(gate.root),
+    );
+    if (!commitPresentation(next, status, generation)) return;
   } catch (error: unknown) {
+    if (generation !== session.generation) return;
     const message = error instanceof Error ? error.message : "Unknown host failure";
-    reveal(companionFail(state, "ERROR", message), tree, status);
+    commitPresentation(companionFail(state, "ERROR", message), status, generation);
+    if (message.includes("does not resolve to a commit") || message.includes("REF_NOT_FOUND")) {
+      try {
+        const root = await findRepositoryRoot(gate.root);
+        await openGitSnapshot(root, "HEAD");
+      } catch {
+        vscode.window.showErrorMessage(message);
+        return;
+      }
+      const picked = await vscode.window.showErrorMessage(message, "Retry with HEAD");
+      if (picked === "Retry with HEAD") await runDiffWithRef("HEAD", status);
+      return;
+    }
     vscode.window.showErrorMessage(message);
   }
 }
 
+async function runDiffWithRef(baseRef: string, status: vscode.StatusBarItem): Promise<void> {
+  await withRoot(status, "diff", async (folder) => {
+    const root = await findRepositoryRoot(folder);
+    const before = await openGitSnapshot(root, baseRef.trim());
+    const after = await openTrackedWorktree(root);
+    const pair = await diffRepositoryWithAdjunct({
+      before,
+      after,
+      realities: state.realities,
+      format: await probeGitStorageFormat(root),
+    });
+    return companionSucceed(state, pair.result, {
+      overlay: pair.overlay,
+      overlayUnavailable: pair.unavailable,
+    });
+  });
+}
+
 export function activate(context: vscode.ExtensionContext): void {
-  const tree = new RuleBlastTreeProvider();
   const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 80);
-  reveal(state, tree, status);
+  treeView = vscode.window.createTreeView("ruleblast.scoreboard", {
+    treeDataProvider: tree,
+    showCollapseAll: true,
+  });
+  commitPresentation(state, status);
 
   const watcher = vscode.workspace.createFileSystemWatcher("**/*");
-  const stale = () => reveal(companionMarkStale(state), tree, status);
+  const stale = () => {
+    commitPresentation(companionMarkStale(state), status);
+  };
   watcher.onDidChange(stale);
   watcher.onDidCreate(stale);
   watcher.onDidDelete(stale);
@@ -99,55 +240,73 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     status,
     watcher,
-    vscode.window.createTreeView("ruleblast.scoreboard", {
-      treeDataProvider: tree,
-      showCollapseAll: true,
+    treeView,
+    decorations,
+    documents,
+    lensProvider,
+    vscode.window.registerFileDecorationProvider(decorations),
+    vscode.workspace.registerTextDocumentContentProvider("ruleblast", documents),
+    vscode.languages.registerCodeLensProvider({ scheme: "file" }, lensProvider),
+    vscode.window.onDidChangeActiveTextEditor(() => {
+      commitPresentation(state, status);
+    }),
+    vscode.commands.registerCommand("ruleblast._openInstructionSource", async (path: unknown) => {
+      if (typeof path === "string" && path !== "") await openInstructionSource(path);
+    }),
+    vscode.commands.registerCommand("ruleblast._compareRealities", async (path: unknown) => {
+      if (typeof path !== "string" || path === "" || state.result === null) return;
+      const row = state.result.paths.find((item) => item.path === path);
+      if (row === undefined) return;
+      const compare = comparePathStacks(row);
+      documents.setCompare("reality:left", `${compare.left.label}\n${compare.left.lines.join("\n")}\n`);
+      documents.setCompare("reality:right", `${compare.right.label}\n${compare.right.lines.join("\n")}\n`);
+      await vscode.commands.executeCommand(
+        "vscode.diff",
+        REALITY_LEFT_URI,
+        REALITY_RIGHT_URI,
+        `${path} · ${compare.left.label} ↔ ${compare.right.label}`,
+      );
     }),
     vscode.commands.registerCommand("ruleblast.scanWorkspace", async () => {
-      await withRoot(tree, status, "scan", async (folder) => {
+      await withRoot(status, "scan", async (folder) => {
         const root = await findRepositoryRoot(folder);
-        const snapshot = await openTrackedWorktree(root);
         return companionSucceed(state, await scanRepository({
-          snapshot,
+          snapshot: await openTrackedWorktree(root),
           realities: state.realities,
         }));
       });
     }),
     vscode.commands.registerCommand("ruleblast.diffFrom", async () => {
-      const base = await vscode.window.showInputBox({
-        title: "RuleBlast Diff From",
-        prompt: "Git ref to compare with the tracked worktree",
-        placeHolder: "HEAD",
-        value: "HEAD",
-      });
-      if (base === undefined || base.trim() === "") return;
-      await withRoot(tree, status, "diff", async (folder) => {
-        const root = await findRepositoryRoot(folder);
-        const before = await openGitSnapshot(root, base.trim());
-        const after = await openTrackedWorktree(root);
-        const pair = await diffRepositoryWithAdjunct({
-          before,
-          after,
-          realities: state.realities,
-          format: await probeGitStorageFormat(root),
+      const picked = await vscode.window.showQuickPick(
+        [
+          { label: "HEAD", description: "Last commit → worktree" },
+          { label: "HEAD~1", description: "Parent of HEAD → worktree" },
+          { label: "$(pencil) Custom ref…", description: "Enter any Git ref", id: "custom" },
+        ],
+        { title: "RuleBlast: Diff From", placeHolder: "Select a base ref to compare with worktree" },
+      );
+      if (picked === undefined || Array.isArray(picked)) return;
+      let baseRef: string | undefined = picked.label;
+      if (picked.id === "custom") {
+        baseRef = await vscode.window.showInputBox({
+          title: "RuleBlast Diff From",
+          prompt: "Git ref to compare with the tracked worktree",
+          placeHolder: "HEAD",
+          value: "HEAD",
         });
-        return companionSucceed(state, pair.result, {
-          overlay: pair.overlay,
-          overlayUnavailable: pair.unavailable,
-        });
-      });
+      }
+      if (baseRef === undefined || baseRef.trim() === "") return;
+      await runDiffWithRef(baseRef, status);
     }),
     vscode.commands.registerCommand("ruleblast.explainScoreboardPath", async (path: unknown) => {
       if (typeof path !== "string" || path === "") return;
       const next = companionExplainFromResult(state, path, presentExplain);
       if (next.explainText !== null) {
-        await vscode.window.showTextDocument(
-          await vscode.workspace.openTextDocument({ content: next.explainText, language: "markdown" }),
-        );
+        await showExplainDocument(next.explainText, next.lifecycle === "STALE");
       } else {
         vscode.window.showErrorMessage(next.error?.message ?? "Last result has no path.");
       }
-      reveal(next, tree, status);
+      commitPresentation(next, status);
     }),
     vscode.commands.registerCommand("ruleblast.explainActiveFile", async (resource?: unknown) => {
       const fsPath = fsPathOf(resource) ?? vscode.window.activeTextEditor?.document.uri.fsPath;
@@ -157,14 +316,17 @@ export function activate(context: vscode.ExtensionContext): void {
       }
       const gate = gateWorkspace(workspaceGate());
       if (!gate.ok) {
-        reveal(companionFail(state, gate.code, gate.message), tree, status);
+        commitPresentation(companionFail(state, gate.code, gate.message), status);
         vscode.window.showErrorMessage(gate.message);
         return;
       }
       const root = await findRepositoryRoot(gate.root);
       const relative = toRepositoryRelativePath(root, fsPath);
       if (relative === null) {
-        reveal(companionFail(state, "INVALID_PATH", "Active file is outside the selected repository."), tree, status);
+        commitPresentation(
+          companionFail(state, "INVALID_PATH", "Active file is outside the selected repository."),
+          status,
+        );
         return;
       }
       const dirty = companionNoteDirty(
@@ -174,26 +336,21 @@ export function activate(context: vscode.ExtensionContext): void {
       if (dirty.result !== null) {
         const next = companionExplainFromResult(dirty, relative, presentExplain);
         if (next.explainText !== null) {
-          await vscode.window.showTextDocument(
-            await vscode.workspace.openTextDocument({ content: next.explainText, language: "markdown" }),
-          );
+          await showExplainDocument(next.explainText, next.lifecycle === "STALE");
         } else {
           vscode.window.showErrorMessage(next.error?.message ?? "Last result has no path.");
         }
-        reveal(next, tree, status);
+        commitPresentation(next, status);
         return;
       }
-      await withRoot(tree, status, "explain", async () => {
-        const snapshot = await openTrackedWorktree(root);
+      await withRoot(status, "explain", async () => {
         const explained = await explainRepository({
-          snapshot,
+          snapshot: await openTrackedWorktree(root),
           path: relative,
           realities: dirty.realities,
         });
         const text = presentExplain(explained.explain);
-        await vscode.window.showTextDocument(
-          await vscode.workspace.openTextDocument({ content: text, language: "markdown" }),
-        );
+        await showExplainDocument(text, dirty.lifecycle === "STALE");
         return companionExplain(dirty, explained.view, text);
       });
     }),
@@ -218,10 +375,10 @@ export function activate(context: vscode.ExtensionContext): void {
       const realities = selected.some((item) => item.id === "")
         ? []
         : selected.map((item) => item.id).filter((id) => id !== "");
-      reveal(companionSetRealities(state, realities), tree, status);
+      commitPresentation(companionSetRealities(state, realities), status);
     }),
     vscode.commands.registerCommand("ruleblast.openVerifiedCase", async () => {
-      await withRoot(tree, status, "case", async () =>
+      await withRoot(status, "case", async () =>
         companionSucceed(state, await openPackagedCase()),
       );
     }),

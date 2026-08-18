@@ -27,18 +27,19 @@ const KIND_ICON: Readonly<Record<ScoreboardKind, string>> = {
 };
 
 const MARK_COLOR: Readonly<Partial<Record<ScoreboardMark, string>>> = {
-  inherited: "charts.green",
-  independent: "charts.blue",
-  unclassified: "charts.yellow",
-  split: "charts.orange",
-  affected: "charts.red",
+  inherited: "descriptionForeground",
+  independent: "descriptionForeground",
+  unclassified: "list.warningForeground",
+  split: "list.warningForeground",
+  affected: "descriptionForeground",
   unchanged: "descriptionForeground",
-  uncertain: "charts.yellow",
+  uncertain: "list.warningForeground",
 };
 
 const INTENT_COMMAND: Readonly<Record<ScoreboardIntent, string>> = {
   EXPLAIN_PATH: "ruleblast.explainScoreboardPath",
   OPEN_PATH: "vscode.open",
+  OPEN_INSTRUCTION_SOURCE: "ruleblast._openInstructionSource",
   RUN_SCAN: "ruleblast.scanWorkspace",
   RUN_DIFF: "ruleblast.diffFrom",
   RUN_EXPLAIN: "ruleblast.explainActiveFile",
@@ -63,17 +64,30 @@ export class RuleBlastTreeProvider implements vscode.TreeDataProvider<Scoreboard
   }
 
   public getTreeItem(element: ScoreboardNode): vscode.TreeItem {
-    const collapsible = element.children && element.children.length > 0
-      ? vscode.TreeItemCollapsibleState.Expanded
+    const hasChildren = element.children && element.children.length > 0;
+    const collapsible = hasChildren
+      ? element.collapsed === false
+        ? vscode.TreeItemCollapsibleState.Expanded
+        : vscode.TreeItemCollapsibleState.Collapsed
       : vscode.TreeItemCollapsibleState.None;
+
     const item = new vscode.TreeItem(element.label, collapsible);
+    item.id = element.id;
     item.description = element.description;
     item.tooltip = tooltipFor(element);
     item.contextValue = element.kind;
+
+    if (element.accessibleLabel !== undefined) {
+      item.accessibilityInformation = {
+        label: element.accessibleLabel,
+      };
+    }
+
     const tint = element.mark === undefined ? undefined : MARK_COLOR[element.mark];
     item.iconPath = tint === undefined
       ? new vscode.ThemeIcon(KIND_ICON[element.kind])
       : new vscode.ThemeIcon(KIND_ICON[element.kind], new vscode.ThemeColor(tint));
+
     if (element.path !== undefined && this.root !== null) {
       item.resourceUri = vscode.Uri.file(
         `${this.root.replace(/[\\/]+$/u, "")}/${element.path}`,
@@ -107,6 +121,9 @@ function commandFor(
   const command = INTENT_COMMAND[element.intent!];
   if (element.intent === "OPEN_PATH" && resourceUri !== undefined) {
     return { command, title: "Open path", arguments: [resourceUri] };
+  }
+  if (element.path !== undefined && element.intent === "OPEN_INSTRUCTION_SOURCE") {
+    return { command, title: "Open instruction source", arguments: [element.path] };
   }
   if (element.path !== undefined &&
       (element.intent === "EXPLAIN_PATH" || element.intent === "OPEN_PATH")) {

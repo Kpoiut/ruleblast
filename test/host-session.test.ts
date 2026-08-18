@@ -268,24 +268,21 @@ describe("companion session", () => {
   it("leaves the empty scoreboard to the host welcome surface", () => {
     expect(companionTree(initialCompanionState())).toEqual([]);
     const analyzing = companionBegin(initialCompanionState(), "scan");
-    expect(companionTree(analyzing).map((node) => node.id)).toEqual(["status"]);
+    expect(companionTree(analyzing)).toEqual([]);
   });
 
-  it("orders a current scoreboard as status, control, then facts", async () => {
+  it("orders a current scoreboard as facts", async () => {
     const result = await scanRepository({
       snapshot: snapshot({ "AGENTS.md": "root", "src/a.ts": "code" }),
       reality: null,
     });
     const tree = companionTree(companionSucceed(initialCompanionState(), result));
-    expect(tree.slice(0, 3).map((node) => node.id)).toEqual([
-      "status", "control", "reality",
-    ]);
+    const ids = tree.map((node) => node.id);
+    expect(ids).toContain("metric-uncertain");
+    expect(ids).toContain("profiles");
+    expect(ids).not.toContain("status");
+    expect(ids).not.toContain("control");
     expect(tree.every((node) => typeof node.kind === "string")).toBe(true);
-    const controls = tree.find((node) => node.id === "control")?.children ?? [];
-    expect(controls.map((node) => node.description)).toEqual(["S", "D", "E", "C"]);
-    expect(controls.map((node) => node.intent)).toEqual([
-      "RUN_SCAN", "RUN_DIFF", "RUN_EXPLAIN", "RUN_CASE",
-    ]);
   });
 
   it("names CHANGE ALIGNMENT on the status line from a prepared overlay", async () => {
@@ -311,7 +308,7 @@ describe("companion session", () => {
     const state = companionFail(initialCompanionState(), "UNTRUSTED", "no");
     expect(state.lifecycle).toBe("ERROR");
     expect(state.error?.code).toBe("UNTRUSTED");
-    expect(companionTree(state).map((node) => node.id)).toEqual(["status", "error"]);
+    expect(companionTree(state).map((node) => node.id)).toEqual(["error"]);
   });
 });
 

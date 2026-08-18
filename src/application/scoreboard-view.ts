@@ -1,4 +1,16 @@
 import type { Completeness, RuleBlastResult } from "../model.js";
+
+export function uncertainPathCount(result: RuleBlastResult): number {
+  if (result.mode === "current") {
+    return result.paths.filter((path) =>
+      path.projections.some((row) => row.status !== "COMPLETE"),
+    ).length;
+  }
+  return result.paths.filter((path) =>
+    path.before.some((row) => row.status !== "COMPLETE") ||
+    path.after.some((row) => row.status !== "COMPLETE"),
+  ).length;
+}
 import { presentationFor } from "./profile-catalog.js";
 
 export interface ScoreboardProfileView {
@@ -19,6 +31,7 @@ export interface ScoreboardView {
   readonly partialPathCount: number;
   readonly unknownPathCount: number;
   readonly changedStackPathCount: number | null;
+  readonly newlySplitPathCount: number | null;
   readonly profiles: readonly ScoreboardProfileView[];
   readonly findingCount: number;
 }
@@ -31,6 +44,7 @@ export function completenessFromResult(result: RuleBlastResult): Completeness {
 
 export function scoreboardView(result: RuleBlastResult): ScoreboardView {
   const changed = result.mode === "diff" ? result.counts.changedStackPathCount : null;
+  const newlySplit = result.mode === "diff" ? result.counts.newlySplitPathCount : null;
   return Object.freeze({
     mode: result.mode,
     candidatePathCount: result.counts.candidatePathCount,
@@ -38,6 +52,7 @@ export function scoreboardView(result: RuleBlastResult): ScoreboardView {
     partialPathCount: result.counts.partialPathCount,
     unknownPathCount: result.counts.unknownPathCount,
     changedStackPathCount: changed,
+    newlySplitPathCount: newlySplit,
     profiles: result.counts.byProfile.map((row) => {
       const presentation = presentationFor(row.profile);
       return Object.freeze({

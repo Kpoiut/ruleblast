@@ -7,7 +7,13 @@ import {
   currentExplain,
   diffExplain,
   present,
+  writeLine,
 } from "./cli-output.js";
+import { attentionPaths } from "./domain/attention-paths.js";
+import {
+  comparePathStacks,
+  formatProjectionCompare,
+} from "./application/projection-compare.js";
 import {
   CliRuntimeError,
   type CapturedCliIo,
@@ -74,6 +80,14 @@ function selectorLabel(selector: SnapshotSelector): string {
   return selector.kind === "worktree" ? "WORKTREE" : selector.ref;
 }
 
+function emitAttentionPaths(
+  result: CurrentRuleBlastResult | DiffRuleBlastResult,
+  io: CapturedCliIo,
+): void {
+  const paths = attentionPaths(result);
+  if (paths.length > 0) writeLine(io.stdout, paths.join("\n"));
+}
+
 function presentationExtras(args: {
   readonly witness: boolean;
   readonly receipt: boolean;
@@ -138,134 +152,190 @@ async function requireTrackedPath(
   }
 }
 
+class CliProgressTracker {
+  private timer: NodeJS.Timeout | null = null;
+  private printed = false;
+
+  constructor(
+    private readonly io: CapturedCliIo,
+    enabled: boolean,
+  ) {
+    if (enabled) {
+      this.timer = setTimeout(() => {
+        this.io.stderr("ruleblast · analyzing…\r");
+        this.printed = true;
+      }, 350);
+    }
+  }
+
+  public finish(): void {
+    if (this.timer !== null) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
+    if (this.printed) {
+      this.io.stderr("\r\x1b[K");
+      this.printed = false;
+    }
+  }
+}
+
 export async function runAnalysisAction(
   args: Exclude<CliArgs, { action: "help" | "version" | "mcp" }>,
   io: CapturedCliIo,
   dependencies: CliDependencies,
 ): Promise<number> {
-  if (args.action === "case") {
-    const result = captureCaseResult(await dependencies.openCase());
-    const presentation = packagedCasePresentation();
-    if (args.explainPath === null) {
-      present(result, args.output, io, {
+  const progress = new CliProgressTracker(
+    io,
+    args.output.kind !== "json" && io.stderrIsTTY === true,
+  );
+  try {
+    if (args.action === "case") {
+      const result = captureCaseResult(await dependencies.openCase());
+      const presentation = packagedCasePresentation();
+      if (args.explainPath === null) {
+        if (args.pathsOnly) {
+          emitAttentionPaths(result, io);
+          return noDefensibleResult(result) ? 2 : 0;
+        }
+        present(result, args.output, io, {
+          beforeLabel: presentation.beforeLabel,
+          afterLabel: presentation.afterLabel,
+          caseLabel: presentation.label,
+          shellDialect: dependencies.shellDialect,
+        }, presentationExtras(args));
+        return noDefensibleResult(result) ? 2 : 0;
+      }
+      const selected = result.paths.find((path) => path.path === args.explainPath);
+      if (selected === undefined) {
+        throw new CliRuntimeError(
+          "TARGET_PATH_NOT_TRACKED",
+          `Recorded case target path not found: ${JSON.stringify(args.explainPath)}`,
+        );
+      }
+      present(diffExplain(result, args.explainPath), args.output, io, {
         beforeLabel: presentation.beforeLabel,
         afterLabel: presentation.afterLabel,
         caseLabel: presentation.label,
         shellDialect: dependencies.shellDialect,
       }, presentationExtras(args));
+      return noDefensibleDiffPath(selected) ? 2 : 0;
+    }
+
+    const start = args.action === "scan"
+      ? dependencies.resolvePath(io.cwd(), args.startPath)
+      : io.cwd();
+    const root = await dependencies.findRepositoryRoot(start);
+    if (args.action === "scan") {
+      const snapshot = await dependencies.openTrackedWorktree(root);
+      const result = await dependencies.analyzeCurrent({
+        snapshot,
+        profiles: analysisProfiles(args, dependencies),
+      });
+      if (args.pathsOnly) {
+        emitAttentionPaths(result, io);
+        return noDefensibleResult(result) ? 2 : 0;
+      }
+      present(result, args.output, io, {
+        currentLabel: "WORKTREE",
+        caseLabel: null,
+        shellDialect: dependencies.shellDialect,
+      }, presentationExtras(args));
       return noDefensibleResult(result) ? 2 : 0;
     }
-    const selected = result.paths.find((path) => path.path === args.explainPath);
-    if (selected === undefined) {
-      throw new CliRuntimeError(
-        "TARGET_PATH_NOT_TRACKED",
-        `Recorded case target path not found: ${JSON.stringify(args.explainPath)}`,
+    if (args.action === "diff") {
+      const before = await dependencies.openGitSnapshot(root, args.base.ref);
+      const after = await openSelector(root, args.target, dependencies);
+      assertDistinct(before, after);
+      const profiles = analysisProfiles(args, dependencies);
+      const admitOverlay = args.output.kind !== "json" &&
+        isGitObjectSnapshot(before) &&
+        (isGitObjectSnapshot(after) || isWorktreeIdentitySource(after));
+      const format = admitOverlay
+        ? await dependencies.probeGitStorageFormat(root)
+        : null;
+      const pair = admitOverlay
+        ? await analyzeOverlayPair({
+            before,
+            after,
+            profiles,
+            format,
+            analyzeDiff: dependencies.analyzeDiff,
+          })
+        : {
+            result: await dependencies.analyzeDiff({ before, after, profiles }),
+            overlay: null,
+            unavailable: false,
+          };
+      if (args.pathsOnly) {
+        emitAttentionPaths(pair.result, io);
+        return noDefensibleResult(pair.result) ? 2 : 0;
+      }
+      present(
+        pair.result,
+        args.output,
+        io,
+        diffTextContext(args.base.ref, args.target, dependencies.shellDialect),
+        presentationExtras(args),
       );
+      if (pair.unavailable) io.stdout(OVERLAY_UNAVAILABLE);
+      if (pair.overlay !== null) {
+        io.stdout(renderBlastOverlay(pair.overlay, {
+          from: args.base.ref,
+          to: selectorLabel(args.target),
+          instructionLineEdits:
+            pair.result.diffStats.addedLineCount +
+            pair.result.diffStats.deletedLineCount +
+            pair.result.diffStats.editedLineCount,
+          changedStackPathCount: pair.result.counts.changedStackPathCount,
+          identityLaw: isWorktreeIdentitySource(after)
+            ? "worktree-captured"
+            : "git-storage",
+        }));
+      }
+      return noDefensibleResult(pair.result) ? 2 : 0;
     }
-    present(diffExplain(result, args.explainPath), args.output, io, {
-      beforeLabel: presentation.beforeLabel,
-      afterLabel: presentation.afterLabel,
-      caseLabel: presentation.label,
-      shellDialect: dependencies.shellDialect,
-    }, presentationExtras(args));
-    return noDefensibleDiffPath(selected) ? 2 : 0;
-  }
 
-  const start = args.action === "scan"
-    ? dependencies.resolvePath(io.cwd(), args.startPath)
-    : io.cwd();
-  const root = await dependencies.findRepositoryRoot(start);
-  if (args.action === "scan") {
-    const snapshot = await dependencies.openTrackedWorktree(root);
-    const result = await dependencies.analyzeCurrent({
-      snapshot,
-      profiles: analysisProfiles(args, dependencies),
-    });
-    present(result, args.output, io, {
-      currentLabel: "WORKTREE",
-      caseLabel: null,
-      shellDialect: dependencies.shellDialect,
-    }, presentationExtras(args));
-    return noDefensibleResult(result) ? 2 : 0;
-  }
-  if (args.action === "diff") {
-    const before = await dependencies.openGitSnapshot(root, args.base.ref);
     const after = await openSelector(root, args.target, dependencies);
-    assertDistinct(before, after);
-    const profiles = analysisProfiles(args, dependencies);
-    const admitOverlay = args.output.kind !== "json" &&
-      isGitObjectSnapshot(before) &&
-      (isGitObjectSnapshot(after) || isWorktreeIdentitySource(after));
-    const format = admitOverlay
-      ? await dependencies.probeGitStorageFormat(root)
-      : null;
-    const pair = admitOverlay
-      ? await analyzeOverlayPair({
-          before,
-          after,
-          profiles,
-          format,
-          analyzeDiff: dependencies.analyzeDiff,
-        })
-      : {
-          result: await dependencies.analyzeDiff({ before, after, profiles }),
-          overlay: null,
-          unavailable: false,
-        };
-    present(
-      pair.result,
-      args.output,
-      io,
-      diffTextContext(args.base.ref, args.target, dependencies.shellDialect),
-      presentationExtras(args),
-    );
-    if (pair.unavailable) io.stdout(OVERLAY_UNAVAILABLE);
-    if (pair.overlay !== null) {
-      io.stdout(renderBlastOverlay(pair.overlay, {
-        from: args.base.ref,
-        to: selectorLabel(args.target),
-        instructionLineEdits:
-          pair.result.diffStats.addedLineCount +
-          pair.result.diffStats.deletedLineCount +
-          pair.result.diffStats.editedLineCount,
-        changedStackPathCount: pair.result.counts.changedStackPathCount,
-        identityLaw: isWorktreeIdentitySource(after)
-          ? "worktree-captured"
-          : "git-storage",
-      }));
+    await requireTrackedPath(after, args.path);
+    if (args.from === null) {
+      const result = await dependencies.analyzeCurrent({
+        snapshot: after,
+        profiles: analysisProfiles(args, dependencies),
+      });
+      const selected = selectedPath(result.paths, args.path);
+      if (args.compare) {
+        writeLine(io.stdout, formatProjectionCompare(comparePathStacks(selected)));
+        return noDefensibleCurrentPath(selected) ? 2 : 0;
+      }
+      present(currentExplain(result, args.path), args.output, io, {
+        currentLabel: selectorLabel(args.target),
+        caseLabel: null,
+        shellDialect: dependencies.shellDialect,
+      }, presentationExtras(args));
+      return noDefensibleCurrentPath(selected) ? 2 : 0;
     }
-    return noDefensibleResult(pair.result) ? 2 : 0;
-  }
-
-  const after = await openSelector(root, args.target, dependencies);
-  await requireTrackedPath(after, args.path);
-  if (args.from === null) {
-    const result = await dependencies.analyzeCurrent({
-      snapshot: after,
+    const before = await dependencies.openGitSnapshot(root, args.from.ref);
+    assertDistinct(before, after);
+    const result = await dependencies.analyzeDiff({
+      before,
+      after,
       profiles: analysisProfiles(args, dependencies),
     });
     const selected = selectedPath(result.paths, args.path);
-    present(currentExplain(result, args.path), args.output, io, {
-      currentLabel: selectorLabel(args.target),
-      caseLabel: null,
-      shellDialect: dependencies.shellDialect,
-    }, presentationExtras(args));
-    return noDefensibleCurrentPath(selected) ? 2 : 0;
+    if (args.compare) {
+      writeLine(io.stdout, formatProjectionCompare(comparePathStacks(selected)));
+      return noDefensibleDiffPath(selected) ? 2 : 0;
+    }
+    present(
+      diffExplain(result, args.path),
+      args.output,
+      io,
+      diffTextContext(args.from.ref, args.target, dependencies.shellDialect),
+      presentationExtras(args),
+    );
+    return noDefensibleDiffPath(selected) ? 2 : 0;
+  } finally {
+    progress.finish();
   }
-  const before = await dependencies.openGitSnapshot(root, args.from.ref);
-  assertDistinct(before, after);
-  const result = await dependencies.analyzeDiff({
-    before,
-    after,
-    profiles: analysisProfiles(args, dependencies),
-  });
-  const selected = selectedPath(result.paths, args.path);
-  present(
-    diffExplain(result, args.path),
-    args.output,
-    io,
-    diffTextContext(args.from.ref, args.target, dependencies.shellDialect),
-    presentationExtras(args),
-  );
-  return noDefensibleDiffPath(selected) ? 2 : 0;
 }

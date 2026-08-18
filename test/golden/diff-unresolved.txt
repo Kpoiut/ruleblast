@@ -1,12 +1,14 @@
 RULEBLAST · HEAD → WORKTREE
 
+  Δ STACK CHANGED          1
+  ≠ NEWLY SPLIT            0
+  ? UNRESOLVED             0
+
+1 tracked path changed stack.
+
 1 instruction-line edit.
-
-1
-tracked path changed stack.
-
-CHANGED SOURCE
-packages/api/AGENTS.md
+SOURCE
+  packages/api/AGENTS.md
 No paths newly split across profiles.
 
 Coverage notes:

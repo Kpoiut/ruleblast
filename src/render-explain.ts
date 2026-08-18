@@ -99,6 +99,15 @@ function appendFindings(lines: string[], findings: readonly Finding[]): void {
   }
 }
 
+function renderProof(value: ExplainResult): readonly string[] {
+  const view = explainViewFromResult(value);
+  const chain = view.why !== null && view.why.causes.length > 0
+    ? [...view.why.causes].sort(compareText)
+    : view.profiles[0]?.sources.map((source) => source.path) ?? [];
+  if (chain.length === 0) return [];
+  return ["PROOF", `  ${chain.map(displayText).join(" → ")}`, ""];
+}
+
 export function renderExplainView(value: ExplainResult): string {
   const view = explainViewFromResult(value);
   const lines = [displayText(view.path)];
@@ -125,6 +134,7 @@ export function renderExplain(
   return [
     explainHeading(context, color),
     "",
+    ...renderProof(value),
     renderExplainView(value).trimEnd(),
     "",
     `Repository-only · Git-tracked sources · resolver revision ${formatCount(value.resolverRevision)}`,

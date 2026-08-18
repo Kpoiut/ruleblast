@@ -1,22 +1,24 @@
 RULEBLAST · VERIFIED CASE · kpoiut/ruleblast · 27d52e2cd6ee → e420008a1c10
 
+  Δ STACK CHANGED        106
+  ≠ NEWLY SPLIT            0
+  ? UNRESOLVED             0
+
+106 tracked paths changed stack.
+
 33 instruction-line edits.
-
-106
-tracked paths changed stack.
-
-CHANGED SOURCES
-AGENTS.md
-  CC Claude Code  106 affected paths
-  CX Codex  106 affected paths
-CLAUDE.md
-  CC Claude Code  106 affected paths
-  CX Codex  106 affected paths
+SOURCE
+  AGENTS.md
+    CC Claude Code       106
+    CX Codex             106
+  CLAUDE.md
+    CC Claude Code       106
+    CX Codex             106
 No paths newly split across profiles.
 
 The largest blast starts at ./.
 
-Pick one path. See every source:
+EXPLAIN
   ruleblast case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 
 Scope: 106 tracked paths · repository-only · resolver revision 1

@@ -180,6 +180,7 @@ function processIo(): CliIo {
     cwd: () => process.cwd(),
     env: process.env,
     stdoutIsTTY: process.stdout.isTTY === true,
+    stderrIsTTY: process.stderr.isTTY === true,
   };
 }
 

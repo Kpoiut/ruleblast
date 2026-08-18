@@ -153,6 +153,11 @@ export type {
   ScoreboardNode,
 } from "./host-session.js";
 export { renderScoreboard, scoreboardView } from "./scoreboard-view.js";
+export { attentionPaths } from "../domain/attention-paths.js";
+export {
+  comparePathStacks,
+  formatProjectionCompare,
+} from "./projection-compare.js";
 export { CONTROL_BINDINGS, CONTROL_CHORD } from "./control-keys.js";
 export {
   findRepositoryRoot,
@@ -161,3 +166,21 @@ export {
   openTrackedWorktree,
   probeGitStorageFormat,
 } from "./repository.js";
+export {
+  PresentationSession,
+  STALE_EXPLAIN_BANNER,
+  derivePresentationTruth,
+  staleExplainBanner,
+  uncertainPathCount,
+} from "./presentation-truth.js";
+export type {
+  CompareRefs,
+  ExplainFreshness,
+  ExplainPolicy,
+  PresentationSnapshot,
+  ResourceDecoration,
+  ResourceLens,
+  ResourceTruth,
+  StatusGlance,
+  WorkspaceTruth,
+} from "./presentation-truth.js";

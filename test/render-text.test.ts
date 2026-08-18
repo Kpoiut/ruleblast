@@ -528,7 +528,8 @@ describe("renderText", () => {
     });
     const text = renderText(arbitrary, diffContext());
     expect(text).toContain("17 instruction-line edits");
-    expect(text).toContain("23\ntracked paths changed stack");
+    expect(text).toContain("Δ STACK CHANGED");
+    expect(text).toContain("23");
     expect(text).toContain("11 paths now live in two AI realities");
     expect(text).toContain("Scope: 47 tracked paths");
     const sourceText = readFileSync(
@@ -656,7 +657,8 @@ describe("renderText", () => {
     });
     const text = renderText(one, diffContext());
     expect(text).toContain("1 instruction-line edit.");
-    expect(text).toContain("tracked path changed stack.");
+    expect(text).toContain("Δ STACK CHANGED");
+    expect(text).toContain("1 tracked path changed stack.");
     expect(text).toContain("1 path now lives in two AI realities.");
 
     const zeroNew = diffResult({

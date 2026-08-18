@@ -320,9 +320,15 @@ Human `diff` Git↔Git and Git→WORKTREE join Git storage blob-object identity 
 
 ## **SHIPPED TO MAIN** — `v2.3.1`: Identity fixture and Windows root
 
-This tree is `2.3.1`. Latest independently verified public npm distribution remains `2.3.0`. Companion version is `2.3.1`. Pack `ruleblast-companion-2.3.1.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`. Not an npm release.
+That increment is `2.3.1`. Latest independently verified public npm distribution remains `2.3.0`. Companion version was `2.3.1`. Pack `ruleblast-companion-2.3.1.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`. Not an npm release.
 
 Staged-index commits prove same-OID mode/kind and gitlink exclusion against `ls-tree`. Repository root is the realpath of `--show-toplevel`, so Windows 8.3 and the long path are one directory. Overlay join uses `blobIdentityKind` and `unionSortedPaths`. Scoreboard control rows are the four actions. Status names CHANGE ALIGNMENT. `--json` stays canonical.
+
+## **SHIPPED TO MAIN** — `v2.4.0`: Progressive disclosure
+
+This tree is `2.4.0`. Latest independently verified public npm distribution remains `2.3.0`. Companion version is `2.4.0`. Pack `ruleblast-companion-2.4.0.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`. Not an npm release.
+
+Human CLI and the companion renderer project the same canonical result at increasing depth: one-line glance, `--paths-only`, `explain --compare`, then explain `PROOF`. `--json` is unchanged. No fifth action, no dashboard, no latency or absolute-trust product claim. Peripheral awareness stays in the editor adapter. The GitHub README leads with that disclosure and keeps install, host map, and replay behind details.
 
 ## **NEXT** — Offline evidence-revision reveal
 

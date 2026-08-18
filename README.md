@@ -1,12 +1,12 @@
 <h1 align="center">RuleBlast — Git diff for invisible repository instructions</h1>
 
 <p align="center">
-  <img src="assets/ruleblast-hero.png?v=2.3.1" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
+  <img src="assets/ruleblast-hero.png?v=2.4.0" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
 </p>
 
 <p align="center">
   <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
-  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.3.1"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.3.1"></a>
+  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.0"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.4.0"></a>
   <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/ruleblast" alt="Apache-2.0 license"></a>
 </p>
@@ -23,7 +23,7 @@
 </p>
 
 <div align="center">
-  <img src="assets/ruleblast-causal-proof.gif?v=2.3.1" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
+  <img src="assets/ruleblast-causal-proof.gif?v=2.4.0" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
 </div>
 
 ```bash
@@ -32,12 +32,18 @@ npx --yes ruleblast@2.3.0 .
 npx --yes ruleblast@2.3.0 diff HEAD~1
 ```
 
-<p align="center"><sub>This tree is 2.3.1. Published CLI is ruleblast@2.3.0. Local · read-only · deterministic · no network or model call</sub></p>
+<p align="center"><sub>This tree is 2.4.0. Published CLI is ruleblast@2.3.0. Local · read-only · deterministic · no network or model call</sub></p>
+
+<p align="center">
+  A Status Bar can say <code>Δ206</code> before anyone opens RuleBlast.<br>
+  One compare puts Codex next to Claude. A <code>PROOF</code> line names the source chain.<br>
+  You do not have to believe the tool. You can read why it said that.
+</p>
 
 ## What Git missed
 
 <div align="center">
-  <img src="assets/ruleblast-visual-benchmark.png?v=2.3.1" alt="Square RuleBlast 2.3.1 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; why-this-path, CLI and IDE surfaces, user allow gate" width="100%">
+  <img src="assets/ruleblast-visual-benchmark.png?v=2.4.0" alt="Square RuleBlast 2.4.0 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; why-this-path, CLI and IDE surfaces, user allow gate" width="100%">
 </div>
 
 Git shows the instruction edit. It does not show every repository path that inherits it.
@@ -56,7 +62,7 @@ ruleblast diff 8fcf2ad931b90589dd29a571f367e3185d26bbe0 --to f0f483e8b2a2630bf8d
 
 A pull request that only edits `AGENTS.md` can look tiny in Git. Human `diff` then answers the review question: which other tracked paths inherited that stack, and which Git motion is independent? `--json` stays the canonical result. It is not actor telemetry.
 
-Companion Diff From renders that prepared adjunct. Keys: `Ctrl+Alt+R` then `S` scan · `D` diff · `E` explain · `C` case.
+Companion Diff From renders that prepared adjunct. Keys: `Ctrl+Alt+R` then `S` scan · `D` diff · `E` explain · `C` case. The Status Bar follows the active file. Compare selected realities opens two stacks in the editor diff.
 
 ## Install
 
@@ -98,7 +104,7 @@ npm uninstall --save-dev ruleblast
 npm install --save-dev --save-exact ruleblast@2.3.0
 npm cache verify
 npx --yes ruleblast@2.3.0 --help
-git clone --branch v2.3.1 --depth 1 https://github.com/Kpoiut/ruleblast.git
+git clone --branch v2.4.0 --depth 1 https://github.com/Kpoiut/ruleblast.git
 cd ruleblast
 npm ci --ignore-scripts
 npm run build
@@ -106,6 +112,8 @@ node dist/cli.js --version
 node dist/cli.js --help
 node dist/cli.js .
 node dist/cli.js case --json
+node dist/cli.js diff HEAD --paths-only
+node dist/cli.js explain src/args.ts --compare
 ```
 
 The `1.0.1 → 1.0.2` registry upgrade was verified by the guarded [eight-cell release workflow](https://github.com/Kpoiut/ruleblast/actions/runs/31722775046).
@@ -128,23 +136,25 @@ npx --yes ruleblast@2.3.0 case --explain .github/ISSUE_TEMPLATE/missing-blast.ym
 ```text
 RULEBLAST · VERIFIED CASE · kpoiut/ruleblast · 27d52e2cd6ee → e420008a1c10
 
+  Δ STACK CHANGED        106
+  ≠ NEWLY SPLIT            0
+  ? UNRESOLVED             0
+
+106 tracked paths changed stack.
+
 33 instruction-line edits.
-
-106
-tracked paths changed stack.
-
-CHANGED SOURCES
-AGENTS.md
-  CC Claude Code  106 affected paths
-  CX Codex  106 affected paths
-CLAUDE.md
-  CC Claude Code  106 affected paths
-  CX Codex  106 affected paths
+SOURCE
+  AGENTS.md
+    CC Claude Code       106
+    CX Codex             106
+  CLAUDE.md
+    CC Claude Code       106
+    CX Codex             106
 No paths newly split across profiles.
 
 The largest blast starts at ./.
 
-Pick one path. See every source:
+EXPLAIN
   ruleblast case --explain .github/ISSUE_TEMPLATE/missing-blast.yml
 
 Scope: 106 tracked paths · repository-only · resolver revision 1
@@ -179,15 +189,33 @@ Unresolved stays `PARTIAL`, `UNKNOWN`, or `INDETERMINATE`. Contract: [CONTRACT.m
 
 Snapshot → evidence-pinned profile projection → compare payloads → render the blast. Bundled Reality Packs declare the four realities; named engines own vendor rules. The analysis engine is the authority; the CLI is the reference host. Impact stays profile-neutral.
 
+This tree discloses that same result in layers: one-line glance, `--paths-only`, `explain --compare`, then a `PROOF` line. Published `2.3.0` does not include those presentation flags.
+
 ## Performance
 
 Packed budget: 10,000 nested paths, p95 < 2,000 ms. `npm run benchmark`. Not a claim about model quality.
 
+<details>
+<summary>Current-tree replay (not the sealed 2→206 proof)</summary>
+
 This tree, dirty worktree versus `HEAD~1`: 237 tracked paths. Default Codex + Claude Code: 0 changed stacks, 0 split. The same diff plus both opt-in CLI surfaces stays 0 changed stacks; Copilot CLI is 0 complete and the N-way is 237 split / 237 partial / 237 indeterminate. That is current-state coverage, not a new instruction edit. Compact metrics: [docs/measurements/fresh-replay.md](docs/measurements/fresh-replay.md). The sealed openai/codex 2→206 proof is unchanged.
+
+</details>
 
 ## Examples
 
 The optional path is only a filesystem starting point for repository discovery. Add `--witness` when you need why-edges. Add `--receipt` when you need a pasteable card. Add `--reality github/copilot-cli@1` and/or `--reality google/gemini-cli@1` when you need those documented surfaces. Repeat `--reality` for a four-surface N-way. Default `--json` stays the two-profile canonical result.
+
+```bash
+npx --yes ruleblast@2.3.0 .
+npx --yes ruleblast@2.3.0 packages/api/internal
+npx --yes ruleblast@2.3.0 diff HEAD~1
+npx --yes ruleblast@2.3.0 explain src/args.ts --from HEAD~1
+npx --yes ruleblast@2.3.0 diff HEAD~1 --json
+```
+
+<details>
+<summary>Host is not a reality — surface map</summary>
 
 | Surface | MODELED | HOST | DISCOVERABLE |
 |---|---|---|---|
@@ -209,13 +237,7 @@ The optional path is only a filesystem starting point for repository discovery. 
 | Trae | not a reality id | COMPATIBLE host | same companion |
 | Zed | not a reality id | desktop MCP | paste `discovery/zed-context-servers.json` |
 
-```bash
-npx --yes ruleblast@2.3.0 .
-npx --yes ruleblast@2.3.0 packages/api/internal
-npx --yes ruleblast@2.3.0 diff HEAD~1
-npx --yes ruleblast@2.3.0 explain src/args.ts --from HEAD~1
-npx --yes ruleblast@2.3.0 diff HEAD~1 --json
-```
+</details>
 
 ## Open in the editor
 
@@ -228,7 +250,7 @@ npm run build
 npm run host:build
 ```
 
-Install the unpacked `hosts/vscode` folder, or pack `ruleblast-companion-2.3.1.vsix` with `npm run host:pack`. Saving a file marks the last result stale; it does not start another analysis. Claude Desktop, ChatGPT/Codex desktop, and Zed use `--mcp`. Marketplace / Open VSX listings are separate publisher operations.
+Install the unpacked `hosts/vscode` folder, or pack `ruleblast-companion-2.4.0.vsix` with `npm run host:pack`. The Status Bar follows the active file from the last result. Compare selected realities opens the two stacks in the editor diff. Saving a file marks the last result stale; it does not start another analysis. Claude Desktop, ChatGPT/Codex desktop, and Zed use `--mcp`. Marketplace / Open VSX listings are separate publisher operations.
 
 ## Give your agent RuleBlast
 
@@ -240,6 +262,9 @@ One skill body, copied to every official path. Neither `node_modules` nor a host
 - Windsurf: [`.windsurf/skills/ruleblast/SKILL.md`](.windsurf/skills/ruleblast/SKILL.md)
 - Kiro: [`.kiro/skills/ruleblast/SKILL.md`](.kiro/skills/ruleblast/SKILL.md)
 
+<details>
+<summary>MCP configs — same four actions</summary>
+
 MCP is the same four actions: `node dist/cli.js --mcp`.
 
 - GitHub Copilot in VS Code: [`.vscode/mcp.json`](.vscode/mcp.json)
@@ -249,6 +274,8 @@ MCP is the same four actions: `node dist/cli.js --mcp`.
 - Claude Desktop: paste [discovery/claude-desktop.mcp.json](discovery/claude-desktop.mcp.json) into `claude_desktop_config.json`
 - Cline: paste [discovery/cline.mcp.json](discovery/cline.mcp.json)
 - Zed: merge [discovery/zed-context-servers.json](discovery/zed-context-servers.json)
+
+</details>
 
 Agents still need your allow gate before they run. Copilot Chat using RuleBlast is HOST/DISCOVERABLE. It is not `github/copilot-cli@1` and not a new modeled editor reality.
 
@@ -268,10 +295,10 @@ A pull request that only edits `AGENTS.md` can look small in Git. The Action com
 - uses: actions/checkout@v4
   with:
     fetch-depth: 0
-- uses: Kpoiut/ruleblast@v2.3.1
+- uses: Kpoiut/ruleblast@v2.4.0
 ```
 
-Root Action `Kpoiut/ruleblast@v2.3.1` posts a `--receipt` for `base.sha → head.sha`. It still runs published `ruleblast@2.3.0`. Pin a commit after you trust the workflow.
+Root Action `Kpoiut/ruleblast@v2.4.0` posts a `--receipt` for `base.sha → head.sha`. It still runs published `ruleblast@2.3.0`. Pin a commit after you trust the workflow.
 
 ## Contribute a Blast Case
 
@@ -281,7 +308,7 @@ Promoted Blast Case: official evidence, retrieval date, manifests, expected JSON
 
 ## Roadmap
 
-This tree is `2.3.1`. Published CLI is `ruleblast@2.3.0`. The product is overlay, work map, and change alignment — which files now receive different AI instructions.
+This tree is `2.4.0`. Published CLI is `ruleblast@2.3.0`. The product is overlay, work map, and change alignment — which files now receive different AI instructions. This tree can disclose that same result as `--paths-only`, `explain --compare`, or a `PROOF` line. Published `2.3.0` does not include those presentation flags.
 
 Today: Codex, Claude Code, opt-in Copilot CLI, and opt-in Gemini CLI. Same companion in VS Code-family editors, including Copilot Chat. Same four actions over `--mcp` for Claude Desktop and Codex desktop.
 

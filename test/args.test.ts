@@ -3,7 +3,10 @@ import { CliUsageError, parseArgs } from "../src/args.js";
 
 const text = { kind: "text", color: "auto" } as const;
 const json = { kind: "json", color: "auto" } as const;
-const flags = { witness: false, receipt: false, realities: [] as const } as const;
+const flags = {
+  witness: false, receipt: false, realities: [] as const, pathsOnly: false,
+} as const;
+const explainFlags = { ...flags, compare: false } as const;
 
 describe("parseArgs", () => {
   it.each([
@@ -40,7 +43,7 @@ describe("parseArgs", () => {
       from: null,
       target: { kind: "worktree" },
       output: text,
-      ...flags,
+      ...explainFlags,
     }],
     [["explain", "src/index.ts", "--from", "HEAD~1", "--to", "HEAD"], {
       action: "explain",
@@ -48,7 +51,7 @@ describe("parseArgs", () => {
       from: { kind: "git", ref: "HEAD~1" },
       target: { kind: "git", ref: "HEAD" },
       output: text,
-      ...flags,
+      ...explainFlags,
     }],
     [["explain", "file.ts", "--from", "-release"], {
       action: "explain",
@@ -56,7 +59,30 @@ describe("parseArgs", () => {
       from: { kind: "git", ref: "-release" },
       target: { kind: "worktree" },
       output: text,
+      ...explainFlags,
+    }],
+    [["explain", "src/a.ts", "--compare"], {
+      action: "explain",
+      path: "src/a.ts",
+      from: null,
+      target: { kind: "worktree" },
+      output: text,
+      ...explainFlags,
+      compare: true,
+    }],
+    [["diff", "--paths-only"], {
+      action: "diff",
+      base: { kind: "git", ref: "HEAD" },
+      target: { kind: "worktree" },
+      output: text,
       ...flags,
+      pathsOnly: true,
+    }],
+    [[".", "--paths-only"], {
+      action: "scan", startPath: ".", output: text, ...flags, pathsOnly: true,
+    }],
+    [["case", "--paths-only"], {
+      action: "case", explainPath: null, output: text, ...flags, pathsOnly: true,
     }],
     [["case"], { action: "case", explainPath: null, output: text, ...flags }],
     [["case", "--explain", "packages\\api//./refund.ts", "--json"], {
@@ -72,7 +98,7 @@ describe("parseArgs", () => {
     }],
     [[".", "--witness"], {
       action: "scan", startPath: ".", output: text, witness: true, receipt: false,
-      realities: [],
+      realities: [], pathsOnly: false,
     }],
     [["diff", "--witness", "--json"], {
       action: "diff",
@@ -82,10 +108,11 @@ describe("parseArgs", () => {
       witness: true,
       receipt: false,
       realities: [],
+      pathsOnly: false,
     }],
     [["case", "--receipt"], {
       action: "case", explainPath: null, output: text, witness: false, receipt: true,
-      realities: [],
+      realities: [], pathsOnly: false,
     }],
     [[".", "--reality", "github/copilot-cli@1"], {
       action: "scan", startPath: ".", output: text, ...flags, realities: ["github/copilot-cli@1"],
@@ -144,6 +171,12 @@ describe("parseArgs", () => {
     [["diff", "--to", "one", "--to", "two"], "DUPLICATE_OPTION"],
     [["diff", "--json", "--color=always"], "OPTION_CONFLICT"],
     [["scan", "--color=rainbow"], "OPTION_CONFLICT"],
+    [["diff", "--paths-only", "--json"], "OPTION_CONFLICT"],
+    [[".", "--paths-only", "--witness"], "OPTION_CONFLICT"],
+    [["explain", "src/a.ts", "--paths-only"], "OPTION_CONFLICT"],
+    [["explain", "src/a.ts", "--compare", "--json"], "OPTION_CONFLICT"],
+    [["diff", "--compare"], "OPTION_CONFLICT"],
+    [["case", "--explain", "src/a.ts", "--paths-only"], "OPTION_CONFLICT"],
   ] as const)("rejects %j with %s", (argv, code) => {
     let thrown: unknown;
     try {

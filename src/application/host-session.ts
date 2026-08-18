@@ -60,7 +60,12 @@ export type ScoreboardKind =
   | "observation"
   | "group";
 
-export type ScoreboardIntent = ControlIntent | "EXPLAIN_PATH" | "OPEN_PATH" | "SELECT_REALITY";
+export type ScoreboardIntent =
+  | ControlIntent
+  | "EXPLAIN_PATH"
+  | "OPEN_PATH"
+  | "OPEN_INSTRUCTION_SOURCE"
+  | "SELECT_REALITY";
 
 export type ScoreboardMark =
   | "affected"
@@ -76,10 +81,12 @@ export interface ScoreboardNode {
   readonly kind: ScoreboardKind;
   readonly label: string;
   readonly description?: string;
+  readonly accessibleLabel?: string;
   readonly path?: string;
   readonly intent?: ScoreboardIntent;
   readonly mark?: ScoreboardMark;
   readonly badge?: string;
+  readonly collapsed?: boolean;
   readonly children?: readonly ScoreboardNode[];
 }
 

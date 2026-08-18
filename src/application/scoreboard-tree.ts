@@ -4,10 +4,9 @@ import {
   formatAnalysisState,
 } from "./analysis-state.js";
 import { classifyChangeAlignment } from "./blast-overlay.js";
-import { CONTROL_BINDINGS, CONTROL_CHORD } from "./control-keys.js";
 import { adjunctRenderContext, overlayNodes } from "./overlay-tree.js";
 import { presentationFor, presentationLabel } from "./profile-catalog.js";
-import { scoreboardView } from "./scoreboard-view.js";
+import { scoreboardView, uncertainPathCount } from "./scoreboard-view.js";
 import type {
   CompanionState,
   ScoreboardNode,
@@ -45,18 +44,49 @@ function sourceNode(
     : node;
 }
 
-function controlNodes(): ScoreboardNode {
+function metricLeaf(
+  id: string,
+  label: string,
+  accessibleLabel: string,
+  mark?: ScoreboardNode["mark"],
+): ScoreboardNode {
+  return mark === undefined
+    ? { id, kind: "counts", label, accessibleLabel }
+    : { id, kind: "counts", label, accessibleLabel, mark };
+}
+
+function realityNode(state: CompanionState): ScoreboardNode {
   return {
-    id: "control",
+    id: "reality",
+    kind: "reality",
+    label: realityLabel(state.realities),
+    intent: "SELECT_REALITY",
+  };
+}
+
+function blastGroup(state: CompanionState): ScoreboardNode | null {
+  const result = state.result;
+  if (result === null || result.mode !== "diff") return null;
+  const blasts = summarizeSourceBlasts(result, undefined, { limit: Infinity });
+  if (blasts.length === 0) return null;
+  return {
+    id: "blast",
     kind: "group",
-    label: "Control",
-    description: CONTROL_CHORD,
-    children: CONTROL_BINDINGS.map((binding) => ({
-      id: `control:${binding.id}`,
-      kind: "control",
-      label: binding.label,
-      description: binding.token,
-      intent: binding.intent,
+    label: "Changed sources",
+    collapsed: false,
+    children: blasts.map((blast) => ({
+      id: `blast:${blast.sourcePath}`,
+      kind: "instruction-source",
+      label: blast.sourcePath,
+      path: blast.sourcePath,
+      intent: "OPEN_INSTRUCTION_SOURCE",
+      description: `${blast.changedStackPathCount} paths`,
+      children: blast.byProfile.map((row) => ({
+        id: `blast:${blast.sourcePath}:${row.profile}`,
+        kind: "profile",
+        label: presentationLabel(row.profile),
+        description: `${row.affectedPathCount} affected`,
+      })),
     })),
   };
 }
@@ -64,51 +94,80 @@ function controlNodes(): ScoreboardNode {
 export function companionTree(state: CompanionState): ScoreboardNode[] {
   const result = state.result;
   const board = result === null ? null : scoreboardView(result);
-  const nodes: ScoreboardNode[] = [
-    { id: "status", kind: "status", label: companionStatusLine(state) },
-    controlNodes(),
-    {
-      id: "reality",
-      kind: "reality",
-      label: realityLabel(state.realities),
-      intent: "SELECT_REALITY",
-    },
-  ];
+
   if (result === null || board === null) {
     if (state.error !== null) {
-      return [
-        nodes[0]!,
-        {
-          id: "error",
-          kind: "error",
-          label: state.error.code,
-          description: state.error.message,
-        },
-      ];
+      return [{
+        id: "error",
+        kind: "error",
+        label: state.error.code,
+        description: state.error.message,
+        accessibleLabel: `RuleBlast error: ${state.error.message}`,
+      }];
     }
-    if (state.lifecycle === "ANALYZING") return [nodes[0]!];
     return [];
   }
+
+  const nodes: ScoreboardNode[] = [];
   if (state.error !== null) {
     nodes.push({
       id: "error",
       kind: "error",
       label: state.error.code,
       description: state.error.message,
+      accessibleLabel: `RuleBlast error: ${state.error.message}`,
     });
   }
-  nodes.push({
-    id: "counts",
-    kind: "counts",
-    label: `${board.candidatePathCount} tracked paths`,
-    description: board.changedStackPathCount === null
-      ? `${board.currentSplitPathCount} split`
-      : `${board.changedStackPathCount} changed`,
-  });
+
+  if (state.lifecycle === "STALE") {
+    nodes.push(metricLeaf(
+      "stale",
+      "STALE",
+      "RuleBlast last result is stale because the workspace changed",
+      "uncertain",
+    ));
+    const blast = blastGroup(state);
+    if (blast !== null) nodes.push(blast);
+    nodes.push(realityNode(state));
+    return nodes;
+  }
+
+  const uncertain = uncertainPathCount(result);
+  if (result.mode === "diff") {
+    nodes.push(metricLeaf(
+      "metric-changed",
+      `Δ ${board.changedStackPathCount} changed`,
+      `${board.changedStackPathCount} paths have changed instruction stacks`,
+      "affected",
+    ));
+    nodes.push(metricLeaf(
+      "metric-split",
+      `≠ ${board.newlySplitPathCount} split`,
+      `${board.newlySplitPathCount} paths newly split across profiles`,
+      (board.newlySplitPathCount ?? 0) > 0 ? "split" : undefined,
+    ));
+  } else if (board.currentSplitPathCount > 0) {
+    nodes.push(metricLeaf(
+      "metric-already-split",
+      `${board.currentSplitPathCount} already split`,
+      `${board.currentSplitPathCount} paths already disagree across selected realities`,
+    ));
+  }
+  nodes.push(metricLeaf(
+    "metric-uncertain",
+    `? ${uncertain} unresolved`,
+    `${uncertain} paths have incomplete projections`,
+    uncertain > 0 ? "uncertain" : undefined,
+  ));
+
+  const blast = blastGroup(state);
+  if (blast !== null) nodes.push(blast);
+
   nodes.push({
     id: "profiles",
     kind: "group",
     label: "Profiles",
+    collapsed: true,
     children: board.profiles.map((profile) => ({
       id: `profile:${profile.profile}`,
       kind: "profile",
@@ -119,46 +178,26 @@ export function companionTree(state: CompanionState): ScoreboardNode[] {
         : `${profile.changedStackPathCount} changed`,
     })),
   });
+
   const uncertainty: ScoreboardNode = {
     id: "uncertainty",
     kind: "uncertainty",
     label: "Uncertainty",
+    collapsed: true,
     description: `${board.partialPathCount} partial · ${board.unknownPathCount} unknown · ${board.findingCount} findings`,
   };
-  nodes.push(
-    board.partialPathCount + board.unknownPathCount > 0
-      ? { ...uncertainty, mark: "uncertain" }
-      : uncertainty,
-  );
-  nodes.push(...overlayNodes({
+  nodes.push(uncertain > 0 ? { ...uncertainty, mark: "uncertain" } : uncertainty);
+
+  for (const node of overlayNodes({
     overlay: state.overlay,
     overlayUnavailable: state.overlayUnavailable,
     ...adjunctRenderContext(result),
-  }));
-  if (result.mode === "diff") {
-    const blasts = summarizeSourceBlasts(result);
-    if (blasts.length > 0) {
-      nodes.push({
-        id: "blast",
-        kind: "group",
-        label: "Changed sources",
-        children: blasts.map((blast) => ({
-          id: `blast:${blast.sourcePath}`,
-          kind: "instruction-source",
-          label: blast.sourcePath,
-          path: blast.sourcePath,
-          intent: "OPEN_PATH",
-          description: `${blast.changedStackPathCount} paths`,
-          children: blast.byProfile.map((row) => ({
-            id: `blast:${blast.sourcePath}:${row.profile}`,
-            kind: "profile",
-            label: presentationLabel(row.profile),
-            description: `${row.affectedPathCount} affected`,
-          })),
-        })),
-      });
-    }
+  })) {
+    nodes.push({ ...node, collapsed: true });
   }
+
+  nodes.push(realityNode(state));
+
   if (state.explainView !== null) {
     const view = state.explainView;
     const explain: ScoreboardNode = {
@@ -167,6 +206,7 @@ export function companionTree(state: CompanionState): ScoreboardNode[] {
       label: `Explain ${view.path}`,
       path: view.path,
       intent: "EXPLAIN_PATH",
+      collapsed: false,
       children: view.profiles.map((profile) => ({
         id: `explain:${profile.profile}`,
         kind: "profile",
@@ -187,5 +227,6 @@ export function companionTree(state: CompanionState): ScoreboardNode[] {
     };
     nodes.push(view.relation === null ? explain : { ...explain, description: view.relation });
   }
+
   return nodes;
 }

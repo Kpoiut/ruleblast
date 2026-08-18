@@ -1,5 +1,8 @@
 RULEBLAST EXPLAIN · HEAD → WORKTREE
 
+PROOF
+  packages/api/AGENTS.md
+
 packages/api/internal/refund.ts
 
 CC Claude Code CLI

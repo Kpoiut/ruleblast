@@ -85,3 +85,11 @@ export function referenceLabel(reference: SnapshotRef): string {
 export function heading(text: string, color: boolean): string {
   return color ? `\u001b[36m${text}\u001b[0m` : text;
 }
+
+export function warnText(text: string, color: boolean): string {
+  return color ? `\u001b[33m${text}\u001b[0m` : text;
+}
+
+export function dimText(text: string, color: boolean): string {
+  return color ? `\u001b[2m${text}\u001b[0m` : text;
+}

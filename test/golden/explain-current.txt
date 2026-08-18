@@ -1,5 +1,8 @@
 RULEBLAST EXPLAIN · WORKTREE
 
+PROOF
+  CLAUDE.md → <external-import>
+
 src/a.ts
 
 CC Claude Code CLI

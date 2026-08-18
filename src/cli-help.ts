@@ -77,6 +77,7 @@ export function renderCliHelp(): string {
 ${IDENTITY_BLAST}.
 One Git tree. Two default realities. Two opt-in CLI surfaces.
 
+CORE
   [path]     ${ROUTES[0]!.useWhen}
              ruleblast . --color=never
 
@@ -93,30 +94,41 @@ One Git tree. Two default realities. Two opt-in CLI surfaces.
              ruleblast case --color=never
              Teaching receipt 33→106, not the 206 Codex proof.
 
+COMMON
+  --json        Canonical JSON output.
+  --paths-only  One attention path per line. Diff: changed stacks. Scan: current splits. Pipeable. Not --json.
+  --compare     Explain only. Two selected-reality source stacks. Not --json.
+  --reality     github/copilot-cli@1 and/or google/gemini-cli@1. Repeat to add both. Default JSON stays two-profile.
+  --color       auto | always | never
+
+EVIDENCE
   --witness  Why-edges for the selected resolution. Opt-in envelope only.
   --receipt  Opt-in scoreboard box plus RBCTX1. Off unless passed.
              User toggle: RULEBLAST_AGENT_ALLOW or .ruleblast-allow.
-  --reality  github/copilot-cli@1 and/or google/gemini-cli@1. Repeat to add both. Default JSON stays two-profile.
 
-Skills   Codex .agents/skills · Claude Code .claude/skills
-         Cursor .cursor/skills · Windsurf .windsurf/skills · Kiro .kiro/skills
-         Not node_modules. Agents default to ask.
+TRANSPORT
   --mcp      Stdio transport of the same four actions. Not a fifth action.
 
-Control  ${CONTROL_CHORD} then ${CONTROL_BINDINGS.map((row) => `${row.token} ${row.id}`).join(" · ")}
-         Companion keybindings. CLI uses the same four tokens: ${CONTROL_BINDINGS.map((row) => row.cli).join("  ")}
+SKILLS
+  Skills     Codex .agents/skills · Claude Code .claude/skills
+             Cursor .cursor/skills · Windsurf .windsurf/skills · Kiro .kiro/skills
+             Not node_modules. Agents default to ask.
 
-Exits
+CONTROL
+  Control    ${CONTROL_CHORD} then ${CONTROL_BINDINGS.map((row) => `${row.token} ${row.id}`).join(" · ")}
+             Companion keybindings. CLI uses the same four tokens: ${CONTROL_BINDINGS.map((row) => row.cli).join("  ")}
+
+EXITS
   0  defensible result or no candidates — not "every path COMPLETE"
   1  recoverable input / repository / ref / path
   2  candidates exist but no complete projection (or complete pair)
   70 internal failure
 
 Usage:
-  ruleblast [path] [--json] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
-  ruleblast diff [base] [--to <ref|WORKTREE>] [--json] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
-  ruleblast explain <path> [--from <ref>] [--to <ref|WORKTREE>] [--json] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
-  ruleblast case [--explain <path>] [--json] [--witness] [--receipt] [--color=auto|always|never]
+  ruleblast [path] [--json] [--paths-only] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
+  ruleblast diff [base] [--to <ref|WORKTREE>] [--json] [--paths-only] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
+  ruleblast explain <path> [--from <ref>] [--to <ref|WORKTREE>] [--json] [--compare] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
+  ruleblast case [--explain <path>] [--json] [--paths-only] [--witness] [--receipt] [--color=auto|always|never]
   ruleblast --mcp
   ruleblast --help
   ruleblast --version

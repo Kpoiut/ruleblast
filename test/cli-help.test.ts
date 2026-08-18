@@ -37,6 +37,11 @@ describe("route catalog", () => {
     expect(help).toContain("OTHER TRACKED CHANGES");
     expect(help).toContain("CHANGE ALIGNMENT");
     expect(help).toContain("--json stays canonical");
+    expect(help).toContain("--paths-only");
+    expect(help).toContain("--compare");
+    expect(help).toContain("ruleblast [path] [--json] [--paths-only]");
+    expect(help).toContain("ruleblast explain <path>");
+    expect(help).toContain("[--compare]");
   });
 });
 
@@ -49,6 +54,7 @@ describe("help path", () => {
       cwd: () => { throw new Error("help must not read cwd"); },
       env: {},
       stdoutIsTTY: false,
+      stderrIsTTY: false,
     });
     expect(code).toBe(0);
     expect(stdout.join("")).toBe(renderCliHelp());

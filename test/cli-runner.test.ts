@@ -165,6 +165,7 @@ function harness(overrides: Partial<CliDependencies> = {}) {
     cwd: () => "C:\\workspace",
     env: {},
     stdoutIsTTY: true,
+    stderrIsTTY: true,
   };
   const worktree = worktreeSnapshot();
   const before = snapshot(gitRef("a".repeat(40)));
@@ -192,6 +193,55 @@ describe("runCli", () => {
     for (const directory of temporaryDirectories.splice(0)) {
       rmSync(directory, { recursive: true, force: true });
     }
+  });
+
+  it("emits nothing when --paths-only has no attention paths", async () => {
+    const h = harness();
+    expect(await runCli([".", "--paths-only"], h.io, h.dependencies)).toBe(0);
+    expect(h.stdout).toEqual([]);
+  });
+
+  it("prints one attention path per line for --paths-only and skips scoreboard text", async () => {
+    const result = diffResult();
+    result.paths[0]!.changedProfiles = ["openai/codex-cli@1"];
+    const h = harness({ analyzeDiff: vi.fn(async () => result) });
+    expect(await runCli(["diff", "--paths-only"], h.io, h.dependencies)).toBe(0);
+    expect(h.stdout.join("")).toBe("src/index.ts\n");
+    expect(h.stdout.join("")).not.toContain("RULEBLAST");
+    expect(h.stdout.join("")).not.toContain("{");
+  });
+
+  it("prints two selected stacks for explain --compare without JSON", async () => {
+    const result = currentResult();
+    const first = result.paths[0]!.projections[0]!;
+    const source = (
+      path: string,
+    ): (typeof first)["sources"][number] => ({
+      path,
+      disposition: "SELECTED",
+      digest: path,
+      bytesUsed: 1,
+      truncated: false,
+    });
+    result.paths[0]!.projections = [
+      { ...first, profile: "openai/codex-cli@1", sources: [source("AGENTS.md")] },
+      {
+        ...first,
+        profile: "anthropic/claude-code-cli@1",
+        sources: [source("CLAUDE.md")],
+      },
+    ];
+    const h = harness({ analyzeCurrent: vi.fn(async () => result) });
+    expect(await runCli(
+      ["explain", "src/index.ts", "--compare"],
+      h.io,
+      h.dependencies,
+    )).toBe(0);
+    const text = h.stdout.join("");
+    expect(text).toContain("RULEBLAST COMPARE · src/index.ts");
+    expect(text).toContain("AGENTS.md");
+    expect(text).toContain("CLAUDE.md");
+    expect(text).not.toContain("{");
   });
 
   it("routes filesystem scans from io.cwd and writes one canonical JSON line", async () => {
@@ -486,6 +536,7 @@ describe("runCli", () => {
       cwd: { enumerable: true, value: () => { cwdCalls += 1; return "C:\\workspace"; } },
       env: { enumerable: true, value: Object.freeze({}) },
       stdoutIsTTY: { enumerable: true, value: false },
+      stderrIsTTY: { enumerable: true, value: false },
     });
     expect(await runCli(["--version"], hostile as unknown as CliIo, base.dependencies)).toBe(0);
     expect(stdoutReads).toBe(1);
@@ -684,7 +735,7 @@ describe("runCli", () => {
     const output: string[] = [];
     const io: CliIo = {
       stdout: (text) => output.push(text), stderr: () => {}, cwd: () => root,
-      env: {}, stdoutIsTTY: false,
+      env: {}, stdoutIsTTY: false, stderrIsTTY: false,
     };
     const dependencies: CliDependencies = {
       version: "test", profiles: [claudeProfile, codexProfile], resolvePath: join,
