@@ -255,11 +255,8 @@ describe("companion session", () => {
     };
     const tree = companionTree(companionSucceed(initialCompanionState(), result, { overlay }));
     const node = tree.find((item) => item.id === "overlay");
-    const edits = result.diffStats.addedLineCount +
-      result.diffStats.deletedLineCount +
-      result.diffStats.editedLineCount;
     expect(node?.children?.find((item) => item.id === "overlay:edits")).toMatchObject({
-      label: `${edits} instruction-line edits`,
+      label: `${result.diffStats.editedLineCount} instruction-line edits`,
       description: `${result.counts.changedStackPathCount} changed stacks · 1 inherited other paths`,
     });
     expect(node?.children?.some((item) => item.id === "overlay:law")).toBe(false);

@@ -91,10 +91,7 @@ export function adjunctRenderContext(
   result: RuleBlastResult | null,
 ): OverlayRenderContext {
   if (result === null || result.mode !== "diff") return {};
-  const instructionLineEdits =
-    result.diffStats.addedLineCount +
-    result.diffStats.deletedLineCount +
-    result.diffStats.editedLineCount;
+  const instructionLineEdits = result.diffStats.editedLineCount;
   const changedStackPathCount = result.counts.changedStackPathCount;
   if (result.after.kind === "worktree") {
     return {

@@ -21,6 +21,7 @@ import {
   asJsonRpcRequest,
   consumeMcpBuffer,
   encodeMcpFrame,
+  isJsonRpcParseError,
   MCP_PROTOCOL_VERSION,
   type JsonRpcMessage,
   type JsonRpcRequest,
@@ -234,6 +235,10 @@ export async function serveMcpStdio(
     const consumed = consumeMcpBuffer(buffer);
     buffer = consumed.rest;
     for (const raw of consumed.messages) {
+      if (isJsonRpcParseError(raw)) {
+        write(raw);
+        continue;
+      }
       const request = asJsonRpcRequest(raw);
       if (request === null) continue;
       const response = await dispatchMcpRequest(request, host);

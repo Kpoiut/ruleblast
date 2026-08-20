@@ -1,4 +1,5 @@
 import { presentationLabel } from "./profile-catalog.js";
+import { comparePayloadRelation } from "../domain/payload-relation.js";
 import type { CurrentPathProjection, PathTransition, Projection } from "../model.js";
 
 export interface ComparedStack {
@@ -29,14 +30,39 @@ function stackFrom(projection: Projection | undefined, fallback: string): Compar
   };
 }
 
+function specifiedComposition(projection: Projection): boolean {
+  return projection.composition !== "UNSPECIFIED" &&
+    projection.composition !== "RUNTIME_DECIDED";
+}
+
+function comparedPair(
+  projections: readonly Projection[],
+): readonly [Projection | undefined, Projection | undefined] {
+  let fallback: readonly [Projection, Projection] | null = null;
+  for (let left = 0; left < projections.length; left += 1) {
+    for (let right = left + 1; right < projections.length; right += 1) {
+      const first = projections[left];
+      const second = projections[right];
+      if (first === undefined || second === undefined) continue;
+      if (comparePayloadRelation(first, second) !== "DIFFERENT") continue;
+      if (specifiedComposition(first) && specifiedComposition(second)) {
+        return [first, second];
+      }
+      fallback ??= [first, second];
+    }
+  }
+  return fallback ?? [projections[0], projections[1]];
+}
+
 export function compareProjectionStacks(
   path: string,
   projections: readonly Projection[],
 ): ProjectionStackCompare {
+  const [left, right] = comparedPair(projections);
   return {
     path,
-    left: stackFrom(projections[0], "left"),
-    right: stackFrom(projections[1], "right"),
+    left: stackFrom(left, "left"),
+    right: stackFrom(right, "right"),
   };
 }
 

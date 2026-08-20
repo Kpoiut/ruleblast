@@ -2,6 +2,13 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.4.4 — SHIPPED TO MAIN
+
+- Default human text is the summary of the same canonical result. `--detail` prints the fields that summary compresses: per-profile counts, findings, split and changed paths, source digests, added/deleted lines, groups, and explain before/after stacks.
+- Worktree capture copies tracked files through a bounded pool so a downloaded package stays fast on real repositories.
+- Instruction-line restatements use `editedLineCount`. `--compare` selects a proven `DIFFERENT` pair. Overlay names deleted other paths as not after-snapshot targets. Invalid MCP frames return JSON-RPC `-32700` instead of throwing.
+- The published CLI people install is still `ruleblast@2.4.1`.
+
 ## 2.4.3 — SHIPPED TO MAIN
 
 - Records the domain capability ladder this product is built for: find instruction files, compute inheritance, resolve each modeled agent, name the two-state blast, compare selected realities with provenance and uncertainty, then emit a deterministic evidence-pinned canonical result.

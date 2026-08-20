@@ -56,8 +56,7 @@ export function receiptForDiff(
   agentAllow: "yes" | "ask" = "ask",
 ): ReceiptCard {
   const rbctx = rbctxForDiff(result);
-  const instructionLines = result.diffStats.deletedLineCount +
-    result.diffStats.addedLineCount + result.diffStats.editedLineCount;
+  const instructionLines = result.diffStats.editedLineCount;
   const markdown = [
     "RULEBLAST PROOF",
     box([

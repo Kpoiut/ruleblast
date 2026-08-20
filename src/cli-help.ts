@@ -97,6 +97,7 @@ CORE
 COMMON
   --json        Canonical JSON output.
   --paths-only  One attention path per line. Diff: changed stacks. Scan: current splits. Pipeable. Not --json.
+  --detail      Full human text of the same result. Default text is the summary. Not --json.
   --compare     Explain only. Two selected-reality source stacks. Not --json.
   --reality     github/copilot-cli@1 and/or google/gemini-cli@1. Repeat to add both. Default JSON stays two-profile.
   --color       auto | always | never
@@ -125,10 +126,10 @@ EXITS
   70 internal failure
 
 Usage:
-  ruleblast [path] [--json] [--paths-only] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
-  ruleblast diff [base] [--to <ref|WORKTREE>] [--json] [--paths-only] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
-  ruleblast explain <path> [--from <ref>] [--to <ref|WORKTREE>] [--json] [--compare] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
-  ruleblast case [--explain <path>] [--json] [--paths-only] [--witness] [--receipt] [--color=auto|always|never]
+  ruleblast [path] [--json] [--paths-only] [--detail] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
+  ruleblast diff [base] [--to <ref|WORKTREE>] [--json] [--paths-only] [--detail] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
+  ruleblast explain <path> [--from <ref>] [--to <ref|WORKTREE>] [--json] [--compare] [--detail] [--witness] [--receipt] [--reality <id>]... [--color=auto|always|never]
+  ruleblast case [--explain <path>] [--json] [--paths-only] [--detail] [--witness] [--receipt] [--color=auto|always|never]
   ruleblast --mcp
   ruleblast --help
   ruleblast --version

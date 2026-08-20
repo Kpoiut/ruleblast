@@ -26,6 +26,18 @@ export function encodeMcpFrame(payload: unknown): string {
   return `Content-Length: ${Buffer.byteLength(body, "utf8")}\r\n\r\n${body}`;
 }
 
+function parseJsonRpcBody(body: string): unknown {
+  try {
+    return JSON.parse(body);
+  } catch {
+    return {
+      jsonrpc: "2.0",
+      id: null,
+      error: { code: -32700, message: "Parse error" },
+    };
+  }
+}
+
 export function consumeMcpBuffer(buffer: string): {
   readonly messages: unknown[];
   readonly rest: string;
@@ -38,7 +50,7 @@ export function consumeMcpBuffer(buffer: string): {
     if (match === null) {
       const line = /^([^\r\n]+)\r?\n/u.exec(rest);
       if (line !== null && line[1]!.startsWith("{")) {
-        messages.push(JSON.parse(line[1]!));
+        messages.push(parseJsonRpcBody(line[1]!));
         rest = rest.slice(line[0].length);
         continue;
       }
@@ -48,10 +60,20 @@ export function consumeMcpBuffer(buffer: string): {
     const start = match[0].length;
     if (rest.length < start + length) break;
     const body = rest.slice(start, start + length);
-    messages.push(JSON.parse(body));
+    messages.push(parseJsonRpcBody(body));
     rest = rest.slice(start + length);
   }
   return { messages, rest };
+}
+
+export function isJsonRpcParseError(value: unknown): value is JsonRpcFailure {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
+  const record = value as Record<string, unknown>;
+  const error = record.error;
+  if (record.jsonrpc !== "2.0" || typeof error !== "object" || error === null) {
+    return false;
+  }
+  return (error as { code?: unknown }).code === -32700;
 }
 
 export function asJsonRpcRequest(value: unknown): JsonRpcRequest | null {

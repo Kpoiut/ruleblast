@@ -340,6 +340,22 @@ describe("tracked worktree snapshots", () => {
     const snapshot = await openTrackedWorktree(root);
     expect(await snapshot.listPaths()).toEqual([]);
   });
+  it("copies many tracked files with the same bytes as a sequential inventory", async () => {
+    const root = repository();
+    for (let index = 0; index < 24; index += 1) {
+      writeFileSync(join(root, `f${String(index).padStart(2, "0")}.txt`), `body-${index}`);
+    }
+    commit(root);
+    const snapshot = await openTrackedWorktree(root);
+    const paths = await snapshot.listPaths();
+    expect(paths).toHaveLength(24);
+    for (const path of paths) {
+      expect(decoder.decode((await snapshot.read(path))!)).toBe(
+        `body-${Number(path.slice(1, 3))}`,
+      );
+    }
+  });
+
   it("captures only tracked paths and eagerly copies modified bytes", async () => {
     const root = repository();
     writeFileSync(join(root, "tracked.txt"), "committed");

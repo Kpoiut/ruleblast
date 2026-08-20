@@ -5,6 +5,7 @@ import { packWitnessHint } from "./packs/witness-hints.js";
 import type { Projection } from "./model.js";
 import { resolveAgentAllow } from "./domain/agent-allow.js";
 import { receiptForCurrent, receiptForDiff } from "./render-receipt.js";
+import { renderDetail } from "./render-detail.js";
 import {
   displayText,
   renderText,
@@ -66,6 +67,7 @@ function effectiveColor(output: CliOutput, io: OutputIo): boolean {
 export interface PresentationExtras {
   readonly witness?: boolean;
   readonly receipt?: boolean;
+  readonly detail?: boolean;
 }
 
 function projectionsOf(value: PresentedResult): Projection[] {
@@ -129,7 +131,7 @@ export function present(
     }
     writeLine(
       io.stdout,
-      `${renderText(value, context, effectiveColor(output, io))}\n\n${renderWitness(graphs)}`,
+      `${humanText(value, context, output, io, extras)}\n\n${renderWitness(graphs)}`,
     );
     return;
   }
@@ -137,8 +139,21 @@ export function present(
     io.stdout,
     output.kind === "json"
       ? canonicalJson(value)
-      : renderText(value, context, effectiveColor(output, io)),
+      : humanText(value, context, output, io, extras),
   );
+}
+
+function humanText(
+  value: PresentedResult,
+  context: TextPresentationContext | undefined,
+  output: CliOutput,
+  io: OutputIo,
+  extras: PresentationExtras,
+): string {
+  const color = effectiveColor(output, io);
+  return extras.detail === true
+    ? renderDetail(value, context, color)
+    : renderText(value, context, color);
 }
 
 function selectedFindings(

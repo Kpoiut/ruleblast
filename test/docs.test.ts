@@ -206,7 +206,7 @@ describe("README story contract", () => {
       "npm uninstall --global ruleblast",
       "npm uninstall --save-dev ruleblast",
       "npm cache verify",
-      "git clone --branch v2.4.3 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v2.4.4 --depth 1 https://github.com/Kpoiut/ruleblast.git",
       "npm ci --ignore-scripts",
       "npm run build",
       "node dist/cli.js --version",
@@ -504,6 +504,7 @@ describe("repository documentation integrity", () => {
       "v2.4.1",
       "v2.4.2",
       "v2.4.3",
+      "v2.4.4",
       "v3.0",
       "v4.0",
     ]) {

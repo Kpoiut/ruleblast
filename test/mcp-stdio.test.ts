@@ -19,6 +19,17 @@ describe("MCP stdio transport", () => {
     expect(asJsonRpcRequest(messages[0])).toMatchObject({ method: "ping", id: 1 });
   });
 
+  it("returns a JSON-RPC parse error instead of throwing on invalid frames", () => {
+    const frame = `Content-Length: 12\r\n\r\n{not-json!!!`;
+    expect(() => consumeMcpBuffer(frame)).not.toThrow();
+    const { messages } = consumeMcpBuffer(frame);
+    expect(messages).toEqual([{
+      jsonrpc: "2.0",
+      id: null,
+      error: { code: -32700, message: "Parse error" },
+    }]);
+  });
+
   it("lists exactly the four public actions and serves the packaged case", async () => {
     const listed = await dispatchMcpRequest(
       { jsonrpc: "2.0", id: 1, method: "tools/list" },

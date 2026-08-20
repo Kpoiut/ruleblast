@@ -5,6 +5,7 @@ const text = { kind: "text", color: "auto" } as const;
 const json = { kind: "json", color: "auto" } as const;
 const flags = {
   witness: false, receipt: false, realities: [] as const, pathsOnly: false,
+  detail: false,
 } as const;
 const explainFlags = { ...flags, compare: false } as const;
 
@@ -84,6 +85,23 @@ describe("parseArgs", () => {
     [["case", "--paths-only"], {
       action: "case", explainPath: null, output: text, ...flags, pathsOnly: true,
     }],
+    [["diff", "--detail"], {
+      action: "diff",
+      base: { kind: "git", ref: "HEAD" },
+      target: { kind: "worktree" },
+      output: text,
+      ...flags,
+      detail: true,
+    }],
+    [["explain", "src/a.ts", "--detail"], {
+      action: "explain",
+      path: "src/a.ts",
+      from: null,
+      target: { kind: "worktree" },
+      output: text,
+      ...explainFlags,
+      detail: true,
+    }],
     [["case"], { action: "case", explainPath: null, output: text, ...flags }],
     [["case", "--explain", "packages\\api//./refund.ts", "--json"], {
       action: "case", explainPath: "packages/api/refund.ts", output: json, ...flags,
@@ -98,7 +116,7 @@ describe("parseArgs", () => {
     }],
     [[".", "--witness"], {
       action: "scan", startPath: ".", output: text, witness: true, receipt: false,
-      realities: [], pathsOnly: false,
+      realities: [], pathsOnly: false, detail: false,
     }],
     [["diff", "--witness", "--json"], {
       action: "diff",
@@ -109,10 +127,15 @@ describe("parseArgs", () => {
       receipt: false,
       realities: [],
       pathsOnly: false,
+      detail: false,
     }],
     [["case", "--receipt"], {
       action: "case", explainPath: null, output: text, witness: false, receipt: true,
-      realities: [], pathsOnly: false,
+      realities: [], pathsOnly: false, detail: false,
+    }],
+    [[".", "--detail", "--witness"], {
+      action: "scan", startPath: ".", output: text, witness: true, receipt: false,
+      realities: [], pathsOnly: false, detail: true,
     }],
     [[".", "--reality", "github/copilot-cli@1"], {
       action: "scan", startPath: ".", output: text, ...flags, realities: ["github/copilot-cli@1"],
@@ -177,6 +200,11 @@ describe("parseArgs", () => {
     [["explain", "src/a.ts", "--compare", "--json"], "OPTION_CONFLICT"],
     [["diff", "--compare"], "OPTION_CONFLICT"],
     [["case", "--explain", "src/a.ts", "--paths-only"], "OPTION_CONFLICT"],
+    [["diff", "--detail", "--json"], "OPTION_CONFLICT"],
+    [[".", "--detail", "--paths-only"], "OPTION_CONFLICT"],
+    [["explain", "src/a.ts", "--detail", "--compare"], "OPTION_CONFLICT"],
+    [["case", "--detail", "--receipt"], "OPTION_CONFLICT"],
+    [[".", "--detail", "--detail"], "DUPLICATE_OPTION"],
   ] as const)("rejects %j with %s", (argv, code) => {
     let thrown: unknown;
     try {

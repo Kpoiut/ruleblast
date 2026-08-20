@@ -26,6 +26,13 @@ export function renderBlastOverlay(
     lines.push(
       `  ${kinds.added} added · ${kinds.modified} modified · ${kinds.deleted} deleted`,
     );
+    if (kinds.deleted > 0) {
+      lines.push(
+        kinds.deleted === 1
+          ? "  1 deleted path is not an after-snapshot target"
+          : `  ${kinds.deleted} deleted paths are not after-snapshot targets`,
+      );
+    }
   }
   const law = identityLawLine(context.identityLaw);
   if (law !== null) lines.push(law);
@@ -54,15 +61,17 @@ export function renderBlastOverlay(
     ["OUTSIDE_BLAST", "OUTSIDE THIS BLAST"],
     ["UNRESOLVED", "UNRESOLVED"],
   ] as const;
+  const sampleCap = context.sampleCap ?? OVERLAY_SAMPLE_CAP;
   for (const [relation, heading] of sections) {
     const rows = view.observedPaths.filter((row) => row.relation === relation);
     if (rows.length === 0) continue;
     lines.push("", heading);
-    for (const row of rows.slice(0, OVERLAY_SAMPLE_CAP)) {
+    const shown = Number.isFinite(sampleCap) ? rows.slice(0, sampleCap) : rows;
+    for (const row of shown) {
       lines.push(`  ${row.path}`);
     }
-    if (rows.length > OVERLAY_SAMPLE_CAP) {
-      lines.push(`  … +${rows.length - OVERLAY_SAMPLE_CAP} more`);
+    if (shown.length < rows.length) {
+      lines.push(`  … +${rows.length - shown.length} more`);
     }
   }
   return `${lines.join("\n")}\n${renderWorkMap(view, context)}`;
@@ -107,6 +116,7 @@ export interface OverlayRenderContext {
   readonly instructionLineEdits?: number;
   readonly changedStackPathCount?: number;
   readonly identityLaw?: OverlayIdentityLaw;
+  readonly sampleCap?: number;
 }
 
 export type ChangeAlignment = "ALIGNED" | "MIXED" | "DIVERGENT" | "UNRESOLVED";

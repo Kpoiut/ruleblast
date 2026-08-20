@@ -309,19 +309,82 @@ async function ancestorSignatures(root: string, relativePath: string): Promise<M
   return result;
 }
 
+const WORKTREE_COPY_CONCURRENCY = 32;
+
+async function mapPool<T, R>(
+  items: readonly T[],
+  concurrency: number,
+  mapper: (item: T) => Promise<R>,
+): Promise<R[]> {
+  if (items.length === 0) return [];
+  const results: R[] = new Array(items.length);
+  let next = 0;
+  async function worker(): Promise<void> {
+    while (true) {
+      const index = next;
+      next += 1;
+      if (index >= items.length) return;
+      results[index] = await mapper(items[index]!);
+    }
+  }
+  const workers = Math.min(Math.max(concurrency, 1), items.length);
+  await Promise.all(Array.from({ length: workers }, () => worker()));
+  return results;
+}
+
+async function captureOne(
+  root: string,
+  entry: IndexEntry,
+): Promise<{
+  readonly path: string;
+  readonly node: NodeSignature;
+  readonly ancestors: ReadonlyMap<string, NodeSignature>;
+  readonly captured: WorktreeEntry | null;
+}> {
+  const ancestors = await ancestorSignatures(root, entry.path);
+  const path = join(root, entry.path);
+  const node = await nodeSignature(path);
+  if (node.kind === "missing") {
+    if (!entry.skip) return { path: entry.path, node, ancestors, captured: null };
+    return {
+      path: entry.path,
+      node,
+      ancestors,
+      captured: {
+        ...entry,
+        bytes: new Uint8Array(await runGit(root, ["cat-file", "blob", entry.oid])),
+      },
+    };
+  }
+  const kind = node.kind;
+  return {
+    path: entry.path,
+    node,
+    ancestors,
+    captured: {
+      path: entry.path,
+      kind,
+      executable: kind === "file" ? entry.executable : false,
+      bytes: await copyNode(path, node),
+    },
+  };
+}
+
 async function capture(root: string): Promise<Capture> {
   const before = await indexState(root);
   const inventory = await trackedInventory(root);
-  const entries = new Map<string, WorktreeEntry>(); const signature = new Map<string, NodeSignature>(); const ancestors = new Map<string, NodeSignature>();
-  for (const entry of inventory.values()) {
-    for (const [path, node] of await ancestorSignatures(root, entry.path)) ancestors.set(path, node);
-    const path = join(root, entry.path); const node = await nodeSignature(path); signature.set(entry.path, node);
-    if (node.kind === "missing") {
-      if (entry.skip) entries.set(entry.path, { ...entry, bytes: new Uint8Array(await runGit(root, ["cat-file", "blob", entry.oid])) });
-      continue;
-    }
-    const kind = node.kind;
-    entries.set(entry.path, { path: entry.path, kind, executable: kind === "file" ? entry.executable : false, bytes: await copyNode(path, node) });
+  const captured = await mapPool(
+    [...inventory.values()],
+    WORKTREE_COPY_CONCURRENCY,
+    (entry) => captureOne(root, entry),
+  );
+  const entries = new Map<string, WorktreeEntry>();
+  const signature = new Map<string, NodeSignature>();
+  const ancestors = new Map<string, NodeSignature>();
+  for (const row of captured) {
+    signature.set(row.path, row.node);
+    for (const [path, node] of row.ancestors) ancestors.set(path, node);
+    if (row.captured !== null) entries.set(row.path, row.captured);
   }
   return { entries, inventory, signature, ancestors, index: before };
 }

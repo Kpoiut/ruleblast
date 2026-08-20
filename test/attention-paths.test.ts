@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { attentionPaths } from "../src/domain/attention-paths.js";
 import { comparePathStacks, formatProjectionCompare } from "../src/application/projection-compare.js";
 import { diffRepository, scanRepository } from "../src/application/authority.js";
+import { GITHUB_COPILOT_CLI_PROFILE_ID } from "../src/model.js";
 import { ManifestSnapshot } from "../src/snapshot.js";
 
 function snapshot(files: Readonly<Record<string, string>>): ManifestSnapshot {
@@ -73,5 +74,28 @@ describe("projection stack compare", () => {
     expect(text).toContain(compare.left.label);
     expect(text).toContain(compare.right.label);
     expect(text).toMatch(/AGENTS\.md|CLAUDE\.md/u);
+  });
+
+  it("compares a proven DIFFERENT pair instead of projections[0] and [1]", async () => {
+    const result = await scanRepository({
+      snapshot: snapshot({
+        "AGENTS.md": "codex rule\n",
+        "CLAUDE.md": "claude rule\n",
+        "src/a.ts": "code",
+      }),
+      realities: [GITHUB_COPILOT_CLI_PROFILE_ID],
+    });
+    const row = result.paths.find((path) => path.path === "src/a.ts");
+    expect(row).toBeDefined();
+    expect(row!.projections.map((projection) => projection.profile)).toEqual([
+      "anthropic/claude-code-cli@1",
+      "github/copilot-cli@1",
+      "openai/codex-cli@1",
+    ]);
+    const compare = comparePathStacks(row!);
+    expect(compare.left.label).toMatch(/Claude/u);
+    expect(compare.right.label).toMatch(/Codex/u);
+    expect(compare.left.label).not.toMatch(/Copilot/u);
+    expect(compare.right.label).not.toMatch(/Copilot/u);
   });
 });

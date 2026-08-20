@@ -142,6 +142,41 @@ describe("blast overlay classifier", () => {
     expect(text).toContain("… +1 more");
   });
 
+  it("lifts the sample cap when a caller asks for the full list", () => {
+    const observedPaths = Array.from({ length: 9 }, (_, index) => ({
+      path: `src/f${String(index)}.ts`,
+      kind: "MODIFY" as const,
+      relation: "IN_BLAST" as const,
+    }));
+    const text = renderBlastOverlay({
+      observedPathCount: 9,
+      inBlastCount: 9,
+      outsideBlastCount: 0,
+      unresolvedCount: 0,
+      splitObservedPathCount: 0,
+      observedPaths,
+    }, { sampleCap: Number.POSITIVE_INFINITY });
+    expect(text).toContain("src/f8.ts");
+    expect(text).not.toContain("… +1 more");
+  });
+
+  it("names deleted other paths as not after-snapshot targets", () => {
+    const text = renderBlastOverlay({
+      observedPathCount: 1,
+      inBlastCount: 0,
+      outsideBlastCount: 0,
+      unresolvedCount: 1,
+      splitObservedPathCount: 0,
+      observedPaths: [{
+        path: "gone.ts",
+        kind: "DELETE",
+        relation: "UNRESOLVED",
+      }],
+    });
+    expect(text).toContain("gone.ts");
+    expect(text).toMatch(/deleted.+not an after-snapshot target/iu);
+  });
+
   it("forbids overlay from reading snapshot bytes", () => {
     const source = readFileSync(new URL("../src/application/blast-overlay.ts", import.meta.url), "utf8");
     expect(source).not.toMatch(/\.read\s*\(/u);

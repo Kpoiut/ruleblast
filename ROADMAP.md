@@ -371,9 +371,15 @@ Every surface RuleBlast owns now introduces itself the same way: **RuleBlast —
 
 ## **SHIPPED TO MAIN** — `v2.4.3`: Domain capability layers
 
-This tree is `2.4.3`. The independently verified public npm package remains `2.4.1`. The companion version is `2.4.3`. Pack `ruleblast-companion-2.4.3.vsix`. Marketplace listings `2.2.0` and `2.2.1` stay as they are. This increment is on main; people still install `ruleblast@2.4.1`.
+That increment is `2.4.3`. The independently verified public npm package remains `2.4.1`. The companion version is `2.4.3`. Pack `ruleblast-companion-2.4.3.vsix`. Marketplace listings `2.2.0` and `2.2.1` stay as they are. This increment is on main; people still install `ruleblast@2.4.1`.
 
 The roadmap now states the domain ladder this product is built for — instruction files, inheritance, per-agent resolvers, two-state blast, multi-reality provenance, then a deterministic evidence-pinned canonical result. Product-breadth scores are reference-only and do not grade this checkout. On that domain axis the current public product sits near L6, read as L5.5–L6 because vendor loading rules can move.
+
+## **SHIPPED TO MAIN** — `v2.4.4`: Summary and detail of one result
+
+This tree is `2.4.4`. The independently verified public npm package remains `2.4.1`. The companion version is `2.4.4`. Pack `ruleblast-companion-2.4.4.vsix`. Marketplace listings `2.2.0` and `2.2.1` stay as they are. This increment is on main; people still install `ruleblast@2.4.1`.
+
+Default human text stays the summary. `--detail` is the complete human projection of the same canonical bytes: counts, findings, changed and split paths, source digests, line stats, groups, and explain before/after stacks. Packed worktree capture copies tracked files through a bounded pool. Instruction-line restatements, `--compare` pair selection, overlay delete gloss, and MCP parse errors match the contract.
 
 ## **NEXT** — Offline evidence-revision reveal
 

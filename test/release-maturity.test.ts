@@ -724,7 +724,7 @@ describe("public release maturity", () => {
   it("records v2.4.3 as the domain capability-layer map", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v2.4.3`: Domain capability layers";
-    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.4.4`:");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -738,10 +738,27 @@ describe("public release maturity", () => {
     expect(roadmap).toContain("wrong axis");
     expect(roadmap).toContain("does not treat the checkout as “at L4”");
     expect(read("CHANGELOG.md")).toContain("## 2.4.3 — SHIPPED TO MAIN");
-    expect(read("package.json")).toContain('"version": "2.4.3"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.4.3"');
-    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.4.3`");
-    expect(read("README.md")).toContain("ruleblast-companion-2.4.3.vsix");
+  });
+
+  it("records v2.4.4 as summary and detail of one result", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v2.4.4`: Summary and detail of one result";
+    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toContain("2.4.4");
+    expect(shipped).toContain("2.4.1");
+    expect(shipped).toContain("ruleblast-companion-2.4.4.vsix");
+    expect(shipped).toContain("--detail");
+    expect(shipped).toContain("summary");
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 2.4.4 — SHIPPED TO MAIN");
+    expect(read("package.json")).toContain('"version": "2.4.4"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.4.4"');
+    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.4.4`");
+    expect(read("README.md")).toContain("ruleblast-companion-2.4.4.vsix");
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.4.1"',
     );

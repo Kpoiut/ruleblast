@@ -91,8 +91,9 @@ function emitAttentionPaths(
 function presentationExtras(args: {
   readonly witness: boolean;
   readonly receipt: boolean;
-}): { witness: boolean; receipt: boolean } {
-  return { witness: args.witness, receipt: args.receipt };
+  readonly detail: boolean;
+}): { witness: boolean; receipt: boolean; detail: boolean } {
+  return { witness: args.witness, receipt: args.receipt, detail: args.detail };
 }
 
 function analysisProfiles(
@@ -283,14 +284,12 @@ export async function runAnalysisAction(
         io.stdout(renderBlastOverlay(pair.overlay, {
           from: args.base.ref,
           to: selectorLabel(args.target),
-          instructionLineEdits:
-            pair.result.diffStats.addedLineCount +
-            pair.result.diffStats.deletedLineCount +
-            pair.result.diffStats.editedLineCount,
+          instructionLineEdits: pair.result.diffStats.editedLineCount,
           changedStackPathCount: pair.result.counts.changedStackPathCount,
           identityLaw: isWorktreeIdentitySource(after)
             ? "worktree-captured"
             : "git-storage",
+          ...(args.detail ? { sampleCap: Number.POSITIVE_INFINITY } : {}),
         }));
       }
       return noDefensibleResult(pair.result) ? 2 : 0;

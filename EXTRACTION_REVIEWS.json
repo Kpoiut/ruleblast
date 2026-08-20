@@ -1,4 +1,17 @@
 {
   "schemaVersion": 1,
-  "reviews": []
+  "reviews": [
+    {
+      "module": "src/args.ts",
+      "extracted": "src/args-tokens.ts",
+      "reason": "Argv grammar admitted --detail. Token capture and flag conflicts move to args-tokens so args.ts stays the action mapper under 400 lines.",
+      "when": "18 August 2026"
+    },
+    {
+      "module": "src/git.ts",
+      "extracted": null,
+      "reason": "Worktree capture now copies tracked files through a bounded pool. Inventory, signature, and stability checks share one Git identity type and stay in git.ts rather than a wrapper that only renames capture.",
+      "when": "18 August 2026"
+    }
+  ]
 }

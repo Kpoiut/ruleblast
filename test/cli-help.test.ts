@@ -39,7 +39,10 @@ describe("route catalog", () => {
     expect(help).toContain("--json stays canonical");
     expect(help).toContain("--paths-only");
     expect(help).toContain("--compare");
+    expect(help).toContain("--detail");
+    expect(help).toContain("Default text is the summary");
     expect(help).toContain("ruleblast [path] [--json] [--paths-only]");
+    expect(help).toContain("[--detail]");
     expect(help).toContain("ruleblast explain <path>");
     expect(help).toContain("[--compare]");
   });
