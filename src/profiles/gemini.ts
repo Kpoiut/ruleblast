@@ -163,19 +163,29 @@ export function createGeminiProfile(config: {
       path === "CONTEXT.md";
   },
   async prepare(snapshot: RepositorySnapshot): Promise<PreparedProfile> {
+    const inventory = new Set(await snapshot.listPaths());
     const nodes = new Map<string, CapturedNode>();
-    for (const path of await snapshot.listPaths()) {
+    const capture = async (path: string): Promise<CapturedNode | null> => {
+      const existing = nodes.get(path);
+      if (existing !== undefined) return existing;
+      if (!inventory.has(path)) return null;
       const entry = await snapshot.entry(path);
-      if (entry === null) continue;
+      if (entry === null) return null;
       const bytes = await snapshot.read(path);
-      if (bytes === null) continue;
-      nodes.set(path, { path, kind: entry.kind, text: decode(bytes) });
-    }
+      if (bytes === null) return null;
+      const node = { path, kind: entry.kind, text: decode(bytes) };
+      nodes.set(path, node);
+      return node;
+    };
+    await capture(GEMINI_SETTINGS_PATH);
     const settings = nodes.get(GEMINI_SETTINGS_PATH);
     const parsedNames = settings === undefined
       ? { names: [DEFAULT_GEMINI_FILENAME] as const, status: "COMPLETE" as const, evidence: [] }
       : parseGeminiFileNames(settings.text);
     const fileNames = parsedNames.names;
+    for (const path of inventory) {
+      if (isGeminiInstructionPath(path, fileNames)) await capture(path);
+    }
     const documents = new Map<string, GeminiFile>();
     for (const node of nodes.values()) {
       documents.set(node.path, node);
@@ -192,9 +202,12 @@ export function createGeminiProfile(config: {
       if (node === undefined) continue;
       for (const reference of listGeminiImportReferences(node.text)) {
         const resolved = resolveGeminiImportPath(current.path, reference);
-        if (resolved === null || !nodes.has(resolved) || queued.has(resolved)) continue;
+        if (resolved === null || !inventory.has(resolved) || queued.has(resolved)) continue;
         queued.add(resolved);
         sourceDependencyPaths.add(resolved);
+        await capture(resolved);
+        const imported = nodes.get(resolved);
+        if (imported !== undefined) documents.set(imported.path, imported);
         pending.push({ path: resolved, depth: current.depth + 1 });
       }
     }

@@ -2,7 +2,7 @@
 
 This document is the public behavior and result contract for RuleBlast v1. It defines what a result means, which bytes are in scope, how uncertainty survives analysis, and what the product may claim. Implementation details may change while this contract and the canonical JSON remain compatible.
 
-The v1 result schema remains `schemaVersion: 1` and `resolverRevision: 1`. This tree’s package version is `2.4.4`. An authorized distribution binds a published npm version to a signed source tag; registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
+The v1 result schema remains `schemaVersion: 1` and `resolverRevision: 1`. This tree’s package version is `2.4.5`. An authorized distribution binds a published npm version to a signed source tag; registry and GitHub Release availability are external facts that this contract never infers from a source checkout.
 
 v2.0 Reality Packs are a reviewed **bundled** representation and contributor format under `packs/bundled/`. Arbitrary third-party runtime pack loading (`--pack`) is not admitted. No fifth bundled reality is admitted in `2.0.0`. Catalog admission (default vs opt-in) is product policy, not a pack field. The four bundled packs are the profile source of truth; named engines reproduce the `MIGRATION_BASE_SHA` `38cb0f50bd03bc39a0046426b6fa3004103d4f4a` adapter oracle, including the Gemini two-hop `sourceDependencyPaths` correction (D2a).
 

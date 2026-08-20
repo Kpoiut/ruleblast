@@ -62,7 +62,7 @@ describe("P1/B0 plan gate", () => {
     const mcp = read("src/mcp-stdio.ts");
     expect(mcp).not.toContain("buildOverlayP1");
     expect(mcp).not.toContain("reconstructWorkMap");
-    expect(mcp).not.toContain("diffRepositoryWithAdjunct");
+    expect(mcp).toContain("diffRepositoryWithAdjunct");
     const host = read("hosts/vscode/src/extension.ts");
     expect(host).not.toContain("buildOverlayP1");
     expect(host).not.toContain("reconstructWorkMap");
@@ -90,6 +90,6 @@ describe("P1/B0 plan gate", () => {
     expect(changelog).toMatch(/^## 2\.3\.0 — RELEASED/mu);
     expect(changelog).not.toMatch(/^## 2\.3\.0 — SHIPPED TO MAIN/mu);
     expect(read("ROADMAP.md")).toMatch(/## \*\*RELEASED\*\* — `v2\.3\.0`/u);
-    expect(read("package.json")).toContain('"version": "2.4.4"');
+    expect(read("package.json")).toContain('"version": "2.4.5"');
   });
 });

@@ -2,6 +2,14 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.4.5 — SHIPPED TO MAIN
+
+- Packed CLI `--help` and `--version` no longer load Git capture, analysis, MCP, or the case receipt.
+- The packaged case verifies its receipt once per process.
+- Gemini prepare reads instruction files and followed imports, not every tracked blob.
+- MCP `diff` prepares the same overlay adjunct as the CLI. All four MCP tools accept `detail`. The companion command **Show Detail** renders last-result detail without a fifth action.
+- Public install identity is `ruleblast@2.4.5`. Pack `ruleblast-companion-2.4.5.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
 ## 2.4.4 — SHIPPED TO MAIN
 
 - Default human text is the summary of the same canonical result. `--detail` prints the fields that summary compresses: per-profile counts, findings, split and changed paths, source digests, added/deleted lines, groups, and explain before/after stacks.

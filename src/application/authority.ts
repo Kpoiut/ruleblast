@@ -116,6 +116,7 @@ export function presentExplain(
 }
 
 export { explainExistingResult };
+export { renderDetail } from "../render-detail.js";
 
 export type { ExplainView } from "./explain-view.js";
 export {

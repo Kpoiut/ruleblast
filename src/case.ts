@@ -156,16 +156,20 @@ export function verifyPromotedReceipt(
   };
 }
 
+let cachedPromotedCase: VerifiedPromotedCase | null = null;
+
 function loadPromotedCase(): VerifiedPromotedCase {
+  if (cachedPromotedCase !== null) return cachedPromotedCase;
   const receipts = listReceiptPaths(CASES_ROOT);
   if (receipts.length !== 1) {
     fail("exactly one promoted receipt must be packaged");
   }
   const relativePosixPath = receipts[0]!;
-  return verifyPromotedReceipt(
+  cachedPromotedCase = verifyPromotedReceipt(
     readFileSync(join(CASES_ROOT, ...relativePosixPath.split("/"))),
     relativePosixPath,
   );
+  return cachedPromotedCase;
 }
 
 export function packagedCasePresentation(): PackagedCasePresentation {

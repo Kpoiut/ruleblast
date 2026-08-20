@@ -4,10 +4,8 @@ import { realpathSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { CliUsageError, parseArgs } from "./args.js";
-import { openPackagedCase } from "./case.js";
 import { packageVersion } from "./package-identity.js";
-import { displayText, writeLine } from "./cli-output.js";
-import { runAnalysisAction } from "./cli-actions.js";
+import { displayText } from "./render-format.js";
 import {
   captureInvocation,
   CliRuntimeError,
@@ -15,17 +13,10 @@ import {
   type CliIo,
 } from "./cli-runtime.js";
 import {
-  findRepositoryRoot,
   GitSnapshotError,
-  openGitSnapshot,
-  openTrackedWorktree,
-  probeGitStorageFormat,
   type GitSnapshotErrorCode,
-} from "./git.js";
-import { analyzeCurrent, analyzeDiff } from "./impact.js";
+} from "./git-errors.js";
 import { renderCliHelp } from "./cli-help.js";
-import { defaultProfileDefinitions } from "./application/authority.js";
-import { serveMcpStdio } from "./mcp-stdio.js";
 
 export {
   CliRuntimeError,
@@ -38,22 +29,56 @@ export type {
   ExplainResult,
 } from "./cli-output.js";
 
+function writeLine(callback: (text: string) => void, text: string): void {
+  callback(`${text.replace(/[\r\n]+$/g, "")}\n`);
+}
+
 const USAGE = renderCliHelp();
 
-const DEFAULT_PROFILES = defaultProfileDefinitions();
-const DEFAULT_DEPENDENCIES: CliDependencies = Object.freeze({
+function unsupportedAnalysis(): never {
+  throw new Error("help and version must not analyze a repository");
+}
+
+const LIGHT_DEPENDENCIES: CliDependencies = Object.freeze({
   version: packageVersion(),
   shellDialect: process.platform === "win32" ? "powershell" : "posix",
-  profiles: DEFAULT_PROFILES,
+  profiles: Object.freeze([]),
   resolvePath: resolve,
-  findRepositoryRoot,
-  openGitSnapshot,
-  probeGitStorageFormat,
-  openTrackedWorktree,
-  analyzeCurrent,
-  analyzeDiff,
-  openCase: openPackagedCase,
+  findRepositoryRoot: async () => unsupportedAnalysis(),
+  openGitSnapshot: async () => unsupportedAnalysis(),
+  probeGitStorageFormat: async () => unsupportedAnalysis(),
+  openTrackedWorktree: async () => unsupportedAnalysis(),
+  analyzeCurrent: async () => unsupportedAnalysis(),
+  analyzeDiff: async () => unsupportedAnalysis(),
+  openCase: async () => unsupportedAnalysis(),
 });
+
+async function loadDefaultDependencies(): Promise<CliDependencies> {
+  const [
+    { openPackagedCase },
+    { findRepositoryRoot, openGitSnapshot, openTrackedWorktree, probeGitStorageFormat },
+    { analyzeCurrent, analyzeDiff },
+    { defaultProfileDefinitions },
+  ] = await Promise.all([
+    import("./case.js"),
+    import("./git.js"),
+    import("./impact.js"),
+    import("./application/profile-catalog.js"),
+  ]);
+  return Object.freeze({
+    version: packageVersion(),
+    shellDialect: process.platform === "win32" ? "powershell" : "posix",
+    profiles: defaultProfileDefinitions(),
+    resolvePath: resolve,
+    findRepositoryRoot,
+    openGitSnapshot,
+    probeGitStorageFormat,
+    openTrackedWorktree,
+    analyzeCurrent,
+    analyzeDiff,
+    openCase: openPackagedCase,
+  });
+}
 
 const GIT_ERROR_MESSAGES: Readonly<Record<GitSnapshotErrorCode, string>> = {
   NOT_REPOSITORY: "No Git repository was found from the selected path",
@@ -124,15 +149,15 @@ export function getVersionLine(version: string): string {
 export async function runCli(
   argv: readonly string[],
   ioValue: CliIo,
-  dependencyValue: CliDependencies = DEFAULT_DEPENDENCIES,
+  dependencyValue?: CliDependencies,
 ): Promise<number> {
   let invocation: ReturnType<typeof captureInvocation>;
   try {
-    invocation = captureInvocation(ioValue, dependencyValue);
+    invocation = captureInvocation(ioValue, dependencyValue ?? LIGHT_DEPENDENCIES);
   } catch {
     return 70;
   }
-  const { io, dependencies } = invocation;
+  const { io } = invocation;
   try {
     const args = parseArgs(argv);
     if (args.action === "help") {
@@ -140,15 +165,18 @@ export async function runCli(
       return 0;
     }
     if (args.action === "version") {
-      writeLine(io.stdout, getVersionLine(dependencies.version));
+      writeLine(io.stdout, getVersionLine((dependencyValue ?? LIGHT_DEPENDENCIES).version));
       return 0;
     }
     if (args.action === "mcp") {
+      const { serveMcpStdio } = await import("./mcp-stdio.js");
       return serveMcpStdio(process.stdin, process.stdout, {
         cwd: io.cwd(),
         env: io.env,
       });
     }
+    const { runAnalysisAction } = await import("./cli-actions.js");
+    const dependencies = dependencyValue ?? await loadDefaultDependencies();
     return await runAnalysisAction(args, io, dependencies);
   } catch (error: unknown) {
     if (error instanceof CliUsageError) {

@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { promisify } from "node:util";
 import type { SnapshotRef } from "./model.js";
 import { gitBlobOid } from "./domain/git-blob-identity.js";
+import { GitSnapshotError } from "./git-errors.js";
 import type {
   GitObjectSnapshot,
   GitStorageObjectFormat,
@@ -181,19 +182,7 @@ export async function openGitSnapshot(root: string, ref: string): Promise<GitObj
   return new GitSnapshot(root, oid, entries);
 }
 
-export type GitSnapshotErrorCode =
-  | "NOT_REPOSITORY"
-  | "REF_NOT_FOUND"
-  | "UNMERGED_INDEX"
-  | "UNSUPPORTED_WORKTREE_NODE"
-  | "WORKTREE_CHANGED_DURING_SNAPSHOT";
-
-export class GitSnapshotError extends Error {
-  public constructor(public readonly code: GitSnapshotErrorCode) {
-    super(code);
-    this.name = "GitSnapshotError";
-  }
-}
+export { GitSnapshotError, type GitSnapshotErrorCode } from "./git-errors.js";
 
 function isGitCommandFailure(error: unknown): boolean {
   return typeof error === "object" && error !== null &&

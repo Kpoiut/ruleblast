@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   asJsonRpcRequest,
@@ -54,6 +55,40 @@ describe("MCP stdio transport", () => {
     expect(payload.metrics.mode).toBe("diff");
     expect(payload.metrics.candidatePathCount).toBe(106);
     expect(payload.metrics.changedStackPathCount).toBe(106);
+  });
+
+  it("lists detail as an optional presentation flag on the four tools", async () => {
+    const listed = await dispatchMcpRequest(
+      { jsonrpc: "2.0", id: 1, method: "tools/list" },
+      host,
+    );
+    const tools = (listed as {
+      result: { tools: readonly { name: string; inputSchema: { properties?: Record<string, unknown> } }[] };
+    }).result.tools;
+    for (const tool of tools) {
+      expect(tool.inputSchema.properties).toMatchObject({
+        detail: { type: "boolean" },
+      });
+    }
+  });
+
+  it("returns detailed human text for the packaged case when requested", async () => {
+    const called = await dispatchMcpRequest({
+      jsonrpc: "2.0",
+      id: 4,
+      method: "tools/call",
+      params: { name: "case", arguments: { detail: true } },
+    }, host);
+    const text = (called as { result: { content: readonly { text: string }[] } }).result;
+    const payload = JSON.parse(text.content[0]!.text) as { text?: string };
+    expect(payload.text).toContain("DETAIL");
+  });
+
+  it("prepares overlay through the authority pair, not a local overlay builder", () => {
+    const source = readFileSync(new URL("../src/mcp-stdio.ts", import.meta.url), "utf8");
+    expect(source).toContain("diffRepositoryWithAdjunct");
+    expect(source).toContain("probeGitStorageFormat");
+    expect(source).not.toContain("buildOverlayP1");
   });
 
   it("refuses analysis when the human allow gate is ask", async () => {

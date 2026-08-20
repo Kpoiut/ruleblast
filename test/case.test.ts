@@ -61,6 +61,14 @@ describe("packaged verified case", () => {
     expect(statSync(RECEIPT_PATH, { bigint: true }).mtimeNs).toBe(beforeMtime);
   });
 
+  it("memoizes the packaged receipt after the first verified load", async () => {
+    const first = await openPackagedCase();
+    const second = await openPackagedCase();
+    expect(second).toBe(first);
+    expect(readFileSync(new URL("../src/case.ts", import.meta.url), "utf8"))
+      .toMatch(/cachedPromotedCase/u);
+  });
+
   it("keeps the hidden demo alias byte-identical to the four-action case surface", async () => {
     const receipt = JSON.parse(readFileSync(RECEIPT_PATH, "utf8")) as {
       readonly resultCore: unknown;

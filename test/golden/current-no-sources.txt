@@ -3,6 +3,6 @@ RULEBLAST · WORKTREE
 No repo instructions yet.
 
 Want the 10-second reveal?
-  npx --yes ruleblast@2.4.1 case
+  npx --yes ruleblast@2.4.5 case
 
 Scope: 4 tracked paths · repository-only · resolver revision 1

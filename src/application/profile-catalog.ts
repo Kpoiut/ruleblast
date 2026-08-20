@@ -1,3 +1,4 @@
+import { isOptInRealityId } from "./opt-in-realities.js";
 import {
   parseProfileId,
   type ProfileId,
@@ -93,7 +94,7 @@ export function optInRealityIds(): readonly string[] {
 }
 
 export function isOptInReality(value: string): boolean {
-  return optInRealityIds().includes(value);
+  return isOptInRealityId(value);
 }
 
 export function profilesForRealities(

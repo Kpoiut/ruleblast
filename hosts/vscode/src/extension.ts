@@ -21,6 +21,7 @@ import {
   optInRealityIds,
   presentExplain,
   presentationLabel,
+  renderDetail,
   probeGitStorageFormat,
   scanRepository,
   toRepositoryRelativePath,
@@ -381,6 +382,14 @@ export function activate(context: vscode.ExtensionContext): void {
       await withRoot(status, "case", async () =>
         companionSucceed(state, await openPackagedCase()),
       );
+    }),
+    vscode.commands.registerCommand("ruleblast.showDetail", async () => {
+      if (state.result === null) {
+        vscode.window.showErrorMessage("Run scan, diff, or case first.");
+        return;
+      }
+      const text = renderDetail(state.result);
+      await showExplainDocument(text, state.lifecycle === "STALE");
     }),
   );
 }

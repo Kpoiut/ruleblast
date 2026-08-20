@@ -2,21 +2,34 @@ import type { Readable, Writable } from "node:stream";
 import { resolveAgentAllow } from "./domain/agent-allow.js";
 import {
   diffRepository,
+  diffRepositoryWithAdjunct,
   explainRepository,
   presentExplain,
   scanRepository,
 } from "./application/authority.js";
 import { isOptInReality, optInRealityIds } from "./application/profile-catalog.js";
+import {
+  OVERLAY_UNAVAILABLE,
+  renderBlastOverlay,
+} from "./application/blast-overlay.js";
+import { adjunctRenderContext } from "./application/overlay-tree.js";
 import { replayMetricsFromResult } from "./application/replay.js";
 import {
   findRepositoryRoot,
   openGitSnapshot,
   openPackagedCase,
   openTrackedWorktree,
+  packagedCasePresentation,
+  probeGitStorageFormat,
 } from "./application/repository.js";
 import { explainExistingResult } from "./cli-output.js";
 import { canonicalJson } from "./canonical.js";
 import { packageVersion } from "./package-identity.js";
+import { renderDetail } from "./render-detail.js";
+import {
+  isGitObjectSnapshot,
+  isWorktreeIdentitySource,
+} from "./snapshot.js";
 import {
   asJsonRpcRequest,
   consumeMcpBuffer,
@@ -46,6 +59,7 @@ const TOOLS = Object.freeze([
       properties: {
         startPath: { type: "string" },
         realities: { type: "array", items: { type: "string" } },
+        detail: { type: "boolean" },
       },
     },
   }),
@@ -60,6 +74,7 @@ const TOOLS = Object.freeze([
         to: { type: "string" },
         startPath: { type: "string" },
         realities: { type: "array", items: { type: "string" } },
+        detail: { type: "boolean" },
       },
     },
   }),
@@ -76,6 +91,7 @@ const TOOLS = Object.freeze([
         to: { type: "string" },
         startPath: { type: "string" },
         realities: { type: "array", items: { type: "string" } },
+        detail: { type: "boolean" },
       },
     },
   }),
@@ -87,6 +103,7 @@ const TOOLS = Object.freeze([
       type: "object",
       properties: {
         explainPath: { type: "string" },
+        detail: { type: "boolean" },
       },
     },
   }),
@@ -100,6 +117,10 @@ function objectParams(value: unknown): Record<string, unknown> {
 function stringField(params: Record<string, unknown>, key: string): string | undefined {
   const value = params[key];
   return typeof value === "string" && value !== "" ? value : undefined;
+}
+
+function wantsDetail(params: Record<string, unknown>): boolean {
+  return params.detail === true;
 }
 
 function realitiesOf(params: Record<string, unknown>): readonly string[] {
@@ -129,12 +150,29 @@ function fail(id: string | number | null, code: number, message: string): JsonRp
   return { jsonrpc: "2.0", id, error: { code, message } };
 }
 
+function withDetail(
+  payload: Record<string, unknown>,
+  params: Record<string, unknown>,
+  result: Parameters<typeof renderDetail>[0],
+  context?: Parameters<typeof renderDetail>[1],
+): Record<string, unknown> {
+  if (!wantsDetail(params)) return payload;
+  return { ...payload, text: renderDetail(result, context, false) };
+}
+
 async function runScan(host: McpHost, params: Record<string, unknown>): Promise<string> {
   const start = stringField(params, "startPath") ?? host.cwd;
   const root = await findRepositoryRoot(start);
   const snapshot = await openTrackedWorktree(root);
   const result = await scanRepository({ snapshot, realities: realitiesOf(params) });
-  return canonicalJson({ metrics: replayMetricsFromResult(result), result });
+  return canonicalJson(withDetail({
+    metrics: replayMetricsFromResult(result),
+    result,
+  }, params, result, {
+    currentLabel: "WORKTREE",
+    caseLabel: null,
+    shellDialect: "posix",
+  }));
 }
 
 async function runDiff(host: McpHost, params: Record<string, unknown>): Promise<string> {
@@ -144,8 +182,38 @@ async function runDiff(host: McpHost, params: Record<string, unknown>): Promise<
   const to = stringField(params, "to") ?? "WORKTREE";
   const before = await openGitSnapshot(root, base);
   const after = to === "WORKTREE" ? await openTrackedWorktree(root) : await openGitSnapshot(root, to);
-  const result = await diffRepository({ before, after, realities: realitiesOf(params) });
-  return canonicalJson({ metrics: replayMetricsFromResult(result), result });
+  const realities = realitiesOf(params);
+  const admitOverlay = isGitObjectSnapshot(before) &&
+    (isGitObjectSnapshot(after) || isWorktreeIdentitySource(after));
+  const pair = admitOverlay
+    ? await diffRepositoryWithAdjunct({
+        before,
+        after,
+        realities,
+        format: await probeGitStorageFormat(root),
+      })
+    : {
+        result: await diffRepository({ before, after, realities }),
+        overlay: null,
+        unavailable: false,
+      };
+  const payload: Record<string, unknown> = {
+    metrics: replayMetricsFromResult(pair.result),
+    result: pair.result,
+  };
+  if (pair.unavailable) payload.overlay = OVERLAY_UNAVAILABLE;
+  else if (pair.overlay !== null) {
+    payload.overlay = renderBlastOverlay(
+      pair.overlay,
+      adjunctRenderContext(pair.result),
+    );
+  }
+  return canonicalJson(withDetail(payload, params, pair.result, {
+    beforeLabel: base,
+    afterLabel: to === "WORKTREE" ? "WORKTREE" : to,
+    caseLabel: null,
+    shellDialect: "posix",
+  }));
 }
 
 async function runExplain(host: McpHost, params: Record<string, unknown>): Promise<string> {
@@ -159,11 +227,26 @@ async function runExplain(host: McpHost, params: Record<string, unknown>): Promi
   if (from === undefined) {
     const snapshot = await openTrackedWorktree(root);
     const explained = await explainRepository({ snapshot, path, realities });
+    if (wantsDetail(params)) {
+      return renderDetail(explained.explain, {
+        currentLabel: "WORKTREE",
+        caseLabel: null,
+        shellDialect: "posix",
+      }, false);
+    }
     return presentExplain(explained.explain);
   }
   const before = await openGitSnapshot(root, from);
   const after = to === "WORKTREE" ? await openTrackedWorktree(root) : await openGitSnapshot(root, to);
   const explained = await explainRepository({ before, after, path, realities });
+  if (wantsDetail(params)) {
+    return renderDetail(explained.explain, {
+      beforeLabel: from,
+      afterLabel: to === "WORKTREE" ? "WORKTREE" : to,
+      caseLabel: null,
+      shellDialect: "posix",
+    }, false);
+  }
   return presentExplain(explained.explain);
 }
 
@@ -171,9 +254,27 @@ async function runCase(params: Record<string, unknown>): Promise<string> {
   const result = await openPackagedCase();
   const explainPath = stringField(params, "explainPath");
   if (explainPath === undefined) {
-    return canonicalJson({ metrics: replayMetricsFromResult(result), result });
+    const presentation = packagedCasePresentation();
+    return canonicalJson(withDetail({
+      metrics: replayMetricsFromResult(result),
+      result,
+    }, params, result, {
+      beforeLabel: presentation.beforeLabel,
+      afterLabel: presentation.afterLabel,
+      caseLabel: presentation.label,
+      shellDialect: "posix",
+    }));
   }
   const { explain } = explainExistingResult(result, explainPath);
+  const presentation = packagedCasePresentation();
+  if (wantsDetail(params)) {
+    return renderDetail(explain, {
+      beforeLabel: presentation.beforeLabel,
+      afterLabel: presentation.afterLabel,
+      caseLabel: presentation.label,
+      shellDialect: "posix",
+    }, false);
+  }
   return presentExplain(explain);
 }
 

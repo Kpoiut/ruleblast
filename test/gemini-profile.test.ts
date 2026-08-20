@@ -43,6 +43,30 @@ describe("google/gemini-cli@1 evidence", () => {
 });
 
 describe("google/gemini-cli@1", () => {
+  it("does not read consumer files while preparing a repository snapshot", async () => {
+    const base = snapshot({
+      "GEMINI.md": "root",
+      "src/a.ts": "consumer-a",
+      "src/b.ts": "consumer-b",
+      "README.md": "docs",
+    });
+    const reads: string[] = [];
+    const wrapped = {
+      get ref() {
+        return base.ref;
+      },
+      listPaths: () => base.listPaths(),
+      entry: (path: string) => base.entry(path),
+      read: async (path: string) => {
+        reads.push(path);
+        return base.read(path);
+      },
+    };
+    await geminiProfile.prepare(wrapped);
+    expect(reads).toEqual(["GEMINI.md"]);
+    expect(reads).not.toContain("src/a.ts");
+  });
+
   it("selects ancestor GEMINI.md files root-to-leaf for READ_TARGET", async () => {
     const prepared = await geminiProfile.prepare(snapshot({
       "GEMINI.md": "root",

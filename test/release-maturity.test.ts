@@ -441,7 +441,7 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.0.2 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.2 — SHIPPED TO MAIN/u);
     expect(read("package.json")).toContain("blast radius of AGENTS.md and CLAUDE.md");
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.4\.1"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.4\.5"/u);
     expect(released).toContain("Latest independently verified public npm distribution at that tag is `2.0.2`");
   });
 
@@ -475,7 +475,7 @@ describe("public release maturity", () => {
     expect(released).not.toMatch(/Claude Desktop|Antigravity|Marketplace/iu);
     expect(read("CHANGELOG.md")).toContain("## 2.1.0 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.1\.0 — SHIPPED TO MAIN/u);
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.4\.1"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.4\.5"/u);
     expect(released).toContain("Latest independently verified public npm distribution at that tag is `2.1.0`");
   });
 
@@ -510,7 +510,7 @@ describe("public release maturity", () => {
     expect(read("which-files-inherit-agents-md.md")).toMatch(/Which files inherit a changed AGENTS.md/u);
     expect(read("llms.txt")).toContain("blast radius of AGENTS.md and CLAUDE.md");
     expect(read("action.yml")).toContain("uses: ./.github/actions/ruleblast");
-    expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.4.1`");
+    expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.4.5`");
   });
 
   it("records the independently verified v2.2.0 npm receipt", () => {
@@ -622,7 +622,7 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.3\.0 — SHIPPED TO MAIN/u);
     expect(read("CHANGELOG.md")).toContain("ALIGNED");
     expect(read("CONTRIBUTING.md")).toContain(
-      "Latest independently verified public npm release is `v2.4.1`",
+      "Latest independently verified public npm release is `v2.4.5`",
     );
   });
 
@@ -695,11 +695,6 @@ describe("public release maturity", () => {
       expect(released).toContain(evidence);
     }
     expect(read("CHANGELOG.md")).toContain("## 2.4.1 — RELEASED");
-    expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.4.1"',
-    );
-    expect(read("action.yml")).toMatch(/default: "2\.4\.1"/u);
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.4\.1"/u);
   });
 
   it("records v2.4.2 as one public descriptor without a rename", () => {
@@ -743,7 +738,7 @@ describe("public release maturity", () => {
   it("records v2.4.4 as summary and detail of one result", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v2.4.4`: Summary and detail of one result";
-    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.4.5`:");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -755,12 +750,28 @@ describe("public release maturity", () => {
     expect(shipped).toContain("summary");
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.4.4 — SHIPPED TO MAIN");
-    expect(read("package.json")).toContain('"version": "2.4.4"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.4.4"');
-    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.4.4`");
-    expect(read("README.md")).toContain("ruleblast-companion-2.4.4.vsix");
+  });
+
+  it("records v2.4.5 as packed hosts of one result", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v2.4.5`: Packed hosts of one result";
+    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toContain("2.4.5");
+    expect(shipped).toContain("ruleblast-companion-2.4.5.vsix");
+    expect(shipped).toContain("MCP");
+    expect(shipped).toContain("detail");
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 2.4.5 — SHIPPED TO MAIN");
+    expect(read("package.json")).toContain('"version": "2.4.5"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.4.5"');
+    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.4.5`");
+    expect(read("README.md")).toContain("ruleblast-companion-2.4.5.vsix");
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.4.1"',
+      'PUBLISHED_PACKAGE_VERSION = "2.4.5"',
     );
   });
 

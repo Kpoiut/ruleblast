@@ -239,8 +239,8 @@ describe("blast overlay classifier", () => {
   it("keeps MCP and explain hosts off overlay derivation", () => {
     const mcp = readFileSync(new URL("../src/mcp-stdio.ts", import.meta.url), "utf8");
     expect(mcp).not.toContain("buildOverlayP1");
-    expect(mcp).not.toContain("OVERLAY_UNAVAILABLE");
-    expect(mcp).not.toContain("probeGitStorageFormat");
+    expect(mcp).toContain("diffRepositoryWithAdjunct");
+    expect(mcp).toContain("probeGitStorageFormat");
     const gitSource = readFileSync(new URL("../src/git.ts", import.meta.url), "utf8");
     const blobOid = gitSource.slice(
       gitSource.indexOf("blobOid(path"),

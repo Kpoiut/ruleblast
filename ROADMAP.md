@@ -377,9 +377,15 @@ The roadmap now states the domain ladder this product is built for — instructi
 
 ## **SHIPPED TO MAIN** — `v2.4.4`: Summary and detail of one result
 
-This tree is `2.4.4`. The independently verified public npm package remains `2.4.1`. The companion version is `2.4.4`. Pack `ruleblast-companion-2.4.4.vsix`. Marketplace listings `2.2.0` and `2.2.1` stay as they are. This increment is on main; people still install `ruleblast@2.4.1`.
+That increment is `2.4.4`. The independently verified public npm package remains `2.4.1`. The companion version is `2.4.4`. Pack `ruleblast-companion-2.4.4.vsix`. Marketplace listings `2.2.0` and `2.2.1` stay as they are. This increment is on main; people still install `ruleblast@2.4.1`.
 
 Default human text stays the summary. `--detail` is the complete human projection of the same canonical bytes: counts, findings, changed and split paths, source digests, line stats, groups, and explain before/after stacks. Packed worktree capture copies tracked files through a bounded pool. Instruction-line restatements, `--compare` pair selection, overlay delete gloss, and MCP parse errors match the contract.
+
+## **SHIPPED TO MAIN** — `v2.4.5`: Packed hosts of one result
+
+This tree is `2.4.5`. Companion version is `2.4.5`. Pack `ruleblast-companion-2.4.5.vsix`. Marketplace listings `2.2.0` and `2.2.1` stay as they are. Public install identity is `ruleblast@2.4.5`.
+
+`--help` and `--version` stay off the analysis graph. The packaged case verifies once. Gemini prepare no longer reads every tracked blob. MCP `diff` uses the same prepared overlay pair as the CLI and accepts `detail`. The companion can show last-result detail without a fifth action.
 
 ## **NEXT** — Offline evidence-revision reveal
 
