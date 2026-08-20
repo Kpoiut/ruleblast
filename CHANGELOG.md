@@ -2,13 +2,18 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 2.4.5 — SHIPPED TO MAIN
+## 2.4.5 — RELEASED
 
 - Packed CLI `--help` and `--version` no longer load Git capture, analysis, MCP, or the case receipt.
 - The packaged case verifies its receipt once per process.
 - Gemini prepare reads instruction files and followed imports, not every tracked blob.
 - MCP `diff` prepares the same overlay adjunct as the CLI. All four MCP tools accept `detail`. The companion command **Show Detail** renders last-result detail without a fifth action.
-- Public install identity is `ruleblast@2.4.5`. Pack `ruleblast-companion-2.4.5.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+- [npm `ruleblast@2.4.5`](https://www.npmjs.com/package/ruleblast/v/2.4.5) reports integrity `sha512-nnrLHacDTodnWAypkJZIiolXIMVIOo0TgHy711FK2bT3K3eimc3v6p61AdaH40Y1gSJQ8Z6SBOjYOYAQ55tt4Q==`. The registry download is the 147,397-byte tarball with SHA-256 `9a8b228b0bcf42fc862704fa43f0a27c0b35a2b988a0f67bfd8e276998f950da`. Pack `ruleblast-companion-2.4.5.vsix` (142,254 bytes, SHA-256 `5b45c7fb9daf0e4674de1ab1007a0612e57d8cf11516551aba49739c0a865ea5`). Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+### Release artifact
+
+- Signed tag object `1bbdb7b276bede8e862e1b8c5ccc3d3f32497a13` for [`v2.4.5`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.5) targets commit `c599195b1c64cdff215e7380b7fee9d737e0a10e`.
+- npm and the GitHub Release serve the same 147,397-byte tarball with SHA-256 `9a8b228b0bcf42fc862704fa43f0a27c0b35a2b988a0f67bfd8e276998f950da`. The GitHub Release also serves the 142,254-byte `ruleblast-companion-2.4.5.vsix` with SHA-256 `5b45c7fb9daf0e4674de1ab1007a0612e57d8cf11516551aba49739c0a865ea5`.
 
 ## 2.4.4 — SHIPPED TO MAIN
 

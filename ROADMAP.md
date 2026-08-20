@@ -381,9 +381,11 @@ That increment is `2.4.4`. The independently verified public npm package remains
 
 Default human text stays the summary. `--detail` is the complete human projection of the same canonical bytes: counts, findings, changed and split paths, source digests, line stats, groups, and explain before/after stacks. Packed worktree capture copies tracked files through a bounded pool. Instruction-line restatements, `--compare` pair selection, overlay delete gloss, and MCP parse errors match the contract.
 
-## **SHIPPED TO MAIN** — `v2.4.5`: Packed hosts of one result
+## **RELEASED** — `v2.4.5`: Packed hosts of one result
 
-This tree is `2.4.5`. Companion version is `2.4.5`. Pack `ruleblast-companion-2.4.5.vsix`. Marketplace listings `2.2.0` and `2.2.1` stay as they are. Public install identity is `ruleblast@2.4.5`.
+This tree is `2.4.5`. Latest independently verified public npm distribution is `2.4.5`. Companion version is `2.4.5`. Pack `ruleblast-companion-2.4.5.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+**Verified publication receipt.** Signed tag object `1bbdb7b276bede8e862e1b8c5ccc3d3f32497a13` for [`v2.4.5`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.5) targets commit `c599195b1c64cdff215e7380b7fee9d737e0a10e`. [npm `ruleblast@2.4.5`](https://www.npmjs.com/package/ruleblast/v/2.4.5) reports integrity `sha512-nnrLHacDTodnWAypkJZIiolXIMVIOo0TgHy711FK2bT3K3eimc3v6p61AdaH40Y1gSJQ8Z6SBOjYOYAQ55tt4Q==`. Exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download is the 147,397-byte tarball with SHA-256 `9a8b228b0bcf42fc862704fa43f0a27c0b35a2b988a0f67bfd8e276998f950da`. The GitHub Release serves that same tarball and the 142,254-byte `ruleblast-companion-2.4.5.vsix` with SHA-256 `5b45c7fb9daf0e4674de1ab1007a0612e57d8cf11516551aba49739c0a865ea5`. These are independently verified external records, not facts inferred from this checkout.
 
 `--help` and `--version` stay off the analysis graph. The packaged case verifies once. Gemini prepare no longer reads every tracked blob. MCP `diff` uses the same prepared overlay pair as the CLI and accepts `detail`. The companion can show last-result detail without a fifth action.
 

@@ -738,7 +738,7 @@ describe("public release maturity", () => {
   it("records v2.4.4 as summary and detail of one result", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v2.4.4`: Summary and detail of one result";
-    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.4.5`:");
+    const next = roadmap.indexOf("## **RELEASED** — `v2.4.5`:");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -754,18 +754,33 @@ describe("public release maturity", () => {
 
   it("records v2.4.5 as packed hosts of one result", () => {
     const roadmap = read("ROADMAP.md");
-    const heading = "## **SHIPPED TO MAIN** — `v2.4.5`: Packed hosts of one result";
+    const heading = "## **RELEASED** — `v2.4.5`: Packed hosts of one result";
     const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
-    const shipped = roadmap.slice(start, next);
-    expect(shipped).toContain("2.4.5");
-    expect(shipped).toContain("ruleblast-companion-2.4.5.vsix");
-    expect(shipped).toContain("MCP");
-    expect(shipped).toContain("detail");
-    expect(shipped).not.toMatch(/\bRELEASED\b/u);
-    expect(read("CHANGELOG.md")).toContain("## 2.4.5 — SHIPPED TO MAIN");
+    const released = roadmap.slice(start, next);
+    expect(released).toContain("2.4.5");
+    expect(released).toContain("ruleblast-companion-2.4.5.vsix");
+    expect(released).toContain("MCP");
+    expect(released).toContain("detail");
+    expect(released).not.toMatch(/\bSHIPPED TO MAIN\b/u);
+    for (const evidence of [
+      "https://www.npmjs.com/package/ruleblast/v/2.4.5",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.5",
+      "1bbdb7b276bede8e862e1b8c5ccc3d3f32497a13",
+      "c599195b1c64cdff215e7380b7fee9d737e0a10e",
+      "sha512-nnrLHacDTodnWAypkJZIiolXIMVIOo0TgHy711FK2bT3K3eimc3v6p61AdaH40Y1gSJQ8Z6SBOjYOYAQ55tt4Q==",
+      "147,397",
+      "9a8b228b0bcf42fc862704fa43f0a27c0b35a2b988a0f67bfd8e276998f950da",
+      "142,254",
+      "5b45c7fb9daf0e4674de1ab1007a0612e57d8cf11516551aba49739c0a865ea5",
+      "not facts inferred from this checkout",
+    ]) {
+      expect(released).toContain(evidence);
+    }
+    expect(read("CHANGELOG.md")).toContain("## 2.4.5 — RELEASED");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.4\.5 — SHIPPED TO MAIN/u);
     expect(read("package.json")).toContain('"version": "2.4.5"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.4.5"');
     expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.4.5`");
