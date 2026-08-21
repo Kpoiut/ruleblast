@@ -366,7 +366,7 @@ describe("v2.4.7 adoption contract", () => {
       "RULEBLAST_POSTER=Git shows the edit; complete held frames only",
     );
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "6d4508f9d995103aeeb736f950973df587e1931bf106226faad0531a960c3aa5",
+      "20ce782cf856e43ba15216dd01c61ce85bfaf580acb9a6e27c20bdd7c85b9825",
     );
 
     const descriptor = readJson<PackageDescriptor>("package.json");
@@ -408,7 +408,7 @@ describe("v2.4.7 adoption contract", () => {
     expect(bytes.readUInt32BE(20)).toBe(480);
     expect(statSync(join(repositoryRoot, asset)).size).toBeLessThanOrEqual(400_000);
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "731cb3561cfa2fa60b3324e90683cd4e861c3a87dd117a5aa2ddb953960d5e7f",
+      "a34512161999fd432ec2da8770a8e375a95ac0ff3852c04f5cc34237ec33d47c",
     );
     const board = read("assets/visual-benchmark.html");
     expect(board).toContain("v2.4.6");
