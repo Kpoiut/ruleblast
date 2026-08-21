@@ -2,26 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>RuleBlast visual benchmark</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RuleBlast — Visual Benchmark & Interactive Workbench</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      width: 1200px;
-      height: 480px;
-      overflow: hidden;
-      background: #07101c;
-      color: #c9d1d9;
-      font-family: "Segoe UI", sans-serif;
+    :root {
+      --bg: #07101c;
+      --card-bg: #0c1624;
+      --card-border: #243852;
+      --fg: #c9d1d9;
+      --dim: #8b949e;
+      --white: #e6edf3;
+      --cyan: #58a6ff;
+      --mint: #3fb950;
+      --rose: #f85149;
+      --amber: #d29922;
+      --purple: #bc8cff;
+      --bar-bg: #162536;
+      --terminal-bg: #0d1117;
+      --terminal-bar: #161b22;
+      --terminal-line: #30363d;
     }
-    .board {
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+    }
+    .container {
       width: 1200px;
-      height: 480px;
-      padding: 20px 28px 16px;
-      background: #07101c;
-      display: grid;
-      grid-template-rows: auto 166px 134px auto;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    /* Toolbar */
+    .toolbar {
+      background: #0d1a2d;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
       gap: 12px;
-      border-top: 4px solid #58a6ff;
+    }
+    .tb-group { display: flex; align-items: center; gap: 10px; }
+    .tb-label { font-size: 12px; font-family: "Cascadia Mono", monospace; color: var(--dim); text-transform: uppercase; letter-spacing: 0.05em; }
+    select, button {
+      background: #15253b;
+      color: var(--white);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    select:hover, button:hover { border-color: var(--cyan); }
+    button.active { background: #1c3d6e; border-color: var(--cyan); color: #fff; }
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-family: "Cascadia Mono", monospace;
+      border: 1px solid var(--card-border);
+      background: rgba(15, 25, 40, 0.8);
+      color: var(--cyan);
+    }
+    /* Views */
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
+    /* Benchmark 8-Card View */
+    .board {
+      width: 100%;
+      background: #07101c;
+      padding: 20px 28px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border-top: 4px solid var(--cyan);
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
     }
     header { display: flex; justify-content: space-between; align-items: flex-start; }
     .brand {
@@ -29,96 +99,589 @@
       font-size: 22px;
       font-weight: 700;
       letter-spacing: 0.08em;
-      color: #e6edf3;
+      color: var(--white);
     }
-    .brand span { color: #58a6ff; }
-    .sub { margin-top: 4px; font-size: 15px; color: #6e7681; }
-    .meta {
-      text-align: right;
-      font-family: "Cascadia Mono", Consolas, monospace;
-      font-size: 13px;
-      color: #58a6ff;
-    }
-    .meta small { display: block; margin-top: 4px; color: #6e7681; }
-    .kpis { display: grid; grid-template-columns: 272px 1fr 396px; gap: 16px; }
+    .brand span { color: var(--cyan); }
+    .sub { margin-top: 4px; font-size: 15px; color: var(--dim); }
+    .header-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .badge-row { display: flex; gap: 8px; }
+    .row-grid-3 { display: grid; grid-template-columns: 292px 1fr 376px; gap: 16px; }
+    .row-grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
+    .row-grid-eco { display: grid; grid-template-columns: 1fr 1.05fr 1fr; gap: 16px; }
     .card {
-      background: #0c1624;
-      border: 1px solid #243852;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 14px 16px;
     }
-    .label {
+    .card-label {
       font-family: "Cascadia Mono", Consolas, monospace;
       font-size: 12px;
       letter-spacing: 0.12em;
-      color: #6e7681;
+      color: var(--dim);
     }
-    .num { margin-top: 4px; font-size: 40px; font-weight: 700; line-height: 1; color: #e6edf3; }
-    .num.cyan { color: #58a6ff; }
-    .hint { margin-top: 8px; font-size: 14px; color: #8b949e; line-height: 1.35; }
-    .pair { display: flex; justify-content: space-between; margin-top: 8px; font-size: 15px; }
+    .num { margin-top: 4px; font-size: 42px; font-weight: 700; line-height: 1; color: var(--white); }
+    .num.cyan { color: var(--cyan); }
+    .hint { margin-top: 6px; font-size: 14px; color: var(--fg); line-height: 1.35; }
+    .hint.dim { color: var(--dim); }
+    .pair { display: flex; justify-content: space-between; margin-top: 6px; font-size: 14px; }
     .pair b { font-family: "Cascadia Mono", Consolas, monospace; }
-    .bar { height: 8px; border-radius: 99px; background: #162536; margin: 6px 0 8px; overflow: hidden; }
-    .fill { height: 100%; background: #58a6ff; }
-    .why { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; }
-    .src { margin-top: 8px; font-family: "Cascadia Mono", Consolas, monospace; font-size: 13px; color: #58a6ff; }
-    .src.fg { color: #c9d1d9; }
+    .split-bar { height: 8px; border-radius: 99px; background: var(--bar-bg); margin: 6px 0 8px; overflow: hidden; }
+    .split-fill { height: 100%; background: var(--cyan); }
+    .src-line { margin-top: 4px; font-family: "Cascadia Mono", Consolas, monospace; font-size: 13px; color: var(--cyan); }
+    .src-line.fg { color: var(--fg); }
+    .src-line.rose { color: var(--rose); }
+    .overlay-pill {
+      background: rgba(14, 28, 44, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      margin-top: 6px;
+      font-family: "Cascadia Mono", monospace;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+    }
     footer {
       font-family: "Cascadia Mono", Consolas, monospace;
-      font-size: 13px;
-      color: #8b949e;
-      border-top: 1px solid #243852;
-      padding-top: 10px;
+      font-size: 12px;
+      color: var(--dim);
+      border-top: 1px solid var(--card-border);
+      padding-top: 12px;
+      margin-top: 6px;
+      display: flex;
+      justify-content: space-between;
     }
+    /* Terminal Replay View */
+    .term-window {
+      background: var(--terminal-bg);
+      border: 1px solid var(--terminal-line);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+    }
+    .term-header {
+      background: var(--terminal-bar);
+      border-bottom: 1px solid var(--terminal-line);
+      height: 38px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      position: relative;
+    }
+    .term-dots { display: flex; gap: 8px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot.red { background: #ff5f56; }
+    .dot.yel { background: #ffbd2e; }
+    .dot.grn { background: #27c93f; }
+    .term-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: "Cascadia Mono", monospace;
+      font-size: 12px;
+      color: var(--dim);
+    }
+    .term-body {
+      padding: 18px 24px;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 480px;
+      color: var(--fg);
+      white-space: pre-wrap;
+    }
+    .term-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0d1a2d;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-top: 12px;
+    }
+    /* IDE Companion View */
+    .ide-mockup {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 10px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 480px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .ide-sidebar {
+      background: #252526;
+      border-right: 1px solid #333;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .ide-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #888; font-weight: 700; }
+    .ide-tree-item {
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #ccc;
+      cursor: pointer;
+    }
+    .ide-tree-item:hover, .ide-tree-item.selected { background: #37373d; color: #fff; }
+    .ide-badge { background: #007acc; color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 10px; font-weight: 700; }
+    .ide-editor {
+      background: #1e1e1e;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .ide-tabs { display: flex; gap: 2px; border-bottom: 1px solid #333; padding-bottom: 6px; margin-bottom: 12px; }
+    .ide-tab { background: #2d2d2d; color: #fff; padding: 4px 12px; border-radius: 4px 4px 0 0; font-size: 12px; font-family: "Cascadia Mono", monospace; }
+    .ide-code { font-family: "Cascadia Mono", monospace; font-size: 13px; color: #d4d4d4; line-height: 1.6; }
+    .ide-lens { color: #58a6ff; font-size: 11px; margin-bottom: 4px; cursor: pointer; }
+    .ide-statusbar {
+      background: #007acc;
+      color: #fff;
+      padding: 4px 12px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      border-radius: 0 0 8px 8px;
+      margin: 12px -16px -16px -16px;
+    }
+    /* Syntax colors */
+    .c-cyan { color: var(--cyan); }
+    .c-mint { color: var(--mint); }
+    .c-rose { color: var(--rose); }
+    .c-amber { color: var(--amber); }
+    .c-purple { color: var(--purple); }
+    .c-dim { color: var(--dim); }
+    .c-white { color: var(--white); font-weight: bold; }
   </style>
 </head>
 <body>
-  <main class="board">
-    <header>
-      <div>
-        <div class="brand">RULE<span>BLAST</span></div>
-        <div class="sub">Git lists the edit. This names who inherited it.</div>
+  <div class="container">
+    <!-- Interactive Toolbar -->
+    <nav class="toolbar">
+      <div class="tb-group">
+        <span class="tb-label">Preset:</span>
+        <select id="presetSelect" onchange="applyPreset(this.value)">
+          <option value="codex">openai/codex (2 edits → 206 CX, 0 CC)</option>
+          <option value="ruleblast">kpoiut/ruleblast (33 edits → 106 CX, 106 CC)</option>
+        </select>
       </div>
-      <div class="meta">v2.4.6<small>CLI + companion · scan · diff · explain · case</small><small>npx --yes ruleblast@2.4.6</small></div>
-    </header>
-    <section class="kpis">
-      <article class="card">
-        <div class="label">Git saw</div>
-        <div class="num">2</div>
-        <div class="hint">instruction-line edits<br>3 files · 6 deleted lines<br>AGENTS.md<br>chat_composer.rs · paste_burst.rs</div>
-      </article>
-      <article class="card">
-        <div class="label">RuleBlast found</div>
-        <div class="num cyan">206</div>
-        <div class="hint">Codex stacks inherited nested AGENTS.md. Claude Code 0. Already DIFFERENT → DIFFERENT. No invented split.</div>
-      </article>
-      <article class="card">
-        <div class="label">The split</div>
-        <div class="pair"><span>CX Codex</span><b style="color:#58a6ff">206</b></div>
-        <div class="bar"><div class="fill" style="width:100%"></div></div>
-        <div class="pair"><span>CC Claude Code</span><b>0</b></div>
-        <div class="bar"></div>
-        <div class="hint">4,476 unchanged · 4,682 candidates</div>
-      </article>
-    </section>
-    <section class="why">
-      <article class="card">
-        <div class="label">Why this path</div>
-        <div class="src">source  codex-rs/tui/src/bottom_pane/AGENTS.md</div>
-        <div class="src fg">consumer  …/bottom_pane/action_required_title.rs</div>
-        <div class="hint" style="margin-top:10px">Both COMPLETE. Packaged case is a different 33→106. Causes are evidence links; source counts can overlap.</div>
-      </article>
-      <article class="card">
-        <div class="label">Overlay</div>
-        <div class="hint" style="color:#3fb950;margin-top:8px"><b>ALIGNED</b></div>
-        <div class="src">CONTINUE 2  later work inherits the edit</div>
-        <div class="hint">REJECT  0  no independent Git motion<br>CX STARTUP · CC READ_TARGET · no inherit</div>
-      </article>
-    </section>
-    <footer>
-      openai/codex  8fcf2ad → f0f483e  ·  resolverRevision 1  ·  0 partial · 0 unknown · 0 indeterminate<br>
-      p95 &lt; 2,000 ms on 10,000 paths  ·  not a model-quality score  ·  scan · diff · explain · case
-    </footer>
-  </main>
+
+      <div class="tb-group">
+        <span class="tb-label">View:</span>
+        <button class="active" onclick="switchView('card', this)">8-Card Benchmark</button>
+        <button onclick="switchView('terminal', this)">Terminal Player</button>
+        <button onclick="switchView('ide', this)">IDE Companion</button>
+        <button onclick="switchView('json', this)">JSON View</button>
+      </div>
+
+      <div class="tb-group">
+        <span class="pill-badge" id="allowBadge">allow: yes</span>
+        <span class="pill-badge">v2.4.6</span>
+      </div>
+    </nav>
+
+    <!-- VIEW 1: Visual Benchmark 8-Card View -->
+    <div id="view-card" class="view-panel active">
+      <main class="board">
+        <header>
+          <div>
+            <div class="brand">RULE<span>BLAST</span></div>
+            <div class="sub">See the second diff. Git lists the edit; this names who inherited it.</div>
+          </div>
+          <div class="header-badges">
+            <div class="badge-row">
+              <span class="pill-badge">CLI + companion</span>
+              <span class="pill-badge">user-owned allow gate</span>
+            </div>
+            <div class="badge-row">
+              <span class="pill-badge" style="color:var(--fg)">scan · diff · explain · case</span>
+              <span class="pill-badge">v2.4.6</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- ROW 1: CORE METRICS -->
+        <section class="row-grid-3">
+          <article class="card">
+            <div class="card-label">GIT SAW</div>
+            <div class="num" id="gitEdits">2</div>
+            <div class="hint">instruction-line edits</div>
+            <div class="hint dim" id="gitFiles">3 files · 6 deleted lines</div>
+            <div class="src-line rose" id="gitSrc">AGENTS.md</div>
+            <div class="hint dim" style="margin-top:2px;" id="gitDetails">chat_composer.rs · paste_burst.rs</div>
+          </article>
+
+          <article class="card">
+            <div class="card-label">RULEBLAST FOUND</div>
+            <div class="num cyan" id="rbFound">206</div>
+            <div class="hint" id="rbDesc">Codex stacks that inherited the nested</div>
+            <div class="hint" style="font-weight:600;color:var(--white)" id="rbRelation">AGENTS.md. Claude Code: 0.</div>
+            <div class="hint dim" id="rbUnchanged">Already DIFFERENT → DIFFERENT.<br>No invented split.</div>
+          </article>
+
+          <article class="card">
+            <div class="card-label">THE SPLIT</div>
+            <div class="pair"><span>CX Codex</span><b id="cxCount" style="color:var(--cyan)">206</b></div>
+            <div class="split-bar"><div class="split-fill" id="cxBar" style="width:100%"></div></div>
+            <div class="pair"><span>CC Claude Code</span><b id="ccCount">0</b></div>
+            <div class="split-bar"><div class="split-fill" id="ccBar" style="width:0%"></div></div>
+            <div class="hint dim" id="splitTotals">Already DIFFERENT → DIFFERENT.<br>No invented split.</div>
+          </article>
+        </section>
+
+        <!-- ROW 2: DEEP CAUSAL & OVERLAY ANALYSIS -->
+        <section class="row-grid-2">
+          <article class="card">
+            <div class="card-label">WHY THIS PATH</div>
+            <div class="hint dim">Changed instruction source</div>
+            <div class="src-line" id="whySource">codex-rs/tui/src/bottom_pane/AGENTS.md</div>
+            <div class="hint dim" style="margin-top:8px;">Example affected consumer — not a cause</div>
+            <div class="src-line fg" id="whyConsumer">codex-rs/tui/src/bottom_pane/action_required_title.rs</div>
+            <div class="hint dim" style="margin-top:10px" id="whySummary">Both endpoints COMPLETE. 4,476 paths unchanged.<br>4,682 candidates · 4.40% hit. Packaged case is 33→106.<br>Causes are evidence links; source counts can overlap.</div>
+          </article>
+
+          <article class="card">
+            <div class="card-label">OVERLAY · 2.4.6</div>
+            <div class="overlay-pill" style="border-color:#1c5030;color:var(--mint)">
+              <span>ALIGNED</span><span style="color:var(--fg)">other Git motion inherited the stack</span>
+            </div>
+            <div class="overlay-pill" style="border-color:#1c466e;color:var(--cyan)">
+              <span>CONTINUE 2</span><span style="color:var(--fg)">later work inherits the edit</span>
+            </div>
+            <div class="overlay-pill" style="border-color:#3c285a;color:var(--purple)">
+              <span>REJECT 0</span><span style="color:var(--fg)">no independent Git motion</span>
+            </div>
+            <div class="overlay-pill" style="border-color:#243852;color:var(--cyan);font-size:12px;">
+              <span>CX STARTUP · cwd = dirname(target)</span><span style="color:var(--dim)">· CC no inherit</span>
+            </div>
+          </article>
+        </section>
+
+        <!-- ROW 3: ECOSYSTEM & SECURITY & UNCERTAINTY -->
+        <section class="row-grid-eco">
+          <article class="card">
+            <div class="card-label">CLI</div>
+            <div class="hint" style="font-family:monospace;font-size:13px;">scan · diff · explain · case</div>
+            <div class="src-line" style="font-size:14px;margin-top:6px;">npx --yes ruleblast@2.4.6</div>
+            <div class="hint dim" style="margin-top:8px;">Published CLI pin. Not a fifth action.</div>
+          </article>
+
+          <article class="card">
+            <div class="card-label">IDE COMPANION</div>
+            <div class="hint" style="font-weight:600;color:var(--white);">Same four actions.</div>
+            <div class="hint dim">Last result stays STALE after the worktree moves.</div>
+            <div class="hint dim">Select Reality is a session option. Not a second engine.</div>
+          </article>
+
+          <article class="card">
+            <div class="card-label">UNCERTAINTY</div>
+            <div class="hint" style="color:var(--mint);font-family:monospace;font-size:14px;">0 partial · 0 unknown</div>
+            <div class="hint" style="color:var(--mint);font-family:monospace;font-size:14px;">0 indeterminate</div>
+            <div class="hint dim" style="font-size:12px;margin-top:6px;">Allow: RULEBLAST_AGENT_ALLOW<br>or user-created .ruleblast-allow</div>
+          </article>
+        </section>
+
+        <footer>
+          <span id="footerRepo">openai/codex 8fcf2ad → f0f483e · resolverRevision 1 · p95 &lt; 2,000 ms on 10,000 paths</span>
+          <span>not a model-quality score</span>
+        </footer>
+      </main>
+    </div>
+
+    <!-- VIEW 2: Interactive Terminal Replay -->
+    <div id="view-terminal" class="view-panel">
+      <div class="term-window">
+        <div class="term-header">
+          <div class="term-dots">
+            <div class="dot red"></div>
+            <div class="dot yel"></div>
+            <div class="dot grn"></div>
+          </div>
+          <div class="term-title" id="termTitle">openai/codex · 8fcf2ad → f0f483e · ruleblast@2.4.6</div>
+        </div>
+        <div class="term-body" id="termOutput"></div>
+      </div>
+      <div class="term-controls">
+        <div class="tb-group">
+          <button onclick="playTerminal()" id="playBtn">▶ Play</button>
+          <button onclick="stepTerminal(-1)">⏮ Prev Step</button>
+          <button onclick="stepTerminal(1)">⏭ Next Step</button>
+          <button onclick="resetTerminal()">↺ Reset</button>
+        </div>
+        <div class="tb-group">
+          <span class="tb-label">Step:</span>
+          <span id="stepLabel" class="pill-badge" style="color:var(--white)">1 / 4</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: IDE Companion Simulation -->
+    <div id="view-ide" class="view-panel">
+      <div class="ide-mockup">
+        <aside class="ide-sidebar">
+          <div class="ide-title">RuleBlast Scoreboard</div>
+          <div class="ide-tree-item selected">
+            <span>Δ CHANGED STACKS</span>
+            <span class="ide-badge" id="ideBadge">206</span>
+          </div>
+          <div class="ide-tree-item">
+            <span>↳ action_required_title.rs</span>
+            <span style="font-size:11px;color:var(--cyan)">CX</span>
+          </div>
+          <div class="ide-tree-item">
+            <span>↳ chat_composer.rs</span>
+            <span style="font-size:11px;color:var(--cyan)">CX</span>
+          </div>
+          <div class="ide-title" style="margin-top:12px;">CHANGE ALIGNMENT</div>
+          <div class="ide-tree-item">
+            <span style="color:var(--mint)">● ALIGNED</span>
+            <span style="font-size:11px;color:#aaa">100%</span>
+          </div>
+          <div class="ide-tree-item">
+            <span style="color:var(--cyan)">CONTINUE</span>
+            <span style="font-size:11px;color:#aaa">2 files</span>
+          </div>
+        </aside>
+
+        <main class="ide-editor">
+          <div>
+            <div class="ide-tabs">
+              <div class="ide-tab">action_required_title.rs</div>
+            </div>
+            <div class="ide-lens" onclick="switchView('terminal', document.querySelectorAll('.toolbar button')[1])">
+              ⚡ RuleBlast: Codex inherits nested AGENTS.md (Claude Code: no inherit) — Click to Explain
+            </div>
+            <div class="ide-code">
+              <span style="color:#569cd6">use</span> crate::bottom_pane::chat_composer;<br>
+              <span style="color:#6a9955">// Model instructions inherited from ./AGENTS.md</span><br>
+              <span style="color:#569cd6">pub struct</span> <span style="color:#4ec9b0">ActionRequiredTitle</span> {<br>
+              &nbsp;&nbsp;<span style="color:#9cdcfe">title</span>: <span style="color:#4ec9b0">String</span>,<br>
+              }
+            </div>
+          </div>
+          <div class="ide-statusbar">
+            <span>RuleBlast: <b id="statusText">Δ206 Codex · ALIGNED</b></span>
+            <span>UTF-8 · Rust · 2.4.6</span>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- VIEW 4: Canonical JSON Inspector -->
+    <div id="view-json" class="view-panel">
+      <div class="term-window">
+        <div class="term-header">
+          <div class="term-dots"><div class="dot red"></div><div class="dot yel"></div><div class="dot grn"></div></div>
+          <div class="term-title">canonical-result.json — schemaVersion: 1 · resolverRevision: 1</div>
+        </div>
+        <pre class="term-body" id="jsonOutput" style="color:#9cdcfe;"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DATA = {
+      codex: {
+        gitEdits: "2", gitFiles: "3 files · 6 deleted lines", gitSrc: "AGENTS.md", gitDetails: "chat_composer.rs · paste_burst.rs",
+        rbFound: "206", rbDesc: "Codex stacks that inherited the nested", rbRelation: "AGENTS.md. Claude Code: 0.",
+        rbUnchanged: "Already DIFFERENT → DIFFERENT.<br>No invented split.",
+        cxCount: "206", cxBar: "100%", ccCount: "0", ccBar: "0%", splitTotals: "Already DIFFERENT → DIFFERENT.<br>No invented split.",
+        whySource: "codex-rs/tui/src/bottom_pane/AGENTS.md",
+        whyConsumer: "codex-rs/tui/src/bottom_pane/action_required_title.rs",
+        whySummary: "Both endpoints COMPLETE. 4,476 paths unchanged.<br>4,682 candidates · 4.40% hit. Packaged case is 33→106.<br>Causes are evidence links; source counts can overlap.",
+        overlayStatus: "ALIGNED", overlayIntent: "CONTINUE  2  later work inherits the edit", overlayReject: "REJECT    0  no independent Git motion",
+        overlayProfiles: "CX STARTUP · CC READ_TARGET · no inherit",
+        footerRepo: "openai/codex 8fcf2ad → f0f483e · resolverRevision 1 · p95 < 2,000 ms on 10,000 paths",
+        ideBadge: "206", statusText: "Δ206 Codex · ALIGNED",
+        steps: [
+          `<span class="c-mint">$ git diff --stat 8fcf2ad931b90589dd29a571f367e3185d26bbe0 f0f483e8b2a2630bf8dfa5f8451e81eba20def6c</span>\n` +
+          `<span class="c-rose"> codex-rs/tui/src/bottom_pane/AGENTS.md        | 2 --</span>\n` +
+          `<span class="c-rose"> codex-rs/tui/src/bottom_pane/chat_composer.rs | 1 -</span>\n` +
+          `<span class="c-rose"> codex-rs/tui/src/bottom_pane/paste_burst.rs   | 3 ---</span>\n` +
+          `<span class="c-rose"> 3 files changed, 6 deletions(-)</span>\n\n<span class="c-dim"># Git saw only 3 files. Who inherited the changed instruction?</span>`,
+
+          `<span class="c-mint">$ npx --yes ruleblast@2.4.6 diff 8fcf2ad931b9 --to f0f483e8b2a2</span>\n\n` +
+          `<span class="c-cyan">RULEBLAST · 8fcf2ad931b9 → f0f483e8b2a2</span>\n` +
+          `<span class="c-cyan">  Δ STACK CHANGED        206</span>\n` +
+          `<span class="c-amber">  ≠ NEWLY SPLIT            0</span>\n` +
+          `<span class="c-amber">  ? UNRESOLVED             0</span>\n\n` +
+          `<span class="c-white">206 tracked paths changed stack.</span>\n` +
+          `<span class="c-dim">2 instruction-line edits.</span>\n` +
+          `<span class="c-cyan">SOURCE</span>\n` +
+          `<span class="c-cyan">  codex-rs/tui/src/bottom_pane/AGENTS.md</span>\n` +
+          `<span class="c-mint">    CX Codex             206</span>\n` +
+          `<span class="c-dim">    CC Claude Code         0</span>\n` +
+          `No paths newly split across profiles.\n\n` +
+          `<span class="c-cyan">CHANGE ALIGNMENT (selected realities)</span>\n` +
+          `<span class="c-mint">  ALIGNED  every other tracked path inherited the changed stack</span>\n` +
+          `<span class="c-cyan">INTENT</span>\n` +
+          `<span class="c-mint">  CONTINUE  2  later work inherits the instruction edit</span>`,
+
+          `<span class="c-mint">$ npx --yes ruleblast@2.4.6 explain codex-rs/tui/src/bottom_pane/action_required_title.rs --from 8fcf2ad931b9 --to f0f483e8b2a2</span>\n\n` +
+          `<span class="c-cyan">RULEBLAST EXPLAIN · 8fcf2ad931b9 → f0f483e8b2a2</span>\n\n` +
+          `<span class="c-mint">PROOF</span>\n` +
+          `<span class="c-cyan">  codex-rs/tui/src/bottom_pane/AGENTS.md</span>\n\n` +
+          `<span class="c-white">codex-rs/tui/src/bottom_pane/action_required_title.rs</span>\n\n` +
+          `<span class="c-mint">CX Codex CLI</span>\n` +
+          `  STARTUP · cwd=codex-rs/tui/src/bottom_pane · COMPLETE · affected\n` +
+          `<span class="c-cyan">  └ SELECTED AGENTS.md ← changed</span>\n\n` +
+          `<span class="c-dim">CC Claude Code CLI</span>\n` +
+          `<span class="c-dim">  READ_TARGET · cwd=. · COMPLETE · unchanged</span>\n` +
+          `<span class="c-dim">  (no inherit of nested AGENTS.md)</span>\n\n` +
+          `<span class="c-cyan">WHY THIS PATH COUNTS</span>\n` +
+          `<span class="c-mint">  + codex-rs/tui/src/bottom_pane/AGENTS.md</span>\n` +
+          `<span class="c-white">  = changed profiles: CX Codex (206) · CC Claude Code (0)</span>\n` +
+          `<span class="c-white">  = profile relation: DIFFERENT → DIFFERENT</span>`,
+
+          `<span class="c-mint">$ █</span>\n\n<span class="c-dim"># Ready. Deterministic, local, read-only. 0 model calls.</span>`
+        ],
+        json: {
+          schemaVersion: 1,
+          resolverRevision: 1,
+          repo: "openai/codex",
+          before: "8fcf2ad931b90589dd29a571f367e3185d26bbe0",
+          after: "f0f483e8b2a2630bf8dfa5f8451e81eba20def6c",
+          metrics: { changedStacks: 206, newlySplit: 0, unresolved: 0, candidatePaths: 4682 },
+          profiles: { "openai/codex-cli@1": { changed: 206 }, "anthropic/claude-code-cli@1": { changed: 0 } },
+          alignment: "ALIGNED",
+          intent: { continue: 2, reject: 0 }
+        }
+      },
+      ruleblast: {
+        gitEdits: "33", gitFiles: "2 files · 48 changes", gitSrc: "AGENTS.md · CLAUDE.md", gitDetails: "root rule synchronizations",
+        rbFound: "106", rbDesc: "All 106 tracked stacks moved in tandem", rbRelation: "Codex: 106 · Claude Code: 106",
+        rbUnchanged: "Synchronized inheritance across all profiles.<br>0 unresolved.",
+        cxCount: "106", cxBar: "100%", ccCount: "106", ccBar: "100%", splitTotals: "Synchronized inheritance across all profiles.<br>0 unresolved.",
+        whySource: "AGENTS.md · CLAUDE.md",
+        whyConsumer: ".github/ISSUE_TEMPLATE/missing-blast.yml",
+        whySummary: "Verified teaching receipt: 33 edits across root instruction sources. 106 of 106 stacks moved.<br>0 current split, partial, unknown, or indeterminate paths.",
+        overlayStatus: "ALIGNED", overlayIntent: "CONTINUE  106  all later work inherits", overlayReject: "REJECT    0  no independent Git motion",
+        overlayProfiles: "CX STARTUP · CC READ_TARGET · full synchronized inherit",
+        footerRepo: "kpoiut/ruleblast  27d52e2 → e420008  ·  resolverRevision 1  ·  0 partial · 0 unknown · 0 indeterminate",
+        ideBadge: "106", statusText: "Δ106 Synchronized · ALIGNED",
+        steps: [
+          `<span class="c-mint">$ npx --yes ruleblast@2.4.6 case</span>\n\n` +
+          `<span class="c-cyan">RULEBLAST · VERIFIED CASE · kpoiut/ruleblast · 27d52e2cd6ee → e420008a1c10</span>\n\n` +
+          `<span class="c-cyan">  Δ STACK CHANGED        106</span>\n` +
+          `<span class="c-amber">  ≠ NEWLY SPLIT            0</span>\n` +
+          `<span class="c-amber">  ? UNRESOLVED             0</span>\n\n` +
+          `<span class="c-white">106 tracked paths changed stack.</span>\n` +
+          `<span class="c-dim">33 instruction-line edits.</span>\n` +
+          `<span class="c-cyan">SOURCE</span>\n` +
+          `<span class="c-cyan">  AGENTS.md</span>\n` +
+          `<span class="c-mint">    CX Codex             106</span>\n` +
+          `<span class="c-mint">    CC Claude Code       106</span>\n` +
+          `<span class="c-cyan">  CLAUDE.md</span>\n` +
+          `<span class="c-mint">    CX Codex             106</span>\n` +
+          `<span class="c-mint">    CC Claude Code       106</span>`,
+
+          `<span class="c-mint">$ npx --yes ruleblast@2.4.6 case --explain .github/ISSUE_TEMPLATE/missing-blast.yml</span>\n\n` +
+          `<span class="c-cyan">RULEBLAST EXPLAIN · VERIFIED CASE · 27d52e2cd6ee → e420008a1c10</span>\n\n` +
+          `<span class="c-mint">PROOF</span>\n` +
+          `<span class="c-cyan">  AGENTS.md</span>\n` +
+          `<span class="c-cyan">  CLAUDE.md</span>\n\n` +
+          `.github/ISSUE_TEMPLATE/missing-blast.yml\n\n` +
+          `<span class="c-mint">CX Codex CLI</span>\n` +
+          `  STARTUP · cwd=. · COMPLETE · affected\n` +
+          `<span class="c-cyan">  └ SELECTED AGENTS.md ← changed</span>\n\n` +
+          `<span class="c-mint">CC Claude Code CLI</span>\n` +
+          `  READ_TARGET · cwd=. · COMPLETE · affected\n` +
+          `<span class="c-cyan">  └ SELECTED CLAUDE.md ← changed</span>`,
+
+          `<span class="c-mint">$ █</span>\n\n<span class="c-dim"># Packaged teaching case complete. Digest: 1e907a88ed...</span>`
+        ],
+        json: {
+          schemaVersion: 1,
+          resolverRevision: 1,
+          repo: "kpoiut/ruleblast",
+          before: "27d52e2cd6eeb25d9b395351fc2212e2d48cb7c8",
+          after: "e420008a1c10c5c328e506247560117f4d40b855",
+          metrics: { changedStacks: 106, newlySplit: 0, unresolved: 0, candidatePaths: 106 },
+          profiles: { "openai/codex-cli@1": { changed: 106 }, "anthropic/claude-code-cli@1": { changed: 106 } },
+          alignment: "ALIGNED",
+          intent: { continue: 106, reject: 0 }
+        }
+      }
+    };
+
+    let activePreset = "codex";
+    let activeStep = 0;
+    let playTimer = null;
+
+    function applyPreset(key) {
+      activePreset = key;
+      const d = DATA[key];
+      for (const prop in d) {
+        if (typeof d[prop] === 'string') {
+          const el = document.getElementById(prop);
+          if (el) el.innerHTML = d[prop];
+        }
+      }
+      document.getElementById('cxBar').style.width = d.cxBar;
+      document.getElementById('ccBar').style.width = d.ccBar;
+      document.getElementById('jsonOutput').innerText = JSON.stringify(d.json, null, 2);
+      resetTerminal();
+    }
+
+    function switchView(viewName, btn) {
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('view-' + viewName).classList.add('active');
+      document.querySelectorAll('.toolbar button').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      if (viewName === 'terminal') renderTerminalStep();
+    }
+
+    function renderTerminalStep() {
+      const steps = DATA[activePreset].steps;
+      document.getElementById('termOutput').innerHTML = steps[activeStep];
+      document.getElementById('stepLabel').innerText = `${activeStep + 1} / ${steps.length}`;
+    }
+
+    function stepTerminal(delta) {
+      const steps = DATA[activePreset].steps;
+      activeStep = Math.max(0, Math.min(steps.length - 1, activeStep + delta));
+      renderTerminalStep();
+    }
+
+    function resetTerminal() {
+      activeStep = 0;
+      if (playTimer) { clearInterval(playTimer); playTimer = null; document.getElementById('playBtn').innerText = "▶ Play"; }
+      renderTerminalStep();
+    }
+
+    function playTerminal() {
+      const btn = document.getElementById('playBtn');
+      if (playTimer) {
+        clearInterval(playTimer);
+        playTimer = null;
+        btn.innerText = "▶ Play";
+      } else {
+        btn.innerText = "❚❚ Pause";
+        playTimer = setInterval(() => {
+          const steps = DATA[activePreset].steps;
+          if (activeStep < steps.length - 1) {
+            activeStep++;
+            renderTerminalStep();
+          } else {
+            activeStep = 0;
+            renderTerminalStep();
+          }
+        }, 3000);
+      }
+    }
+
+    // Initialize
+    applyPreset('codex');
+  </script>
 </body>
 </html>

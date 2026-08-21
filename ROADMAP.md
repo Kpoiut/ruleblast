@@ -413,7 +413,13 @@ Interpreter admission is the list of uninterpretable resolver operations. Finger
 
 Overlay REJECT restates OUTSIDE THIS BLAST and says it is not a recommendation to discard the Git change.
 
-The GitHub README causal-proof GIF types the published `ruleblast@2.4.6` CLI and prints output in batches on the sealed 2→206 pair. 24 frames, no HUD. The visual board is a compact 1,200×480 strip. Those assets are not in the npm tarball.
+The GitHub README causal-proof GIF types the published `ruleblast@2.4.6` CLI and prints output in batches on the sealed 2→206 pair. Those assets are not in the npm tarball.
+
+## **SHIPPED TO MAIN** — `v2.4.8`: Demo chrome and eight-card scoreboard
+
+This tree is `2.4.8`. Latest independently verified public npm distribution remains `2.4.6`. Companion version is `2.4.8`. Pack `ruleblast-companion-2.4.8.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+The README causal-proof GIF is a 35-frame typed terminal of the published `ruleblast@2.4.6` CLI on the sealed 2→206 pair. No HUD. Frame delays stay inside the README GIF contract. The visual scoreboard is an eight-card 1,200×630 board. Not a fifth action. Not a product UI. Those assets are not in the npm tarball.
 
 ## **NEXT** — Candidate reality conformance lab
 

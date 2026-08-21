@@ -2,6 +2,12 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.4.8 — SHIPPED TO MAIN
+
+- README causal-proof GIF keeps the typed 35-frame terminal (macOS chrome, no HUD). Frame delays are locked to the README GIF contract (≤70 cs, 840 cs total).
+- Visual scoreboard keeps the eight-card layout. Source HTML profile ids stay catalog ids. Assets are not packed.
+- The published CLI people install is still `ruleblast@2.4.6`.
+
 ## 2.4.7 — SHIPPED TO MAIN
 
 - Evidence reveal names `SEALED`, `NO_KNOWN_DRIFT`, or `POSSIBLY_STALE` from committed candidate inventory. That is not a claim the vendor runtime is unchanged. Companion last-result lifecycle stays `CURRENT` / `STALE`. `--json` stays canonical.

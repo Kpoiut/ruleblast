@@ -2,7 +2,7 @@
   "name": "ruleblast",
   "displayName": "RuleBlast — Git Diff for Agent Instructions",
   "description": "Git diff for AI agent repository instructions. Change AGENTS.md. See every file that inherits it. Shows the blast radius of AGENTS.md and CLAUDE.md changes.",
-  "version": "2.4.7",
+  "version": "2.4.8",
   "publisher": "kpoiut",
   "license": "Apache-2.0",
   "icon": "media/icon.png",
