@@ -745,6 +745,7 @@ describe("adjunct completeness", () => {
     expect(text).toContain("REJECT");
     expect(text).toContain("later work inherits the instruction edit");
     expect(text).toContain("Git moved; selected stacks did not");
+    expect(text).toContain("not a recommendation to discard the change");
     expect(text).not.toContain("UNRESOLVED  ");
   });
 

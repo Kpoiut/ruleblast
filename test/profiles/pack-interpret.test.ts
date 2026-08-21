@@ -4,7 +4,11 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { canonicalJson } from "../../src/canonical.js";
 import { loadBundledPack } from "../../src/packs/load.js";
-import { interpretCompiledPack } from "../../src/packs/interpret.js";
+import {
+  canInterpretResolver,
+  interpretCompiledPack,
+  uninterpretableReasons,
+} from "../../src/packs/interpret.js";
 import { profileFromCompiledPack } from "../../src/packs/profile.js";
 import { createCodexProfile, codexProfile } from "../../src/profiles/codex.js";
 import { ManifestSnapshot } from "../../src/snapshot.js";
@@ -18,8 +22,64 @@ describe("spec-driven pack interpreter", () => {
     const profile = readFileSync(join(repositoryRoot, "src/packs/profile.ts"), "utf8");
     expect(interpret).not.toContain("profiles/codex");
     expect(interpret).not.toContain("createCodexProfile");
+    expect(interpret).not.toContain("fingerprint");
     expect(profile).not.toContain("createCodexProfile");
     expect(profile).toContain("interpretCompiledPack");
+  });
+
+  it("admits interpretation from resolver operations, not fingerprint", () => {
+    const codex = loadBundledPack("openai-codex-cli@1").resolver;
+    expect(uninterpretableReasons(codex)).toEqual([]);
+    expect(canInterpretResolver(codex)).toBe(true);
+    expect(canInterpretResolver({ ...codex, fingerprint: "claude-v1" })).toBe(true);
+    expect(canInterpretResolver({ ...codex, fingerprint: "gemini-v1" })).toBe(true);
+    expect(canInterpretResolver({ ...codex, fingerprint: "copilot-v1" })).toBe(true);
+  });
+
+  it("names the missing operations on fingerprint-backed bundled packs", () => {
+    const claude = uninterpretableReasons(
+      loadBundledPack("anthropic-claude-code-cli@1").resolver,
+    );
+    const gemini = uninterpretableReasons(
+      loadBundledPack("google-gemini-cli@1").resolver,
+    );
+    const copilot = uninterpretableReasons(
+      loadBundledPack("github-copilot-cli@1").resolver,
+    );
+    expect(claude).toEqual([
+      "context.cwd",
+      "context.trigger",
+      "assemble.mode",
+      "select.mode",
+      "discover.origins",
+      "discover.range",
+      "transform",
+    ]);
+    expect(gemini).toEqual([
+      "context.cwd",
+      "context.trigger",
+      "onSymlink",
+      "select.mode",
+      "discover.origins",
+      "discover.range",
+      "transform",
+    ]);
+    expect(copilot).toEqual([
+      "context.cwd",
+      "context.trigger",
+      "assemble.mode",
+      "select.mode",
+      "discover.origins",
+      "discover.origin",
+      "transform",
+    ]);
+    expect(claude.join("\n")).not.toMatch(/fingerprint/iu);
+    expect(canInterpretResolver(loadBundledPack("anthropic-claude-code-cli@1").resolver))
+      .toBe(false);
+    const profile = readFileSync(join(repositoryRoot, "src/packs/profile.ts"), "utf8");
+    expect(profile).toContain("createClaudeProfile");
+    expect(profile).toContain("createGeminiProfile");
+    expect(profile).toContain("createCopilotProfile");
   });
 
   it("interprets the bundled Codex pack onto the adapter oracle", async () => {

@@ -25,13 +25,13 @@ interface PackageLock {
   readonly packages: Readonly<Record<string, { readonly version?: string }>>;
 }
 
-describe("v2.4.6 adoption contract", () => {
+describe("v2.4.7 adoption contract", () => {
   it("locks the exact package identity and supported discovery metadata", () => {
     const descriptor = readJson<PackageDescriptor>("package.json");
     const lock = readJson<PackageLock>("package-lock.json");
 
     expect(descriptor).toMatchObject({
-      version: "2.4.6",
+      version: "2.4.7",
       description:
         "Git diff for AI agent repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes across Codex, Claude Code, Gemini CLI, and Copilot CLI.",
       repository: {
@@ -61,8 +61,8 @@ describe("v2.4.6 adoption contract", () => {
       "cli",
       "developer-tools",
     ]);
-    expect(lock.version).toBe("2.4.6");
-    expect(lock.packages[""]?.version).toBe("2.4.6");
+    expect(lock.version).toBe("2.4.7");
+    expect(lock.packages[""]?.version).toBe("2.4.7");
 
     expect(descriptor.description).toContain("blast radius");
     expect(descriptor.description).toContain("AGENTS.md");
@@ -205,7 +205,7 @@ describe("v2.4.6 adoption contract", () => {
     expect(conduct).toMatch(/protect/iu);
 
     const contributingLead = read("CONTRIBUTING.md").slice(0, 700);
-    expect(contributingLead).toContain("v2.4.6");
+    expect(contributingLead).toContain("v2.4.7");
     expect(contributingLead).toContain("2.4.6");
     expect(contributingLead).toMatch(/you do not need a 25-commit/iu);
     expect(contributingLead).toMatch(/surprising result/iu);
@@ -366,7 +366,7 @@ describe("v2.4.6 adoption contract", () => {
       "RULEBLAST_POSTER=Git shows the edit; complete held frames only",
     );
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "46de49e7600f7b9ee4f0ce73adffa93ec957fe25812a62e79fadaec38d699900",
+      "cd87cc4cd01a392893ce23a37d2c2873909376a94c9648bc75bdf0bf92644fb2",
     );
 
     const descriptor = readJson<PackageDescriptor>("package.json");
@@ -408,8 +408,17 @@ describe("v2.4.6 adoption contract", () => {
     expect(bytes.readUInt32BE(20)).toBe(1_200);
     expect(statSync(join(repositoryRoot, asset)).size).toBeLessThanOrEqual(400_000);
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "661907a451e1004c08f373be8aa77eacba015475276e2cfd8ab9adcce0653d65",
+      "c3dab442d036e0faa796556adb1a6625ea17209a31bd30185eff92ceaea4f6e6",
     );
+    const board = read("assets/visual-benchmark.html");
+    expect(board).toContain("v2.4.6");
+    expect(board).toContain("npx --yes ruleblast@2.4.6");
+    expect(board).toContain("CONTINUE 2");
+    expect(board).toContain("ALIGNED");
+    expect(board).toContain("chat_composer.rs");
+    expect(board).toContain("paste_burst.rs");
+    expect(board).not.toContain("v2.1.1");
+    expect(board).not.toContain("ruleblast@2.1.1");
     const descriptor = readJson<PackageDescriptor>("package.json");
     expect(descriptor.files).not.toContain(asset);
   });

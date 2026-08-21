@@ -403,6 +403,18 @@ Human overlay restates membership as CONTINUE or REJECT so a later agent reading
 
 Candidate `npm pack` is offline. Timed-out child commands name their argv, not only `node.exe`. Sequential profile capture stays the prepare-method security property. Fingerprint builtins stay four.
 
+## **SHIPPED TO MAIN** — `v2.4.7`: Sealed evidence and interpreter admission
+
+This tree is `2.4.7`. Latest independently verified public npm distribution remains `2.4.6`. Companion version is `2.4.7`. Pack `ruleblast-companion-2.4.7.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+Offline `--detail` / `--receipt` names a bundled evidence digest `SEALED`, `NO_KNOWN_DRIFT`, or `POSSIBLY_STALE` from committed candidate inventory. That is not a claim the vendor runtime is unchanged. Companion last-result lifecycle stays `CURRENT` / `STALE`. `--json` stays canonical.
+
+Interpreter admission is the list of uninterpretable resolver operations. Fingerprint is not an admission input. Codex remains the only bundled spec the interpreter can execute; `createCodexProfile` stays the adapter oracle. Claude, Gemini, and Copilot stay fingerprint engines because their specs are not data-complete. No fifth bundled reality. No `--pack`. A model name is never a reality.
+
+Overlay REJECT restates OUTSIDE THIS BLAST and says it is not a recommendation to discard the Git change.
+
+The GitHub README causal-proof GIF and visual scoreboard show the published `ruleblast@2.4.6` CLI and the sealed 2→206 pair with the real three-file Git first diff. Those assets are not in the npm tarball.
+
 ## **NEXT** — Candidate reality conformance lab
 
 A candidate runtime may grow selection, rejection, precedence, ambiguity, and unknown fixtures without becoming a public `--reality`. That is a later gate, not a fifth bundled engine.

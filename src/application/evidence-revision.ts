@@ -12,7 +12,7 @@ import {
 import type { PackClaim } from "../packs/schema.js";
 import { presentationFor } from "./profile-catalog.js";
 
-export type EvidenceStatus = "CURRENT" | "POSSIBLY_STALE";
+export type EvidenceStatus = "SEALED" | "NO_KNOWN_DRIFT" | "POSSIBLY_STALE";
 
 export interface BundledEvidenceRow {
   readonly id: string;
@@ -88,8 +88,11 @@ export function revealEvidenceRevisions(
     const digest = evidenceDigest(pack.evidence);
     const candidate = byId.get(pack.pack.id);
     const candidateDigest = candidate === undefined ? null : evidenceDigest(candidate.evidence);
-    const status: EvidenceStatus =
-      candidateDigest !== null && candidateDigest !== digest ? "POSSIBLY_STALE" : "CURRENT";
+    const status: EvidenceStatus = candidateDigest === null
+      ? "SEALED"
+      : candidateDigest !== digest
+        ? "POSSIBLY_STALE"
+        : "NO_KNOWN_DRIFT";
     return Object.freeze({
       id: pack.pack.id,
       evidenceDigest: digest,

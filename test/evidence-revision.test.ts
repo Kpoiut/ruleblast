@@ -93,7 +93,7 @@ function captureJson(result: CurrentRuleBlastResult): string {
 }
 
 describe("offline evidence-revision reveal", () => {
-  it("marks bundled realities CURRENT when no candidate evidence differs", () => {
+  it("marks bundled realities SEALED when no candidate evidence is committed", () => {
     const reveal = revealEvidenceRevisions();
     expect(reveal.bundled).toHaveLength(4);
     expect(reveal.bundled.map((row) => row.id).sort()).toEqual([
@@ -103,7 +103,7 @@ describe("offline evidence-revision reveal", () => {
       "openai/codex-cli@1",
     ]);
     for (const row of reveal.bundled) {
-      expect(row.status).toBe("CURRENT");
+      expect(row.status).toBe("SEALED");
       expect(row.evidenceDigest).toMatch(/^[0-9a-f]{64}$/u);
       expect(row.candidateDigest).toBeNull();
     }
@@ -138,10 +138,10 @@ describe("offline evidence-revision reveal", () => {
     expect(driftedCodex?.candidateDigest).toMatch(/^[0-9a-f]{64}$/u);
     expect(driftedCodex?.candidateDigest).not.toBe(codex?.evidenceDigest);
     expect(drifted.bundled.filter((row) => row.id !== "openai/codex-cli@1")
-      .every((row) => row.status === "CURRENT")).toBe(true);
+      .every((row) => row.status === "SEALED")).toBe(true);
   });
 
-  it("keeps CURRENT when candidate evidence bytes match the sealed pack", () => {
+  it("marks NO_KNOWN_DRIFT when candidate evidence bytes match the sealed pack", () => {
     const sealed = revealEvidenceRevisions().bundled.find(
       (row) => row.id === "openai/codex-cli@1",
     );
@@ -163,7 +163,7 @@ describe("offline evidence-revision reveal", () => {
     }));
     const matched = revealEvidenceRevisions({ candidateRoot: root });
     const row = matched.bundled.find((item) => item.id === "openai/codex-cli@1");
-    expect(row?.status).toBe("CURRENT");
+    expect(row?.status).toBe("NO_KNOWN_DRIFT");
     expect(row?.candidateDigest).toBe(sealed?.evidenceDigest);
     expect(evidenceDigest([
       {
@@ -229,12 +229,14 @@ describe("offline evidence-revision reveal", () => {
     const json = captureJson(result);
     const text = renderEvidenceReveal(revealEvidenceRevisions());
     expect(text).toContain("EVIDENCE");
-    expect(text).toContain("CURRENT");
+    expect(text).toContain("SEALED");
+    expect(text).not.toMatch(/^EVIDENCE[\s\S]*\bCURRENT\b/u);
     expect(text).toContain("CANDIDATE");
     expect(text).toContain("NOT_ADMITTED");
     expect(text).toContain("xai/grok-build-cli");
     expect(detailed).toContain("EVIDENCE");
-    expect(detailed).toContain("CURRENT");
+    expect(detailed).toContain("SEALED");
+    expect(detailed).not.toMatch(/EVIDENCE[\s\S]*\bCURRENT\b/u);
     expect(receipt.markdown).toContain("EVIDENCE");
     expect(summary).not.toContain("EVIDENCE");
     expect(summary).not.toContain("POSSIBLY_STALE");

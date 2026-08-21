@@ -789,7 +789,7 @@ describe("public release maturity", () => {
   it("records v2.4.6 as the spec-driven pack interpreter", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **RELEASED** — `v2.4.6`: Spec-driven pack interpreter";
-    const next = roadmap.indexOf("## **NEXT** — Candidate reality conformance lab");
+    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.4.7`: Sealed evidence and interpreter admission");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -818,10 +818,36 @@ describe("public release maturity", () => {
     }
     expect(read("CHANGELOG.md")).toContain("## 2.4.6 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.4\.6 — SHIPPED TO MAIN/u);
-    expect(read("package.json")).toContain('"version": "2.4.6"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.4.6"');
-    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.4.6`");
+    expect(read("src/package-identity.ts")).toContain(
+      'PUBLISHED_PACKAGE_VERSION = "2.4.6"',
+    );
     expect(read("README.md")).toContain("ruleblast-companion-2.4.6.vsix");
+  });
+
+  it("records v2.4.7 as sealed evidence and interpreter admission", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v2.4.7`: Sealed evidence and interpreter admission";
+    const next = roadmap.indexOf("## **NEXT** — Candidate reality conformance lab");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toContain("2.4.7");
+    expect(shipped).toContain("2.4.6");
+    expect(shipped).toContain("ruleblast-companion-2.4.7.vsix");
+    expect(shipped).toContain("SEALED");
+    expect(shipped).toContain("NO_KNOWN_DRIFT");
+    expect(shipped).toContain("POSSIBLY_STALE");
+    expect(shipped).toContain("uninterpretable");
+    expect(shipped).toContain("not a recommendation");
+    expect(shipped).toContain("ruleblast@2.4.6");
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 2.4.7 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.4\.7 — RELEASED/u);
+    expect(read("package.json")).toContain('"version": "2.4.7"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.4.7"');
+    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.4.7`");
+    expect(read("README.md")).toContain("ruleblast-companion-2.4.7.vsix");
   });
 
   it("keeps release-state records outside the current package boundary", () => {

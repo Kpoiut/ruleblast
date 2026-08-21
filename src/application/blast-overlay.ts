@@ -65,7 +65,9 @@ export function renderBlastOverlay(
       lines.push(`  CONTINUE  ${view.inBlastCount}  later work inherits the instruction edit`);
     }
     if (view.outsideBlastCount > 0) {
-      lines.push(`  REJECT  ${view.outsideBlastCount}  Git moved; selected stacks did not`);
+      lines.push(
+        `  REJECT  ${view.outsideBlastCount}  Git moved; selected stacks did not; not a recommendation to discard the change`,
+      );
     }
     if (view.unresolvedCount > 0) {
       lines.push(

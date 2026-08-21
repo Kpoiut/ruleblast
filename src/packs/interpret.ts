@@ -76,25 +76,44 @@ function source(
   return { path, disposition, digest: sha256(digestBytes), bytesUsed, truncated };
 }
 
-export function canInterpretResolver(resolver: ResolverSpec): boolean {
-  if (resolver.context.cwd !== "dirname-target") return false;
-  if (resolver.context.trigger !== "STARTUP") return false;
-  if (resolver.assemble.mode !== "ordered") return false;
-  if (resolver.onSymlink !== "unknown-unfollowed") return false;
-  if (resolver.select.mode !== "first-per-directory") return false;
-  if (resolver.discover.origins.length !== 1) return false;
+export function uninterpretableReasons(resolver: ResolverSpec): readonly string[] {
+  const reasons: string[] = [];
+  if (resolver.context.cwd !== "dirname-target") reasons.push("context.cwd");
+  if (resolver.context.trigger !== "STARTUP") reasons.push("context.trigger");
+  if (resolver.assemble.mode !== "ordered") reasons.push("assemble.mode");
+  if (resolver.onSymlink !== "unknown-unfollowed") reasons.push("onSymlink");
+  if (resolver.select.mode !== "first-per-directory") reasons.push("select.mode");
+  if (resolver.discover.origins.length !== 1) reasons.push("discover.origins");
   const origin = resolver.discover.origins[0];
-  if (origin === undefined || origin.kind !== "ancestors") return false;
-  if (origin.from !== "repositoryRoot" || origin.to !== "cwd" || origin.inclusive !== true) {
-    return false;
+  if (origin === undefined || origin.kind !== "ancestors") {
+    reasons.push("discover.origin");
+  } else {
+    if (origin.from !== "repositoryRoot" || origin.to !== "cwd" || origin.inclusive !== true) {
+      reasons.push("discover.range");
+    }
+    if (origin.names.length === 0) reasons.push("discover.names");
+    if (
+      resolver.select.names.length !== origin.names.length ||
+      origin.names.some((name, index) => name !== resolver.select.names[index])
+    ) {
+      reasons.push("select.names");
+    }
   }
-  if (origin.names.length === 0) return false;
-  if (resolver.select.names.length !== origin.names.length) return false;
-  if (origin.names.some((name, index) => name !== resolver.select.names[index])) return false;
-  if (resolver.transform.length !== 1) return false;
   const transform = resolver.transform[0];
-  return transform !== undefined && transform.kind === "byte-budget" &&
-    typeof transform.bytes === "number" && transform.bytes > 0;
+  if (
+    resolver.transform.length !== 1 ||
+    transform === undefined ||
+    transform.kind !== "byte-budget" ||
+    typeof transform.bytes !== "number" ||
+    transform.bytes <= 0
+  ) {
+    reasons.push("transform");
+  }
+  return Object.freeze(reasons);
+}
+
+export function canInterpretResolver(resolver: ResolverSpec): boolean {
+  return uninterpretableReasons(resolver).length === 0;
 }
 
 function resolveDirectory(
