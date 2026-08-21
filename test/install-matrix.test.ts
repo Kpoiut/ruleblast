@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -92,6 +92,10 @@ describe("candidate installation matrix", () => {
     );
     expect(packageSmokeTest).toContain("scripts/package-smoke.mjs");
     expect(installMatrix).toContain("runInstallSmoke");
+    expect(readFileSync(new URL("../scripts/install-smoke.mjs", import.meta.url), "utf8"))
+      .toContain('npm_config_offline: "true"');
+    expect(readFileSync(new URL("../scripts/package-pack.mjs", import.meta.url), "utf8"))
+      .toContain("npm_config_offline");
     expect(workflow).toContain("RULEBLAST_REGISTRY_SMOKE: ruleblast@2.2.0");
     expect(workflow).toContain(
       "RULEBLAST_REGISTRY_UPGRADE_FROM: ruleblast@1.5.1",
@@ -161,7 +165,7 @@ describe("candidate installation matrix", () => {
       local: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 2.4.5",
+        version: "ruleblast 2.4.6",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,
@@ -174,7 +178,7 @@ describe("candidate installation matrix", () => {
       global: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 2.4.5",
+        version: "ruleblast 2.4.6",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,
@@ -190,9 +194,9 @@ describe("candidate installation matrix", () => {
   it("documents exact, non-interactive and reversible install commands", async () => {
     const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
     for (const command of [
-      "npx --yes ruleblast@2.4.5 --help",
-      "npx --yes ruleblast@2.4.5 .",
-      "npm install --save-dev --save-exact ruleblast@2.4.5",
+      "npx --yes ruleblast@2.4.6 --help",
+      "npx --yes ruleblast@2.4.6 .",
+      "npm install --save-dev --save-exact ruleblast@2.4.6",
       "ruleblast --version",
       "npx ruleblast --version",
       "npm uninstall --global ruleblast",
@@ -202,17 +206,17 @@ describe("candidate installation matrix", () => {
       expect(readme).toContain(command);
     }
     expect(readme).toMatch(
-      /npm uninstall --global ruleblast[\s\S]+npm install --global ruleblast@2\.4\.5/u,
+      /npm uninstall --global ruleblast[\s\S]+npm install --global ruleblast@2\.4\.6/u,
     );
     expect(readme).toMatch(
-      /npm uninstall --save-dev ruleblast[\s\S]+npm install --save-dev --save-exact ruleblast@2\.4\.5/u,
+      /npm uninstall --save-dev ruleblast[\s\S]+npm install --save-dev --save-exact ruleblast@2\.4\.6/u,
     );
     expect(readme).toContain(
-      "git clone --branch v2.4.5 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v2.4.6 --depth 1 https://github.com/Kpoiut/ruleblast.git",
     );
     expect(readme).toMatch(/Windows.+Linux/isu);
     expect(readme).not.toMatch(/Windows.+macOS.+Linux/isu);
-    expect(readme).not.toMatch(/npx (?!--yes )ruleblast@2\.4\.5/gu);
+    expect(readme).not.toMatch(/npx (?!--yes )ruleblast@2\.4\.6/gu);
   });
 
   it("terminates timed-out process descendants before rejecting", async () => {
@@ -255,6 +259,7 @@ describe("candidate installation matrix", () => {
       const error = await outcome;
       expect(error).toBeInstanceOf(Error);
       expect((error as Error).message).toMatch(/timed out/iu);
+      expect((error as Error).message).toContain("-e");
 
       const descendantPid = Number.parseInt(await readFile(pidFile, "utf8"), 10);
       expect(Number.isSafeInteger(descendantPid)).toBe(true);
@@ -291,7 +296,7 @@ describe("candidate installation matrix", () => {
         packDirectory,
         { ...process.env, npm_execpath: fakeNpm },
         { timeoutMs: 100 },
-      )).rejects.toThrow(/timed out/iu);
+      )).rejects.toThrow(/timed out.+pack/iu);
     } finally {
       await rm(root, { recursive: true, force: true });
     }

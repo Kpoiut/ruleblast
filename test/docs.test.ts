@@ -100,7 +100,7 @@ describe("README story contract", () => {
       "WORK MAP",
       "CHANGE ALIGNMENT",
       "assets/ruleblast-causal-proof.gif",
-      "npx --yes ruleblast@2.4.5 .",
+      "npx --yes ruleblast@2.4.6 .",
       "## What Git missed",
       "assets/ruleblast-visual-benchmark.png",
       "which-files-inherit-agents-md.md",
@@ -108,7 +108,7 @@ describe("README story contract", () => {
       "PROOF.md",
       "## Install",
       "## Run the verified case",
-      "npx --yes ruleblast@2.4.5 case --json",
+      "npx --yes ruleblast@2.4.6 case --json",
       "Exact packaged-case terminal transcript",
       "## Explain one path",
       "## Scope",
@@ -192,21 +192,21 @@ describe("README story contract", () => {
   it("documents one-command, global, local, maintenance, and source installs", () => {
     for (const command of [
       "node --version",
-      "npm view ruleblast@2.4.5 version",
-      "npx --yes ruleblast@2.4.5",
-      "npx --yes ruleblast@2.4.5 --help",
+      "npm view ruleblast@2.4.6 version",
+      "npx --yes ruleblast@2.4.6",
+      "npx --yes ruleblast@2.4.6 --help",
       "cd <your-git-repository>",
-      "npm install --global ruleblast@2.4.5",
+      "npm install --global ruleblast@2.4.6",
       "ruleblast --version",
       "ruleblast --help",
       "ruleblast",
-      "npm install --save-dev --save-exact ruleblast@2.4.5",
+      "npm install --save-dev --save-exact ruleblast@2.4.6",
       "npx ruleblast --version",
       "npx ruleblast --help",
       "npm uninstall --global ruleblast",
       "npm uninstall --save-dev ruleblast",
       "npm cache verify",
-      "git clone --branch v2.4.5 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v2.4.6 --depth 1 https://github.com/Kpoiut/ruleblast.git",
       "npm ci --ignore-scripts",
       "npm run build",
       "node dist/cli.js --version",
@@ -217,10 +217,10 @@ describe("README story contract", () => {
       expect(readme).toContain(command);
     }
     for (const action of [
-      "npx --yes ruleblast@2.4.5 .",
-      "npx --yes ruleblast@2.4.5 diff HEAD~1",
-      "npx --yes ruleblast@2.4.5 explain src/args.ts --from HEAD~1",
-      "npx --yes ruleblast@2.4.5 case",
+      "npx --yes ruleblast@2.4.6 .",
+      "npx --yes ruleblast@2.4.6 diff HEAD~1",
+      "npx --yes ruleblast@2.4.6 explain src/args.ts --from HEAD~1",
+      "npx --yes ruleblast@2.4.6 case",
     ]) {
       expect(readme).toContain(action);
     }
@@ -506,6 +506,7 @@ describe("repository documentation integrity", () => {
       "v2.4.3",
       "v2.4.4",
       "v2.4.5",
+      "v2.4.6",
       "v3.0",
       "v4.0",
     ]) {

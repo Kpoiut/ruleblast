@@ -56,6 +56,23 @@ export function renderBlastOverlay(
       `  ${alignmentGloss(alignment)}`,
     );
   }
+  if (view.observedPathCount > 0) {
+    lines.push(
+      "",
+      "INTENT (selected realities; not actor telemetry; not a stored session)",
+    );
+    if (view.inBlastCount > 0) {
+      lines.push(`  CONTINUE  ${view.inBlastCount}  later work inherits the instruction edit`);
+    }
+    if (view.outsideBlastCount > 0) {
+      lines.push(`  REJECT  ${view.outsideBlastCount}  Git moved; selected stacks did not`);
+    }
+    if (view.unresolvedCount > 0) {
+      lines.push(
+        `  UNRESOLVED  ${view.unresolvedCount}  do not treat as inherited or independent`,
+      );
+    }
+  }
   const sections = [
     ["IN_BLAST", "IN THIS BLAST"],
     ["OUTSIDE_BLAST", "OUTSIDE THIS BLAST"],

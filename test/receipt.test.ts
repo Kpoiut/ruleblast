@@ -119,7 +119,9 @@ describe("pasteable receipt", () => {
     expect(first.markdown).not.toContain("openai/codex-cli@1");
     expect(first.markdown).toContain("agent-allow ask");
     expect(first.markdown).toContain("Not a claim about model compliance.");
-    expect(first.markdown).not.toContain("Copilot");
+    expect(first.markdown).toContain("EVIDENCE");
+    const scoreboard = first.markdown.slice(0, first.markdown.indexOf("EVIDENCE"));
+    expect(scoreboard).not.toContain("Copilot");
     expect(receiptForCurrent(result, "yes").markdown).toContain("agent-allow yes");
   });
 

@@ -441,7 +441,7 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.0.2 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.2 — SHIPPED TO MAIN/u);
     expect(read("package.json")).toContain("blast radius of AGENTS.md and CLAUDE.md");
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.4\.5"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.4\.6"/u);
     expect(released).toContain("Latest independently verified public npm distribution at that tag is `2.0.2`");
   });
 
@@ -475,7 +475,7 @@ describe("public release maturity", () => {
     expect(released).not.toMatch(/Claude Desktop|Antigravity|Marketplace/iu);
     expect(read("CHANGELOG.md")).toContain("## 2.1.0 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.1\.0 — SHIPPED TO MAIN/u);
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.4\.5"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.4\.6"/u);
     expect(released).toContain("Latest independently verified public npm distribution at that tag is `2.1.0`");
   });
 
@@ -755,7 +755,7 @@ describe("public release maturity", () => {
   it("records v2.4.5 as packed hosts of one result", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **RELEASED** — `v2.4.5`: Packed hosts of one result";
-    const next = roadmap.indexOf("## **NEXT** — Offline evidence-revision reveal");
+    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.4.6`:");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -781,13 +781,33 @@ describe("public release maturity", () => {
     }
     expect(read("CHANGELOG.md")).toContain("## 2.4.5 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.4\.5 — SHIPPED TO MAIN/u);
-    expect(read("package.json")).toContain('"version": "2.4.5"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.4.5"');
-    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.4.5`");
-    expect(read("README.md")).toContain("ruleblast-companion-2.4.5.vsix");
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.4.5"',
+      'PUBLISHED_PACKAGE_VERSION = "2.4.6"',
     );
+  });
+
+  it("records v2.4.6 as the spec-driven pack interpreter", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v2.4.6`: Spec-driven pack interpreter";
+    const next = roadmap.indexOf("## **NEXT** — Candidate reality conformance lab");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toContain("2.4.6");
+    expect(shipped).toContain("2.4.5");
+    expect(shipped).toContain("ruleblast-companion-2.4.6.vsix");
+    expect(shipped).toContain("interpret");
+    expect(shipped).toContain("resolver.json");
+    expect(shipped).toContain("POSSIBLY_STALE");
+    expect(shipped).toContain("CONTINUE");
+    expect(shipped).toContain("createCodexProfile");
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 2.4.6 — SHIPPED TO MAIN");
+    expect(read("package.json")).toContain('"version": "2.4.6"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.4.6"');
+    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.4.6`");
+    expect(read("README.md")).toContain("ruleblast-companion-2.4.6.vsix");
   });
 
   it("keeps release-state records outside the current package boundary", () => {

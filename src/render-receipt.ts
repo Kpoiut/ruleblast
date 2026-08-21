@@ -1,3 +1,4 @@
+import { renderEvidenceReveal } from "./application/evidence-revision.js";
 import { presentationLabel } from "./application/profile-catalog.js";
 import { rbctxForCurrent, rbctxForDiff } from "./domain/rbctx.js";
 import type {
@@ -47,6 +48,8 @@ export function receiptForCurrent(
     ]),
     "",
     "Not a claim about model compliance.",
+    "",
+    renderEvidenceReveal().trimEnd(),
   ].join("\n");
   return { version: "RBREC1", title: "current", rbctx, markdown };
 }
@@ -72,6 +75,8 @@ export function receiptForDiff(
     ]),
     "",
     "Not a claim about model compliance.",
+    "",
+    renderEvidenceReveal().trimEnd(),
   ].join("\n");
   return { version: "RBREC1", title: "diff", rbctx, markdown };
 }

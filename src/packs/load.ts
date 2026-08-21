@@ -5,10 +5,15 @@ import { InvalidPackError, compilePack, decodePackBundle } from "./compile.js";
 import type { CompiledPack } from "./schema.js";
 
 const bundledRoot = join(dirname(fileURLToPath(import.meta.url)), "../../packs/bundled");
+const candidateRoot = join(dirname(fileURLToPath(import.meta.url)), "../../packs/candidate");
 const UNSAFE_DIRECTORY = /[<>:"/\\|?*\u0000-\u001f]/u;
 
 export function bundledPacksRoot(): string {
   return bundledRoot;
+}
+
+export function candidatePacksRoot(): string {
+  return candidateRoot;
 }
 
 export function bundledDirectoryForPackId(id: string): string {

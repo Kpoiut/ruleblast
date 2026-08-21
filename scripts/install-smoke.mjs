@@ -168,7 +168,11 @@ export async function runInstallSmoke(options = {}) {
       artifactCount = 0;
       dependencies = [];
     } else {
-      const buildEnv = npmEnvironment(buildCache, inheritedEnvironment);
+      const buildEnv = {
+        ...npmEnvironment(buildCache, inheritedEnvironment),
+        npm_config_offline: "true",
+        npm_config_fetch_retries: "0",
+      };
       if (!candidateHasCompiledCli(REPOSITORY_ROOT)) {
         await runNpm(["run", "build"], REPOSITORY_ROOT, {
           env: buildEnv,

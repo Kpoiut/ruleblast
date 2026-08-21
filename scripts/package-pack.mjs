@@ -66,6 +66,7 @@ export async function packPackage(
     "pack",
     "--json",
     "--ignore-scripts",
+    ...(environment.npm_config_offline === "true" ? ["--offline"] : []),
     "--pack-destination",
     packDirectory,
   ], repositoryRoot, {

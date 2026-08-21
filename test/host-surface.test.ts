@@ -74,7 +74,7 @@ describe("compatible host catalog", () => {
     expect(canonical).toContain("Claude Desktop");
     expect(canonical).toContain(".vscode/mcp.json");
     expect(canonical).toContain(".codex/config.toml");
-    expect(canonical).toContain("ruleblast@2.4.5 --mcp");
+    expect(canonical).toContain("ruleblast@2.4.6 --mcp");
     expect(canonical).toContain("WORK MAP");
     expect(canonical).toContain("not actor telemetry");
     expect(canonical).not.toMatch(/cursor\/editor@1/u);

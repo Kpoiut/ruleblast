@@ -16,6 +16,7 @@ import {
   formatCount,
   plural,
 } from "./render-format.js";
+import { renderEvidenceReveal } from "./application/evidence-revision.js";
 import { renderText, type TextResult } from "./render-text.js";
 
 function snapshotLine(
@@ -175,5 +176,6 @@ export function renderDetail(
     : value.mode === "diff"
       ? diffDetail(value)
       : explainDetail(value);
+  extra.push("", ...renderEvidenceReveal().trimEnd().split("\n"));
   return extra.length === 0 ? `${summary}\n` : `${summary}\n\n${extra.join("\n")}\n`;
 }

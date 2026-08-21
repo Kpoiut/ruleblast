@@ -1,0 +1,42 @@
+{
+  "schema": "ruleblast.candidate.v1",
+  "id": "xai/grok-build-cli",
+  "label": "Grok Build CLI",
+  "admission": "not-admitted",
+  "stability": "forming",
+  "reason": "Official Grok Build CLI docs describe repository instruction discovery. No sealed resolver revision exists. Not a public --reality. Not the Grok model. Cursor Composer, GLM, and Llama remain model names or hosts, not this surface.",
+  "evidence": [
+    {
+      "claimId": "grok.discover.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://docs.x.ai/build/features/project-rules",
+      "retrievedAt": "2026-08-20",
+      "sourceRevision": "2026-07-04",
+      "claim": "Grok Build CLI loads project-rule Markdown from every directory from the repository root down to the working directory, with deeper files taking precedence on conflicts."
+    },
+    {
+      "claimId": "grok.names.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://docs.x.ai/build/features/project-rules",
+      "retrievedAt": "2026-08-20",
+      "sourceRevision": "2026-07-04",
+      "claim": "Within each directory the Grok Build CLI reads AGENTS.md, Agents.md, AGENT.md, CLAUDE.md, Claude.md, and CLAUDE.local.md, plus every *.md file in .grok/rules/ (.claude/rules/ and .cursor/rules/ are read for compatibility with this CLI, not as Cursor editor or Claude Code realities)."
+    },
+    {
+      "claimId": "grok.gitignore.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://docs.x.ai/build/features/project-rules",
+      "retrievedAt": "2026-08-20",
+      "sourceRevision": "2026-07-04",
+      "claim": "Grok Build CLI skips instruction files ignored by .gitignore."
+    },
+    {
+      "claimId": "grok.nested.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://docs.x.ai/build/features/project-rules",
+      "retrievedAt": "2026-08-20",
+      "sourceRevision": "2026-07-04",
+      "claim": "A nested AGENTS.md scopes to its subtree."
+    }
+  ]
+}

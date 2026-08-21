@@ -2,6 +2,13 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.4.6 — SHIPPED TO MAIN
+
+- Catalog Codex is interpreted from the pack `resolver.json`. `createCodexProfile` stays the adapter oracle. The interpreter does not import that adapter. No fifth bundled reality. No `--pack`.
+- Offline evidence-revision reveal: bundled digests can be `CURRENT` or `POSSIBLY_STALE` from committed candidate evidence. `--json` stays canonical.
+- Human overlay restates `IN_BLAST` / `OUTSIDE_BLAST` as CONTINUE / REJECT for the next reader of the same result. RuleBlast does not write intent files.
+- Candidate `npm pack` is offline. Timed-out child commands name their argv. Sequential profile capture stays the prepare-method security property. The tarball advertises `ruleblast@2.4.6`.
+
 ## 2.4.5 — RELEASED
 
 - Packed CLI `--help` and `--version` no longer load Git capture, analysis, MCP, or the case receipt.

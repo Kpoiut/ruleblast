@@ -292,14 +292,18 @@ function decodeManifest(value: unknown): PackManifest {
   });
 }
 
-export function decodePackBundle(value: unknown): PackBundle {
-  const object = expectKeys(value, ["pack", "evidence", "resolver"], "bundle");
-  if (!Array.isArray(object.evidence) || object.evidence.length === 0) {
+export function decodePackEvidence(value: unknown): readonly PackClaim[] {
+  if (!Array.isArray(value) || value.length === 0) {
     fail("evidence must be a non-empty array");
   }
+  return Object.freeze(value.map((item, index) => decodeClaim(item, index)));
+}
+
+export function decodePackBundle(value: unknown): PackBundle {
+  const object = expectKeys(value, ["pack", "evidence", "resolver"], "bundle");
   return Object.freeze({
     pack: decodeManifest(object.pack),
-    evidence: Object.freeze(object.evidence.map((item, index) => decodeClaim(item, index))),
+    evidence: decodePackEvidence(object.evidence),
     resolver: decodeResolver(object.resolver),
   });
 }

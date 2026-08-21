@@ -29,6 +29,8 @@ describe("profile catalog", () => {
     ]);
     expect(isOptInReality("google/gemini-cli@1")).toBe(true);
     expect(isOptInReality("cursor/editor@1")).toBe(false);
+    expect(isOptInReality("xai/grok-build-cli")).toBe(false);
+    expect(isOptInReality("grok-4")).toBe(false);
   });
 
   it("adds exactly one opt-in reality without inventing a generic plugin API", () => {

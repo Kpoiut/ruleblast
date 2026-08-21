@@ -93,7 +93,9 @@ export function runProcess(command, args, options = {}) {
           if (settled) return;
           settled = true;
           void terminateProcessTree(child).then(
-            () => reject(new Error(`Command timed out after ${options.timeoutMs}ms: ${command}`)),
+            () => reject(new Error(
+              `Command timed out after ${options.timeoutMs}ms: ${command} ${args.join(" ")}`,
+            )),
             reject,
           );
         }, options.timeoutMs);

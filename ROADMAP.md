@@ -389,15 +389,27 @@ This tree is `2.4.5`. Latest independently verified public npm distribution is `
 
 `--help` and `--version` stay off the analysis graph. The packaged case verifies once. Gemini prepare no longer reads every tracked blob. MCP `diff` uses the same prepared overlay pair as the CLI and accepts `detail`. The companion can show last-result detail without a fifth action.
 
-## **NEXT** — Offline evidence-revision reveal
+## **SHIPPED TO MAIN** — `v2.4.6`: Spec-driven pack interpreter
 
-An offline run should be able to say that a pinned evidence revision may have drifted without contacting a network. That is a later gate, not a host or marketplace expansion.
+That increment is `2.4.6`. The companion version is `2.4.6`. Pack `ruleblast-companion-2.4.6.vsix`. Marketplace listings `2.2.0` and `2.2.1` stay as they are. The tarball advertises `ruleblast@2.4.6`. Independently verified registry bytes remain `2.4.5` until the authorized publish.
+
+The catalog Codex engine is interpreted from `resolver.json`. `createCodexProfile` remains the adapter oracle. The interpreter does not import that adapter. Claude, Gemini, and Copilot still use fingerprint engines because their specs are not yet data-complete. No fifth bundled reality. No `--pack`. A model name is never a reality.
+
+An offline run can say a pinned bundled evidence digest is `CURRENT` or `POSSIBLY_STALE` by comparing committed candidate evidence, without contacting a network. `--json` stays canonical.
+
+Human overlay restates membership as CONTINUE or REJECT so a later agent reading the same result can continue inherited work or reject independent Git motion. That is presentation of the overlay, not a stored session and not repository mutation.
+
+Candidate `npm pack` is offline. Timed-out child commands name their argv, not only `node.exe`. Sequential profile capture stays the prepare-method security property. Fingerprint builtins stay four.
+
+## **NEXT** — Candidate reality conformance lab
+
+A candidate runtime may grow selection, rejection, precedence, ambiguity, and unknown fixtures without becoming a public `--reality`. That is a later gate, not a fifth bundled engine.
 
 ## **HORIZON** — `v3`: Prove the overlay at corpus scale
 
 Ordered product direction after `v2.3.0`. Not current support. Each step sharpens the same instruction-semantics knife. None of these is a climb toward a harness, dashboard, or platform.
 
-- **`v3.0`** — Offline evidence-revision reveal. A pinned pack or profile evidence digest that can be stale without a network fetch.
+- **`v3.0`** — Corpus-scale evidence-revision: every sealed pack and candidate sidecar compared offline. The first packed reveal is in `v2.4.6`.
 - **`v3.1`** — Sealed full-tree public overlay replay of a licensed pair (the 2651980→58e8f75 shape, not a changed-set subset). Fail closed if OTHER disagrees with the Git identity oracle.
 - **`v3.2`** — Recomputable overlay card: same prepared pair, same adjunct bytes, never an independent authority. Canonical JSON stays adjunct-free.
 - **`v3.3`** — Instruction-pressure corpus: N instruction-line edits → M inherited OTHER paths, each row a Blast Case, no model-quality claim.
@@ -424,7 +436,9 @@ These are unresolved questions, not current support or promised work:
 
 - Which third surface has both stable official semantics and enough demand to pass the `v1.3.0` gate?
 - Can the finite Reality Pack representation reproduce every bundled golden result without an executable escape hatch?
-- How should an offline run reveal that a pinned evidence revision may have drifted without making a network request?
+- How should an offline run reveal that a pinned evidence revision may have drifted without making a network request? The first packed reveal is in `v2.4.6`; corpus-scale drift remains open.
+- Can Qwen Code CLI, DeepSeek Harness, Kimi Code CLI, or ZCode pass the admission gate as data-only Reality Packs without becoming model-name realities? Grok Build CLI is a forming candidate, not public `--reality`.
+- Cursor Composer, GLM, Grok the model, and Llama are not realities. A host or a model behind a host is not a modeled runtime.
 - Can a licensed corpus of Blast Cases cover monorepos, nested instructions, imports, exclusions, and uncertain order without publishing sensitive content?
 - How many documented rule realities are genuinely distinct once equivalent projections are clustered by evidence rather than brand?
 - Can a Git storage blob-object identity join with selected-realities stack delta be admitted as a public product dimension? Human Git-pair and Git→WORKTREE overlay plus CHANGE ALIGNMENT are in `v2.3.0` RELEASED. Full-tree replay of 2651980→58e8f75 is still unsealed.

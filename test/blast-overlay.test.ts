@@ -733,8 +733,19 @@ describe("adjunct completeness", () => {
     expect(text).toContain("MIXED");
     expect(text).toContain("other tracked motion is not one inherited class");
     expect(text.indexOf("CHANGE ALIGNMENT")).toBeGreaterThan(text.indexOf("OTHER TRACKED CHANGES"));
-    expect(text.indexOf("WORK MAP")).toBeGreaterThan(text.indexOf("CHANGE ALIGNMENT"));
+    expect(text.indexOf("INTENT")).toBeGreaterThan(text.indexOf("CHANGE ALIGNMENT"));
+    expect(text.indexOf("WORK MAP")).toBeGreaterThan(text.indexOf("INTENT"));
     expect(text).not.toMatch(VERDICT);
+  });
+
+  it("restates blast membership as CONTINUE or REJECT for the next reader", () => {
+    const text = renderBlastOverlay(mixedView);
+    expect(text).toContain("INTENT (selected realities; not actor telemetry; not a stored session)");
+    expect(text).toContain("CONTINUE");
+    expect(text).toContain("REJECT");
+    expect(text).toContain("later work inherits the instruction edit");
+    expect(text).toContain("Git moved; selected stacks did not");
+    expect(text).not.toContain("UNRESOLVED  ");
   });
 
   it("names ALIGNED, DIVERGENT, and UNRESOLVED gloss from membership only", () => {
@@ -786,6 +797,7 @@ describe("adjunct completeness", () => {
       observedPaths: [],
     });
     expect(text).not.toContain("CHANGE ALIGNMENT");
+    expect(text).not.toContain("INTENT");
     expect(text).not.toContain("added ·");
   });
 
