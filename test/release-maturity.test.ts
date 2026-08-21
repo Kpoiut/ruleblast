@@ -510,7 +510,7 @@ describe("public release maturity", () => {
     expect(read("which-files-inherit-agents-md.md")).toMatch(/Which files inherit a changed AGENTS.md/u);
     expect(read("llms.txt")).toContain("blast radius of AGENTS.md and CLAUDE.md");
     expect(read("action.yml")).toContain("uses: ./.github/actions/ruleblast");
-    expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.4.5`");
+    expect(read("CONTRIBUTING.md")).toContain("Latest independently verified public npm release is `v2.4.6`");
   });
 
   it("records the independently verified v2.2.0 npm receipt", () => {
@@ -622,7 +622,7 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.3\.0 — SHIPPED TO MAIN/u);
     expect(read("CHANGELOG.md")).toContain("ALIGNED");
     expect(read("CONTRIBUTING.md")).toContain(
-      "Latest independently verified public npm release is `v2.4.5`",
+      "Latest independently verified public npm release is `v2.4.6`",
     );
   });
 
@@ -755,7 +755,7 @@ describe("public release maturity", () => {
   it("records v2.4.5 as packed hosts of one result", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **RELEASED** — `v2.4.5`: Packed hosts of one result";
-    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.4.6`:");
+    const next = roadmap.indexOf("## **RELEASED** — `v2.4.6`:");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -788,22 +788,36 @@ describe("public release maturity", () => {
 
   it("records v2.4.6 as the spec-driven pack interpreter", () => {
     const roadmap = read("ROADMAP.md");
-    const heading = "## **SHIPPED TO MAIN** — `v2.4.6`: Spec-driven pack interpreter";
+    const heading = "## **RELEASED** — `v2.4.6`: Spec-driven pack interpreter";
     const next = roadmap.indexOf("## **NEXT** — Candidate reality conformance lab");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
-    const shipped = roadmap.slice(start, next);
-    expect(shipped).toContain("2.4.6");
-    expect(shipped).toContain("2.4.5");
-    expect(shipped).toContain("ruleblast-companion-2.4.6.vsix");
-    expect(shipped).toContain("interpret");
-    expect(shipped).toContain("resolver.json");
-    expect(shipped).toContain("POSSIBLY_STALE");
-    expect(shipped).toContain("CONTINUE");
-    expect(shipped).toContain("createCodexProfile");
-    expect(shipped).not.toMatch(/\bRELEASED\b/u);
-    expect(read("CHANGELOG.md")).toContain("## 2.4.6 — SHIPPED TO MAIN");
+    const released = roadmap.slice(start, next);
+    expect(released).toContain("2.4.6");
+    expect(released).toContain("ruleblast-companion-2.4.6.vsix");
+    expect(released).toContain("interpret");
+    expect(released).toContain("resolver.json");
+    expect(released).toContain("POSSIBLY_STALE");
+    expect(released).toContain("CONTINUE");
+    expect(released).toContain("createCodexProfile");
+    expect(released).not.toMatch(/\bSHIPPED TO MAIN\b/u);
+    for (const evidence of [
+      "https://www.npmjs.com/package/ruleblast/v/2.4.6",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.6",
+      "137dec9cb431d6b6f20869e14252d3f5b8c838b8",
+      "44124475babc60bbb73186debe311ab6753d2f6b",
+      "sha512-MpYQzjNive82VKCJWqhUCx32/NXHgy8Hm878oCSt4u33y9bZgqLlTpYXPxNWHODZn+CL838IyzKZ1j/ip3SL8g==",
+      "153,122",
+      "c8438947be110f783b66e2f9746b5bbc6f9941a2bc5776a2a22af23fc063cdd9",
+      "148,086",
+      "877c565790c2e4b7366ef4ba467c9dd02efc7b0638ddca4fc95fb1faa67d0404",
+      "not facts inferred from this checkout",
+    ]) {
+      expect(released).toContain(evidence);
+    }
+    expect(read("CHANGELOG.md")).toContain("## 2.4.6 — RELEASED");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.4\.6 — SHIPPED TO MAIN/u);
     expect(read("package.json")).toContain('"version": "2.4.6"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.4.6"');
     expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.4.6`");

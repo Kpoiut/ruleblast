@@ -389,9 +389,11 @@ This tree is `2.4.5`. Latest independently verified public npm distribution is `
 
 `--help` and `--version` stay off the analysis graph. The packaged case verifies once. Gemini prepare no longer reads every tracked blob. MCP `diff` uses the same prepared overlay pair as the CLI and accepts `detail`. The companion can show last-result detail without a fifth action.
 
-## **SHIPPED TO MAIN** — `v2.4.6`: Spec-driven pack interpreter
+## **RELEASED** — `v2.4.6`: Spec-driven pack interpreter
 
-That increment is `2.4.6`. The companion version is `2.4.6`. Pack `ruleblast-companion-2.4.6.vsix`. Marketplace listings `2.2.0` and `2.2.1` stay as they are. The tarball advertises `ruleblast@2.4.6`. Independently verified registry bytes remain `2.4.5` until the authorized publish.
+This tree is `2.4.6`. Latest independently verified public npm distribution is `2.4.6`. Companion version is `2.4.6`. Pack `ruleblast-companion-2.4.6.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+**Verified publication receipt.** Signed tag object `137dec9cb431d6b6f20869e14252d3f5b8c838b8` for [`v2.4.6`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.6) targets commit `44124475babc60bbb73186debe311ab6753d2f6b`. [npm `ruleblast@2.4.6`](https://www.npmjs.com/package/ruleblast/v/2.4.6) reports integrity `sha512-MpYQzjNive82VKCJWqhUCx32/NXHgy8Hm878oCSt4u33y9bZgqLlTpYXPxNWHODZn+CL838IyzKZ1j/ip3SL8g==`. Exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download is the 153,122-byte tarball with SHA-256 `c8438947be110f783b66e2f9746b5bbc6f9941a2bc5776a2a22af23fc063cdd9`. The GitHub Release serves that same tarball and the 148,086-byte `ruleblast-companion-2.4.6.vsix` with SHA-256 `877c565790c2e4b7366ef4ba467c9dd02efc7b0638ddca4fc95fb1faa67d0404`. These are independently verified external records, not facts inferred from this checkout.
 
 The catalog Codex engine is interpreted from `resolver.json`. `createCodexProfile` remains the adapter oracle. The interpreter does not import that adapter. Claude, Gemini, and Copilot still use fingerprint engines because their specs are not yet data-complete. No fifth bundled reality. No `--pack`. A model name is never a reality.
 

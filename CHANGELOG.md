@@ -2,12 +2,18 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 2.4.6 — SHIPPED TO MAIN
+## 2.4.6 — RELEASED
 
 - Catalog Codex is interpreted from the pack `resolver.json`. `createCodexProfile` stays the adapter oracle. The interpreter does not import that adapter. No fifth bundled reality. No `--pack`.
 - Offline evidence-revision reveal: bundled digests can be `CURRENT` or `POSSIBLY_STALE` from committed candidate evidence. `--json` stays canonical.
 - Human overlay restates `IN_BLAST` / `OUTSIDE_BLAST` as CONTINUE / REJECT for the next reader of the same result. RuleBlast does not write intent files.
-- Candidate `npm pack` is offline. Timed-out child commands name their argv. Sequential profile capture stays the prepare-method security property. The tarball advertises `ruleblast@2.4.6`.
+- Candidate `npm pack` is offline. Timed-out child commands name their argv. Sequential profile capture stays the prepare-method security property.
+- [npm `ruleblast@2.4.6`](https://www.npmjs.com/package/ruleblast/v/2.4.6) reports integrity `sha512-MpYQzjNive82VKCJWqhUCx32/NXHgy8Hm878oCSt4u33y9bZgqLlTpYXPxNWHODZn+CL838IyzKZ1j/ip3SL8g==`. The registry download is the 153,122-byte tarball with SHA-256 `c8438947be110f783b66e2f9746b5bbc6f9941a2bc5776a2a22af23fc063cdd9`. Pack `ruleblast-companion-2.4.6.vsix` (148,086 bytes, SHA-256 `877c565790c2e4b7366ef4ba467c9dd02efc7b0638ddca4fc95fb1faa67d0404`). Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+### Release artifact
+
+- Signed tag object `137dec9cb431d6b6f20869e14252d3f5b8c838b8` for [`v2.4.6`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.6) targets commit `44124475babc60bbb73186debe311ab6753d2f6b`.
+- npm and the GitHub Release serve the same 153,122-byte tarball with SHA-256 `c8438947be110f783b66e2f9746b5bbc6f9941a2bc5776a2a22af23fc063cdd9`. The GitHub Release also serves the 148,086-byte `ruleblast-companion-2.4.6.vsix` with SHA-256 `877c565790c2e4b7366ef4ba467c9dd02efc7b0638ddca4fc95fb1faa67d0404`.
 
 ## 2.4.5 — RELEASED
 
