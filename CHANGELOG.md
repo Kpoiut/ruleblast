@@ -7,7 +7,7 @@ All notable user-visible changes to RuleBlast are recorded here.
 - Evidence reveal names `SEALED`, `NO_KNOWN_DRIFT`, or `POSSIBLY_STALE` from committed candidate inventory. That is not a claim the vendor runtime is unchanged. Companion last-result lifecycle stays `CURRENT` / `STALE`. `--json` stays canonical.
 - Interpreter admission is the list of missing resolver operations. Fingerprint is not an admission input. Codex remains the only bundled spec the interpreter can execute. Claude, Gemini, and Copilot stay fingerprint oracles. No fifth bundled reality. No `--pack`.
 - Overlay REJECT restates OUTSIDE THIS BLAST and says it is not a recommendation to discard the Git change.
-- GitHub README causal-proof GIF and visual scoreboard show the published `ruleblast@2.4.6` CLI and the sealed openai/codex 2→206 pair with the real three-file Git first diff (`AGENTS.md`, `chat_composer.rs`, `paste_burst.rs`). Those assets are not in the npm tarball.
+- GitHub README causal-proof GIF is a 24-frame filled terminal of the published `ruleblast@2.4.6` CLI on the sealed openai/codex 2→206 pair (real three-file Git first diff). The visual board is a compact 1,200×480 strip. Those assets are not in the npm tarball.
 - The published CLI people install is still `ruleblast@2.4.6`.
 
 ## 2.4.6 — RELEASED

@@ -7,209 +7,68 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       width: 1200px;
-      height: 1200px;
+      height: 480px;
       overflow: hidden;
-      background: #020617;
-      color: #e2e8f0;
-      font-family: "Segoe UI", "IBM Plex Sans", sans-serif;
+      background: #07101c;
+      color: #c9d1d9;
+      font-family: "Segoe UI", sans-serif;
     }
     .board {
       width: 1200px;
-      height: 1200px;
-      padding: 32px 36px 28px;
-      background:
-        radial-gradient(900px 520px at 8% -8%, rgba(34, 211, 238, 0.22), transparent 58%),
-        radial-gradient(760px 480px at 108% 8%, rgba(139, 92, 246, 0.26), transparent 52%),
-        radial-gradient(700px 500px at 92% 108%, rgba(99, 102, 241, 0.18), transparent 50%),
-        linear-gradient(180deg, #06101f 0%, #020617 55%, #04111c 100%);
+      height: 480px;
+      padding: 20px 28px 16px;
+      background: #07101c;
       display: grid;
-      grid-template-rows: auto auto auto auto auto auto;
-      gap: 16px;
-      position: relative;
+      grid-template-rows: auto 166px 134px auto;
+      gap: 12px;
+      border-top: 4px solid #58a6ff;
     }
-    .board::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: radial-gradient(ellipse at 50% 30%, #000 35%, transparent 78%);
-    }
-    header, section, footer { position: relative; z-index: 1; }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
+    header { display: flex; justify-content: space-between; align-items: flex-start; }
     .brand {
-      font-family: "Cascadia Mono", "Consolas", monospace;
-      font-size: 30px;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 22px;
       font-weight: 700;
-      letter-spacing: 0.12em;
-      color: #f8fbff;
+      letter-spacing: 0.08em;
+      color: #e6edf3;
     }
-    .brand span {
-      background: linear-gradient(90deg, #22d3ee, #818cf8 55%, #c084fc);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .sub {
-      margin-top: 8px;
-      font-size: 20px;
-      color: #9fb4c8;
-      max-width: 640px;
-      line-height: 1.35;
-    }
-    .pills { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; max-width: 430px; }
-    .pill {
-      border: 1px solid rgba(34, 211, 238, 0.28);
-      background: rgba(8, 24, 38, 0.88);
-      color: #7dd3fc;
-      border-radius: 999px;
-      padding: 7px 13px;
-      font-family: "Cascadia Mono", "Consolas", monospace;
+    .brand span { color: #58a6ff; }
+    .sub { margin-top: 4px; font-size: 15px; color: #6e7681; }
+    .meta {
+      text-align: right;
+      font-family: "Cascadia Mono", Consolas, monospace;
       font-size: 13px;
-      box-shadow: 0 0 18px rgba(34, 211, 238, 0.08);
+      color: #58a6ff;
     }
-    .pill.hot {
-      border-color: rgba(167, 139, 250, 0.45);
-      color: #ddd6fe;
-      background: rgba(46, 16, 74, 0.55);
-    }
-    .kpis {
-      display: grid;
-      grid-template-columns: 0.86fr 1.28fr 1.16fr;
-      gap: 14px;
-    }
+    .meta small { display: block; margin-top: 4px; color: #6e7681; }
+    .kpis { display: grid; grid-template-columns: 272px 1fr 396px; gap: 16px; }
     .card {
-      background: linear-gradient(180deg, rgba(12, 24, 40, 0.92), rgba(7, 15, 27, 0.92));
-      border: 1px solid rgba(56, 189, 248, 0.16);
-      border-radius: 22px;
-      padding: 20px 22px;
-      box-shadow: 0 18px 40px rgba(2, 6, 23, 0.35);
-    }
-    .card.hero {
-      border-color: rgba(34, 211, 238, 0.42);
-      box-shadow:
-        0 0 0 1px rgba(34, 211, 238, 0.12),
-        0 0 48px rgba(34, 211, 238, 0.12);
+      background: #0c1624;
+      border: 1px solid #243852;
+      border-radius: 12px;
+      padding: 14px 16px;
     }
     .label {
-      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-family: "Cascadia Mono", Consolas, monospace;
       font-size: 12px;
-      letter-spacing: 0.16em;
-      color: #6b8a9c;
-      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #6e7681;
     }
-    .num {
-      margin-top: 6px;
-      font-size: 78px;
-      font-weight: 700;
-      line-height: 0.92;
-      color: #f8fbff;
-      font-family: "Segoe UI", sans-serif;
-    }
-    .num.mint {
-      background: linear-gradient(180deg, #67e8f9 0%, #22d3ee 48%, #2dd4bf 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 0 28px rgba(34, 211, 238, 0.25);
-    }
-    .num.rose { color: #fda4af; }
-    .hint { margin-top: 8px; color: #93a7b8; font-size: 17px; line-height: 1.35; }
-    .hint b { color: #e2fff9; }
-    .pair {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      font-size: 20px;
-      margin-top: 8px;
-    }
-    .pair b {
-      font-family: "Cascadia Mono", "Consolas", monospace;
-      font-size: 28px;
-    }
-    .pair.cx b { color: #22d3ee; }
-    .pair.cc { color: #c4b5fd; }
-    .pair.cc b { color: #a78bfa; }
-    .bar {
-      height: 11px;
-      border-radius: 999px;
-      background: #132033;
-      margin: 8px 0 6px;
-      overflow: hidden;
-    }
-    .fill {
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #22d3ee, #38bdf8);
-      box-shadow: 0 0 16px rgba(34, 211, 238, 0.55);
-    }
-    .fill.zero {
-      width: 0;
-      background: #334155;
-      box-shadow: none;
-    }
-    .why {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 14px;
-    }
-    .src {
-      font-family: "Cascadia Mono", "Consolas", monospace;
-      font-size: 16px;
-      color: #a5f3fc;
-      margin-top: 8px;
-      word-break: break-all;
-      line-height: 1.4;
-    }
-    .meta { margin-top: 6px; color: #8aa0ae; font-size: 16px; }
-    .chip-col { display: flex; flex-direction: column; gap: 10px; }
-    .chip {
-      background: rgba(8, 28, 42, 0.9);
-      border: 1px solid rgba(45, 212, 191, 0.18);
-      border-radius: 14px;
-      padding: 10px 12px;
-      font-size: 16px;
-      color: #c5d5e0;
-    }
-    .chip b {
-      color: #22d3ee;
-      font-family: "Cascadia Mono", "Consolas", monospace;
-    }
-    .chip.violet {
-      border-color: rgba(167, 139, 250, 0.28);
-    }
-    .chip.violet b { color: #c4b5fd; }
-    .chip.ok b { color: #4ade80; }
-    .surfaces {
-      display: grid;
-      grid-template-columns: 1.1fr 1fr 0.95fr;
-      gap: 14px;
-    }
-    .cmd {
-      margin-top: 10px;
-      font-family: "Cascadia Mono", "Consolas", monospace;
-      font-size: 16px;
-      color: #67e8f9;
-    }
+    .num { margin-top: 4px; font-size: 40px; font-weight: 700; line-height: 1; color: #e6edf3; }
+    .num.cyan { color: #58a6ff; }
+    .hint { margin-top: 8px; font-size: 14px; color: #8b949e; line-height: 1.35; }
+    .pair { display: flex; justify-content: space-between; margin-top: 8px; font-size: 15px; }
+    .pair b { font-family: "Cascadia Mono", Consolas, monospace; }
+    .bar { height: 8px; border-radius: 99px; background: #162536; margin: 6px 0 8px; overflow: hidden; }
+    .fill { height: 100%; background: #58a6ff; }
+    .why { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; }
+    .src { margin-top: 8px; font-family: "Cascadia Mono", Consolas, monospace; font-size: 13px; color: #58a6ff; }
+    .src.fg { color: #c9d1d9; }
     footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #7f96a4;
-      font-size: 16px;
-      border-top: 1px solid rgba(34, 211, 238, 0.16);
-      padding-top: 14px;
-    }
-    .foot-strong {
-      color: #dbeafe;
-      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 13px;
+      color: #8b949e;
+      border-top: 1px solid #243852;
+      padding-top: 10px;
     }
   </style>
 </head>
@@ -218,75 +77,47 @@
     <header>
       <div>
         <div class="brand">RULE<span>BLAST</span></div>
-        <div class="sub">See the second diff. Local scoreboard for repository instruction projection — Git lists the edit; this names who inherited it.</div>
+        <div class="sub">Git lists the edit. This names who inherited it.</div>
       </div>
-      <div class="pills">
-        <div class="pill hot">v2.4.6</div>
-        <div class="pill">scan · diff · explain · case</div>
-        <div class="pill">CLI + VS Code companion</div>
-        <div class="pill">user-owned allow gate</div>
-      </div>
+      <div class="meta">v2.4.6<small>npx --yes ruleblast@2.4.6</small></div>
     </header>
-
     <section class="kpis">
       <article class="card">
         <div class="label">Git saw</div>
-        <div class="num rose">2</div>
-        <div class="hint">instruction-line edits<br>3 files · 6 deleted lines<br>AGENTS.md · chat_composer.rs · paste_burst.rs</div>
+        <div class="num">2</div>
+        <div class="hint">instruction-line edits<br>3 files · 6 deleted lines<br>AGENTS.md<br>chat_composer.rs · paste_burst.rs</div>
       </article>
-      <article class="card hero">
+      <article class="card">
         <div class="label">RuleBlast found</div>
-        <div class="num mint">206</div>
-        <div class="hint">Codex stacks that inherited the nested <b>AGENTS.md</b>. Claude Code: <b>0</b>.</div>
+        <div class="num cyan">206</div>
+        <div class="hint">Codex stacks inherited nested AGENTS.md. Claude Code 0. Already DIFFERENT → DIFFERENT. No invented split.</div>
       </article>
       <article class="card">
         <div class="label">The split</div>
-        <div class="pair cx"><span>CX Codex</span><b>206</b></div>
+        <div class="pair"><span>CX Codex</span><b style="color:#58a6ff">206</b></div>
         <div class="bar"><div class="fill" style="width:100%"></div></div>
-        <div class="pair cc"><span>CC Claude Code</span><b>0</b></div>
-        <div class="bar"><div class="fill zero"></div></div>
-        <div class="hint">Already DIFFERENT → DIFFERENT. No invented split.</div>
+        <div class="pair"><span>CC Claude Code</span><b>0</b></div>
+        <div class="bar"></div>
+        <div class="hint">4,476 unchanged · 4,682 candidates</div>
       </article>
     </section>
-
     <section class="why">
       <article class="card">
         <div class="label">Why this path</div>
-        <div class="meta">Changed instruction source</div>
-        <div class="src">codex-rs/tui/src/bottom_pane/AGENTS.md</div>
-        <div class="meta" style="margin-top:16px">Example affected consumer — not a cause</div>
-        <div class="src">codex-rs/tui/src/bottom_pane/action_required_title.rs</div>
-        <div class="hint" style="margin-top:14px">Both endpoints COMPLETE. 4,476 paths unchanged. 4,682 candidates · 4.40% hit. Packaged case is a different 33→106 receipt.</div>
+        <div class="src">source  codex-rs/tui/src/bottom_pane/AGENTS.md</div>
+        <div class="src fg">consumer  …/bottom_pane/action_required_title.rs</div>
+        <div class="hint" style="margin-top:10px">Both COMPLETE. Packaged case is a different 33→106. Causes are evidence links; source counts can overlap.</div>
       </article>
-      <article class="card chip-col">
-        <div class="label">Overlay · 2.4.6</div>
-        <div class="chip ok"><b>ALIGNED</b> other Git motion inherited the stack</div>
-        <div class="chip"><b>CONTINUE 2</b> later work inherits the edit</div>
-        <div class="chip violet"><b>REJECT 0</b> no independent Git motion</div>
-        <div class="chip"><b>CX</b> STARTUP · cwd = dirname(target)</div>
-        <div class="chip violet"><b>CC</b> READ_TARGET · cwd = repository root · no inherit</div>
+      <article class="card">
+        <div class="label">Overlay</div>
+        <div class="hint" style="color:#3fb950;margin-top:8px"><b>ALIGNED</b></div>
+        <div class="src">CONTINUE 2  later work inherits the edit</div>
+        <div class="hint">REJECT  0  no independent Git motion<br>CX STARTUP · CC READ_TARGET · no inherit</div>
       </article>
     </section>
-
-    <section class="surfaces">
-      <article class="card">
-        <div class="label">CLI</div>
-        <div class="hint">scan · diff · explain · case</div>
-        <div class="cmd">npx --yes ruleblast@2.4.6</div>
-      </article>
-      <article class="card">
-        <div class="label">IDE companion</div>
-        <div class="hint">Same four actions. Last result stays STALE after the worktree moves. Select Reality is a session option. Not a second engine.</div>
-      </article>
-      <article class="card">
-        <div class="label">Uncertainty</div>
-        <div class="hint">0 partial · 0 unknown · 0 indeterminate<br>Allow: RULEBLAST_AGENT_ALLOW or .ruleblast-allow</div>
-      </article>
-    </section>
-
     <footer>
-      <div class="foot-strong">openai/codex 8fcf2ad → f0f483e · resolverRevision 1</div>
-      <div>p95 &lt; 2,000 ms on 10,000 paths · not a model-quality score</div>
+      openai/codex  8fcf2ad → f0f483e  ·  resolverRevision 1  ·  0 partial · 0 unknown · 0 indeterminate<br>
+      p95 &lt; 2,000 ms on 10,000 paths  ·  not a model-quality score  ·  scan · diff · explain · case
     </footer>
   </main>
 </body>

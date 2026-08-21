@@ -413,7 +413,7 @@ Interpreter admission is the list of uninterpretable resolver operations. Finger
 
 Overlay REJECT restates OUTSIDE THIS BLAST and says it is not a recommendation to discard the Git change.
 
-The GitHub README causal-proof GIF and visual scoreboard show the published `ruleblast@2.4.6` CLI and the sealed 2→206 pair with the real three-file Git first diff. Those assets are not in the npm tarball.
+The GitHub README causal-proof GIF is a 24-frame filled terminal of the published `ruleblast@2.4.6` CLI on the sealed 2→206 pair. The visual board is a compact 1,200×480 strip. Those assets are not in the npm tarball.
 
 ## **NEXT** — Candidate reality conformance lab
 

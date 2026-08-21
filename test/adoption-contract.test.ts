@@ -355,7 +355,7 @@ describe("v2.4.7 adoption contract", () => {
         totalDelayCentiseconds += delayCentiseconds;
       }
     }
-    expect(frameControls).toHaveLength(12);
+    expect(frameControls).toHaveLength(24);
     expect(frameControls.every(({ disposal }) => disposal === 1)).toBe(true);
     expect(frameControls.every(({ delayCentiseconds }) =>
       delayCentiseconds > 0 && delayCentiseconds <= 70
@@ -366,7 +366,7 @@ describe("v2.4.7 adoption contract", () => {
       "RULEBLAST_POSTER=Git shows the edit; complete held frames only",
     );
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "cd87cc4cd01a392893ce23a37d2c2873909376a94c9648bc75bdf0bf92644fb2",
+      "6d4508f9d995103aeeb736f950973df587e1931bf106226faad0531a960c3aa5",
     );
 
     const descriptor = readJson<PackageDescriptor>("package.json");
@@ -405,10 +405,10 @@ describe("v2.4.7 adoption contract", () => {
     const bytes = readFileSync(join(repositoryRoot, asset));
     expect(bytes.subarray(1, 4).toString("ascii")).toBe("PNG");
     expect(bytes.readUInt32BE(16)).toBe(1_200);
-    expect(bytes.readUInt32BE(20)).toBe(1_200);
+    expect(bytes.readUInt32BE(20)).toBe(480);
     expect(statSync(join(repositoryRoot, asset)).size).toBeLessThanOrEqual(400_000);
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "c3dab442d036e0faa796556adb1a6625ea17209a31bd30185eff92ceaea4f6e6",
+      "731cb3561cfa2fa60b3324e90683cd4e861c3a87dd117a5aa2ddb953960d5e7f",
     );
     const board = read("assets/visual-benchmark.html");
     expect(board).toContain("v2.4.6");
