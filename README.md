@@ -194,7 +194,7 @@ This tree discloses that same result in layers: one-line glance, `--paths-only`,
 
 ## Performance
 
-Packed budget: 10,000 nested paths, p95 < 2,000 ms. `npm run benchmark`. Not a claim about model quality.
+Packed budget: 10,000 nested paths. Efficiency gate: p95 < 1,000 ms. Ceiling: p95 < 2,000 ms. The ceiling is the hard stop, not the goal. `npm run benchmark` also times the sealed GIF pair (diff + explain KEEP) and lab inventory. Not a claim about model quality.
 
 <details>
 <summary>Current-tree replay (not the sealed 2→206 proof)</summary>

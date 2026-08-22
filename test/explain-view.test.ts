@@ -198,6 +198,10 @@ describe("visual explain text", () => {
     expect(text).not.toContain("digest=");
     expect(text).not.toContain("secret-digest");
     expect(text).not.toContain("projection-digest");
+    expect(text).toContain("WHY THIS PATH NOW");
+    expect(text).toContain("KEEP");
+    expect(text).toMatch(/rbctx RBCTX1:[0-9a-f]{12}/u);
+    expect(text).toContain("next agent: reuse this explanation unless rbctx moves");
   });
 
   it("prints why-this-path with catalog badges for a split", () => {
@@ -217,6 +221,9 @@ describe("visual explain text", () => {
     expect(text).toContain("← changed");
     expect(text).toContain("RELATION · DIFFERENT");
     expect(text).not.toContain("digest=");
+    expect(text).toContain("KEEP");
+    expect(text).toContain("WHY THIS PATH COUNTS");
+    expect(text).not.toContain("WHY THIS PATH NOW");
   });
 
   it("keeps CLI and companion explain text on the same visual model", () => {

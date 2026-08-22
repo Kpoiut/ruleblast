@@ -8,6 +8,8 @@ All notable user-visible changes to RuleBlast are recorded here.
 - Packed installs include `packs/candidate` so the lab and evidence reveal are the same inventory in a source tree and in the npm CLI.
 - TypeScript remains the analysis authority. A Go or Rust capture sidecar is not admitted; the packed 10,000-path budget still holds, and a second analysis engine is forbidden.
 - Build wipes `dist/` before `tsc` so a deleted module cannot remain in the npm tarball.
+- Packed 10,000-path analysis keeps the 2,000 ms ceiling and adds an efficiency gate at p95 < 1,000 ms. Same projection digest recipe. Same capture. `npm run benchmark` also times the sealed GIF fixture pair and explain KEEP text.
+- `explain` prints KEEP (`rbctx` + reuse rule) so a later agent on the same repo can reuse the last explanation instead of repeating the path. Diff explain `--from` also names LATER WORK CONTINUE/REJECT from the overlay when that path is OTHER. Not a stored session file. Not actor telemetry.
 - The published CLI people install is still `ruleblast@2.4.6`.
 
 ## 2.4.11 — SHIPPED TO MAIN

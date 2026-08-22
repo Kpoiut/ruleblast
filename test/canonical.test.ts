@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canonicalJson, sha256 } from "../src/canonical.js";
+import { canonicalJson, sha256, sha256MovingTarget } from "../src/canonical.js";
 import {
   ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
   OPENAI_CODEX_CLI_PROFILE_ID,
@@ -148,6 +148,41 @@ describe("sha256", () => {
     expect(sha256(new TextEncoder().encode("ruleblast"))).toBe(
       sha256("ruleblast"),
     );
+  });
+});
+
+describe("sha256MovingTarget", () => {
+  it("matches a full canonicalize for each target path", () => {
+    const digest = sha256MovingTarget((targetPath) => ({
+      assembledPayload: "Root benchmark instruction.\n",
+      composition: "ORDERED",
+      context: {
+        cwd: "packages/deep/src",
+        repositoryOnly: true,
+        targetPath,
+        trigger: "STARTUP",
+      },
+      profile: "openai/codex-cli@1",
+      status: "COMPLETE",
+    }));
+    for (const targetPath of [
+      "packages/deep/src/file-00003.ts",
+      "packages/deep/src/file-09999.ts",
+      "AGENTS.md",
+    ]) {
+      expect(digest(targetPath)).toBe(sha256(canonicalJson({
+        assembledPayload: "Root benchmark instruction.\n",
+        composition: "ORDERED",
+        context: {
+          cwd: "packages/deep/src",
+          repositoryOnly: true,
+          targetPath,
+          trigger: "STARTUP",
+        },
+        profile: "openai/codex-cli@1",
+        status: "COMPLETE",
+      })));
+    }
   });
 });
 

@@ -12,6 +12,7 @@ import type {
 } from "../model.js";
 import { compareCodePoints } from "../domain/repository-path.js";
 import type { CurrentExplainResult, DiffExplainResult, ExplainResult } from "../cli-output.js";
+import { rbctxForExplainCurrent, rbctxForExplainDiff } from "../domain/rbctx.js";
 import { presentationFor } from "./profile-catalog.js";
 
 export interface ExplainSourceView {
@@ -51,6 +52,13 @@ export interface ExplainWhyView {
   readonly newlySplit: boolean;
 }
 
+export interface ExplainKeepView {
+  readonly rbctx: string;
+  readonly relation: PayloadRelation | null;
+  readonly split: boolean;
+  readonly reuse: string;
+}
+
 export interface ExplainView {
   readonly path: string;
   readonly profiles: readonly ExplainProfileView[];
@@ -58,6 +66,7 @@ export interface ExplainView {
   readonly completeness: Completeness;
   readonly findings: readonly Finding[];
   readonly why: ExplainWhyView | null;
+  readonly keep: ExplainKeepView;
 }
 
 function worstCompleteness(values: readonly Completeness[]): Completeness {
@@ -155,16 +164,34 @@ function whyFromTransition(path: PathTransition): ExplainWhyView {
   });
 }
 
+const KEEP_REUSE =
+  "next agent: reuse this explanation unless rbctx moves; do not repeat the same path work";
+
+function keepView(
+  rbctx: string,
+  relation: PayloadRelation | null,
+  split: boolean,
+): ExplainKeepView {
+  return Object.freeze({
+    rbctx,
+    relation,
+    split,
+    reuse: KEEP_REUSE,
+  });
+}
+
 export function explainViewFromCurrent(path: CurrentPathProjection): ExplainView {
+  const relation = path.payloadRelation;
   return Object.freeze({
     path: path.path,
     profiles: path.projections.map((projection) =>
       profileView(projection, null, []),
     ),
-    relation: path.payloadRelation,
+    relation,
     completeness: worstCompleteness(path.projections.map((item) => item.status)),
     findings: [],
     why: null,
+    keep: keepView("", relation, path.isSplit === true),
   });
 }
 
@@ -172,6 +199,7 @@ export function explainViewFromTransition(path: PathTransition): ExplainView {
   const profiles = path.after.map((after) =>
     profileView(after, path.changedProfiles.includes(after.profile), path.causes),
   );
+  const split = path.afterPayloadRelation === "DIFFERENT";
   if (path.after.length === 0) {
     return Object.freeze({
       path: path.path,
@@ -180,6 +208,7 @@ export function explainViewFromTransition(path: PathTransition): ExplainView {
       completeness: worstCompleteness(path.before.map((item) => item.status)),
       findings: [],
       why: whyFromTransition(path),
+      keep: keepView("", path.afterPayloadRelation, split),
     });
   }
   return Object.freeze({
@@ -189,16 +218,36 @@ export function explainViewFromTransition(path: PathTransition): ExplainView {
     completeness: worstCompleteness(path.after.map((item) => item.status)),
     findings: [],
     why: whyFromTransition(path),
+    keep: keepView("", path.afterPayloadRelation, split),
   });
 }
 
 export function explainViewFromResult(result: ExplainResult): ExplainView {
   if (result.analysisMode === "current") {
     const view = explainViewFromCurrent(result.path);
-    return Object.freeze({ ...view, findings: result.findings });
+    const rbctx = rbctxForExplainCurrent(
+      result.snapshot.label,
+      result.path.path,
+      result.path.projections,
+    );
+    return Object.freeze({
+      ...view,
+      findings: result.findings,
+      keep: keepView(rbctx, view.relation, view.keep.split),
+    });
   }
   const view = explainViewFromTransition(result.path);
-  return Object.freeze({ ...view, findings: result.findings });
+  const rbctx = rbctxForExplainDiff(
+    `${result.before.label}>${result.after.label}`,
+    result.path.path,
+    result.path.before,
+    result.path.after,
+  );
+  return Object.freeze({
+    ...view,
+    findings: result.findings,
+    keep: keepView(rbctx, view.relation, view.keep.split),
+  });
 }
 
 export function explainViewFromExplain(

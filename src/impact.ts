@@ -42,11 +42,7 @@ export interface DiffAnalysisInput {
 async function candidatePaths(
   snapshot: RepositorySnapshot,
 ): Promise<readonly string[]> {
-  const paths = [...new Set(await snapshot.listPaths())].sort(compareCodePoints);
-  const existing = await Promise.all(paths.map(async (path) =>
-    (await snapshot.entry(path)) === null ? null : path,
-  ));
-  return existing.filter((path): path is string => path !== null);
+  return [...new Set(await snapshot.listPaths())].sort(compareCodePoints);
 }
 
 function emptyCurrentProfileCounts(profile: ProfileId): CurrentProfileCounts {

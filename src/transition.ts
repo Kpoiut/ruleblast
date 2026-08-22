@@ -43,15 +43,7 @@ export async function buildTransition(
   const beforeSet = new Set(beforePaths);
   const afterSet = new Set(afterPaths);
   const candidatePaths = Object.freeze(
-    (
-      await Promise.all(
-        [...afterSet].map(async (path) =>
-          (await after.entry(path)) === null ? null : path,
-        ),
-      )
-    )
-      .filter((path): path is string => path !== null)
-      .sort(compareCodePoints),
+    [...afterSet].sort(compareCodePoints),
   );
   const changedPaths = [...new Set([...beforeSet, ...afterSet])]
     .filter((path) => sourceDependencyPaths.has(path))

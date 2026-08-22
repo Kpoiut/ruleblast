@@ -103,5 +103,7 @@ describe("explain presentation model", () => {
     expect(view.profiles[0]?.sources[0]?.path).toBe("AGENTS.md");
     expect(view.relation).toBe("DIFFERENT");
     expect(view.why).toBeNull();
+    expect(view.keep.split).toBe(true);
+    expect(view.keep.relation).toBe("DIFFERENT");
   });
 });

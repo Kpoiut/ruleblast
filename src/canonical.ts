@@ -143,3 +143,26 @@ export function canonicalJson(value: unknown): string {
 export function sha256(value: string | Uint8Array): string {
   return createHash("sha256").update(value).digest("hex");
 }
+
+const MOVING_TARGET_PLACEHOLDER = "\u0000";
+
+/**
+ * Same digest as `sha256(canonicalJson(build(targetPath)))` when `targetPath`
+ * is the only moving string. Used so 10k same-directory projections do not
+ * reserialize a stable payload. Falls back to a full canonicalize when the
+ * placeholder is not unique in the template.
+ */
+export function sha256MovingTarget(
+  build: (targetPath: string) => unknown,
+): (targetPath: string) => string {
+  const template = canonicalJson(build(MOVING_TARGET_PLACEHOLDER));
+  const token = JSON.stringify(MOVING_TARGET_PLACEHOLDER);
+  const first = template.indexOf(token);
+  const again = first === -1 ? -1 : template.indexOf(token, first + token.length);
+  if (first === -1 || again !== -1) {
+    return (targetPath) => sha256(canonicalJson(build(targetPath)));
+  }
+  const head = template.slice(0, first);
+  const tail = template.slice(first + token.length);
+  return (targetPath) => sha256(`${head}${JSON.stringify(targetPath)}${tail}`);
+}

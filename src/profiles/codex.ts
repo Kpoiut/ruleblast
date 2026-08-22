@@ -1,4 +1,4 @@
-import { canonicalJson, sha256 } from "../canonical.js";
+import { sha256, sha256MovingTarget } from "../canonical.js";
 import {
   OPENAI_CODEX_CLI_PROFILE_ID,
   type Projection,
@@ -247,7 +247,7 @@ function makeProjection(
   material: ProjectionMaterial,
   targetPath: string,
   profileId: string,
-  evidenceRevisions: readonly string[],
+  digestFor: (targetPath: string) => string,
 ): Projection {
   const context = {
     cwd: directoryFromTarget(targetPath),
@@ -255,16 +255,7 @@ function makeProjection(
     targetPath,
     repositoryOnly: true as const,
   };
-  const projectionDigest = sha256(canonicalJson({
-    profile: profileId,
-    context,
-    status: material.status,
-    composition: "ORDERED",
-    assembledPayload: material.assembledPayload,
-    evidenceRevisions,
-    effectiveSources: material.effectiveSources,
-    normalizedPayloadUnits: material.units,
-  }));
+  const projectionDigest = digestFor(targetPath);
   return {
     profile: profileId,
     context,
@@ -330,24 +321,45 @@ export function createCodexProfile(config: {
           Object.freeze({ ...capturedEntry, bytes: new Uint8Array(bytes) }),
         );
       }
-      const cachedMaterials = new Map<string, ProjectionMaterial>();
+      const cachedMaterials = new Map<string, {
+        readonly material: ProjectionMaterial;
+        readonly digestFor: (targetPath: string) => string;
+      }>();
       return Object.freeze({
         id: config.id,
         sourceDependencyPaths: Object.freeze([...candidates.keys()].sort(compareCodePoints)),
         project(targetPath: string): Projection {
           const directory = directoryFromTarget(targetPath);
-          let material = cachedMaterials.get(directory);
-          if (material === undefined) {
-            material = projectionMaterial(resolve(
+          let cached = cachedMaterials.get(directory);
+          if (cached === undefined) {
+            const material = projectionMaterial(resolve(
               directory,
               candidates,
               config.byteLimit,
               config.overrideName,
               config.agentsName,
             ));
-            cachedMaterials.set(directory, material);
+            cached = {
+              material,
+              digestFor: sha256MovingTarget((path) => ({
+                assembledPayload: material.assembledPayload,
+                composition: "ORDERED",
+                context: {
+                  cwd: directory,
+                  repositoryOnly: true,
+                  targetPath: path,
+                  trigger: "STARTUP",
+                },
+                effectiveSources: material.effectiveSources,
+                evidenceRevisions: revisions,
+                normalizedPayloadUnits: material.units,
+                profile: config.id,
+                status: material.status,
+              })),
+            };
+            cachedMaterials.set(directory, cached);
           }
-          return makeProjection(material, targetPath, config.id, revisions);
+          return makeProjection(cached.material, targetPath, config.id, cached.digestFor);
         },
       });
     },

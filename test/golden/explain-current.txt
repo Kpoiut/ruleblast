@@ -17,9 +17,17 @@ STARTUP · cwd=src · COMPLETE · complete
   └ SELECTED AGENTS.md
 1 source · ORDERED
 
+WHY THIS PATH NOW
+  relation INDETERMINATE
+  split no
+
 RELATION · INDETERMINATE
 
 UNRESOLVED
   [UNKNOWN_PROJECTION] CC Claude Code · projection is unknown
+
+KEEP
+  rbctx RBCTX1:d1a5cba20ba1
+  next agent: reuse this explanation unless rbctx moves; do not repeat the same path work
 
 Repository-only · Git-tracked sources · resolver revision 1

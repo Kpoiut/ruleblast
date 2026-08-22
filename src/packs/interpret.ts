@@ -1,4 +1,4 @@
-import { canonicalJson, sha256 } from "../canonical.js";
+import { sha256, sha256MovingTarget } from "../canonical.js";
 import type { Projection, ResolvedSource } from "../model.js";
 import type { RepositorySnapshot, SnapshotEntry } from "../snapshot.js";
 import {
@@ -278,23 +278,44 @@ export function interpretCompiledPack(pack: CompiledPack): ProfileDefinition {
         }));
       }
       const cached = new Map<string, Projection>();
-      const materials = new Map<string, ReturnType<typeof projectMaterial>>();
+      const materials = new Map<string, {
+        readonly material: ReturnType<typeof projectMaterial>;
+        readonly digestFor: (targetPath: string) => string;
+      }>();
       return Object.freeze({
         id: pack.pack.id,
         sourceDependencyPaths: Object.freeze([...candidates.keys()].sort(compareCodePoints)),
         project(targetPath: string): Projection {
           const directory = dirname(targetPath);
-          let material = materials.get(directory);
-          if (material === undefined) {
-            material = projectMaterial(resolveTree(
+          let cachedMaterial = materials.get(directory);
+          if (cachedMaterial === undefined) {
+            const material = projectMaterial(resolveTree(
               directory, candidates, byteLimit, names, shadows,
             ));
-            materials.set(directory, material);
+            cachedMaterial = {
+              material,
+              digestFor: sha256MovingTarget((path) => ({
+                assembledPayload: material.assembledPayload,
+                composition: "ORDERED",
+                context: {
+                  cwd: directory,
+                  repositoryOnly: true,
+                  targetPath: path,
+                  trigger: "STARTUP",
+                },
+                effectiveSources: material.effectiveSources,
+                evidenceRevisions: revisions,
+                normalizedPayloadUnits: material.units,
+                profile: pack.pack.id,
+                status: material.status,
+              })),
+            };
+            materials.set(directory, cachedMaterial);
           }
           const existing = cached.get(targetPath);
           if (existing !== undefined) return existing;
           const projection = makeProjection(
-            material, targetPath, pack.pack.id, revisions,
+            cachedMaterial.material, targetPath, pack.pack.id, cachedMaterial.digestFor,
           );
           cached.set(targetPath, projection);
           return projection;
@@ -324,7 +345,7 @@ function makeProjection(
   material: ReturnType<typeof projectMaterial>,
   targetPath: string,
   profileId: string,
-  evidenceRevisions: readonly string[],
+  digestFor: (targetPath: string) => string,
 ): Projection {
   const context = {
     cwd: dirname(targetPath),
@@ -339,16 +360,7 @@ function makeProjection(
     composition: "ORDERED",
     sources: material.sources.map((item) => ({ ...item })),
     normalizedPayloadUnits: material.units.map((unit) => [...unit]),
-    projectionDigest: sha256(canonicalJson({
-      profile: profileId,
-      context,
-      status: material.status,
-      composition: "ORDERED",
-      assembledPayload: material.assembledPayload,
-      evidenceRevisions,
-      effectiveSources: material.effectiveSources,
-      normalizedPayloadUnits: material.units,
-    })),
+    projectionDigest: digestFor(targetPath),
     normalizedPayloadDigest: material.normalizedPayloadDigest,
     evidence: [...material.evidence],
   };

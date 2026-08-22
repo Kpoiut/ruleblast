@@ -796,10 +796,8 @@ describe("CLI Git pair overlay", () => {
     expect(overlay).not.toContain("GEMINI.md");
   });
 
-  it("does not probe or print overlay on explain of a Git pair", async () => {
-    const probe = vi.fn(async () => {
-      throw new Error("explain must not probe storage format");
-    });
+  it("keeps the overlay dump off explain and still names KEEP for the next agent", async () => {
+    const probe = vi.fn(async (): Promise<"sha1"> => "sha1");
     const run = cliAt(pair.root, { probeGitStorageFormat: probe });
     expect(await runCli(
       [
@@ -809,8 +807,24 @@ describe("CLI Git pair overlay", () => {
       run.io,
       run.dependencies,
     )).toBe(0);
-    expect(probe).not.toHaveBeenCalled();
-    expect(run.stdout.join("")).not.toContain("OTHER TRACKED CHANGES");
+    expect(probe).toHaveBeenCalled();
+    const text = run.stdout.join("");
+    expect(text).not.toContain("OTHER TRACKED CHANGES");
+    expect(text).toContain("KEEP");
+    expect(text).toMatch(/rbctx RBCTX1:[0-9a-f]{12}/u);
+    const jsonProbe = vi.fn(async (): Promise<"sha1"> => "sha1");
+    const jsonRun = cliAt(pair.root, { probeGitStorageFormat: jsonProbe });
+    expect(await runCli(
+      [
+        "explain", "packages/api/in.ts", "--from", pair.beforeRef, "--to", pair.afterRef,
+        "--json",
+      ],
+      jsonRun.io,
+      jsonRun.dependencies,
+    )).toBe(0);
+    expect(jsonProbe).not.toHaveBeenCalled();
+    expect(jsonRun.stdout.join("")).not.toContain("KEEP");
+    expect(jsonRun.stdout.join("")).not.toContain("LATER WORK");
   });
 
   it("binds dirty worktree bytes to Git blob identity without reading during overlay", async () => {

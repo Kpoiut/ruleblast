@@ -344,23 +344,53 @@ export async function runAnalysisAction(
     }
     const before = await dependencies.openGitSnapshot(root, args.from.ref);
     assertDistinct(before, after);
-    const result = await dependencies.analyzeDiff({
-      before,
-      after,
-      profiles: analysisProfiles(args, dependencies),
-    });
-    const selected = selectedPath(result.paths, args.path);
+    const profiles = analysisProfiles(args, dependencies);
+    const admitOverlay = args.output.kind !== "json" &&
+      isGitObjectSnapshot(before) &&
+      (isGitObjectSnapshot(after) || isWorktreeIdentitySource(after));
+    const format = admitOverlay
+      ? await dependencies.probeGitStorageFormat(root)
+      : null;
+    const pair = admitOverlay
+      ? await analyzeOverlayPair({
+          before,
+          after,
+          profiles,
+          format,
+          analyzeDiff: dependencies.analyzeDiff,
+        })
+      : {
+          result: await dependencies.analyzeDiff({ before, after, profiles }),
+          overlay: null,
+          unavailable: false,
+        };
+    const selected = selectedPath(pair.result.paths, args.path);
     if (args.compare) {
       writeLine(io.stdout, formatProjectionCompare(comparePathStacks(selected)));
       return noDefensibleDiffPath(selected) ? 2 : 0;
     }
     await present(
-      diffExplain(result, args.path),
+      diffExplain(pair.result, args.path),
       args.output,
       io,
       diffTextContext(args.from.ref, args.target, dependencies.shellDialect),
       presentationExtras(args),
     );
+    if (pair.overlay !== null) {
+      const row = pair.overlay.observedPaths.find((item) => item.path === args.path);
+      if (row !== undefined) {
+        const intent = row.relation === "IN_BLAST"
+          ? "CONTINUE"
+          : row.relation === "OUTSIDE_BLAST"
+            ? "REJECT"
+            : "UNRESOLVED";
+        writeLine(io.stdout, [
+          "LATER WORK",
+          `  ${intent}  ${row.relation}  ${row.kind}`,
+          "  next agent: Git membership is not a recommendation to discard the change",
+        ].join("\n"));
+      }
+    }
     return noDefensibleDiffPath(selected) ? 2 : 0;
   } finally {
     progress.finish();

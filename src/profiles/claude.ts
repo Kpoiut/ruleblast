@@ -1,4 +1,4 @@
-import { canonicalJson, sha256 } from "../canonical.js";
+import { sha256, sha256MovingTarget } from "../canonical.js";
 import {
   ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
   type Projection,
@@ -156,21 +156,12 @@ function makeProjection(
   material: ProjectionMaterial,
   targetPath: string,
   profileId: string,
-  evidenceRevisions: readonly string[],
+  digestFor: (targetPath: string) => string,
 ): Projection {
   const context = {
     cwd: ".", trigger: "READ_TARGET" as const, targetPath, repositoryOnly: true as const,
   };
-  const projectionDigest = sha256(canonicalJson({
-    profile: profileId,
-    context,
-    status: material.status,
-    composition: material.composition,
-    evidenceRevisions,
-    effectiveSources: material.effectiveSources,
-    normalizedPayloadUnits: material.units,
-    evidence: material.evidence,
-  }));
+  const projectionDigest = digestFor(targetPath);
   return {
     profile: profileId,
     context,
@@ -375,20 +366,41 @@ export function createClaudeProfile(config: {
       const { files, documents, rules } = await captureDependencies(snapshot);
       const settings = parseClaudeProjectSettings(files.get(SETTINGS_PATH));
       const sourceDependencyPaths = Object.freeze([...files.keys()].sort(compareCodePoints));
-      const cache = new Map<string, ProjectionMaterial>();
+      const cache = new Map<string, {
+        readonly material: ProjectionMaterial;
+        readonly digestFor: (targetPath: string) => string;
+      }>();
       return Object.freeze({
         id: config.id,
         sourceDependencyPaths,
         project(targetPath: string): Projection {
           const cacheKey = claudeResolutionCacheKey(targetPath, rules.length > 0);
-          let material = cache.get(cacheKey);
-          if (material === undefined) {
-            material = projectionMaterial(
+          let cached = cache.get(cacheKey);
+          if (cached === undefined) {
+            const material = projectionMaterial(
               resolveTarget(targetPath, files, rules, documents, settings),
             );
-            cache.set(cacheKey, material);
+            cached = {
+              material,
+              digestFor: sha256MovingTarget((path) => ({
+                composition: material.composition,
+                context: {
+                  cwd: ".",
+                  repositoryOnly: true,
+                  targetPath: path,
+                  trigger: "READ_TARGET",
+                },
+                effectiveSources: material.effectiveSources,
+                evidence: material.evidence,
+                evidenceRevisions: revisions,
+                normalizedPayloadUnits: material.units,
+                profile: config.id,
+                status: material.status,
+              })),
+            };
+            cache.set(cacheKey, cached);
           }
-          return makeProjection(material, targetPath, config.id, revisions);
+          return makeProjection(cached.material, targetPath, config.id, cached.digestFor);
         },
       });
     },

@@ -1,18 +1,27 @@
 #!/usr/bin/env node
 
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { cpus, platform, release } from "node:os";
-import { resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { performance } from "node:perf_hooks";
-import { pathToFileURL } from "node:url";
-import { analyzeCurrent } from "../dist/impact.js";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { inventoryConformanceLab } from "../dist/application/conformance-lab.js";
+import { diffExplain } from "../dist/cli-output.js";
+import { analyzeCurrent, analyzeDiff } from "../dist/impact.js";
 import { claudeProfile } from "../dist/profiles/claude.js";
 import { codexProfile } from "../dist/profiles/codex.js";
+import { explainPresentationContext, renderExplain } from "../dist/render-explain.js";
 import { ManifestSnapshot } from "../dist/snapshot.js";
 
 const PATH_COUNT = 10_000;
 const WARMUP_COUNT = 5;
 const SAMPLE_COUNT = 20;
-const P95_TARGET_MS = 2_000;
+const EFFICIENCY_P95_MS = 1_000;
+const CEILING_P95_MS = 2_000;
+const REPOSITORY_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const GIF_PAIR_ROOT = join(REPOSITORY_ROOT, "test/fixtures/overlay-206");
+const GIF_EXPLAIN_PATH = "codex-rs/tui/src/bottom_pane/chat_composer.rs";
+const DEFAULT_PROFILES = Object.freeze([claudeProfile, codexProfile]);
 
 function entry(path, text = "") {
   return {
@@ -39,6 +48,30 @@ export function createBenchmarkSnapshot() {
   });
 }
 
+function snapshotFromTree(root, label) {
+  const entries = [];
+  const walk = (directory) => {
+    for (const name of readdirSync(directory)) {
+      const full = join(directory, name);
+      const stat = statSync(full);
+      if (stat.isDirectory()) {
+        walk(full);
+        continue;
+      }
+      if (!stat.isFile()) continue;
+      const path = relative(root, full).split("\\").join("/");
+      entries.push({
+        path,
+        kind: "file",
+        executable: false,
+        base64: readFileSync(full).toString("base64"),
+      });
+    }
+  };
+  walk(root);
+  return new ManifestSnapshot({ schemaVersion: 1, label, entries });
+}
+
 function percentile95(sorted) {
   return sorted[Math.ceil(0.95 * sorted.length) - 1];
 }
@@ -50,19 +83,91 @@ function median(sorted) {
     : sorted[Math.floor(midpoint)];
 }
 
-async function measuredAnalysis(snapshot) {
+function sampleStats(samplesMs) {
+  const sorted = [...samplesMs].sort((left, right) => left - right);
+  return {
+    medianMs: median(sorted),
+    p95Ms: percentile95(sorted),
+    samplesMs,
+  };
+}
+
+async function timed(run) {
   const started = performance.now();
-  const result = await analyzeCurrent({
+  const value = await run();
+  return { value, elapsedMs: performance.now() - started };
+}
+
+async function measuredCurrent(snapshot) {
+  const { value, elapsedMs } = await timed(() => analyzeCurrent({
     snapshot,
-    profiles: [claudeProfile, codexProfile],
-  });
-  const elapsedMs = performance.now() - started;
-  if (result.counts.candidatePathCount !== PATH_COUNT || result.paths.length !== PATH_COUNT) {
+    profiles: DEFAULT_PROFILES,
+  }));
+  if (value.counts.candidatePathCount !== PATH_COUNT || value.paths.length !== PATH_COUNT) {
     throw new Error(
-      `Benchmark analyzed ${result.paths.length}/${result.counts.candidatePathCount} paths, expected ${PATH_COUNT}`,
+      `Benchmark analyzed ${value.paths.length}/${value.counts.candidatePathCount} paths, expected ${PATH_COUNT}`,
     );
   }
   return elapsedMs;
+}
+
+async function sample(run) {
+  for (let index = 0; index < WARMUP_COUNT; index += 1) await run();
+  const samplesMs = [];
+  for (let index = 0; index < SAMPLE_COUNT; index += 1) {
+    samplesMs.push(await run());
+  }
+  return sampleStats(samplesMs);
+}
+
+async function measureGifPair() {
+  const before = snapshotFromTree(join(GIF_PAIR_ROOT, "before"), "gif-before");
+  const after = snapshotFromTree(join(GIF_PAIR_ROOT, "after"), "gif-after");
+  const run = async () => {
+    const { value, elapsedMs } = await timed(() => analyzeDiff({
+      before,
+      after,
+      profiles: DEFAULT_PROFILES,
+    }));
+    return { elapsedMs, result: value };
+  };
+  const first = await run();
+  const stats = await sample(async () => (await run()).elapsedMs);
+  const explained = diffExplain(first.result, GIF_EXPLAIN_PATH);
+  const explainMs = [];
+  for (let index = 0; index < SAMPLE_COUNT; index += 1) {
+    const started = performance.now();
+    const text = renderExplain(explained, explainPresentationContext(explained), false);
+    explainMs.push(performance.now() - started);
+    if (!text.includes("KEEP") || !text.includes("WHY THIS PATH")) {
+      throw new Error("GIF explain text lost KEEP or WHY THIS PATH");
+    }
+  }
+  return {
+    candidatePathCount: first.result.counts.candidatePathCount,
+    changedStackPathCount: first.result.counts.changedStackPathCount,
+    editedLineCount: first.result.diffStats.editedLineCount,
+    explainPath: GIF_EXPLAIN_PATH,
+    diff: stats,
+    explain: sampleStats(explainMs),
+  };
+}
+
+async function measureLab() {
+  const first = await timed(() => inventoryConformanceLab());
+  const cached = await timed(() => inventoryConformanceLab());
+  const lab = first.value;
+  const codex = lab.bundled.find((row) => row.id === "openai/codex-cli@1");
+  const claude = lab.bundled.find((row) => row.id === "anthropic/claude-code-cli@1");
+  if (codex?.proof !== "ORACLE" || claude?.proof !== "ADAPTER") {
+    throw new Error("Lab lost interpreter ORACLE or fingerprint ADAPTER proof");
+  }
+  return {
+    firstMs: first.elapsedMs,
+    cachedMs: cached.elapsedMs,
+    bundled: lab.bundled.length,
+    candidates: lab.candidates.length,
+  };
 }
 
 export async function runBenchmark() {
@@ -70,14 +175,9 @@ export async function runBenchmark() {
   if ((await snapshot.listPaths()).length !== PATH_COUNT) {
     throw new Error("Benchmark manifest is not exactly 10,000 paths");
   }
-  for (let index = 0; index < WARMUP_COUNT; index += 1) {
-    await measuredAnalysis(snapshot);
-  }
-  const samplesMs = [];
-  for (let index = 0; index < SAMPLE_COUNT; index += 1) {
-    samplesMs.push(await measuredAnalysis(snapshot));
-  }
-  const sorted = [...samplesMs].sort((left, right) => left - right);
+  const current10k = await sample(() => measuredCurrent(snapshot));
+  const gif = await measureGifPair();
+  const lab = await measureLab();
   const report = {
     benchmark: {
       candidatePathCount: PATH_COUNT,
@@ -85,10 +185,22 @@ export async function runBenchmark() {
       nestedInstructionCount: 2,
       warmupCount: WARMUP_COUNT,
       sampleCount: SAMPLE_COUNT,
-      medianMs: median(sorted),
-      p95Ms: percentile95(sorted),
-      targetP95Ms: P95_TARGET_MS,
-      samplesMs,
+      medianMs: current10k.medianMs,
+      p95Ms: current10k.p95Ms,
+      efficiencyTargetP95Ms: EFFICIENCY_P95_MS,
+      ceilingTargetP95Ms: CEILING_P95_MS,
+      samplesMs: current10k.samplesMs,
+    },
+    surfaces: {
+      gifDiff: gif.diff,
+      gifExplain: gif.explain,
+      gifPair: {
+        candidatePathCount: gif.candidatePathCount,
+        changedStackPathCount: gif.changedStackPathCount,
+        editedLineCount: gif.editedLineCount,
+        explainPath: gif.explainPath,
+      },
+      lab,
     },
     environment: {
       node: process.version,
@@ -97,9 +209,19 @@ export async function runBenchmark() {
       cpu: cpus()[0]?.model ?? "unknown",
     },
   };
-  if (report.benchmark.p95Ms >= P95_TARGET_MS) {
+  if (report.benchmark.p95Ms >= CEILING_P95_MS) {
     throw Object.assign(
-      new Error(`Benchmark p95 ${report.benchmark.p95Ms.toFixed(2)}ms is not under ${P95_TARGET_MS}ms`),
+      new Error(
+        `Benchmark p95 ${report.benchmark.p95Ms.toFixed(2)}ms is not under the ${CEILING_P95_MS}ms ceiling`,
+      ),
+      { report },
+    );
+  }
+  if (report.benchmark.p95Ms >= EFFICIENCY_P95_MS) {
+    throw Object.assign(
+      new Error(
+        `Benchmark p95 ${report.benchmark.p95Ms.toFixed(2)}ms is not under the ${EFFICIENCY_P95_MS}ms efficiency gate (ceiling remains ${CEILING_P95_MS}ms)`,
+      ),
       { report },
     );
   }
@@ -113,12 +235,17 @@ if (directEntry) {
     if (process.argv.includes("--json")) {
       process.stdout.write(`${JSON.stringify(report)}\n`);
     } else {
-      const { benchmark, environment } = report;
+      const { benchmark, surfaces, environment } = report;
       process.stdout.write(
-        `benchmark: ${benchmark.candidatePathCount} paths, ` +
+        `current 10k: ${benchmark.candidatePathCount} paths, ` +
         `${benchmark.warmupCount} warmups + ${benchmark.sampleCount} samples, ` +
         `median ${benchmark.medianMs.toFixed(2)}ms, p95 ${benchmark.p95Ms.toFixed(2)}ms ` +
-        `(target <${benchmark.targetP95Ms}ms)\n` +
+        `(efficiency <${benchmark.efficiencyTargetP95Ms}ms, ceiling <${benchmark.ceilingTargetP95Ms}ms)\n` +
+        `gif pair: ${surfaces.gifPair.candidatePathCount} paths, ` +
+        `${surfaces.gifPair.changedStackPathCount} changed stacks, ` +
+        `diff p95 ${surfaces.gifDiff.p95Ms.toFixed(2)}ms, ` +
+        `explain p95 ${surfaces.gifExplain.p95Ms.toFixed(2)}ms\n` +
+        `lab: first ${surfaces.lab.firstMs.toFixed(2)}ms, cached ${surfaces.lab.cachedMs.toFixed(2)}ms\n` +
         `baseline: Node ${environment.node}, ${environment.os}, ${environment.arch}, ${environment.cpu}\n`,
       );
     }

@@ -391,6 +391,7 @@ describe("v2.5.0 adoption contract", () => {
     expect(install).toBeGreaterThan(image);
     expect(readme).toContain("10,000 nested paths");
     expect(readme).toContain("p95 < 2,000 ms");
+    expect(readme).toContain("p95 < 1,000 ms");
     expect(readme).toContain("npm run benchmark");
     expect(readme).toMatch(/does not measure model quality|Not a claim about model quality/iu);
     expect(readme).toContain("<details>");

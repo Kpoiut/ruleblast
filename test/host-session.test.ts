@@ -94,6 +94,12 @@ describe("companion session", () => {
       completeness: "COMPLETE" as const,
       findings: [],
       why: null,
+      keep: {
+        rbctx: "RBCTX1:deadbeefcafe",
+        relation: "SAME" as const,
+        split: false,
+        reuse: "next agent: reuse this explanation unless rbctx moves; do not repeat the same path work",
+      },
     };
     const state = companionExplain(initialCompanionState(), view, "src/a.ts\n");
     expect(state.explainView).toBe(view);

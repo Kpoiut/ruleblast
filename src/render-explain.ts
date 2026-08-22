@@ -2,6 +2,7 @@ import type { ExplainResult } from "./cli-output.js";
 import { presentationLabel } from "./application/profile-catalog.js";
 import {
   explainViewFromResult,
+  type ExplainKeepView,
   type ExplainProfileView,
   type ExplainSourceView,
   type ExplainWhyView,
@@ -57,6 +58,25 @@ function renderProfile(profile: ExplainProfileView): string[] {
   lines.push(profile.reason);
   for (const note of profile.boundaryNotes) lines.push(displayText(note));
   return lines;
+}
+
+function renderNow(keep: ExplainKeepView, hasDiffWhy: boolean): string[] {
+  if (hasDiffWhy) return [];
+  return [
+    "",
+    "WHY THIS PATH NOW",
+    `  relation ${keep.relation ?? "INDETERMINATE"}`,
+    `  split ${keep.split ? "yes" : "no"}`,
+  ];
+}
+
+function renderKeep(keep: ExplainKeepView): string[] {
+  return [
+    "",
+    "KEEP",
+    `  rbctx ${keep.rbctx}`,
+    `  ${keep.reuse}`,
+  ];
 }
 
 function renderWhy(why: ExplainWhyView): string[] {
@@ -115,8 +135,10 @@ export function renderExplainView(value: ExplainResult): string {
     lines.push("", ...renderProfile(profile));
   }
   if (view.why !== null) lines.push(...renderWhy(view.why));
+  lines.push(...renderNow(view.keep, view.why !== null));
   if (view.relation !== null) lines.push("", `RELATION · ${view.relation}`);
   appendFindings(lines, view.findings);
+  lines.push(...renderKeep(view.keep));
   return `${lines.join("\n")}\n`;
 }
 
