@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import { ensureConformanceLab } from "../src/application/conformance-lab.js";
 import { currentExplain, diffExplain } from "../src/cli-output.js";
 import {
   ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
@@ -195,11 +196,14 @@ const diffContext = {
 } as const;
 
 describe("detailed human text", () => {
-  it("keeps default summary goldens and appends canonical fields the summary omits", () => {
+  beforeAll(async () => {
+    await ensureConformanceLab();
+  });
+  it("keeps default summary goldens and appends canonical fields the summary omits", async () => {
     const current = currentResult();
     const summary = renderText(current, currentContext, false);
     expect(summary).toBe(golden("current-split"));
-    const detailed = renderDetail(current, currentContext, false);
+    const detailed = await renderDetail(current, currentContext, false);
     expect(detailed.startsWith(summary.trimEnd())).toBe(true);
     expect(detailed).toContain("DETAIL");
     expect(detailed).toContain("SNAPSHOT");
@@ -212,11 +216,11 @@ describe("detailed human text", () => {
     expect(detailed).not.toMatch(/\b[A-Z]:\\/u);
   });
 
-  it("prints added/deleted lines, source digests, groups, and every changed path", () => {
+  it("prints added/deleted lines, source digests, groups, and every changed path", async () => {
     const result = diffResult();
     const summary = renderText(result, diffContext, false);
     expect(summary).toBe(golden("diff-blast"));
-    const detailed = renderDetail(result, diffContext, false);
+    const detailed = await renderDetail(result, diffContext, false);
     expect(detailed).toContain("DETAIL");
     expect(detailed).toContain("added 5");
     expect(detailed).toContain("deleted 4");
@@ -228,7 +232,7 @@ describe("detailed human text", () => {
     expect(detailed).toContain("GROUPS");
   });
 
-  it("prints source digest, bytes used, composition, and evidence on explain", () => {
+  it("prints source digest, bytes used, composition, and evidence on explain", async () => {
     const result = currentResult();
     result.paths[1]!.projections[1] = projection(
       OPENAI_CODEX_CLI_PROFILE_ID,
@@ -239,7 +243,7 @@ describe("detailed human text", () => {
       },
     );
     const explained = currentExplain(result, "src/a.ts");
-    const detailed = renderDetail(explained, currentContext, false);
+    const detailed = await renderDetail(explained, currentContext, false);
     expect(detailed).toContain("DETAIL");
     expect(detailed).toContain("abc123");
     expect(detailed).toContain("32 bytes");
@@ -247,9 +251,9 @@ describe("detailed human text", () => {
     expect(detailed).toContain("vendor:codex");
   });
 
-  it("prints the before source tree on a diff explain", () => {
+  it("prints the before source tree on a diff explain", async () => {
     const explained = diffExplain(diffResult(), "packages/api/internal/refund.ts");
-    const detailed = renderDetail(explained, diffContext, false);
+    const detailed = await renderDetail(explained, diffContext, false);
     expect(detailed).toContain("BEFORE");
     expect(detailed).toContain("AFTER");
   });

@@ -4,8 +4,6 @@ import { renderWitness, witnessForProjection, type WitnessGraph } from "./domain
 import { packWitnessHint } from "./packs/witness-hints.js";
 import type { Projection } from "./model.js";
 import { resolveAgentAllow } from "./domain/agent-allow.js";
-import { receiptForCurrent, receiptForDiff } from "./render-receipt.js";
-import { renderDetail } from "./render-detail.js";
 import {
   displayText,
   renderText,
@@ -88,35 +86,33 @@ function witnessGraphs(value: PresentedResult): WitnessGraph[] {
   );
 }
 
-export function present(
+export async function present(
   value: PresentedResult,
   output: CliOutput,
   io: OutputIo,
   context?: TextPresentationContext,
   extras: PresentationExtras = {},
-): void {
+): Promise<void> {
   if (extras.receipt === true && (value.mode === "current" || value.mode === "diff")) {
     const allow = resolveAgentAllow({
       env: io.env,
       cwd: io.cwd?.() ?? "",
     });
+    const { receiptForDiff, receiptForCurrent } = await import("./render-receipt.js");
     const card = value.mode === "diff"
-      ? receiptForDiff(value, allow)
-      : receiptForCurrent(value, allow);
+      ? await receiptForDiff(value, allow)
+      : await receiptForCurrent(value, allow);
     writeLine(io.stdout, output.kind === "json" ? canonicalJson(card) : card.markdown);
     return;
   }
   if (extras.receipt === true && value.mode === "explain") {
-    writeLine(
-      io.stdout,
-      output.kind === "json"
-        ? canonicalJson({
-          version: "RBREC1",
-          title: "explain",
-          path: value.path.path,
-        })
-        : `RULEBLAST PROOF\nexplain ${value.path.path}\n\nNot a claim about model compliance.`,
-    );
+    const allow = resolveAgentAllow({
+      env: io.env,
+      cwd: io.cwd?.() ?? "",
+    });
+    const { receiptForExplain } = await import("./render-receipt.js");
+    const card = await receiptForExplain(value, allow);
+    writeLine(io.stdout, output.kind === "json" ? canonicalJson(card) : card.markdown);
     return;
   }
   if (extras.witness === true) {
@@ -129,31 +125,31 @@ export function present(
       }));
       return;
     }
-    writeLine(
-      io.stdout,
-      `${humanText(value, context, output, io, extras)}\n\n${renderWitness(graphs)}`,
-    );
+    const body = extras.detail === true
+      ? await detailText(value, context, output, io)
+      : renderText(value, context, effectiveColor(output, io));
+    writeLine(io.stdout, `${body}\n\n${renderWitness(graphs)}`);
     return;
   }
-  writeLine(
-    io.stdout,
-    output.kind === "json"
-      ? canonicalJson(value)
-      : humanText(value, context, output, io, extras),
-  );
+  if (output.kind === "json") {
+    writeLine(io.stdout, canonicalJson(value));
+    return;
+  }
+  if (extras.detail === true) {
+    writeLine(io.stdout, await detailText(value, context, output, io));
+    return;
+  }
+  writeLine(io.stdout, renderText(value, context, effectiveColor(output, io)));
 }
 
-function humanText(
+async function detailText(
   value: PresentedResult,
   context: TextPresentationContext | undefined,
   output: CliOutput,
   io: OutputIo,
-  extras: PresentationExtras,
-): string {
-  const color = effectiveColor(output, io);
-  return extras.detail === true
-    ? renderDetail(value, context, color)
-    : renderText(value, context, color);
+): Promise<string> {
+  const { renderDetail } = await import("./render-detail.js");
+  return renderDetail(value, context, effectiveColor(output, io));
 }
 
 function selectedFindings(

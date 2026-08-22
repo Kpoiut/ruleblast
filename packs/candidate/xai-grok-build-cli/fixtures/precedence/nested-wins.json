@@ -1,0 +1,33 @@
+{
+  "schema": "ruleblast.candidate-fixture.v1",
+  "axis": "precedence",
+  "id": "grok.precedence.nested-wins",
+  "claimId": "grok.nested.1",
+  "expectedStatus": "UNKNOWN",
+  "expectedComposition": "UNSPECIFIED",
+  "reason": "Vendor docs say a nested AGENTS.md scopes to its subtree and deeper files take precedence on conflicts. The merge-versus-replace algorithm is not sealed.",
+  "snapshot": {
+    "schemaVersion": 1,
+    "label": "grok nested project-rule precedence",
+    "entries": [
+      {
+        "path": "AGENTS.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "cm9vdA=="
+      },
+      {
+        "path": "pkg/AGENTS.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "bmVzdGVk"
+      },
+      {
+        "path": "pkg/app.ts",
+        "kind": "file",
+        "executable": false,
+        "base64": "dGFyZ2V0"
+      }
+    ]
+  }
+}

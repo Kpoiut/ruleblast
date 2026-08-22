@@ -117,6 +117,7 @@ export function presentExplain(
 
 export { explainExistingResult };
 export { renderDetail } from "../render-detail.js";
+export { ensureConformanceLab } from "./conformance-lab.js";
 
 export type { ExplainView } from "./explain-view.js";
 export {

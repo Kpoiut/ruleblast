@@ -1,0 +1,33 @@
+{
+  "schema": "ruleblast.candidate-fixture.v1",
+  "axis": "selection",
+  "id": "grok.selection.root-to-cwd",
+  "claimId": "grok.discover.1",
+  "expectedStatus": "UNKNOWN",
+  "expectedComposition": "UNSPECIFIED",
+  "reason": "Official Grok Build CLI docs describe project-rule Markdown from repository root through cwd. No interpreter-admissible resolver exists, so this record does not claim a complete projection.",
+  "snapshot": {
+    "schemaVersion": 1,
+    "label": "grok root-to-cwd project rules",
+    "entries": [
+      {
+        "path": "AGENTS.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "cm9vdCBydWxlcw=="
+      },
+      {
+        "path": "src/AGENTS.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "c3JjIHJ1bGVz"
+      },
+      {
+        "path": "src/app.ts",
+        "kind": "file",
+        "executable": false,
+        "base64": "dGFyZ2V0"
+      }
+    ]
+  }
+}

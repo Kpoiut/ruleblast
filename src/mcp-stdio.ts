@@ -158,14 +158,14 @@ function fail(id: string | number | null, code: number, message: string): JsonRp
   return { jsonrpc: "2.0", id, error: { code, message } };
 }
 
-function withDetail(
+async function withDetail(
   payload: Record<string, unknown>,
   params: Record<string, unknown>,
   result: Parameters<typeof renderDetail>[0],
   context?: Parameters<typeof renderDetail>[1],
-): Record<string, unknown> {
+): Promise<Record<string, unknown>> {
   if (!wantsDetail(params)) return payload;
-  return { ...payload, text: renderDetail(result, context, false) };
+  return { ...payload, text: await renderDetail(result, context, false) };
 }
 
 async function runScan(host: McpHost, params: Record<string, unknown>): Promise<string> {
@@ -174,7 +174,7 @@ async function runScan(host: McpHost, params: Record<string, unknown>): Promise<
   const snapshot = await openTrackedWorktree(root);
   const result = await scanRepository({ snapshot, realities: realitiesOf(params) });
   if (wantsIndex(params)) return renderResultIndex(result);
-  return canonicalJson(withDetail({
+  return canonicalJson(await withDetail({
     metrics: replayMetricsFromResult(result),
     result,
   }, params, result, {
@@ -224,7 +224,7 @@ async function runDiff(host: McpHost, params: Record<string, unknown>): Promise<
       to: to === "WORKTREE" ? "WORKTREE" : to,
     });
   }
-  return canonicalJson(withDetail(payload, params, pair.result, {
+  return canonicalJson(await withDetail(payload, params, pair.result, {
     beforeLabel: base,
     afterLabel: to === "WORKTREE" ? "WORKTREE" : to,
     caseLabel: null,
@@ -277,7 +277,7 @@ async function runCase(params: Record<string, unknown>): Promise<string> {
         to: presentation.afterLabel,
       });
     }
-    return canonicalJson(withDetail({
+    return canonicalJson(await withDetail({
       metrics: replayMetricsFromResult(result),
       result,
     }, params, result, {

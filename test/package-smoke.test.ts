@@ -183,7 +183,7 @@ describe("packed package smoke", () => {
       helpVerified: true,
       jsonDeterministic: true,
       metadataVerified: true,
-      version: "ruleblast 2.4.11",
+      version: "ruleblast 2.5.0",
     });
   }, 120_000);
 });

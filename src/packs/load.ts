@@ -1,6 +1,7 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { compareCodePoints } from "../domain/repository-path.js";
 import { InvalidPackError, compilePack, decodePackBundle } from "./compile.js";
 import type { CompiledPack } from "./schema.js";
 
@@ -18,6 +19,19 @@ export function candidatePacksRoot(): string {
 
 export function bundledDirectoryForPackId(id: string): string {
   return id.replaceAll("/", "-");
+}
+
+export function listContainedDirectories(root: string): readonly string[] {
+  try {
+    return Object.freeze(
+      readdirSync(root, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => assertSafeDirectoryName(entry.name))
+        .sort(compareCodePoints),
+    );
+  } catch {
+    return Object.freeze([]);
+  }
 }
 
 export function assertSafeDirectoryName(name: string): string {

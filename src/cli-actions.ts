@@ -215,7 +215,7 @@ export async function runAnalysisAction(
           });
           return noDefensibleResult(result) ? 2 : 0;
         }
-        present(result, args.output, io, {
+        await present(result, args.output, io, {
           beforeLabel: presentation.beforeLabel,
           afterLabel: presentation.afterLabel,
           caseLabel: presentation.label,
@@ -230,7 +230,7 @@ export async function runAnalysisAction(
           `Recorded case target path not found: ${JSON.stringify(args.explainPath)}`,
         );
       }
-      present(diffExplain(result, args.explainPath), args.output, io, {
+      await present(diffExplain(result, args.explainPath), args.output, io, {
         beforeLabel: presentation.beforeLabel,
         afterLabel: presentation.afterLabel,
         caseLabel: presentation.label,
@@ -257,7 +257,7 @@ export async function runAnalysisAction(
         emitIndex(result, io);
         return noDefensibleResult(result) ? 2 : 0;
       }
-      present(result, args.output, io, {
+      await present(result, args.output, io, {
         currentLabel: "WORKTREE",
         caseLabel: null,
         shellDialect: dependencies.shellDialect,
@@ -300,7 +300,7 @@ export async function runAnalysisAction(
         });
         return noDefensibleResult(pair.result) ? 2 : 0;
       }
-      present(
+      await present(
         pair.result,
         args.output,
         io,
@@ -335,7 +335,7 @@ export async function runAnalysisAction(
         writeLine(io.stdout, formatProjectionCompare(comparePathStacks(selected)));
         return noDefensibleCurrentPath(selected) ? 2 : 0;
       }
-      present(currentExplain(result, args.path), args.output, io, {
+      await present(currentExplain(result, args.path), args.output, io, {
         currentLabel: selectorLabel(args.target),
         caseLabel: null,
         shellDialect: dependencies.shellDialect,
@@ -354,7 +354,7 @@ export async function runAnalysisAction(
       writeLine(io.stdout, formatProjectionCompare(comparePathStacks(selected)));
       return noDefensibleDiffPath(selected) ? 2 : 0;
     }
-    present(
+    await present(
       diffExplain(result, args.path),
       args.output,
       io,

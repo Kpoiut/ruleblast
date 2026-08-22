@@ -39,7 +39,7 @@ describe("companion host purity", () => {
     expect(icon.readUInt32BE(16)).toBe(128);
     expect(icon.readUInt32BE(20)).toBe(128);
     expect(manifest.icon).toBe("media/icon.png");
-    expect(manifest.version).toBe("2.4.11");
+    expect(manifest.version).toBe("2.5.0");
   });
 
   it("uses a currentColor SVG on the activity bar instead of the opaque marketplace PNG", () => {
@@ -87,6 +87,8 @@ describe("companion host purity", () => {
     expect(commands).toContain("ruleblast.explainScoreboardPath");
     expect(commands).toContain("ruleblast.showDetail");
     expect(commands).toContain("ruleblast.showIndex");
+    expect(readFileSync(join(repositoryRoot, "hosts/vscode/src/extension.ts"), "utf8"))
+      .toContain("await renderDetail(state.result)");
     for (const command of commands) {
       expect(command.startsWith("ruleblast.")).toBe(true);
     }

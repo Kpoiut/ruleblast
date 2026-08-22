@@ -1,0 +1,33 @@
+{
+  "schema": "ruleblast.candidate-fixture.v1",
+  "axis": "unknown",
+  "id": "grok.unknown.cursor-rules-not-editor",
+  "claimId": "grok.names.1",
+  "expectedStatus": "UNKNOWN",
+  "expectedComposition": "UNSPECIFIED",
+  "reason": "Grok Build CLI may read .cursor/rules and .claude/rules as compatibility sources for this CLI. That is not cursor/editor@1 and not anthropic/claude-code-cli@1.",
+  "snapshot": {
+    "schemaVersion": 1,
+    "label": "grok cursor rules compatibility files",
+    "entries": [
+      {
+        "path": "AGENTS.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "Y2xp"
+      },
+      {
+        "path": ".cursor/rules/note.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "ZWRpdG9yLXNoYXBlZA=="
+      },
+      {
+        "path": "src/app.ts",
+        "kind": "file",
+        "executable": false,
+        "base64": "dGFyZ2V0"
+      }
+    ]
+  }
+}

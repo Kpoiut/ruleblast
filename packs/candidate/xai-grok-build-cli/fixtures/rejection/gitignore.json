@@ -1,0 +1,33 @@
+{
+  "schema": "ruleblast.candidate-fixture.v1",
+  "axis": "rejection",
+  "id": "grok.rejection.gitignore",
+  "claimId": "grok.gitignore.1",
+  "expectedStatus": "UNKNOWN",
+  "expectedComposition": "UNSPECIFIED",
+  "reason": "Vendor docs skip instruction files ignored by .gitignore. RuleBlast snapshots are Git-tracked only. How ignore rules interact with skip-worktree or otherwise tracked ignored paths is unspecified.",
+  "snapshot": {
+    "schemaVersion": 1,
+    "label": "grok gitignore skipped instructions",
+    "entries": [
+      {
+        "path": ".gitignore",
+        "kind": "file",
+        "executable": false,
+        "base64": "QUdFTlRTLm1kCg=="
+      },
+      {
+        "path": "AGENTS.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "c2hvdWxkIHN0YXkgdW5wcm9qZWN0ZWQ="
+      },
+      {
+        "path": "src/app.ts",
+        "kind": "file",
+        "executable": false,
+        "base64": "dGFyZ2V0"
+      }
+    ]
+  }
+}

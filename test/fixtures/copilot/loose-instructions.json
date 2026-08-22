@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "label": "copilot modular file without applyTo",
+  "entries": [
+    {
+      "path": ".github/instructions/loose.instructions.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "bm8gZnJvbnRtYXR0ZXI="
+    },
+    {
+      "path": "src/file.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQ=="
+    }
+  ]
+}

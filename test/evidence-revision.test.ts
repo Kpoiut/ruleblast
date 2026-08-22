@@ -2,7 +2,8 @@ import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import { ensureConformanceLab } from "../src/application/conformance-lab.js";
 import {
   evidenceDigest,
   revealEvidenceRevisions,
@@ -93,6 +94,10 @@ function captureJson(result: CurrentRuleBlastResult): string {
 }
 
 describe("offline evidence-revision reveal", () => {
+  beforeAll(async () => {
+    await ensureConformanceLab();
+  });
+
   it("marks bundled realities SEALED when no candidate evidence is committed", () => {
     const reveal = revealEvidenceRevisions();
     expect(reveal.bundled).toHaveLength(4);
@@ -213,19 +218,19 @@ describe("offline evidence-revision reveal", () => {
     expect(() => parseArgs([".", "--pack", "qwen"])).toThrow(/Unknown option/);
   });
 
-  it("prints the reveal on --detail and --receipt, never on canonical JSON or the summary", () => {
+  it("prints the reveal on --detail and --receipt, never on canonical JSON or the summary", async () => {
     const result = currentResult();
     const summary = renderText(result, {
       currentLabel: "WORKTREE",
       caseLabel: null,
       shellDialect: "posix",
     }, false);
-    const detailed = renderDetail(result, {
+    const detailed = await renderDetail(result, {
       currentLabel: "WORKTREE",
       caseLabel: null,
       shellDialect: "posix",
     }, false);
-    const receipt = receiptForCurrent(result);
+    const receipt = await receiptForCurrent(result);
     const json = captureJson(result);
     const text = renderEvidenceReveal(revealEvidenceRevisions());
     expect(text).toContain("EVIDENCE");

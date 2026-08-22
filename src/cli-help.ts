@@ -98,7 +98,7 @@ COMMON
   --json        Canonical JSON output.
   --paths-only  One attention path per line. Diff: changed stacks. Scan: current splits. Pipeable. Not --json.
   --index       Agent/user compact index. SOURCE, CONTINUE, REJECT, SPLIT. All rows, no sample cap. Not --json.
-  --detail      Full human text of the same result. Default text is the summary. Not --json.
+  --detail      Full human text of the same result. Includes EVIDENCE and LAB. Default text is the summary. Not --json.
   --compare     Explain only. Two selected-reality source stacks. Not --json.
   --reality     github/copilot-cli@1 and/or google/gemini-cli@1. Repeat to add both. Default JSON stays two-profile.
   --color       auto | always | never

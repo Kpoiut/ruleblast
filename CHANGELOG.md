@@ -2,6 +2,13 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.5.0 — SHIPPED TO MAIN
+
+- Candidate Reality Conformance Lab: `--detail` and `--receipt` print bundled INTERPRET versus FINGERPRINT coverage from a sealed `oracle.json` per pack. Codex `INTERPRET`/`ORACLE` is a live interpreter match of `sourceDependencyPaths` and projection digests on every existing Codex fixture snapshot packed beside the resolver. Tests still compare those probes to `createCodexProfile`. Claude, Gemini, and Copilot `FINGERPRINT`/`ADAPTER` is a live fingerprint-adapter match of the same digest fields on every existing fixture snapshot for that surface, plus the sealed missing-operation list; the interpreter still rejects those resolvers. A mismatched oracle fails closed. Candidate fixtures carry loadable snapshots (`LOADED`) and may only record UNKNOWN. Projection of a candidate remains `UNEXECUTED`. `RECORDED` is not a passing oracle. Grok Build CLI has those five axes and remains `NOT_ADMITTED`. Not a fifth action. Not a public `--reality`. Not a `--pack` loader. Not a model-quality score. `--json` stays canonical.
+- Packed installs include `packs/candidate` so the lab and evidence reveal are the same inventory in a source tree and in the npm CLI.
+- TypeScript remains the analysis authority. A Go or Rust capture sidecar is not admitted; the packed 10,000-path budget still holds, and a second analysis engine is forbidden.
+- The published CLI people install is still `ruleblast@2.4.6`.
+
 ## 2.4.11 — SHIPPED TO MAIN
 
 - `--index` prints a compact tab-separated SOURCE/CONTINUE/REJECT/SPLIT map of the same canonical result, including snapshot FROM/TO, overlay LAW, and STACK count. Every row. No overlay sample cap. Truncated overlay remainder points at `--index`. Agents use it on large repositories; humans can read it. Not a fifth action. Does not write a file. `--json` stays canonical.

@@ -1,6 +1,6 @@
 {
   "name": "ruleblast",
-  "version": "2.4.11",
+  "version": "2.5.0",
   "description": "Git diff for AI agent repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes across Codex, Claude Code, Gemini CLI, and Copilot CLI.",
   "keywords": [
     "agents.md",
@@ -30,6 +30,7 @@
     "cases/README.md",
     "dist",
     "packs/bundled",
+    "packs/candidate",
     "schemas/reality-pack-v1.schema.json",
     "README.md",
     "CONTRACT.md",

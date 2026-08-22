@@ -73,6 +73,16 @@ describe("spec-driven pack interpreter", () => {
       "discover.origin",
       "transform",
     ]);
+    const oracleOps = (directory: string): readonly string[] => {
+      const oracle = JSON.parse(
+        readFileSync(join(repositoryRoot, "packs/bundled", directory, "oracle.json"), "utf8"),
+      ) as { readonly kind: string; readonly missingOperations?: readonly string[] };
+      expect(oracle.kind).toBe("uninterpretable");
+      return oracle.missingOperations ?? [];
+    };
+    expect(oracleOps("anthropic-claude-code-cli@1")).toEqual(claude);
+    expect(oracleOps("google-gemini-cli@1")).toEqual(gemini);
+    expect(oracleOps("github-copilot-cli@1")).toEqual(copilot);
     expect(claude.join("\n")).not.toMatch(/fingerprint/iu);
     expect(canInterpretResolver(loadBundledPack("anthropic-claude-code-cli@1").resolver))
       .toBe(false);

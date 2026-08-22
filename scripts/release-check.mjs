@@ -79,9 +79,10 @@ export function expectedPackedFiles(repositoryRoot = REPOSITORY_ROOT) {
     "cases/kpoiut__ruleblast/27d52e2cd6ee..e420008a1c10.json",
     "schemas/reality-pack-v1.schema.json",
   ];
-  const packs = filesBelow(join(repositoryRoot, "packs/bundled")).map((path) =>
-    slashPath(relative(repositoryRoot, path)),
-  );
+  const packs = [
+    ...filesBelow(join(repositoryRoot, "packs/bundled")),
+    ...filesBelow(join(repositoryRoot, "packs/candidate")),
+  ].map((path) => slashPath(relative(repositoryRoot, path)));
   const dist = filesBelow(join(repositoryRoot, "src"))
     .filter((path) => path.endsWith(".ts"))
     .flatMap((path) => {

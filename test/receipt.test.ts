@@ -1,13 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import { ensureConformanceLab } from "../src/application/conformance-lab.js";
 import { CliUsageError, parseArgs } from "../src/args.js";
-import { present } from "../src/cli-output.js";
+import { currentExplain, present } from "../src/cli-output.js";
+import { receiptForCurrent, receiptForExplain } from "../src/render-receipt.js";
 import { rbctxForProjection } from "../src/domain/rbctx.js";
 import {
   OPENAI_CODEX_CLI_PROFILE_ID,
   type CurrentRuleBlastResult,
   type Projection,
 } from "../src/model.js";
-import { receiptForCurrent } from "../src/render-receipt.js";
 
 function projection(overrides: Partial<Projection> = {}): Projection {
   return {
@@ -64,13 +65,13 @@ function currentResult(): CurrentRuleBlastResult {
   };
 }
 
-function capturePresent(
+async function capturePresent(
   value: CurrentRuleBlastResult,
   kind: "json" | "text",
   extras: { witness?: boolean; receipt?: boolean } = {},
-): string {
+): Promise<string> {
   const stdout: string[] = [];
-  present(
+  await present(
     value,
     { kind, color: "never" },
     {
@@ -105,10 +106,14 @@ describe("RBCTX identity", () => {
 });
 
 describe("pasteable receipt", () => {
-  it("derives a deterministic card from existing result counts only", () => {
+  beforeAll(async () => {
+    await ensureConformanceLab();
+  });
+
+  it("derives a deterministic card from existing result counts only", async () => {
     const result = currentResult();
-    const first = receiptForCurrent(result);
-    const second = receiptForCurrent(result);
+    const first = await receiptForCurrent(result);
+    const second = await receiptForCurrent(result);
     expect(first).toEqual(second);
     expect(first.version).toBe("RBREC1");
     expect(first.rbctx).toMatch(/^RBCTX1:[0-9a-f]{12}$/u);
@@ -122,28 +127,95 @@ describe("pasteable receipt", () => {
     expect(first.markdown).toContain("EVIDENCE");
     const scoreboard = first.markdown.slice(0, first.markdown.indexOf("EVIDENCE"));
     expect(scoreboard).not.toContain("Copilot");
-    expect(receiptForCurrent(result, "yes").markdown).toContain("agent-allow yes");
+    expect((await receiptForCurrent(result, "yes")).markdown).toContain("agent-allow yes");
   });
 
-  it("keeps default JSON free of receipt or context envelopes", () => {
-    const raw = capturePresent(currentResult(), "json");
+  it("keeps default JSON free of receipt or context envelopes", async () => {
+    const raw = await capturePresent(currentResult(), "json");
     expect(JSON.parse(raw)).toEqual(currentResult());
     expect(raw).not.toContain("RBREC1");
     expect(raw).not.toContain("RBCTX1");
     expect(raw).not.toContain("ruleblast.witness.v1");
   });
 
-  it("emits the receipt card for --receipt json and markdown for text", () => {
-    const card = JSON.parse(capturePresent(currentResult(), "json", { receipt: true })) as {
+  it("emits the receipt card for --receipt json and markdown for text", async () => {
+    const card = JSON.parse(await capturePresent(currentResult(), "json", { receipt: true })) as {
       readonly version: string;
       readonly rbctx: string;
       readonly markdown: string;
     };
     expect(card.version).toBe("RBREC1");
     expect(card.rbctx).toMatch(/^RBCTX1:/u);
-    expect(capturePresent(currentResult(), "text", { receipt: true })).toContain(
+    expect(await capturePresent(currentResult(), "text", { receipt: true })).toContain(
       "RULEBLAST PROOF",
     );
+  });
+
+  it("derives an explain receipt from the path projections instead of a stub", async () => {
+    const explained = currentExplain(currentResult(), "src/file.ts");
+    const card = await receiptForExplain(explained);
+    expect(card.version).toBe("RBREC1");
+    expect(card.title).toBe("explain");
+    expect(card.rbctx).toMatch(/^RBCTX1:[0-9a-f]{12}$/u);
+    expect(card.markdown).toContain("src/file.ts");
+    expect(card.markdown).toContain("CX Codex");
+    expect(card.markdown).toContain("COMPLETE");
+    expect(card.markdown).toContain("ORDERED");
+    expect(card.markdown).toContain("SAME");
+    expect(card.markdown).toContain("EVIDENCE");
+    expect(card.markdown).toContain("LAB");
+    expect(card.markdown).not.toMatch(/^RULEBLAST PROOF\nexplain src\/file\.ts\n/u);
+    const stdout: string[] = [];
+    await present(
+      explained,
+      { kind: "json", color: "never" },
+      {
+        stdout: (text) => { stdout.push(text); },
+        stderr: () => { throw new Error("present must not write stderr"); },
+        env: {},
+        stdoutIsTTY: false,
+      },
+      undefined,
+      { receipt: true },
+    );
+    const emitted = JSON.parse(stdout.join("")) as {
+      readonly version: string;
+      readonly title: string;
+      readonly rbctx: string;
+      readonly markdown: string;
+    };
+    expect(emitted).toEqual(card);
+  });
+
+  it("derives a diff explain receipt from before and after projections", async () => {
+    const explained = {
+      mode: "explain" as const,
+      analysisMode: "diff" as const,
+      schemaVersion: 1 as const,
+      resolverRevision: 1 as const,
+      before: { kind: "git" as const, label: "HEAD~1", oid: null },
+      after: { kind: "git" as const, label: "HEAD", oid: null },
+      path: {
+        path: "src/file.ts",
+        before: [projection()],
+        after: [projection({ projectionDigest: "q" })],
+        changedProfiles: [OPENAI_CODEX_CLI_PROFILE_ID],
+        beforePayloadRelation: "SAME" as const,
+        afterPayloadRelation: "DIFFERENT" as const,
+        wasSplit: false,
+        isSplit: true,
+        causes: ["AGENTS.md"],
+      },
+      findings: [],
+    };
+    const card = await receiptForExplain(explained);
+    expect(card.title).toBe("explain");
+    expect(card.markdown).toContain("HEAD~1 → HEAD");
+    expect(card.markdown).toContain("src/file.ts");
+    expect(card.markdown).toContain("SAME → DIFFERENT");
+    expect(card.markdown).toContain("CX Codex");
+    expect(card.markdown).toContain("LAB");
+    expect(card.markdown).not.toMatch(/^RULEBLAST PROOF\nexplain /u);
   });
 });
 

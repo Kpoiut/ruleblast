@@ -42,6 +42,7 @@ describe("route catalog", () => {
     expect(help).toContain("SOURCE, CONTINUE, REJECT");
     expect(help).toContain("--compare");
     expect(help).toContain("--detail");
+    expect(help).toContain("Includes EVIDENCE and LAB");
     expect(help).toContain("Default text is the summary");
     expect(help).toContain("ruleblast [path] [--json] [--paths-only]");
     expect(help).toContain("[--detail]");

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "label": "copilot repo-wide instructions",
+  "entries": [
+    {
+      "path": ".github/copilot-instructions.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "cmVwbyB3aWRl"
+    },
+    {
+      "path": ".github/instructions/front.instructions.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "LS0tCmFwcGx5VG86IHdlYi8qKgotLS0KZnJvbnQgb25seQ=="
+    },
+    {
+      "path": "web/app.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQ=="
+    },
+    {
+      "path": "src/core.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQ=="
+    }
+  ]
+}

@@ -439,9 +439,15 @@ This tree is `2.4.11`. Latest independently verified public npm distribution rem
 
 `--index` is presentation of the same four-action result: snapshot FROM/TO, overlay LAW, STACK count, SOURCE, CONTINUE, REJECT, SPLIT. Every row. No sample cap. Truncated overlay remainder names `--index`. MCP `index` and companion Show Index render that map. Not a fifth action. Not a hosted index. RuleBlast does not write that map into the repository. `--json` stays canonical.
 
-## **NEXT** — Candidate reality conformance lab
+## **SHIPPED TO MAIN** — `v2.5.0`: Candidate Reality Conformance Lab
 
-A candidate runtime may grow selection, rejection, precedence, ambiguity, and unknown fixtures without becoming a public `--reality`. That is a later gate, not a fifth bundled engine.
+This tree is `2.5.0`. Latest independently verified public npm distribution remains `2.4.6`. Companion version is `2.5.0`. Pack `ruleblast-companion-2.5.0.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+`--detail` and `--receipt` print the Candidate Reality Conformance Lab. Each bundled pack carries a sealed `oracle.json`. Codex `INTERPRET`/`ORACLE` is a live interpreter match of `sourceDependencyPaths` and projection digests on every existing Codex fixture snapshot packed beside the resolver. Tests still compare those probes to the adapter oracle. Claude, Gemini, and Copilot `FINGERPRINT`/`ADAPTER` is a live fingerprint-adapter match of the same digest fields on every existing fixture snapshot for that surface, plus the sealed missing-operation list; the interpreter still rejects those resolvers. Candidate fixtures carry loadable snapshots and record UNKNOWN only. Projection of a candidate remains `UNEXECUTED`. `RECORDED` is not a passing oracle. Grok Build CLI may grow those fixtures without becoming a public `--reality`. A mismatched oracle fails closed. The lab does not score model quality, compliance, or downstream behavior. Canonical JSON is unchanged. Packed installs include `packs/candidate`. Not a fifth action. Not a fifth bundled reality. Not a `--pack` loader. TypeScript remains the analysis authority; a native capture sidecar is not admitted while the packed 10,000-path budget holds.
+
+## **NEXT** — Fingerprint resolver operations
+
+Claude, Gemini, and Copilot stay fingerprint engines until their resolver specs are data-complete. Closing those operation gaps does not add a fifth bundled reality.
 
 ## **HORIZON** — `v3`: Prove the overlay at corpus scale
 
@@ -475,7 +481,8 @@ These are unresolved questions, not current support or promised work:
 - Which third surface has both stable official semantics and enough demand to pass the `v1.3.0` gate?
 - Can the finite Reality Pack representation reproduce every bundled golden result without an executable escape hatch?
 - How should an offline run reveal that a pinned evidence revision may have drifted without making a network request? The first packed reveal is in `v2.4.6`; corpus-scale drift remains open.
-- Can Qwen Code CLI, DeepSeek Harness, Kimi Code CLI, or ZCode pass the admission gate as data-only Reality Packs without becoming model-name realities? Grok Build CLI is a forming candidate, not public `--reality`.
+- Can Qwen Code CLI, DeepSeek Harness, Kimi Code CLI, or ZCode pass the admission gate as data-only Reality Packs without becoming model-name realities? Grok Build CLI is a forming candidate with lab fixtures, not public `--reality`.
+- Can an optional native worktree capture sidecar beat the TypeScript packed 10,000-path budget on a measured million-path repository without becoming a second analysis engine? Not admitted in `2.5.0`. npm must not require rustc or a Go toolchain.
 - Cursor Composer, GLM, Grok the model, and Llama are not realities. A host or a model behind a host is not a modeled runtime.
 - Can a licensed corpus of Blast Cases cover monorepos, nested instructions, imports, exclusions, and uncertain order without publishing sensitive content?
 - How many documented rule realities are genuinely distinct once equivalent projections are clustered by evidence rather than brand?

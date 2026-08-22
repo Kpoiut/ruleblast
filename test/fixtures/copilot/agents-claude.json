@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "label": "copilot agents and claude files",
+  "entries": [
+    {
+      "path": "AGENTS.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZXgtc2hhcGVk"
+    },
+    {
+      "path": "CLAUDE.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y2xhdWRlLXNoYXBlZA=="
+    },
+    {
+      "path": "src/file.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQ=="
+    }
+  ]
+}

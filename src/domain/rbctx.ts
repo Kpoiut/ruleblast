@@ -35,6 +35,32 @@ export function rbctxForCurrent(result: CurrentRuleBlastResult): string {
   })));
 }
 
+export function rbctxForExplainCurrent(
+  label: string,
+  path: string,
+  projections: readonly Projection[],
+): string {
+  return fingerprint("explain-current", `${label}:${path}`, [{
+    path,
+    identities: projections.map(rbctxForProjection),
+  }]);
+}
+
+export function rbctxForExplainDiff(
+  bound: string,
+  path: string,
+  before: readonly Projection[],
+  after: readonly Projection[],
+): string {
+  return fingerprint("explain-diff", `${bound}:${path}`, [{
+    path,
+    identities: [
+      ...before.map(rbctxForProjection),
+      ...after.map(rbctxForProjection),
+    ],
+  }]);
+}
+
 export function rbctxForDiff(result: DiffRuleBlastResult): string {
   return fingerprint(
     "diff",

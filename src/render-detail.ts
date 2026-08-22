@@ -16,6 +16,7 @@ import {
   formatCount,
   plural,
 } from "./render-format.js";
+import { renderConformanceLab } from "./application/conformance-lab.js";
 import { renderEvidenceReveal } from "./application/evidence-revision.js";
 import { renderText, type TextResult } from "./render-text.js";
 
@@ -164,11 +165,11 @@ function explainDetail(value: ExplainResult): string[] {
   return lines;
 }
 
-export function renderDetail(
+export async function renderDetail(
   value: TextResult,
   contextValue?: TextPresentationContext,
   color = false,
-): string {
+): Promise<string> {
   const context = captureTextPresentationContext(value, contextValue);
   const summary = renderText(value, context, color).trimEnd();
   const extra = value.mode === "current"
@@ -176,6 +177,11 @@ export function renderDetail(
     : value.mode === "diff"
       ? diffDetail(value)
       : explainDetail(value);
-  extra.push("", ...renderEvidenceReveal().trimEnd().split("\n"));
+  extra.push(
+    "",
+    ...renderEvidenceReveal().trimEnd().split("\n"),
+    "",
+    ...(await renderConformanceLab()).trimEnd().split("\n"),
+  );
   return extra.length === 0 ? `${summary}\n` : `${summary}\n\n${extra.join("\n")}\n`;
 }

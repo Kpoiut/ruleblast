@@ -1,11 +1,19 @@
+import { renderConformanceLab } from "./application/conformance-lab.js";
 import { renderEvidenceReveal } from "./application/evidence-revision.js";
 import { presentationLabel } from "./application/profile-catalog.js";
-import { rbctxForCurrent, rbctxForDiff } from "./domain/rbctx.js";
+import type { ExplainResult } from "./cli-output.js";
+import {
+  rbctxForCurrent,
+  rbctxForDiff,
+  rbctxForExplainCurrent,
+  rbctxForExplainDiff,
+} from "./domain/rbctx.js";
 import type {
   CurrentRuleBlastResult,
   DiffRuleBlastResult,
+  Projection,
 } from "./model.js";
-import { formatCount } from "./render-format.js";
+import { displayText, formatCount } from "./render-format.js";
 
 function receiptProfileLine(profile: string, count: number, word: string): string {
   return `${presentationLabel(profile)}  ${formatCount(count)} ${word}`;
@@ -28,10 +36,10 @@ function box(lines: readonly string[]): string {
   ].join("\n");
 }
 
-export function receiptForCurrent(
+export async function receiptForCurrent(
   result: CurrentRuleBlastResult,
   agentAllow: "yes" | "ask" = "ask",
-): ReceiptCard {
+): Promise<ReceiptCard> {
   const rbctx = rbctxForCurrent(result);
   const markdown = [
     "RULEBLAST PROOF",
@@ -50,14 +58,16 @@ export function receiptForCurrent(
     "Not a claim about model compliance.",
     "",
     renderEvidenceReveal().trimEnd(),
+    "",
+    (await renderConformanceLab()).trimEnd(),
   ].join("\n");
   return { version: "RBREC1", title: "current", rbctx, markdown };
 }
 
-export function receiptForDiff(
+export async function receiptForDiff(
   result: DiffRuleBlastResult,
   agentAllow: "yes" | "ask" = "ask",
-): ReceiptCard {
+): Promise<ReceiptCard> {
   const rbctx = rbctxForDiff(result);
   const instructionLines = result.diffStats.editedLineCount;
   const markdown = [
@@ -77,6 +87,54 @@ export function receiptForDiff(
     "Not a claim about model compliance.",
     "",
     renderEvidenceReveal().trimEnd(),
+    "",
+    (await renderConformanceLab()).trimEnd(),
   ].join("\n");
   return { version: "RBREC1", title: "diff", rbctx, markdown };
+}
+
+function projectionLine(projection: Projection): string {
+  return `${presentationLabel(projection.profile)}  ${projection.status}  ${projection.composition}`;
+}
+
+export async function receiptForExplain(
+  value: ExplainResult,
+  agentAllow: "yes" | "ask" = "ask",
+): Promise<ReceiptCard> {
+  const lines = value.analysisMode === "current"
+    ? [
+        displayText(value.snapshot.label),
+        displayText(value.path.path),
+        ...value.path.projections.map(projectionLine),
+        value.path.payloadRelation,
+      ]
+    : [
+        `${displayText(value.before.label)} → ${displayText(value.after.label)}`,
+        displayText(value.path.path),
+        `${value.path.beforePayloadRelation} → ${value.path.afterPayloadRelation}`,
+        ...value.path.after.map(projectionLine),
+      ];
+  const rbctx = value.analysisMode === "current"
+    ? rbctxForExplainCurrent(value.snapshot.label, value.path.path, value.path.projections)
+    : rbctxForExplainDiff(
+        `${value.before.label}>${value.after.label}`,
+        value.path.path,
+        value.path.before,
+        value.path.after,
+      );
+  const markdown = [
+    "RULEBLAST PROOF",
+    box([
+      ...lines,
+      `agent-allow ${agentAllow}`,
+      `rbctx ${rbctx}`,
+    ]),
+    "",
+    "Not a claim about model compliance.",
+    "",
+    renderEvidenceReveal().trimEnd(),
+    "",
+    (await renderConformanceLab()).trimEnd(),
+  ].join("\n");
+  return { version: "RBREC1", title: "explain", rbctx, markdown };
 }

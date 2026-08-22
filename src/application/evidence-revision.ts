@@ -1,13 +1,12 @@
 import { createHash } from "node:crypto";
-import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { compareCodePoints } from "../domain/repository-path.js";
-import { readCandidateSurface, type CandidateSurface } from "../packs/candidate.js";
+import { readCandidateInventory } from "../packs/candidate.js";
 import {
-  bundledDirectoryForPackId,
   bundledPacksRoot,
   candidatePacksRoot,
-  loadBundledPack,
+  listContainedDirectories,
+  readPackDirectory,
 } from "../packs/load.js";
 import type { PackClaim } from "../packs/schema.js";
 import { presentationFor } from "./profile-catalog.js";
@@ -51,40 +50,19 @@ export function evidenceDigest(claims: readonly PackClaim[]): string {
   return createHash("sha256").update(JSON.stringify(canonical)).digest("hex");
 }
 
-function listDirectories(root: string): readonly string[] {
-  try {
-    return readdirSync(root, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => entry.name)
-      .sort(compareCodePoints);
-  } catch {
-    return Object.freeze([]);
-  }
-}
-
-function loadCandidates(root: string): readonly CandidateSurface[] {
-  const loaded: CandidateSurface[] = [];
-  for (const name of listDirectories(root)) {
-    const surface = readCandidateSurface(join(root, name));
-    if (bundledDirectoryForPackId(surface.id) !== name) {
-      throw new TypeError(
-        `candidate directory ${JSON.stringify(name)} does not match id ${JSON.stringify(surface.id)}`,
-      );
-    }
-    loaded.push(surface);
-  }
-  return Object.freeze(loaded);
-}
+let defaultReveal: EvidenceReveal | undefined;
 
 export function revealEvidenceRevisions(
   roots: EvidenceRevealRoots = {},
 ): EvidenceReveal {
+  const usingDefault = roots.bundledRoot === undefined && roots.candidateRoot === undefined;
+  if (usingDefault && defaultReveal !== undefined) return defaultReveal;
   const bundledRoot = roots.bundledRoot ?? bundledPacksRoot();
   const candidateRoot = roots.candidateRoot ?? candidatePacksRoot();
-  const candidates = loadCandidates(candidateRoot);
+  const candidates = readCandidateInventory(candidateRoot);
   const byId = new Map(candidates.map((item) => [item.id, item]));
-  const bundled = listDirectories(bundledRoot).map((name) => {
-    const pack = loadBundledPack(name);
+  const bundled = listContainedDirectories(bundledRoot).map((name) => {
+    const pack = readPackDirectory(join(bundledRoot, name));
     const digest = evidenceDigest(pack.evidence);
     const candidate = byId.get(pack.pack.id);
     const candidateDigest = candidate === undefined ? null : evidenceDigest(candidate.evidence);
@@ -111,10 +89,12 @@ export function revealEvidenceRevisions(
       evidenceDigest: evidenceDigest(item.evidence),
     }))
     .sort((left, right) => compareCodePoints(left.id, right.id));
-  return Object.freeze({
+  const reveal = Object.freeze({
     bundled: Object.freeze(bundled),
     candidates: Object.freeze(extra),
   });
+  if (usingDefault) defaultReveal = reveal;
+  return reveal;
 }
 
 export function renderEvidenceReveal(reveal: EvidenceReveal = revealEvidenceRevisions()): string {

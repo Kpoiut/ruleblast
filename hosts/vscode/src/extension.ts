@@ -419,7 +419,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.window.showErrorMessage("Run scan, diff, or case first.");
         return;
       }
-      const text = renderDetail(state.result);
+      const text = await renderDetail(state.result);
       await showExplainDocument(text, state.lifecycle === "STALE");
     }),
     vscode.commands.registerCommand("ruleblast.showIndex", async () => {

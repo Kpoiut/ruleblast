@@ -7,28 +7,17 @@ import { copilotProfile, GITHUB_COPILOT_CLI_PROFILE_ID } from "../src/profiles/c
 import { ManifestSnapshot } from "../src/snapshot.js";
 
 const repositoryRoot = dirname(dirname(fileURLToPath(import.meta.url)));
+const fixtureRoot = join(repositoryRoot, "test/fixtures/copilot");
 
-function snapshot(files: Readonly<Record<string, string>>): ManifestSnapshot {
-  return new ManifestSnapshot({
-    schemaVersion: 1,
-    label: "copilot",
-    entries: Object.entries(files).map(([path, contents]) => ({
-      path,
-      kind: "file" as const,
-      executable: false,
-      base64: Buffer.from(contents, "utf8").toString("base64"),
-    })),
-  });
+function fixture(name: string): ManifestSnapshot {
+  return new ManifestSnapshot(
+    JSON.parse(readFileSync(join(fixtureRoot, `${name}.json`), "utf8")),
+  );
 }
 
 describe("github/copilot-cli@1", () => {
   it("selects repository-wide instructions and excludes a non-matching applyTo rule", async () => {
-    const prepared = await copilotProfile.prepare(snapshot({
-      ".github/copilot-instructions.md": "repo wide",
-      ".github/instructions/front.instructions.md": "---\napplyTo: web/**\n---\nfront only",
-      "web/app.ts": "code",
-      "src/core.ts": "code",
-    }));
+    const prepared = await copilotProfile.prepare(fixture("repo-wide"));
     const web = prepared.project("web/app.ts");
     const core = prepared.project("src/core.ts");
     expect(web.profile).toBe(GITHUB_COPILOT_CLI_PROFILE_ID);
@@ -50,11 +39,7 @@ describe("github/copilot-cli@1", () => {
   });
 
   it("selects documented agent instruction files without claiming precedence", async () => {
-    const prepared = await copilotProfile.prepare(snapshot({
-      "AGENTS.md": "codex-shaped",
-      "CLAUDE.md": "claude-shaped",
-      "src/file.ts": "code",
-    }));
+    const prepared = await copilotProfile.prepare(fixture("agents-claude"));
     const projection = prepared.project("src/file.ts");
     expect(projection.composition).toBe("UNSPECIFIED");
     expect(projection.sources.map((source) => source.path).sort()).toEqual([
@@ -65,10 +50,7 @@ describe("github/copilot-cli@1", () => {
   });
 
   it("does not invent payload for a modular file without applyTo", async () => {
-    const prepared = await copilotProfile.prepare(snapshot({
-      ".github/instructions/loose.instructions.md": "no frontmatter",
-      "src/file.ts": "code",
-    }));
+    const prepared = await copilotProfile.prepare(fixture("loose-instructions"));
     const projection = prepared.project("src/file.ts");
     expect(projection.sources).toEqual([
       expect.objectContaining({

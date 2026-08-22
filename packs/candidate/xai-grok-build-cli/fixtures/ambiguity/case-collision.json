@@ -1,0 +1,33 @@
+{
+  "schema": "ruleblast.candidate-fixture.v1",
+  "axis": "ambiguity",
+  "id": "grok.ambiguity.case-collision",
+  "claimId": "grok.names.1",
+  "expectedStatus": "UNKNOWN",
+  "expectedComposition": "UNSPECIFIED",
+  "reason": "The documented name list includes AGENTS.md, Agents.md, and AGENT.md in one directory. Case-insensitive filesystems can collapse those names. No sealed rule says which alternative is selected.",
+  "snapshot": {
+    "schemaVersion": 1,
+    "label": "grok AGENTS.md versus Agents.md",
+    "entries": [
+      {
+        "path": "AGENTS.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "cGFzY2Fs"
+      },
+      {
+        "path": "Agents.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "Zm9sZGVk"
+      },
+      {
+        "path": "src/app.ts",
+        "kind": "file",
+        "executable": false,
+        "base64": "dGFyZ2V0"
+      }
+    ]
+  }
+}
