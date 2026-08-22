@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import {
   mkdirSync,
   mkdtempSync,
+  readdirSync,
   readFileSync,
   statSync,
   writeFileSync,
@@ -40,7 +41,9 @@ import { compareCodePoints } from "../src/domain/repository-path.js";
 import { identityDeltaFromGit } from "./git-identity-oracle.js";
 
 function git(root: string, args: readonly string[]): string {
-  return execFileSync("git", ["-C", root, ...args], { encoding: "utf8" }).trim();
+  return execFileSync("git", ["--no-optional-locks", "-C", root, ...args], {
+    encoding: "utf8",
+  }).trim();
 }
 
 function write(root: string, relative: string, content: string): void {
@@ -94,14 +97,27 @@ function initRepo(objectFormat?: GitStorageObjectFormat): string {
 	name = overlay
 [core]
 	autocrlf = false
+	fsmonitor = false
+[commit]
+	gpgsign = false
 `,
   );
   return root;
 }
 
-function commitWorktree(root: string, workTree: string, message: string): string {
-  git(root, ["--work-tree", workTree, "add", "-A"]);
-  return commitStaged(root, message);
+function walkFiles(directory: string): string[] {
+  const files: string[] = [];
+  const visit = (relative: string): void => {
+    const absolute = relative === "" ? directory : join(directory, ...relative.split("/"));
+    for (const entry of readdirSync(absolute, { withFileTypes: true })) {
+      const child = relative === "" ? entry.name : `${relative}/${entry.name}`;
+      if (entry.isDirectory()) visit(child);
+      else if (entry.isFile()) files.push(child);
+    }
+  };
+  visit("");
+  files.sort(compareCodePoints);
+  return files;
 }
 
 function seedFixturePair(name: string): {
@@ -111,14 +127,70 @@ function seedFixturePair(name: string): {
   readonly beforeRef: string;
   readonly afterRef: string;
 } {
+  // One pack, not a loose `git add` write storm. Windows Verify AV-scans
+  // those loose objects past the implicit 5s clock.
   const { root: fixture, manifest } = publicFixture(name);
   const root = initRepo();
+  const headRef = git(root, ["symbolic-ref", "HEAD"]);
+  const parts: Buffer[] = [];
+  const text = (value: string): void => {
+    parts.push(Buffer.from(value, "utf8"));
+  };
+  const blobMarks = new Map<string, number>();
+  let nextMark = 0;
+  const tree = (side: "before" | "after"): [string, number][] => {
+    const directory = join(fixture, side);
+    const entries: [string, number][] = [];
+    for (const path of walkFiles(directory)) {
+      const bytes = readFileSync(join(directory, ...path.split("/")));
+      const oid = gitBlobOid(bytes, "sha1");
+      let mark = blobMarks.get(oid);
+      if (mark === undefined) {
+        nextMark += 1;
+        mark = nextMark;
+        blobMarks.set(oid, mark);
+        text(`blob\nmark :${mark}\ndata ${bytes.byteLength}\n`);
+        parts.push(bytes);
+        text("\n");
+      }
+      entries.push([path, mark]);
+    }
+    return entries;
+  };
+  const writeCommit = (
+    mark: number,
+    message: string,
+    files: readonly [string, number][],
+    parent: number | null,
+  ): void => {
+    const body = `${message}\n`;
+    text(`commit ${headRef}\nmark :${mark}\n`);
+    text("author overlay <overlay@example.test> 1000000000 +0000\n");
+    text("committer overlay <overlay@example.test> 1000000000 +0000\n");
+    text(`data ${Buffer.byteLength(body)}\n${body}`);
+    if (parent !== null) text(`from :${parent}\ndeleteall\n`);
+    for (const [path, blobMark] of files) {
+      text(`M 100644 :${blobMark} ${path}\n`);
+    }
+  };
+  const beforeFiles = tree("before");
+  const afterFiles = tree("after");
+  const beforeMark = nextMark + 1;
+  const afterMark = nextMark + 2;
+  writeCommit(beforeMark, `${name} before`, beforeFiles, null);
+  writeCommit(afterMark, `${name} after`, afterFiles, beforeMark);
+  text("done\n");
+  execFileSync(
+    "git",
+    ["--no-optional-locks", "-C", root, "fast-import", "--quiet", "--done"],
+    { input: Buffer.concat(parts) },
+  );
   return {
     fixture,
     manifest,
     root,
-    beforeRef: commitWorktree(root, join(fixture, "before"), `${name} before`),
-    afterRef: commitWorktree(root, join(fixture, "after"), `${name} after`),
+    beforeRef: git(root, ["rev-parse", `${headRef}~1`]),
+    afterRef: git(root, ["rev-parse", headRef]),
   };
 }
 
@@ -128,7 +200,7 @@ function commit(root: string, message: string): string {
 }
 
 function commitStaged(root: string, message: string): string {
-  git(root, ["commit", "-m", message]);
+  git(root, ["commit", "--no-verify", "--no-gpg-sign", "-m", message]);
   return git(root, ["rev-parse", "HEAD"]);
 }
 
