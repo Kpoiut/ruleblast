@@ -4,7 +4,7 @@ All notable user-visible changes to RuleBlast are recorded here.
 
 ## 2.4.10 — SHIPPED TO MAIN
 
-- README causal-proof GIF types the everyday CLI: `git diff --stat HEAD~1`, `ruleblast diff HEAD~1`, `ruleblast explain <path> --from HEAD~1`. No npx pin and no commit hashes in the typed commands. Sealed 2→206 output is unchanged. Loop 15 s. Git and explain print in batches so the result does not dump at once.
+- README causal-proof GIF types the everyday CLI: `git diff --stat HEAD~1`, `ruleblast diff HEAD~1`, `ruleblast explain <path> --from HEAD~1`. No npx pin and no commit hashes in the typed commands. Sealed 2→206 output is unchanged. Loop 15 s. Print is snappy; holds are for reading.
 - Companion Diff From lists HEAD, HEAD~1, recent RuleBlast bases, and `git log`. Same diff action. Not a fifth action.
 - The published CLI people install is still `ruleblast@2.4.6`.
 

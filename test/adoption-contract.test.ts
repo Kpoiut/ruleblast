@@ -358,7 +358,7 @@ describe("v2.4.10 adoption contract", () => {
     expect(frameControls).toHaveLength(35);
     expect(frameControls.every(({ disposal }) => disposal === 1)).toBe(true);
     expect(frameControls.every(({ delayCentiseconds }) =>
-      delayCentiseconds > 0 && delayCentiseconds <= 120
+      delayCentiseconds > 0 && delayCentiseconds <= 200
     )).toBe(true);
     expect(totalDelayCentiseconds).toBe(1_500);
     expect(bytes.toString("ascii")).toContain("NETSCAPE2.0");
@@ -366,7 +366,7 @@ describe("v2.4.10 adoption contract", () => {
       "RULEBLAST_POSTER=Git shows the edit; complete held frames only",
     );
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "9bbd9f19df3cf1577b334f3ad03661b063337a0ec83d96141b39bc567c1990c9",
+      "31d6f0473c679e888c5921f4bb53fc3f41a300f8ce305c86df0b203757679e74",
     );
 
     const descriptor = readJson<PackageDescriptor>("package.json");
