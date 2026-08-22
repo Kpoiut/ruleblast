@@ -1,12 +1,12 @@
 <h1 align="center">RuleBlast — Git diff for AI agent repository instructions</h1>
 
 <p align="center">
-  <img src="assets/ruleblast-hero.png?v=2.4.8s" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
+  <img src="assets/ruleblast-hero.png?v=2.4.9s" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
 </p>
 
 <p align="center">
   <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
-  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.6"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.4.8"></a>
+  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.6"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.4.9"></a>
   <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/ruleblast" alt="Apache-2.0 license"></a>
 </p>
@@ -23,7 +23,7 @@
 </p>
 
 <div align="center">
-  <img src="assets/ruleblast-causal-proof.gif?v=2.4.8s" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
+  <img src="assets/ruleblast-causal-proof.gif?v=2.4.9s" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
 </div>
 
 ```bash
@@ -32,7 +32,7 @@ npx --yes ruleblast@2.4.6 .
 npx --yes ruleblast@2.4.6 diff HEAD~1
 ```
 
-<p align="center"><sub>This tree is 2.4.8. Published CLI is ruleblast@2.4.6. Local · read-only · deterministic · no network or model call</sub></p>
+<p align="center"><sub>This tree is 2.4.9. Published CLI is ruleblast@2.4.6. Local · read-only · deterministic · no network or model call</sub></p>
 
 <p align="center">
   A Status Bar can say <code>Δ206</code> before anyone opens RuleBlast.<br>
@@ -43,7 +43,7 @@ npx --yes ruleblast@2.4.6 diff HEAD~1
 ## What Git missed
 
 <div align="center">
-  <img src="assets/ruleblast-visual-benchmark.png?v=2.4.8s" alt="RuleBlast 2.4.6 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; nested AGENTS.md; ALIGNED CONTINUE 2" width="100%">
+  <img src="assets/ruleblast-visual-benchmark.png?v=2.4.9s" alt="RuleBlast 2.4.6 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; nested AGENTS.md; ALIGNED CONTINUE 2" width="100%">
 </div>
 
 Git shows the instruction edit. It does not show every repository path that inherits it.
@@ -250,7 +250,7 @@ npm run build
 npm run host:build
 ```
 
-Install the unpacked `hosts/vscode` folder, or pack `ruleblast-companion-2.4.8.vsix` with `npm run host:pack`. GitHub Release [`v2.4.6`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.6) serves `ruleblast-companion-2.4.6.vsix`. The Status Bar follows the active file from the last result. Compare selected realities opens the two stacks in the editor diff. Saving a file marks the last result stale; it does not start another analysis. Claude Desktop, ChatGPT/Codex desktop, and Zed use `--mcp`. Marketplace / Open VSX listings are separate publisher operations.
+Install the unpacked `hosts/vscode` folder, or pack `ruleblast-companion-2.4.9.vsix` with `npm run host:pack`. GitHub Release [`v2.4.6`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.4.6) serves `ruleblast-companion-2.4.6.vsix`. The Status Bar follows the active file from the last result. Compare selected realities opens the two stacks in the editor diff. Saving a file marks the last result stale; it does not start another analysis. Claude Desktop, ChatGPT/Codex desktop, and Zed use `--mcp`. Marketplace / Open VSX listings are separate publisher operations.
 
 ## Give your agent RuleBlast
 
@@ -308,7 +308,7 @@ Promoted Blast Case: official evidence, retrieval date, manifests, expected JSON
 
 ## Roadmap
 
-This tree is `2.4.8`. Published CLI is `ruleblast@2.4.6`. The product is overlay, work map, change alignment, and intent — which files now receive different AI instructions, and whether later work should CONTINUE or REJECT that inheritance. REJECT is not a recommendation to discard the Git change. Glance, `--paths-only`, `explain --compare`, and a `PROOF` line disclose that same result. Offline `--detail` / `--receipt` can say a pinned evidence revision is SEALED, NO_KNOWN_DRIFT, or POSSIBLY_STALE without a network fetch.
+This tree is `2.4.9`. Published CLI is `ruleblast@2.4.6`. The product is overlay, work map, change alignment, and intent — which files now receive different AI instructions, and whether later work should CONTINUE or REJECT that inheritance. REJECT is not a recommendation to discard the Git change. Glance, `--paths-only`, `explain --compare`, and a `PROOF` line disclose that same result. Offline `--detail` / `--receipt` can say a pinned evidence revision is SEALED, NO_KNOWN_DRIFT, or POSSIBLY_STALE without a network fetch.
 
 Today: Codex, Claude Code, opt-in Copilot CLI, and opt-in Gemini CLI. Same companion in VS Code-family editors, including Copilot Chat. Same four actions over `--mcp` for Claude Desktop and Codex desktop.
 

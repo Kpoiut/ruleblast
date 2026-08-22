@@ -421,6 +421,12 @@ This tree is `2.4.8`. Latest independently verified public npm distribution rema
 
 The README causal-proof GIF is a 35-frame Windows Terminal + PowerShell session of the published `ruleblast@2.4.6` CLI on the sealed 2→206 pair. Loop 10.08 s. No HUD. The visual scoreboard is an eight-card 1,200×630 board. Not a fifth action. Not a product UI. Those assets are not in the npm tarball.
 
+## **SHIPPED TO MAIN** — `v2.4.9`: Flush Windows Terminal tab chrome
+
+This tree is `2.4.9`. Latest independently verified public npm distribution remains `2.4.6`. Companion version is `2.4.9`. Pack `ruleblast-companion-2.4.9.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+The README causal-proof GIF keeps the 35-frame PowerShell session of `ruleblast@2.4.6` on the sealed 2→206 pair. The active tab is flush title-bar chrome (`tab.background` = terminalBackground). Not a fifth action. Not a product UI. Those assets are not in the npm tarball.
+
 ## **NEXT** — Candidate reality conformance lab
 
 A candidate runtime may grow selection, rejection, precedence, ambiguity, and unknown fixtures without becoming a public `--reality`. That is a later gate, not a fifth bundled engine.

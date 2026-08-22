@@ -25,13 +25,13 @@ interface PackageLock {
   readonly packages: Readonly<Record<string, { readonly version?: string }>>;
 }
 
-describe("v2.4.8 adoption contract", () => {
+describe("v2.4.9 adoption contract", () => {
   it("locks the exact package identity and supported discovery metadata", () => {
     const descriptor = readJson<PackageDescriptor>("package.json");
     const lock = readJson<PackageLock>("package-lock.json");
 
     expect(descriptor).toMatchObject({
-      version: "2.4.8",
+      version: "2.4.9",
       description:
         "Git diff for AI agent repository instructions. Shows the blast radius of AGENTS.md and CLAUDE.md changes across Codex, Claude Code, Gemini CLI, and Copilot CLI.",
       repository: {
@@ -61,8 +61,8 @@ describe("v2.4.8 adoption contract", () => {
       "cli",
       "developer-tools",
     ]);
-    expect(lock.version).toBe("2.4.8");
-    expect(lock.packages[""]?.version).toBe("2.4.8");
+    expect(lock.version).toBe("2.4.9");
+    expect(lock.packages[""]?.version).toBe("2.4.9");
 
     expect(descriptor.description).toContain("blast radius");
     expect(descriptor.description).toContain("AGENTS.md");
@@ -205,7 +205,7 @@ describe("v2.4.8 adoption contract", () => {
     expect(conduct).toMatch(/protect/iu);
 
     const contributingLead = read("CONTRIBUTING.md").slice(0, 700);
-    expect(contributingLead).toContain("v2.4.8");
+    expect(contributingLead).toContain("v2.4.9");
     expect(contributingLead).toContain("2.4.6");
     expect(contributingLead).toMatch(/you do not need a 25-commit/iu);
     expect(contributingLead).toMatch(/surprising result/iu);
@@ -366,7 +366,7 @@ describe("v2.4.8 adoption contract", () => {
       "RULEBLAST_POSTER=Git shows the edit; complete held frames only",
     );
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "dfb9d0a7ddabb7ca79478355956049dbc48e4e2e77d307557527d47681c7d423",
+      "b8bcaa6f1e24d6dce3bf9e4962be18997452918e554331ba37442e09589d6e18",
     );
 
     const descriptor = readJson<PackageDescriptor>("package.json");

@@ -2,6 +2,11 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.4.9 — SHIPPED TO MAIN
+
+- README causal-proof GIF uses a flush Windows Terminal title-bar tab: profile icon, PowerShell, close, new-tab, chevron. Not an inset glued pill. Tab title is the profile name, not a copied session string.
+- The published CLI people install is still `ruleblast@2.4.6`.
+
 ## 2.4.8 — SHIPPED TO MAIN
 
 - README causal-proof GIF is a Windows Terminal + PowerShell session (35 frames, 10.08 s). Commands type, output prints in batches, holds stay readable. No HUD. Not a fake macOS mock.
