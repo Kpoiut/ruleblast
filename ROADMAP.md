@@ -449,7 +449,7 @@ This tree is `2.5.0`. Latest independently verified public npm distribution is `
 
 ## **SHIPPED TO MAIN** — `v2.5.1`: Copilot interpreted from resolver.json
 
-This tree is `2.5.1`. Latest independently verified public npm distribution remains `2.5.0`. Companion version is `2.5.1`. Pack `ruleblast-companion-2.5.1.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+This tree is `2.5.1`. Latest independently verified public npm distribution is `2.5.1`. Companion version is `2.5.1`. Pack `ruleblast-companion-2.5.1.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
 
 The interpreter executes Copilot’s pack: multi-origin discover, select-all, unspecified assemble, frontmatter-glob `applyTo`, unexpanded `@` mention. Projections match `createCopilotProfile` on every packed Copilot fixture. Lab `INTERPRET` / `ORACLE`. The adapter stays the oracle and is not imported by the interpreter. Claude remains fingerprint on `transform`. Gemini remains fingerprint on `onSymlink` and `transform`. Those lists shrank because generic operations now run, not because gaps were hidden. One path primitive. Codex prefix-directory cache. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
 

@@ -73,7 +73,7 @@ describe("v2.5.1 adoption contract", () => {
     expect(descriptor.description).toContain(phrase);
     expect(read("src/package-identity.ts")).toContain(phrase);
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.0"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.1"',
     );
     expect(read("src/cli-help.ts")).toContain("IDENTITY_BLAST");
     expect(read(".agents/skills/ruleblast/SKILL.md")).toContain(phrase);
@@ -119,7 +119,7 @@ describe("v2.5.1 adoption contract", () => {
   it("keeps the public onboarding on the verified case and product boundary", () => {
     const readme = read("README.md");
     expect(readme).toContain("## Run the verified case");
-    expect(readme).toContain("npx --yes ruleblast@2.5.0 case");
+    expect(readme).toContain("npx --yes ruleblast@2.5.1 case");
     expect(readme).not.toMatch(/ruleblast demo/iu);
     expect(readme).not.toContain("DEMO FIXTURE");
     expect(readme).not.toContain("remains conditional");
@@ -136,10 +136,10 @@ describe("v2.5.1 adoption contract", () => {
     const eyeHero = readme.indexOf("assets/ruleblast-hero.png");
     const tagline = readme.indexOf("Git shows the <code>AGENTS.md</code>");
     const causalProof = readme.indexOf("assets/ruleblast-causal-proof.gif");
-    const yourRepo = readme.indexOf("npx --yes ruleblast@2.5.0 .");
+    const yourRepo = readme.indexOf("npx --yes ruleblast@2.5.1 .");
     const missed = readme.indexOf("## What Git missed");
     const proof = readme.indexOf("PROOF.md");
-    const teachingCase = readme.indexOf("npx --yes ruleblast@2.5.0 case");
+    const teachingCase = readme.indexOf("npx --yes ruleblast@2.5.1 case");
     const install = readme.indexOf("## Install");
     expect(title).toBeGreaterThan(-1);
     expect(eyeHero).toBeGreaterThan(title);
@@ -205,8 +205,8 @@ describe("v2.5.1 adoption contract", () => {
     expect(conduct).toMatch(/protect/iu);
 
     const contributingLead = read("CONTRIBUTING.md").slice(0, 700);
-    expect(contributingLead).toContain("v2.5.0");
-    expect(contributingLead).toContain("2.5.0");
+    expect(contributingLead).toContain("v2.5.1");
+    expect(contributingLead).toContain("2.5.1");
     expect(contributingLead).toMatch(/you do not need a 25-commit/iu);
     expect(contributingLead).toMatch(/surprising result/iu);
 
@@ -386,7 +386,7 @@ describe("v2.5.1 adoption contract", () => {
     const asset = "assets/ruleblast-visual-benchmark.png";
     const image = readme.indexOf(asset);
     const install = readme.indexOf("## Install");
-    expect(heading).toBeGreaterThan(readme.indexOf("npx --yes ruleblast@2.5.0 ."));
+    expect(heading).toBeGreaterThan(readme.indexOf("npx --yes ruleblast@2.5.1 ."));
     expect(image).toBeGreaterThan(heading);
     expect(install).toBeGreaterThan(image);
     expect(readme).toContain("10,000 nested paths");

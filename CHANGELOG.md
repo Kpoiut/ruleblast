@@ -9,7 +9,6 @@ All notable user-visible changes to RuleBlast are recorded here.
 - One repository-path primitive (`compareCodePoints`, dirname, basename, ancestors, join) is shared by Git capture, snapshots, transitions, impact, the interpreter, and all four profile adapters.
 - Codex ordered/byte-budget interpretation caches ancestor-directory resolution and hashes each candidate once at prepare. Same digest recipe. Same adapter-oracle bytes.
 - Overlay wall still runs four baseline analyses and four analysis-plus-overlay samples. Overlay median/p95 add less than 500 ms. The 5 s test clock is unchanged. Public-pair Git identity seeds both commits through one `git fast-import` pack so Windows Node 24 stays inside that clock.
-- The published CLI people install is still `ruleblast@2.5.0`.
 
 ## 2.5.0 — RELEASED
 
