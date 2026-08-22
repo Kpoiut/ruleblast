@@ -2,13 +2,19 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 2.5.1 — SHIPPED TO MAIN
+## 2.5.1 — RELEASED
 
 - Copilot CLI is interpreted from `resolver.json`: multiple discover origins (fixed, glob, ancestors), `select.mode` all, `assemble.mode` unspecified, empty transform, `frontmatter-glob` `applyTo`, and `onAtReference: partial-unexpanded`. Live interpreter projections are byte-identical to `createCopilotProfile` on every packed Copilot fixture. Lab `INTERPRET` / `ORACLE`. The adapter remains the test oracle and is not imported by the interpreter. Not a fifth action. Not a fifth bundled reality.
 - Interpreter admission is the operations the engine can execute, not a Codex-only shape filter. Claude’s remaining gap is `transform` (HTML comments and `@path` imports). Gemini’s remaining gaps are `onSymlink` (`partial-unfollowed`) and `transform` (`at-path-import`). Those resolvers still fingerprint. Missing-operation lists shrank because those operations now run, not because the lab hides them.
 - One repository-path primitive (`compareCodePoints`, dirname, basename, ancestors, join) is shared by Git capture, snapshots, transitions, impact, the interpreter, and all four profile adapters.
 - Codex ordered/byte-budget interpretation caches ancestor-directory resolution and hashes each candidate once at prepare. Same digest recipe. Same adapter-oracle bytes.
 - Overlay wall still runs four baseline analyses and four analysis-plus-overlay samples. Overlay median/p95 add less than 500 ms. The 5 s test clock is unchanged. Public-pair Git identity seeds both commits through one `git fast-import` pack so Windows Node 24 stays inside that clock.
+- [npm `ruleblast@2.5.1`](https://www.npmjs.com/package/ruleblast/v/2.5.1) reports integrity `sha512-cAchQ4It9MM4E+CmOMvnviX/zGic+28DvxbHIK908NN+qJ9aLAsi7iPiIEelKBJiY/N4Ie0RxiVeOqhB1TbfhQ==`. The registry download is the 177,160-byte tarball with SHA-256 `32e3cc817f0dd915764f2f9d67c8b3f3f8aa4bc9215c11c8439842ed52ee6c4a`. Pack `ruleblast-companion-2.5.1.vsix` (160,281 bytes, SHA-256 `26ed18e60cf4f4bad0dfef78514f2924d2f14878355547c5644a6220e1b09869`). Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+### Release artifact
+
+- Signed tag object `761f547ca00d911cf5c5b826461b82c01ccac900` for [`v2.5.1`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.1) targets commit `e60fd18ec4a83ce8aff7488b0bb9203ab4a8cedc`.
+- npm and the GitHub Release serve the same 177,160-byte tarball with SHA-256 `32e3cc817f0dd915764f2f9d67c8b3f3f8aa4bc9215c11c8439842ed52ee6c4a`. The GitHub Release also serves the 160,281-byte `ruleblast-companion-2.5.1.vsix` with SHA-256 `26ed18e60cf4f4bad0dfef78514f2924d2f14878355547c5644a6220e1b09869`.
 
 ## 2.5.0 — RELEASED
 

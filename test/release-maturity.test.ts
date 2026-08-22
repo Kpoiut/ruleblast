@@ -925,7 +925,7 @@ describe("public release maturity", () => {
   it("records v2.5.0 as the candidate reality conformance lab", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **RELEASED** — `v2.5.0`: Candidate Reality Conformance Lab";
-    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.5.1`: Copilot interpreted from resolver.json");
+    const next = roadmap.indexOf("## **RELEASED** — `v2.5.1`: Copilot interpreted from resolver.json");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -964,22 +964,36 @@ describe("public release maturity", () => {
 
   it("records v2.5.1 as Copilot interpreted from resolver.json", () => {
     const roadmap = read("ROADMAP.md");
-    const heading = "## **SHIPPED TO MAIN** — `v2.5.1`: Copilot interpreted from resolver.json";
+    const heading = "## **RELEASED** — `v2.5.1`: Copilot interpreted from resolver.json";
     const next = roadmap.indexOf("## **NEXT** — Fingerprint resolver operations");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
-    const shipped = roadmap.slice(start, next);
-    expect(shipped).toContain("2.5.1");
-    expect(shipped).toContain("ruleblast-companion-2.5.1.vsix");
-    expect(shipped).toContain("applyTo");
-    expect(shipped).toContain("INTERPRET");
-    expect(shipped).toContain("createCopilotProfile");
-    expect(shipped).toContain("transform");
-    expect(shipped).toContain("Not a fifth action");
-    expect(shipped).not.toMatch(/\bRELEASED\b/u);
-    expect(read("CHANGELOG.md")).toContain("## 2.5.1 — SHIPPED TO MAIN");
-    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.1 — RELEASED/u);
+    const released = roadmap.slice(start, next);
+    expect(released).toContain("2.5.1");
+    expect(released).toContain("ruleblast-companion-2.5.1.vsix");
+    expect(released).toContain("applyTo");
+    expect(released).toContain("INTERPRET");
+    expect(released).toContain("createCopilotProfile");
+    expect(released).toContain("transform");
+    expect(released).toContain("Not a fifth action");
+    expect(released).not.toMatch(/\bSHIPPED TO MAIN\b/u);
+    for (const evidence of [
+      "https://www.npmjs.com/package/ruleblast/v/2.5.1",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.1",
+      "761f547ca00d911cf5c5b826461b82c01ccac900",
+      "e60fd18ec4a83ce8aff7488b0bb9203ab4a8cedc",
+      "sha512-cAchQ4It9MM4E+CmOMvnviX/zGic+28DvxbHIK908NN+qJ9aLAsi7iPiIEelKBJiY/N4Ie0RxiVeOqhB1TbfhQ==",
+      "177,160",
+      "32e3cc817f0dd915764f2f9d67c8b3f3f8aa4bc9215c11c8439842ed52ee6c4a",
+      "160,281",
+      "26ed18e60cf4f4bad0dfef78514f2924d2f14878355547c5644a6220e1b09869",
+      "not facts inferred from this checkout",
+    ]) {
+      expect(released).toContain(evidence);
+    }
+    expect(read("CHANGELOG.md")).toContain("## 2.5.1 — RELEASED");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.1 — SHIPPED TO MAIN/u);
     expect(read("package.json")).toContain('"version": "2.5.1"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.1"');
     expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.5.1`");
