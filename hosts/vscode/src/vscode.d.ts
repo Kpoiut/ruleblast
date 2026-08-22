@@ -138,7 +138,14 @@ declare module "vscode" {
     fire(data: T): void;
     dispose(): void;
   }
-  export interface ExtensionContext { subscriptions: Disposable[]; }
+  export interface Memento {
+    get<T>(key: string): T | undefined;
+    update(key: string, value: unknown): Promise<void>;
+  }
+  export interface ExtensionContext {
+    subscriptions: Disposable[];
+    workspaceState: Memento;
+  }
   export const workspace: {
     readonly workspaceFolders: readonly WorkspaceFolder[] | undefined;
     readonly isTrusted: boolean;

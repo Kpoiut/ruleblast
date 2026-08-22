@@ -427,6 +427,12 @@ This tree is `2.4.9`. Latest independently verified public npm distribution rema
 
 The README causal-proof GIF keeps the 35-frame PowerShell session of `ruleblast@2.4.6` on the sealed 2→206 pair. The active tab is flush title-bar chrome (`tab.background` = terminalBackground). Not a fifth action. Not a product UI. Those assets are not in the npm tarball.
 
+## **SHIPPED TO MAIN** — `v2.4.10`: Everyday CLI in the demo, git-log Diff From
+
+This tree is `2.4.10`. Latest independently verified public npm distribution remains `2.4.6`. Companion version is `2.4.10`. Pack `ruleblast-companion-2.4.10.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+The README causal-proof GIF types `git diff --stat HEAD~1`, `ruleblast diff HEAD~1`, and `ruleblast explain <path> --from HEAD~1` on the sealed 2→206 pair. Companion Diff From can pick HEAD, HEAD~1, a remembered base, or a commit from `git log`. Same four actions. Not a product UI. Those assets are not in the npm tarball.
+
 ## **NEXT** — Candidate reality conformance lab
 
 A candidate runtime may grow selection, rejection, precedence, ambiguity, and unknown fixtures without becoming a public `--reality`. That is a later gate, not a fifth bundled engine.

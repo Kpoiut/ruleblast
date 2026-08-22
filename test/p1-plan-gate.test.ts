@@ -91,6 +91,6 @@ describe("P1/B0 plan gate", () => {
     expect(changelog).toMatch(/^## 2\.3\.0 — RELEASED/mu);
     expect(changelog).not.toMatch(/^## 2\.3\.0 — SHIPPED TO MAIN/mu);
     expect(read("ROADMAP.md")).toMatch(/## \*\*RELEASED\*\* — `v2\.3\.0`/u);
-    expect(read("package.json")).toContain('"version": "2.4.9"');
+    expect(read("package.json")).toContain('"version": "2.4.10"');
   });
 });

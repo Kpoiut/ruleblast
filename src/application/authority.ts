@@ -160,6 +160,9 @@ export {
   formatProjectionCompare,
 } from "./projection-compare.js";
 export { CONTROL_BINDINGS, CONTROL_CHORD } from "./control-keys.js";
+export { diffFromPicks, rememberDiffBases } from "./diff-from-picks.js";
+export type { DiffFromPick, GitLogCommit } from "./diff-from-picks.js";
+export { listRecentCommits } from "./recent-commits.js";
 export {
   findRepositoryRoot,
   openGitSnapshot,

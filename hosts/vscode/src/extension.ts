@@ -12,13 +12,16 @@ import {
   companionSucceed,
   diffRepositoryWithAdjunct,
   explainRepository,
+  diffFromPicks,
   findRepositoryRoot,
   gateWorkspace,
   initialCompanionState,
+  listRecentCommits,
   openGitSnapshot,
   openPackagedCase,
   openTrackedWorktree,
   optInRealityIds,
+  rememberDiffBases,
   presentExplain,
   presentationLabel,
   renderDetail,
@@ -204,6 +207,37 @@ async function withRoot(
   }
 }
 
+const DIFF_BASES_KEY = "ruleblast.diffBases";
+
+async function pickDiffBase(
+  context: vscode.ExtensionContext,
+  folder: string,
+): Promise<string | undefined> {
+  const root = await findRepositoryRoot(folder);
+  const commits = await listRecentCommits(root);
+  const recent = context.workspaceState.get<string[]>(DIFF_BASES_KEY) ?? [];
+  const picked = await vscode.window.showQuickPick(
+    diffFromPicks({ recent, commits }).map((row) => ({
+      ...row,
+      id: row.ref === null ? "custom" : undefined,
+    })),
+    {
+      title: "RuleBlast: Diff From",
+      placeHolder: "HEAD, last parent, a recent base, or a commit from git log",
+    },
+  );
+  if (picked === undefined || Array.isArray(picked)) return undefined;
+  if (picked.ref === null || picked.id === "custom") {
+    return vscode.window.showInputBox({
+      title: "RuleBlast Diff From",
+      prompt: "Git ref to compare with the tracked worktree",
+      placeHolder: "HEAD",
+      value: "HEAD",
+    });
+  }
+  return picked.ref;
+}
+
 async function runDiffWithRef(baseRef: string, status: vscode.StatusBarItem): Promise<void> {
   await withRoot(status, "diff", async (folder) => {
     const root = await findRepositoryRoot(folder);
@@ -278,25 +312,21 @@ export function activate(context: vscode.ExtensionContext): void {
       });
     }),
     vscode.commands.registerCommand("ruleblast.diffFrom", async () => {
-      const picked = await vscode.window.showQuickPick(
-        [
-          { label: "HEAD", description: "Last commit → worktree" },
-          { label: "HEAD~1", description: "Parent of HEAD → worktree" },
-          { label: "$(pencil) Custom ref…", description: "Enter any Git ref", id: "custom" },
-        ],
-        { title: "RuleBlast: Diff From", placeHolder: "Select a base ref to compare with worktree" },
-      );
-      if (picked === undefined || Array.isArray(picked)) return;
-      let baseRef: string | undefined = picked.label;
-      if (picked.id === "custom") {
-        baseRef = await vscode.window.showInputBox({
-          title: "RuleBlast Diff From",
-          prompt: "Git ref to compare with the tracked worktree",
-          placeHolder: "HEAD",
-          value: "HEAD",
-        });
+      const gate = gateWorkspace(workspaceGate());
+      if (!gate.ok) {
+        commitPresentation(companionFail(state, gate.code, gate.message), status);
+        vscode.window.showErrorMessage(gate.message);
+        return;
       }
+      const baseRef = await pickDiffBase(context, gate.root);
       if (baseRef === undefined || baseRef.trim() === "") return;
+      await context.workspaceState.update(
+        DIFF_BASES_KEY,
+        [...rememberDiffBases(
+          context.workspaceState.get<string[]>(DIFF_BASES_KEY) ?? [],
+          baseRef,
+        )],
+      );
       await runDiffWithRef(baseRef, status);
     }),
     vscode.commands.registerCommand("ruleblast.explainScoreboardPath", async (path: unknown) => {
