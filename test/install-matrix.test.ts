@@ -194,9 +194,9 @@ describe("candidate installation matrix", () => {
   it("documents exact, non-interactive and reversible install commands", async () => {
     const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
     for (const command of [
-      "npx --yes ruleblast@2.4.6 --help",
-      "npx --yes ruleblast@2.4.6 .",
-      "npm install --save-dev --save-exact ruleblast@2.4.6",
+      "npx --yes ruleblast@2.5.0 --help",
+      "npx --yes ruleblast@2.5.0 .",
+      "npm install --save-dev --save-exact ruleblast@2.5.0",
       "ruleblast --version",
       "npx ruleblast --version",
       "npm uninstall --global ruleblast",
@@ -212,7 +212,7 @@ describe("candidate installation matrix", () => {
       /npm uninstall --save-dev ruleblast[\s\S]+npm install --save-dev --save-exact ruleblast@2\.4\.6/u,
     );
     expect(readme).toContain(
-      "git clone --branch v2.4.6 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v2.5.0 --depth 1 https://github.com/Kpoiut/ruleblast.git",
     );
     expect(readme).toMatch(/Windows.+Linux/isu);
     expect(readme).not.toMatch(/Windows.+macOS.+Linux/isu);

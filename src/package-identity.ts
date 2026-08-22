@@ -20,7 +20,7 @@ export function packageVersion(): string {
 }
 
 /** Last independently verified public npm pin. Not inferred from this tree. */
-export const PUBLISHED_PACKAGE_VERSION = "2.4.6";
+export const PUBLISHED_PACKAGE_VERSION = "2.5.0";
 
 export function advertisedPackage(): string {
   return `ruleblast@${PUBLISHED_PACKAGE_VERSION}`;

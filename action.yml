@@ -16,7 +16,7 @@ inputs:
   version:
     description: Exact published package to run.
     required: false
-    default: "2.4.6"
+    default: "2.5.0"
   reality:
     description: Optional extra modeled reality. github/copilot-cli@1 or google/gemini-cli@1.
     required: false

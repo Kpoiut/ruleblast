@@ -30,11 +30,11 @@ The same Git tree can project different instruction stacks. Codex, Claude Code, 
 
 ## RuleBlast
 
-[RuleBlast](https://github.com/Kpoiut/ruleblast) is a local, read-only Git CLI. It shows the blast radius of `AGENTS.md` and `CLAUDE.md` changes across those four CLI surfaces. No network or model call during analysis. This tree is `2.5.0`. Published CLI is `ruleblast@2.4.6`.
+[RuleBlast](https://github.com/Kpoiut/ruleblast) is a local, read-only Git CLI. It shows the blast radius of `AGENTS.md` and `CLAUDE.md` changes across those four CLI surfaces. No network or model call during analysis. This tree is `2.5.0`. Published CLI is `ruleblast@2.5.0`.
 
 ```bash
-npx --yes ruleblast@2.4.6 .
-npx --yes ruleblast@2.4.6 diff HEAD~1
+npx --yes ruleblast@2.5.0 .
+npx --yes ruleblast@2.5.0 diff HEAD~1
 ```
 
 Which other path inherited the same nested source? The sealed case does not answer that for you.
