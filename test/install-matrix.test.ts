@@ -206,10 +206,10 @@ describe("candidate installation matrix", () => {
       expect(readme).toContain(command);
     }
     expect(readme).toMatch(
-      /npm uninstall --global ruleblast[\s\S]+npm install --global ruleblast@2\.4\.6/u,
+      /npm uninstall --global ruleblast[\s\S]+npm install --global ruleblast@2\.5\.0/u,
     );
     expect(readme).toMatch(
-      /npm uninstall --save-dev ruleblast[\s\S]+npm install --save-dev --save-exact ruleblast@2\.4\.6/u,
+      /npm uninstall --save-dev ruleblast[\s\S]+npm install --save-dev --save-exact ruleblast@2\.5\.0/u,
     );
     expect(readme).toContain(
       "git clone --branch v2.5.0 --depth 1 https://github.com/Kpoiut/ruleblast.git",

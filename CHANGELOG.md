@@ -2,7 +2,7 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 2.5.0 — SHIPPED TO MAIN
+## 2.5.0 — RELEASED
 
 - Candidate Reality Conformance Lab: `--detail` and `--receipt` print bundled INTERPRET versus FINGERPRINT coverage from a sealed `oracle.json` per pack. Codex `INTERPRET`/`ORACLE` is a live interpreter match of `sourceDependencyPaths` and projection digests on every existing Codex fixture snapshot packed beside the resolver. Tests still compare those probes to `createCodexProfile`. Claude, Gemini, and Copilot `FINGERPRINT`/`ADAPTER` is a live fingerprint-adapter match of the same digest fields on every existing fixture snapshot for that surface, plus the sealed missing-operation list; the interpreter still rejects those resolvers. A mismatched oracle fails closed. Candidate fixtures carry loadable snapshots (`LOADED`) and may only record UNKNOWN. Projection of a candidate remains `UNEXECUTED`. `RECORDED` is not a passing oracle. Grok Build CLI has those five axes and remains `NOT_ADMITTED`. Not a fifth action. Not a public `--reality`. Not a `--pack` loader. Not a model-quality score. `--json` stays canonical.
 - Packed installs include `packs/candidate` so the lab and evidence reveal are the same inventory in a source tree and in the npm CLI.
@@ -10,6 +10,12 @@ All notable user-visible changes to RuleBlast are recorded here.
 - Build wipes `dist/` before `tsc` so a deleted module cannot remain in the npm tarball.
 - Packed 10,000-path analysis keeps the 2,000 ms ceiling and adds an efficiency gate at p95 < 1,000 ms. Same projection digest recipe. Same capture. `npm run benchmark` also times the sealed GIF fixture pair and explain KEEP text.
 - `explain` prints KEEP (`rbctx` + reuse rule) so a later agent on the same repo can reuse the last explanation instead of repeating the path. Diff explain `--from` also names LATER WORK CONTINUE/REJECT from the overlay when that path is OTHER. Not a stored session file. Not actor telemetry.
+- [npm `ruleblast@2.5.0`](https://www.npmjs.com/package/ruleblast/v/2.5.0) reports integrity `sha512-+L5dINRsAs5/vW2nSYbBpzwL4NTCAF7/P9corxZtjd/Ats/0VvKTlU61vYVL1xqW5S4MIo9e2LpqHeKS2f1Eag==`. The registry download is the 174,972-byte tarball with SHA-256 `4fede04c92030ed7e98fdf44868f1c334f24b4d66b233ad2bf68cc6967272e4f`. Pack `ruleblast-companion-2.5.0.vsix` (157,848 bytes, SHA-256 `a1933630a594ae617defe530ea2e3bcaa44bba054a797f88e123710f90db1606`). Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+### Release artifact
+
+- Signed tag object `a6ab195c517815cddfcbea326452e67782477fc9` for [`v2.5.0`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.0) targets commit `0afa7e251f70454078b50391cf93e5d7dc19cac5`.
+- npm and the GitHub Release serve the same 174,972-byte tarball with SHA-256 `4fede04c92030ed7e98fdf44868f1c334f24b4d66b233ad2bf68cc6967272e4f`. The GitHub Release also serves the 157,848-byte `ruleblast-companion-2.5.0.vsix` with SHA-256 `a1933630a594ae617defe530ea2e3bcaa44bba054a797f88e123710f90db1606`.
 
 ## 2.4.11 — SHIPPED TO MAIN
 

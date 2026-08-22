@@ -906,7 +906,7 @@ describe("public release maturity", () => {
   it("records v2.4.11 as the agent index for large repositories", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v2.4.11`: Agent index for large repositories";
-    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.5.0`: Candidate Reality Conformance Lab");
+    const next = roadmap.indexOf("## **RELEASED** — `v2.5.0`: Candidate Reality Conformance Lab");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -924,24 +924,38 @@ describe("public release maturity", () => {
 
   it("records v2.5.0 as the candidate reality conformance lab", () => {
     const roadmap = read("ROADMAP.md");
-    const heading = "## **SHIPPED TO MAIN** — `v2.5.0`: Candidate Reality Conformance Lab";
+    const heading = "## **RELEASED** — `v2.5.0`: Candidate Reality Conformance Lab";
     const next = roadmap.indexOf("## **NEXT** — Fingerprint resolver operations");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
-    const shipped = roadmap.slice(start, next);
-    expect(shipped).toContain("2.5.0");
-    expect(shipped).toContain("ruleblast-companion-2.5.0.vsix");
-    expect(shipped).toContain("RECORDED");
-    expect(shipped).toContain("not a passing oracle");
-    expect(shipped).toContain("oracle.json");
-    expect(shipped).toContain("ORACLE");
-    expect(shipped).toContain("ADAPTER");
-    expect(shipped).toContain("Not a fifth action");
-    expect(shipped).toContain("TypeScript remains the analysis authority");
-    expect(shipped).not.toMatch(/\bRELEASED\b/u);
-    expect(read("CHANGELOG.md")).toContain("## 2.5.0 — SHIPPED TO MAIN");
-    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.0 — RELEASED/u);
+    const released = roadmap.slice(start, next);
+    expect(released).toContain("2.5.0");
+    expect(released).toContain("ruleblast-companion-2.5.0.vsix");
+    expect(released).toContain("RECORDED");
+    expect(released).toContain("not a passing oracle");
+    expect(released).toContain("oracle.json");
+    expect(released).toContain("ORACLE");
+    expect(released).toContain("ADAPTER");
+    expect(released).toContain("Not a fifth action");
+    expect(released).toContain("TypeScript remains the analysis authority");
+    expect(released).not.toMatch(/\bSHIPPED TO MAIN\b/u);
+    for (const evidence of [
+      "https://www.npmjs.com/package/ruleblast/v/2.5.0",
+      "https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.0",
+      "a6ab195c517815cddfcbea326452e67782477fc9",
+      "0afa7e251f70454078b50391cf93e5d7dc19cac5",
+      "sha512-+L5dINRsAs5/vW2nSYbBpzwL4NTCAF7/P9corxZtjd/Ats/0VvKTlU61vYVL1xqW5S4MIo9e2LpqHeKS2f1Eag==",
+      "174,972",
+      "4fede04c92030ed7e98fdf44868f1c334f24b4d66b233ad2bf68cc6967272e4f",
+      "157,848",
+      "a1933630a594ae617defe530ea2e3bcaa44bba054a797f88e123710f90db1606",
+      "not facts inferred from this checkout",
+    ]) {
+      expect(released).toContain(evidence);
+    }
+    expect(read("CHANGELOG.md")).toContain("## 2.5.0 — RELEASED");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.0 — SHIPPED TO MAIN/u);
     expect(read("package.json")).toContain('"version": "2.5.0"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.0"');
     expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.5.0`");

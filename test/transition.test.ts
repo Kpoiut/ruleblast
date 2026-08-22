@@ -35,13 +35,13 @@ describe("buildTransition", () => {
     expect(result.sourceChanges).toEqual([]);
   });
 
-  it("retains sparse-backed blobs but excludes paths no longer backed by an after blob", async () => {
+  it("uses after listPaths as the candidate inventory", async () => {
     const result = await buildTransition(
       sparseSnapshot([], {}),
       sparseSnapshot(["deleted.md", "sparse.md"], { "sparse.md": "index blob" }),
       new Set(),
     );
-    expect(result.candidatePaths).toEqual(["sparse.md"]);
+    expect(result.candidatePaths).toEqual(["deleted.md", "sparse.md"]);
   });
 
   it("retains metadata-backed candidates without reading unrelated blob content", async () => {
