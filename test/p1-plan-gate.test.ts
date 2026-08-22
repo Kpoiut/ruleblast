@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -74,6 +74,16 @@ describe("P1/B0 plan gate", () => {
     expect(overlay).toContain("WORK MAP");
     expect(overlay).toContain("CHANGE ALIGNMENT");
     expect(overlay).toContain("INTENT");
+  });
+
+  it("wipes dist before tsc so deleted modules cannot enter the npm tarball", () => {
+    const descriptor = JSON.parse(read("package.json")) as {
+      readonly scripts: { readonly build: string; readonly "host:build": string };
+    };
+    expect(descriptor.scripts.build).toContain("scripts/clean-dist.mjs");
+    expect(descriptor.scripts["host:build"]).toContain("npm run build");
+    expect(existsSync(join(repositoryRoot, "src/application/operation-chain.ts"))).toBe(false);
+    expect(read("scripts/release-check.mjs")).toContain("filesBelow(join(repositoryRoot, \"src\"))");
   });
 
   it("does not raise kill-clocks or restore duplicate Verify smokes", () => {

@@ -41,8 +41,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "host:build": "tsc -p tsconfig.build.json && node scripts/sync-host-engine.mjs && tsc -p hosts/vscode/tsconfig.json",
+    "build": "node scripts/clean-dist.mjs && tsc -p tsconfig.build.json",
+    "host:build": "npm run build && node scripts/sync-host-engine.mjs && tsc -p hosts/vscode/tsconfig.json",
     "host:pack": "npm run host:build && node scripts/package-host.mjs",
     "check": "tsc -p tsconfig.json && vitest run",
     "test": "vitest run",
