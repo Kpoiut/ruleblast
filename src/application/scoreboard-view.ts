@@ -1,4 +1,5 @@
 import type { Completeness, RuleBlastResult } from "../model.js";
+import { presentationFor } from "./profile-catalog.js";
 
 export function uncertainPathCount(result: RuleBlastResult): number {
   if (result.mode === "current") {
@@ -11,7 +12,6 @@ export function uncertainPathCount(result: RuleBlastResult): number {
     path.after.some((row) => row.status !== "COMPLETE"),
   ).length;
 }
-import { presentationFor } from "./profile-catalog.js";
 
 export interface ScoreboardProfileView {
   readonly profile: string;

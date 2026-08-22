@@ -23,6 +23,7 @@ import {
   probeGitStorageFormat,
 } from "./application/repository.js";
 import { explainExistingResult } from "./cli-output.js";
+import { renderResultIndex } from "./application/result-index.js";
 import { canonicalJson } from "./canonical.js";
 import { packageVersion } from "./package-identity.js";
 import { renderDetail } from "./render-detail.js";
@@ -60,6 +61,7 @@ const TOOLS = Object.freeze([
         startPath: { type: "string" },
         realities: { type: "array", items: { type: "string" } },
         detail: { type: "boolean" },
+        index: { type: "boolean" },
       },
     },
   }),
@@ -75,6 +77,7 @@ const TOOLS = Object.freeze([
         startPath: { type: "string" },
         realities: { type: "array", items: { type: "string" } },
         detail: { type: "boolean" },
+        index: { type: "boolean" },
       },
     },
   }),
@@ -104,6 +107,7 @@ const TOOLS = Object.freeze([
       properties: {
         explainPath: { type: "string" },
         detail: { type: "boolean" },
+        index: { type: "boolean" },
       },
     },
   }),
@@ -121,6 +125,10 @@ function stringField(params: Record<string, unknown>, key: string): string | und
 
 function wantsDetail(params: Record<string, unknown>): boolean {
   return params.detail === true;
+}
+
+function wantsIndex(params: Record<string, unknown>): boolean {
+  return params.index === true;
 }
 
 function realitiesOf(params: Record<string, unknown>): readonly string[] {
@@ -165,6 +173,7 @@ async function runScan(host: McpHost, params: Record<string, unknown>): Promise<
   const root = await findRepositoryRoot(start);
   const snapshot = await openTrackedWorktree(root);
   const result = await scanRepository({ snapshot, realities: realitiesOf(params) });
+  if (wantsIndex(params)) return renderResultIndex(result);
   return canonicalJson(withDetail({
     metrics: replayMetricsFromResult(result),
     result,
@@ -207,6 +216,13 @@ async function runDiff(host: McpHost, params: Record<string, unknown>): Promise<
       pair.overlay,
       adjunctRenderContext(pair.result),
     );
+  }
+  if (wantsIndex(params)) {
+    return renderResultIndex(pair.result, {
+      overlay: pair.overlay,
+      from: base,
+      to: to === "WORKTREE" ? "WORKTREE" : to,
+    });
   }
   return canonicalJson(withDetail(payload, params, pair.result, {
     beforeLabel: base,
@@ -255,6 +271,12 @@ async function runCase(params: Record<string, unknown>): Promise<string> {
   const explainPath = stringField(params, "explainPath");
   if (explainPath === undefined) {
     const presentation = packagedCasePresentation();
+    if (wantsIndex(params)) {
+      return renderResultIndex(result, {
+        from: presentation.beforeLabel,
+        to: presentation.afterLabel,
+      });
+    }
     return canonicalJson(withDetail({
       metrics: replayMetricsFromResult(result),
       result,

@@ -57,6 +57,21 @@ describe("MCP stdio transport", () => {
     expect(payload.metrics.changedStackPathCount).toBe(106);
   });
 
+  it("returns the compact result index for the packaged case", async () => {
+    const called = await dispatchMcpRequest({
+      jsonrpc: "2.0",
+      id: 5,
+      method: "tools/call",
+      params: { name: "case", arguments: { index: true } },
+    }, host);
+    const text = (called as { result: { content: readonly { text: string }[]; isError?: boolean } })
+      .result;
+    expect(text.isError).not.toBe(true);
+    expect(text.content[0]!.text.startsWith("# ruleblast.index v1\n")).toBe(true);
+    expect(text.content[0]!.text).toContain("MODE\tdiff\n");
+    expect(text.content[0]!.text).toContain("CONTINUE\t");
+  });
+
   it("lists detail as an optional presentation flag on the four tools", async () => {
     const listed = await dispatchMcpRequest(
       { jsonrpc: "2.0", id: 1, method: "tools/list" },
@@ -68,6 +83,11 @@ describe("MCP stdio transport", () => {
     for (const tool of tools) {
       expect(tool.inputSchema.properties).toMatchObject({
         detail: { type: "boolean" },
+      });
+    }
+    for (const tool of tools.filter((item) => item.name !== "explain")) {
+      expect(tool.inputSchema.properties).toMatchObject({
+        index: { type: "boolean" },
       });
     }
   });

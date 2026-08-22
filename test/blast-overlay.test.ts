@@ -139,7 +139,7 @@ describe("blast overlay classifier", () => {
     expect(text).toContain("src/f0.ts");
     expect(text).toContain("src/f7.ts");
     expect(text).not.toContain("src/f8.ts");
-    expect(text).toContain("… +1 more");
+    expect(text).toContain("… +1 more · ruleblast diff --index");
   });
 
   it("lifts the sample cap when a caller asks for the full list", () => {

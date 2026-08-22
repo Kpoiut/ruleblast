@@ -25,6 +25,7 @@ import {
   presentExplain,
   presentationLabel,
   renderDetail,
+  renderResultIndex,
   probeGitStorageFormat,
   scanRepository,
   toRepositoryRelativePath,
@@ -419,6 +420,14 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
       }
       const text = renderDetail(state.result);
+      await showExplainDocument(text, state.lifecycle === "STALE");
+    }),
+    vscode.commands.registerCommand("ruleblast.showIndex", async () => {
+      if (state.result === null) {
+        vscode.window.showErrorMessage("Run scan, diff, or case first.");
+        return;
+      }
+      const text = renderResultIndex(state.result, { overlay: state.overlay });
       await showExplainDocument(text, state.lifecycle === "STALE");
     }),
   );

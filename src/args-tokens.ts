@@ -37,6 +37,7 @@ export interface ParsedTokens {
   readonly pathsOnly: boolean;
   readonly compare: boolean;
   readonly detail: boolean;
+  readonly index: boolean;
 }
 
 const NO_VALUE_OPTIONS = new Set([
@@ -46,6 +47,7 @@ const NO_VALUE_OPTIONS = new Set([
   "--paths-only",
   "--compare",
   "--detail",
+  "--index",
 ]);
 
 export function usage(code: CliUsageErrorCode, message: string): never {
@@ -119,6 +121,7 @@ export function parseTokens(
   let pathsOnly = false;
   let compare = false;
   let detail = false;
+  let asIndex = false;
   let color: ColorMode = "auto";
   let colorSeen = false;
   for (let index = 0; index < tokens.length; index += 1) {
@@ -149,6 +152,11 @@ export function parseTokens(
     if (token === "--compare") {
       if (compare) return usage("DUPLICATE_OPTION", "--compare may be specified only once");
       compare = true;
+      continue;
+    }
+    if (token === "--index") {
+      if (asIndex) return usage("DUPLICATE_OPTION", "--index may be specified only once");
+      asIndex = true;
       continue;
     }
     if (token === "--detail") {
@@ -197,10 +205,16 @@ export function parseTokens(
       "--json cannot be combined with --color=always",
     );
   }
-  if (pathsOnly && (json || witness || receipt || compare || detail)) {
+  if (pathsOnly && (json || witness || receipt || compare || detail || asIndex)) {
     return usage(
       "OPTION_CONFLICT",
-      "--paths-only cannot combine with --json, --witness, --receipt, --compare, or --detail",
+      "--paths-only cannot combine with --json, --witness, --receipt, --compare, --detail, or --index",
+    );
+  }
+  if (asIndex && (json || witness || receipt || compare || detail)) {
+    return usage(
+      "OPTION_CONFLICT",
+      "--index cannot combine with --json, --witness, --receipt, --compare, or --detail",
     );
   }
   if (compare && json) {
@@ -222,5 +236,6 @@ export function parseTokens(
     pathsOnly,
     compare,
     detail,
+    index: asIndex,
   });
 }

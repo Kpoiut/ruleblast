@@ -90,7 +90,9 @@ export function renderBlastOverlay(
       lines.push(`  ${row.path}`);
     }
     if (shown.length < rows.length) {
-      lines.push(`  … +${rows.length - shown.length} more`);
+      lines.push(
+        `  … +${rows.length - shown.length} more · ruleblast diff --index`,
+      );
     }
   }
   return `${lines.join("\n")}\n${renderWorkMap(view, context)}`;

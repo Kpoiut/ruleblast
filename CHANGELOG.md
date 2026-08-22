@@ -2,6 +2,12 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.4.11 — SHIPPED TO MAIN
+
+- `--index` prints a compact tab-separated SOURCE/CONTINUE/REJECT/SPLIT map of the same canonical result, including snapshot FROM/TO, overlay LAW, and STACK count. Every row. No overlay sample cap. Truncated overlay remainder points at `--index`. Agents use it on large repositories; humans can read it. Not a fifth action. Does not write a file. `--json` stays canonical.
+- MCP `scan`, `diff`, and `case` accept `index`. Companion **Show Index** renders the last result the same way.
+- The published CLI people install is still `ruleblast@2.4.6`.
+
 ## 2.4.10 — SHIPPED TO MAIN
 
 - README causal-proof GIF types the everyday CLI: `git diff --stat HEAD~1`, `ruleblast diff HEAD~1`, `ruleblast explain <path> --from HEAD~1`. No npx pin and no commit hashes in the typed commands. Sealed 2→206 output is unchanged. Loop 15 s. Print is snappy; holds are for reading.

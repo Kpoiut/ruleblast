@@ -212,6 +212,7 @@ describe("README story contract", () => {
       "node dist/cli.js --version",
       "node dist/cli.js --help",
       "node dist/cli.js diff HEAD --paths-only",
+      "node dist/cli.js diff HEAD --index",
       "node dist/cli.js explain src/args.ts --compare",
     ]) {
       expect(readme).toContain(command);
@@ -511,6 +512,7 @@ describe("repository documentation integrity", () => {
       "v2.4.8",
       "v2.4.9",
       "v2.4.10",
+      "v2.4.11",
       "v3.0",
       "v4.0",
     ]) {

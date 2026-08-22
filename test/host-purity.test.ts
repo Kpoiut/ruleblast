@@ -39,7 +39,7 @@ describe("companion host purity", () => {
     expect(icon.readUInt32BE(16)).toBe(128);
     expect(icon.readUInt32BE(20)).toBe(128);
     expect(manifest.icon).toBe("media/icon.png");
-    expect(manifest.version).toBe("2.4.10");
+    expect(manifest.version).toBe("2.4.11");
   });
 
   it("uses a currentColor SVG on the activity bar instead of the opaque marketplace PNG", () => {
@@ -75,7 +75,8 @@ describe("companion host purity", () => {
     const analysis = commands.filter((command) =>
       command !== "ruleblast.selectReality" &&
       command !== "ruleblast.explainScoreboardPath" &&
-      command !== "ruleblast.showDetail"
+      command !== "ruleblast.showDetail" &&
+      command !== "ruleblast.showIndex"
     );
     expect(analysis.sort()).toEqual([
       "ruleblast.diffFrom",
@@ -85,6 +86,7 @@ describe("companion host purity", () => {
     ]);
     expect(commands).toContain("ruleblast.explainScoreboardPath");
     expect(commands).toContain("ruleblast.showDetail");
+    expect(commands).toContain("ruleblast.showIndex");
     for (const command of commands) {
       expect(command.startsWith("ruleblast.")).toBe(true);
     }

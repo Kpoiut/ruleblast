@@ -38,6 +38,8 @@ describe("route catalog", () => {
     expect(help).toContain("CHANGE ALIGNMENT");
     expect(help).toContain("--json stays canonical");
     expect(help).toContain("--paths-only");
+    expect(help).toContain("--index");
+    expect(help).toContain("SOURCE, CONTINUE, REJECT");
     expect(help).toContain("--compare");
     expect(help).toContain("--detail");
     expect(help).toContain("Default text is the summary");

@@ -10,6 +10,7 @@ import {
   writeLine,
 } from "./cli-output.js";
 import { attentionPaths } from "./domain/attention-paths.js";
+import { renderResultIndex } from "./application/result-index.js";
 import {
   comparePathStacks,
   formatProjectionCompare,
@@ -86,6 +87,14 @@ function emitAttentionPaths(
 ): void {
   const paths = attentionPaths(result);
   if (paths.length > 0) writeLine(io.stdout, paths.join("\n"));
+}
+
+function emitIndex(
+  result: CurrentRuleBlastResult | DiffRuleBlastResult,
+  io: CapturedCliIo,
+  context: Parameters<typeof renderResultIndex>[1] = {},
+): void {
+  writeLine(io.stdout, renderResultIndex(result, context).trimEnd());
 }
 
 function presentationExtras(args: {
@@ -199,6 +208,13 @@ export async function runAnalysisAction(
           emitAttentionPaths(result, io);
           return noDefensibleResult(result) ? 2 : 0;
         }
+        if (args.index) {
+          emitIndex(result, io, {
+            from: presentation.beforeLabel,
+            to: presentation.afterLabel,
+          });
+          return noDefensibleResult(result) ? 2 : 0;
+        }
         present(result, args.output, io, {
           beforeLabel: presentation.beforeLabel,
           afterLabel: presentation.afterLabel,
@@ -237,6 +253,10 @@ export async function runAnalysisAction(
         emitAttentionPaths(result, io);
         return noDefensibleResult(result) ? 2 : 0;
       }
+      if (args.index) {
+        emitIndex(result, io);
+        return noDefensibleResult(result) ? 2 : 0;
+      }
       present(result, args.output, io, {
         currentLabel: "WORKTREE",
         caseLabel: null,
@@ -270,6 +290,14 @@ export async function runAnalysisAction(
           };
       if (args.pathsOnly) {
         emitAttentionPaths(pair.result, io);
+        return noDefensibleResult(pair.result) ? 2 : 0;
+      }
+      if (args.index) {
+        emitIndex(pair.result, io, {
+          overlay: pair.overlay,
+          from: args.base.ref,
+          to: selectorLabel(args.target),
+        });
         return noDefensibleResult(pair.result) ? 2 : 0;
       }
       present(

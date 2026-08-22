@@ -62,7 +62,7 @@ function overlaySection(
     children.push({
       id: `overlay:${relation}:more`,
       kind: "group",
-      label: `+${matched.length - OVERLAY_SAMPLE_CAP} more`,
+      label: `+${matched.length - OVERLAY_SAMPLE_CAP} more · Show Index`,
     });
   }
   return {
@@ -93,8 +93,12 @@ export function adjunctRenderContext(
   if (result === null || result.mode !== "diff") return {};
   const instructionLineEdits = result.diffStats.editedLineCount;
   const changedStackPathCount = result.counts.changedStackPathCount;
+  const from = result.before.label;
+  const to = result.after.kind === "worktree" ? "WORKTREE" : result.after.label;
   if (result.after.kind === "worktree") {
     return {
+      from,
+      to,
       instructionLineEdits,
       changedStackPathCount,
       identityLaw: "worktree-captured",
@@ -102,12 +106,14 @@ export function adjunctRenderContext(
   }
   if (result.before.kind === "git" && result.after.kind === "git") {
     return {
+      from,
+      to,
       instructionLineEdits,
       changedStackPathCount,
       identityLaw: "git-storage",
     };
   }
-  return { instructionLineEdits, changedStackPathCount };
+  return { from, to, instructionLineEdits, changedStackPathCount };
 }
 
 export function overlayNodes(state: {

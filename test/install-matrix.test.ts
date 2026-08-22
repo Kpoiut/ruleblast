@@ -165,7 +165,7 @@ describe("candidate installation matrix", () => {
       local: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 2.4.10",
+        version: "ruleblast 2.4.11",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,
@@ -178,7 +178,7 @@ describe("candidate installation matrix", () => {
       global: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 2.4.10",
+        version: "ruleblast 2.4.11",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,

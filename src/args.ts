@@ -32,6 +32,7 @@ interface CommonArgs {
   readonly realities: readonly string[];
   readonly pathsOnly: boolean;
   readonly detail: boolean;
+  readonly index: boolean;
 }
 
 export interface ScanArgs extends CommonArgs {
@@ -160,6 +161,7 @@ function parseScan(tokens: readonly string[]): ScanArgs {
     realities: parsedRealities(parsed, true),
     pathsOnly: parsed.pathsOnly,
     detail: parsed.detail,
+    index: parsed.index,
   });
 }
 
@@ -180,6 +182,7 @@ function parseDiff(tokens: readonly string[]): DiffArgs {
     realities: parsedRealities(parsed, true),
     pathsOnly: parsed.pathsOnly,
     detail: parsed.detail,
+    index: parsed.index,
   });
 }
 
@@ -196,6 +199,9 @@ function parseExplain(tokens: readonly string[]): ExplainArgs {
   if (parsed.pathsOnly) {
     return usage("OPTION_CONFLICT", "--paths-only cannot be used with explain");
   }
+  if (parsed.index) {
+    return usage("OPTION_CONFLICT", "--index cannot be used with explain");
+  }
   return Object.freeze({
     action: "explain", path, from, target, output: parsed.output,
     witness: parsed.witness, receipt: parsed.receipt,
@@ -203,6 +209,7 @@ function parseExplain(tokens: readonly string[]): ExplainArgs {
     pathsOnly: false,
     compare: parsed.compare,
     detail: parsed.detail,
+    index: false,
   });
 }
 
@@ -216,6 +223,9 @@ function parseCase(tokens: readonly string[]): CaseArgs {
   if (parsed.pathsOnly && explainValue !== undefined) {
     return usage("OPTION_CONFLICT", "--paths-only cannot combine with case --explain");
   }
+  if (parsed.index && explainValue !== undefined) {
+    return usage("OPTION_CONFLICT", "--index cannot combine with case --explain");
+  }
   return Object.freeze({
     action: "case",
     explainPath: explainValue === undefined ? null : repositoryPath(explainValue),
@@ -225,6 +235,7 @@ function parseCase(tokens: readonly string[]): CaseArgs {
     realities: parsedRealities(parsed, false),
     pathsOnly: parsed.pathsOnly,
     detail: parsed.detail,
+    index: parsed.index,
   });
 }
 

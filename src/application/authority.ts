@@ -155,6 +155,7 @@ export type {
 } from "./host-session.js";
 export { renderScoreboard, scoreboardView } from "./scoreboard-view.js";
 export { attentionPaths } from "../domain/attention-paths.js";
+export { renderResultIndex } from "./result-index.js";
 export {
   comparePathStacks,
   formatProjectionCompare,

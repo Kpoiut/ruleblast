@@ -5,7 +5,7 @@ const text = { kind: "text", color: "auto" } as const;
 const json = { kind: "json", color: "auto" } as const;
 const flags = {
   witness: false, receipt: false, realities: [] as const, pathsOnly: false,
-  detail: false,
+  detail: false, index: false,
 } as const;
 const explainFlags = { ...flags, compare: false } as const;
 
@@ -71,6 +71,14 @@ describe("parseArgs", () => {
       ...explainFlags,
       compare: true,
     }],
+    [["diff", "--index"], {
+      action: "diff",
+      base: { kind: "git", ref: "HEAD" },
+      target: { kind: "worktree" },
+      output: text,
+      ...flags,
+      index: true,
+    }],
     [["diff", "--paths-only"], {
       action: "diff",
       base: { kind: "git", ref: "HEAD" },
@@ -116,7 +124,7 @@ describe("parseArgs", () => {
     }],
     [[".", "--witness"], {
       action: "scan", startPath: ".", output: text, witness: true, receipt: false,
-      realities: [], pathsOnly: false, detail: false,
+      realities: [], pathsOnly: false, detail: false, index: false,
     }],
     [["diff", "--witness", "--json"], {
       action: "diff",
@@ -128,14 +136,15 @@ describe("parseArgs", () => {
       realities: [],
       pathsOnly: false,
       detail: false,
+      index: false,
     }],
     [["case", "--receipt"], {
       action: "case", explainPath: null, output: text, witness: false, receipt: true,
-      realities: [], pathsOnly: false, detail: false,
+      realities: [], pathsOnly: false, detail: false, index: false,
     }],
     [[".", "--detail", "--witness"], {
       action: "scan", startPath: ".", output: text, witness: true, receipt: false,
-      realities: [], pathsOnly: false, detail: true,
+      realities: [], pathsOnly: false, detail: true, index: false,
     }],
     [[".", "--reality", "github/copilot-cli@1"], {
       action: "scan", startPath: ".", output: text, ...flags, realities: ["github/copilot-cli@1"],
@@ -202,6 +211,11 @@ describe("parseArgs", () => {
     [["diff", "--paths-only", "--json"], "OPTION_CONFLICT"],
     [[".", "--paths-only", "--witness"], "OPTION_CONFLICT"],
     [["explain", "src/a.ts", "--paths-only"], "OPTION_CONFLICT"],
+    [["diff", "--index", "--json"], "OPTION_CONFLICT"],
+    [[".", "--index", "--paths-only"], "OPTION_CONFLICT"],
+    [["explain", "src/a.ts", "--index"], "OPTION_CONFLICT"],
+    [["case", "--explain", "src/a.ts", "--index"], "OPTION_CONFLICT"],
+    [[".", "--index", "--index"], "DUPLICATE_OPTION"],
     [["explain", "src/a.ts", "--compare", "--json"], "OPTION_CONFLICT"],
     [["diff", "--compare"], "OPTION_CONFLICT"],
     [["case", "--explain", "src/a.ts", "--paths-only"], "OPTION_CONFLICT"],

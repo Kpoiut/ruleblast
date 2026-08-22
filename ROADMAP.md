@@ -433,6 +433,12 @@ This tree is `2.4.10`. Latest independently verified public npm distribution rem
 
 The README causal-proof GIF types `git diff --stat HEAD~1`, `ruleblast diff HEAD~1`, and `ruleblast explain <path> --from HEAD~1` on the sealed 2→206 pair. Loop 15 s. Print is snappy; holds are for reading. Companion Diff From can pick HEAD, HEAD~1, a remembered base, or a commit from `git log`. Same four actions. Not a product UI. Those assets are not in the npm tarball.
 
+## **SHIPPED TO MAIN** — `v2.4.11`: Agent index for large repositories
+
+This tree is `2.4.11`. Latest independently verified public npm distribution remains `2.4.6`. Companion version is `2.4.11`. Pack `ruleblast-companion-2.4.11.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+`--index` is presentation of the same four-action result: snapshot FROM/TO, overlay LAW, STACK count, SOURCE, CONTINUE, REJECT, SPLIT. Every row. No sample cap. Truncated overlay remainder names `--index`. MCP `index` and companion Show Index render that map. Not a fifth action. Not a hosted index. RuleBlast does not write that map into the repository. `--json` stays canonical.
+
 ## **NEXT** — Candidate reality conformance lab
 
 A candidate runtime may grow selection, rejection, precedence, ambiguity, and unknown fixtures without becoming a public `--reality`. That is a later gate, not a fifth bundled engine.

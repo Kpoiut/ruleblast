@@ -2,7 +2,7 @@
   "name": "ruleblast",
   "displayName": "RuleBlast — Git Diff for Agent Instructions",
   "description": "Git diff for AI agent repository instructions. Change AGENTS.md. See every file that inherits it. Shows the blast radius of AGENTS.md and CLAUDE.md changes.",
-  "version": "2.4.10",
+  "version": "2.4.11",
   "publisher": "kpoiut",
   "license": "Apache-2.0",
   "icon": "media/icon.png",
@@ -43,7 +43,8 @@
     "onCommand:ruleblast.explainScoreboardPath",
     "onCommand:ruleblast.openVerifiedCase",
     "onCommand:ruleblast.selectReality",
-    "onCommand:ruleblast.showDetail"
+    "onCommand:ruleblast.showDetail",
+    "onCommand:ruleblast.showIndex"
   ],
   "main": "./out/extension.js",
   "type": "module",
@@ -55,7 +56,8 @@
       { "command": "ruleblast.explainScoreboardPath", "title": "RuleBlast: Explain Scoreboard Path" },
       { "command": "ruleblast.openVerifiedCase", "title": "RuleBlast: Open Verified Case", "shortTitle": "Case", "icon": "$(book)" },
       { "command": "ruleblast.selectReality", "title": "RuleBlast: Select Reality…" },
-      { "command": "ruleblast.showDetail", "title": "RuleBlast: Show Detail", "shortTitle": "Detail", "icon": "$(list-flat)", "enablement": "workspaceFolderCount > 0" }
+      { "command": "ruleblast.showDetail", "title": "RuleBlast: Show Detail", "shortTitle": "Detail", "icon": "$(list-flat)", "enablement": "workspaceFolderCount > 0" },
+      { "command": "ruleblast.showIndex", "title": "RuleBlast: Show Index", "shortTitle": "Index", "icon": "$(list-tree)", "enablement": "workspaceFolderCount > 0" }
     ],
     "keybindings": [
       { "command": "ruleblast.scanWorkspace", "key": "ctrl+alt+r s", "mac": "ctrl+alt+r s", "when": "workspaceFolderCount > 0" },
