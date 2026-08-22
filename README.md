@@ -1,7 +1,7 @@
 <h1 align="center">RuleBlast — Git diff for AI agent repository instructions</h1>
 
 <p align="center">
-  <img src="assets/ruleblast-hero.png?v=2.4.8" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
+  <img src="assets/ruleblast-hero.png?v=2.4.8s" alt="RuleBlast — See the second diff. Local, read-only, evidence-first" width="100%">
 </p>
 
 <p align="center">
@@ -23,7 +23,7 @@
 </p>
 
 <div align="center">
-  <img src="assets/ruleblast-causal-proof.gif?v=2.4.8" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
+  <img src="assets/ruleblast-causal-proof.gif?v=2.4.8s" alt="Terminal demo: git sees 3 files and 6 deletions; ruleblast diff shows Codex 206 paths and Claude Code 0; explain names nested AGENTS.md" width="100%">
 </div>
 
 ```bash
@@ -43,7 +43,7 @@ npx --yes ruleblast@2.4.6 diff HEAD~1
 ## What Git missed
 
 <div align="center">
-  <img src="assets/ruleblast-visual-benchmark.png?v=2.4.8" alt="RuleBlast 2.4.6 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; nested AGENTS.md; ALIGNED CONTINUE 2" width="100%">
+  <img src="assets/ruleblast-visual-benchmark.png?v=2.4.8s" alt="RuleBlast 2.4.6 scoreboard: Git saw 2 instruction lines; Codex 206, Claude Code 0; nested AGENTS.md; ALIGNED CONTINUE 2" width="100%">
 </div>
 
 Git shows the instruction edit. It does not show every repository path that inherits it.

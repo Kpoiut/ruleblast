@@ -358,15 +358,15 @@ describe("v2.4.8 adoption contract", () => {
     expect(frameControls).toHaveLength(35);
     expect(frameControls.every(({ disposal }) => disposal === 1)).toBe(true);
     expect(frameControls.every(({ delayCentiseconds }) =>
-      delayCentiseconds > 0 && delayCentiseconds <= 70
+      delayCentiseconds > 0 && delayCentiseconds <= 84
     )).toBe(true);
-    expect(totalDelayCentiseconds).toBe(840);
+    expect(totalDelayCentiseconds).toBe(1_008);
     expect(bytes.toString("ascii")).toContain("NETSCAPE2.0");
     expect(bytes.toString("ascii")).toContain(
       "RULEBLAST_POSTER=Git shows the edit; complete held frames only",
     );
     expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "984743fdc82c919eed5d705d37a51d632bbe4a6386e457dfee8d1f4980086282",
+      "dfb9d0a7ddabb7ca79478355956049dbc48e4e2e77d307557527d47681c7d423",
     );
 
     const descriptor = readJson<PackageDescriptor>("package.json");

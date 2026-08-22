@@ -4,7 +4,7 @@ All notable user-visible changes to RuleBlast are recorded here.
 
 ## 2.4.8 — SHIPPED TO MAIN
 
-- README causal-proof GIF keeps the typed 35-frame terminal (macOS chrome, no HUD). Frame delays are locked to the README GIF contract (≤70 cs, 840 cs total).
+- README causal-proof GIF is a Windows Terminal + PowerShell session (35 frames, 10.08 s). Commands type, output prints in batches, holds stay readable. No HUD. Not a fake macOS mock.
 - Visual scoreboard keeps the eight-card layout. Source HTML profile ids stay catalog ids. Assets are not packed.
 - The published CLI people install is still `ruleblast@2.4.6`.
 
