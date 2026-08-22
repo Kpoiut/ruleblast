@@ -127,7 +127,11 @@ describe("fingerprint adapter oracle probes", () => {
     await expectAdapterProbes("google-gemini-cli@1", "test/fixtures/gemini");
   });
 
-  it("packs the Copilot fixture suite through the fingerprint adapter", async () => {
+  it("packs the Copilot fixture suite through the interpreter", async () => {
+    const oracle = readOracle("github-copilot-cli@1");
+    expect(oracle.kind).toBe("interpret");
+    expect(oracle.packId).toBe("github/copilot-cli@1");
+    expect(oracle.missingOperations).toBeUndefined();
     await expectAdapterProbes("github-copilot-cli@1", "test/fixtures/copilot");
   });
 });

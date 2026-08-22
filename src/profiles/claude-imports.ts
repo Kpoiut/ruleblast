@@ -1,4 +1,5 @@
 import { sha256 } from "../canonical.js";
+import { pathDirname } from "../domain/repository-path.js";
 import type { Projection, ResolvedSource } from "../model.js";
 import type { SnapshotEntry } from "../snapshot.js";
 
@@ -181,11 +182,6 @@ export function listClaudeImportReferences(
     .map((token) => token.value);
 }
 
-function dirname(path: string): string {
-  const slash = path.lastIndexOf("/");
-  return slash === -1 ? "." : path.slice(0, slash);
-}
-
 export function resolveClaudeImportPath(
   containingPath: string,
   importedPath: string,
@@ -193,7 +189,7 @@ export function resolveClaudeImportPath(
   const slashed = importedPath.replace(/\\/g, "/");
   if (slashed.startsWith("/") || slashed.startsWith("~/") ||
       DRIVE_OR_UNC.test(importedPath)) return null;
-  const base = dirname(containingPath);
+  const base = pathDirname(containingPath);
   const parts = base === "." ? [] : base.split("/");
   for (const part of slashed.split("/")) {
     if (part === "" || part === ".") continue;

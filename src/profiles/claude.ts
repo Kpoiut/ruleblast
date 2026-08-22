@@ -23,7 +23,13 @@ import {
   type ClaudeProjectSettings,
   type ParsedClaudeRule,
 } from "./claude-rules.js";
-import { compareCodePoints } from "../domain/repository-path.js";
+import {
+  ancestorDirectories,
+  compareCodePoints,
+  joinRepositoryPath,
+  pathBasename,
+  pathDirname,
+} from "../domain/repository-path.js";
 import {
   defineEvidenceRef,
   digestNormalizedPayload,
@@ -39,33 +45,13 @@ const SETTINGS_PATH = ".claude/settings.json";
 const MEMORY_NAMES = new Set(["CLAUDE.md", "CLAUDE.local.md"]);
 const ENTRY_FIELDS = ["path", "kind", "executable"] as const;
 
-function basename(path: string): string {
-  return path.slice(path.lastIndexOf("/") + 1);
-}
-
-function dirname(path: string): string {
-  const slash = path.lastIndexOf("/");
-  return slash === -1 ? "." : path.slice(0, slash);
-}
-
 /** Rules match full paths; without rules, resolution changes only by directory. */
 function claudeResolutionCacheKey(targetPath: string, hasRules: boolean): string {
-  return hasRules ? targetPath : dirname(targetPath);
-}
-
-function ancestorDirectories(path: string): readonly string[] {
-  const directory = dirname(path);
-  if (directory === ".") return ["."];
-  const parts = directory.split("/");
-  return [".", ...parts.map((_, index) => parts.slice(0, index + 1).join("/"))];
-}
-
-function candidatePath(directory: string, name: string): string {
-  return directory === "." ? name : `${directory}/${name}`;
+  return hasRules ? targetPath : pathDirname(targetPath);
 }
 
 function isMemoryPath(path: string): boolean {
-  return MEMORY_NAMES.has(basename(path)) && !isClaudeRulePath(path);
+  return MEMORY_NAMES.has(pathBasename(path)) && !isClaudeRulePath(path);
 }
 
 function isDirectCandidate(path: string): boolean {
@@ -226,7 +212,7 @@ function resolveTarget(
   for (const directory of ancestorDirectories(targetPath)) {
     const paths = directory === "."
       ? ["CLAUDE.local.md"]
-      : [candidatePath(directory, "CLAUDE.md"), candidatePath(directory, "CLAUDE.local.md")];
+      : [joinRepositoryPath(directory, "CLAUDE.md"), joinRepositoryPath(directory, "CLAUDE.local.md")];
     for (const path of paths) {
       if (path === DOT_ROOT_MEMORY) continue;
       const memory = files.get(path);
@@ -244,7 +230,7 @@ function resolveTarget(
       } else {
         selectedMemoryCount += 1;
         mergeExpansion(state, expandClaudeDocument(documents.get(path)!, "SELECTED", environment));
-        if (basename(path) === "CLAUDE.local.md") {
+        if (pathBasename(path) === "CLAUDE.local.md") {
           state.evidence.push(
             "LOCAL_PROJECT_MEMORY: tracked CLAUDE.local.md included in repository-only projection");
         }

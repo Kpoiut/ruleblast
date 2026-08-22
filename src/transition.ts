@@ -1,4 +1,5 @@
 import { sha256 } from "./canonical.js";
+import { compareCodePoints } from "./domain/repository-path.js";
 import { diffInstructionBytes } from "./line-diff.js";
 import type { InstructionDiffStats, InstructionSourceChange } from "./model.js";
 import type { RepositorySnapshot } from "./snapshot.js";
@@ -9,19 +10,6 @@ export interface RepositoryTransition {
   readonly candidatePaths: readonly string[];
   readonly sourceChanges: readonly InstructionSourceChange[];
   readonly diffStats: InstructionDiffStats;
-}
-
-function compareCodePoints(left: string, right: string): number {
-  let leftIndex = 0;
-  let rightIndex = 0;
-  while (leftIndex < left.length && rightIndex < right.length) {
-    const leftCodePoint = left.codePointAt(leftIndex)!;
-    const rightCodePoint = right.codePointAt(rightIndex)!;
-    if (leftCodePoint !== rightCodePoint) return leftCodePoint < rightCodePoint ? -1 : 1;
-    leftIndex += leftCodePoint > 0xffff ? 2 : 1;
-    rightIndex += rightCodePoint > 0xffff ? 2 : 1;
-  }
-  return leftIndex === left.length && rightIndex === right.length ? 0 : leftIndex === left.length ? -1 : 1;
 }
 
 function equalBytes(left: Uint8Array | null, right: Uint8Array | null): boolean {

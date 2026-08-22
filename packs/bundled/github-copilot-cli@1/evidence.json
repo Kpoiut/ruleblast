@@ -22,5 +22,13 @@
     "retrievedAt": "2026-08-14",
     "sourceRevision": "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-14",
     "claim": "Copilot CLI also discovers AGENTS.md, CLAUDE.md, and GEMINI.md in standard locations and does not define a general precedence order."
+  },
+  {
+    "claimId": "copilot.repo-only.1",
+    "sourceType": "ruleblast-compatibility",
+    "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",
+    "retrievedAt": "2026-08-14",
+    "sourceRevision": "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-14",
+    "claim": "User-level $HOME/.copilot files and COPILOT_CUSTOM_INSTRUCTIONS_DIRS are outside repository-only analysis."
   }
 ]

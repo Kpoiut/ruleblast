@@ -52,6 +52,27 @@ export function unionSortedPaths(
   return merged;
 }
 
+export function pathBasename(path: string): string {
+  const slash = path.lastIndexOf("/");
+  return slash === -1 ? path : path.slice(slash + 1);
+}
+
+export function pathDirname(path: string): string {
+  const slash = path.lastIndexOf("/");
+  return slash === -1 ? "." : path.slice(0, slash);
+}
+
+export function ancestorDirectories(targetPath: string): string[] {
+  const targetDirectory = pathDirname(targetPath);
+  if (targetDirectory === ".") return ["."];
+  const segments = targetDirectory.split("/");
+  return [".", ...segments.map((_, index) => segments.slice(0, index + 1).join("/"))];
+}
+
+export function joinRepositoryPath(directory: string, name: string): string {
+  return directory === "." ? name : `${directory}/${name}`;
+}
+
 const WINDOWS_DRIVE_PATTERN = /^[A-Za-z]:/;
 
 export function assertCanonicalRepositoryPath(

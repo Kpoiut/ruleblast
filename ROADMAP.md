@@ -447,9 +447,15 @@ This tree is `2.5.0`. Latest independently verified public npm distribution is `
 
 `--detail` and `--receipt` print the Candidate Reality Conformance Lab. Each bundled pack carries a sealed `oracle.json`. Codex `INTERPRET`/`ORACLE` is a live interpreter match of `sourceDependencyPaths` and projection digests on every existing Codex fixture snapshot packed beside the resolver. Tests still compare those probes to the adapter oracle. Claude, Gemini, and Copilot `FINGERPRINT`/`ADAPTER` is a live fingerprint-adapter match of the same digest fields on every existing fixture snapshot for that surface, plus the sealed missing-operation list; the interpreter still rejects those resolvers. Candidate fixtures carry loadable snapshots and record UNKNOWN only. Projection of a candidate remains `UNEXECUTED`. `RECORDED` is not a passing oracle. Grok Build CLI may grow those fixtures without becoming a public `--reality`. A mismatched oracle fails closed. The lab does not score model quality, compliance, or downstream behavior. Canonical JSON is unchanged. Packed installs include `packs/candidate`. Not a fifth action. Not a fifth bundled reality. Not a `--pack` loader. TypeScript remains the analysis authority; a native capture sidecar is not admitted while the packed 10,000-path budget holds. The 10,000-path packed budget keeps a 2,000 ms ceiling and an efficiency gate at p95 < 1,000 ms. `explain` KEEP is presentation of the last result identity so a later agent can reuse it; RuleBlast does not write a session file.
 
+## **SHIPPED TO MAIN** — `v2.5.1`: Copilot interpreted from resolver.json
+
+This tree is `2.5.1`. Latest independently verified public npm distribution remains `2.5.0`. Companion version is `2.5.1`. Pack `ruleblast-companion-2.5.1.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+The interpreter executes Copilot’s pack: multi-origin discover, select-all, unspecified assemble, frontmatter-glob `applyTo`, unexpanded `@` mention. Projections match `createCopilotProfile` on every packed Copilot fixture. Lab `INTERPRET` / `ORACLE`. The adapter stays the oracle and is not imported by the interpreter. Claude remains fingerprint on `transform`. Gemini remains fingerprint on `onSymlink` and `transform`. Those lists shrank because generic operations now run, not because gaps were hidden. One path primitive. Codex prefix-directory cache. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
+
 ## **NEXT** — Fingerprint resolver operations
 
-Claude, Gemini, and Copilot stay fingerprint engines until their resolver specs are data-complete. Closing those operation gaps does not add a fifth bundled reality.
+Claude and Gemini stay fingerprint engines until `transform` (and Gemini `partial-unfollowed`) are data-complete. Closing those operation gaps does not add a fifth bundled reality.
 
 ## **HORIZON** — `v3`: Prove the overlay at corpus scale
 

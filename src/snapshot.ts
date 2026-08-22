@@ -1,4 +1,5 @@
 import type { SnapshotRef } from "./model.js";
+import { compareCodePoints } from "./domain/repository-path.js";
 
 export interface SnapshotEntry {
   path: string;
@@ -164,30 +165,6 @@ function validateEntry(value: unknown, index: number): StoredEntry {
     executable: value.executable,
     bytes: decodeCanonicalBase64(value.base64),
   };
-}
-
-function compareCodePoints(left: string, right: string): number {
-  let leftIndex = 0;
-  let rightIndex = 0;
-
-  while (leftIndex < left.length && rightIndex < right.length) {
-    const leftCodePoint = left.codePointAt(leftIndex);
-    const rightCodePoint = right.codePointAt(rightIndex);
-    if (leftCodePoint === undefined || rightCodePoint === undefined) {
-      fail("Unable to compare snapshot paths");
-    }
-    if (leftCodePoint !== rightCodePoint) {
-      return leftCodePoint < rightCodePoint ? -1 : 1;
-    }
-
-    leftIndex += leftCodePoint > 0xffff ? 2 : 1;
-    rightIndex += rightCodePoint > 0xffff ? 2 : 1;
-  }
-
-  if (leftIndex === left.length && rightIndex === right.length) {
-    return 0;
-  }
-  return leftIndex === left.length ? -1 : 1;
 }
 
 export class ManifestSnapshot implements RepositorySnapshot {

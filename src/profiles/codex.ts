@@ -1,5 +1,12 @@
 import { sha256, sha256MovingTarget } from "../canonical.js";
 import {
+  ancestorDirectories,
+  compareCodePoints,
+  joinRepositoryPath,
+  pathBasename,
+  pathDirname,
+} from "../domain/repository-path.js";
+import {
   OPENAI_CODEX_CLI_PROFILE_ID,
   type Projection,
   type ResolvedSource,
@@ -80,50 +87,7 @@ interface ProjectionMaterial {
   }[];
 }
 
-function basename(path: string): string {
-  const slash = path.lastIndexOf("/");
-  return slash === -1 ? path : path.slice(slash + 1);
-}
 
-function compareCodePoints(left: string, right: string): number {
-  let leftIndex = 0;
-  let rightIndex = 0;
-  while (leftIndex < left.length && rightIndex < right.length) {
-    const leftPoint = left.codePointAt(leftIndex);
-    const rightPoint = right.codePointAt(rightIndex);
-    if (leftPoint === undefined || rightPoint === undefined) {
-      throw new Error("Unable to compare Codex candidate paths");
-    }
-    if (leftPoint !== rightPoint) {
-      return leftPoint < rightPoint ? -1 : 1;
-    }
-    leftIndex += leftPoint > 0xffff ? 2 : 1;
-    rightIndex += rightPoint > 0xffff ? 2 : 1;
-  }
-  return leftIndex === left.length && rightIndex === right.length
-    ? 0
-    : leftIndex === left.length
-      ? -1
-      : 1;
-}
-
-function dirname(path: string): string {
-  const slash = path.lastIndexOf("/");
-  return slash === -1 ? "." : path.slice(0, slash);
-}
-
-function ancestorDirectories(targetPath: string): string[] {
-  const targetDirectory = dirname(targetPath);
-  if (targetDirectory === ".") {
-    return ["."];
-  }
-  const segments = targetDirectory.split("/");
-  return [".", ...segments.map((_, index) => segments.slice(0, index + 1).join("/"))];
-}
-
-function candidatePath(directory: string, name: string): string {
-  return directory === "." ? name : `${directory}/${name}`;
-}
 
 function source(
   path: string,
@@ -142,8 +106,8 @@ function resolveDirectory(
   overrideName: string,
   agentsName: string,
 ): { readonly resolution: Resolution; readonly consumed: number } {
-  const override = candidates.get(candidatePath(directory, overrideName));
-  const agents = candidates.get(candidatePath(directory, agentsName));
+  const override = candidates.get(joinRepositoryPath(directory, overrideName));
+  const agents = candidates.get(joinRepositoryPath(directory, agentsName));
   const selected = override ?? agents;
   if (selected === undefined) {
     return {
@@ -215,10 +179,6 @@ function resolve(
   return { status, sources, contributions, evidence };
 }
 
-function directoryFromTarget(targetPath: string): string {
-  return dirname(targetPath);
-}
-
 /** Codex adds only its repository instruction separator in this v1 projection. */
 export function assembleCodexProjectInstructions(
   contributions: readonly string[],
@@ -250,7 +210,7 @@ function makeProjection(
   digestFor: (targetPath: string) => string,
 ): Projection {
   const context = {
-    cwd: directoryFromTarget(targetPath),
+    cwd: pathDirname(targetPath),
     trigger: "STARTUP" as const,
     targetPath,
     repositoryOnly: true as const,
@@ -297,7 +257,7 @@ export function createCodexProfile(config: {
     id: config.id,
     evidence: config.evidence,
     isInstructionPath(path: string): boolean {
-      const name = basename(path);
+      const name = pathBasename(path);
       return names.includes(name);
     },
     async prepare(snapshot: RepositorySnapshot): Promise<PreparedProfile> {
@@ -329,7 +289,7 @@ export function createCodexProfile(config: {
         id: config.id,
         sourceDependencyPaths: Object.freeze([...candidates.keys()].sort(compareCodePoints)),
         project(targetPath: string): Projection {
-          const directory = directoryFromTarget(targetPath);
+          const directory = pathDirname(targetPath);
           let cached = cachedMaterials.get(directory);
           if (cached === undefined) {
             const material = projectionMaterial(resolve(

@@ -1,5 +1,6 @@
 import { Minimatch } from "minimatch";
 import { canonicalJson, sha256 } from "../canonical.js";
+import { compareCodePoints, pathBasename, pathDirname } from "../domain/repository-path.js";
 import {
   GITHUB_COPILOT_CLI_PROFILE_ID,
   type Projection,
@@ -47,15 +48,16 @@ const COPILOT_EVIDENCE = Object.freeze([
     revision: "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-14",
     claim: "Copilot CLI also discovers AGENTS.md, CLAUDE.md, and GEMINI.md in standard locations and does not define a general precedence order.",
   }),
+  defineEvidenceRef({
+    url: "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",
+    retrievedAt: "2026-08-14",
+    revision: "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-14",
+    claim: "User-level $HOME/.copilot files and COPILOT_CUSTOM_INSTRUCTIONS_DIRS are outside repository-only analysis.",
+  }),
 ]);
 
 function decode(bytes: Uint8Array): string {
   return new TextDecoder().decode(bytes);
-}
-
-function directoryOf(path: string): string {
-  const index = path.lastIndexOf("/");
-  return index === -1 ? "." : path.slice(0, index);
 }
 
 function isAncestor(scope: string, targetPath: string): boolean {
@@ -71,7 +73,7 @@ function classify(path: string): CopilotDocument["kind"] | null {
       (path.startsWith(".github/instructions/") || path.includes("/.github/instructions/"))) {
     return "modular";
   }
-  const base = path.slice(path.lastIndexOf("/") + 1);
+  const base = pathBasename(path);
   if (base === "AGENTS.md" || base === "CLAUDE.md" || base === "GEMINI.md") return "agent";
   if (path === ".claude/CLAUDE.md" || path.endsWith("/.claude/CLAUDE.md")) return "agent";
   return null;
@@ -91,7 +93,7 @@ function scopeOf(path: string, kind: CopilotDocument["kind"]): string {
   if (path === ".claude/CLAUDE.md" || path.endsWith("/.claude/CLAUDE.md")) {
     return path === ".claude/CLAUDE.md" ? "." : path.slice(0, -"/.claude/CLAUDE.md".length);
   }
-  return directoryOf(path);
+  return pathDirname(path);
 }
 
 function parseApplyTo(text: string): readonly string[] | null {
@@ -141,7 +143,9 @@ export function createCopilotProfile(config: {
     }
     return {
       id: config.id,
-      sourceDependencyPaths: documents.map((document) => document.path),
+      sourceDependencyPaths: Object.freeze(
+        documents.map((document) => document.path).sort(compareCodePoints),
+      ),
       project(targetPath: string): Projection {
         const sources: ResolvedSource[] = [];
         const contributions: string[] = [];
@@ -189,10 +193,7 @@ export function createCopilotProfile(config: {
           targetPath,
           repositoryOnly: true as const,
         };
-        const evidence = [
-          ...COPILOT_EVIDENCE.map((item) => item.claim),
-          "User-level $HOME/.copilot files and COPILOT_CUSTOM_INSTRUCTIONS_DIRS are outside repository-only analysis.",
-        ];
+        const evidence = [...config.evidence.map((item) => item.claim)];
         if (partial) {
           evidence.push(
             "Documented @ file references are visible but not expanded in this revision.",

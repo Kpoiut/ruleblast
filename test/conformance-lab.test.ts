@@ -119,9 +119,7 @@ describe("candidate reality conformance lab", () => {
     expect(byId["anthropic/claude-code-cli@1"]?.engine).toBe("FINGERPRINT");
     expect(byId["anthropic/claude-code-cli@1"]?.proof).toBe("ADAPTER");
     expect(byId["google/gemini-cli@1"]?.proof).toBe("ADAPTER");
-    expect(byId["github/copilot-cli@1"]?.proof).toBe("ADAPTER");
     expect(byId["google/gemini-cli@1"]?.engine).toBe("FINGERPRINT");
-    expect(byId["github/copilot-cli@1"]?.engine).toBe("FINGERPRINT");
     const bundledRoot = join(repositoryRoot, "packs/bundled");
     const bundledDirs = readdirSync(bundledRoot, { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
@@ -141,9 +139,11 @@ describe("candidate reality conformance lab", () => {
         expect(() => interpretCompiledPack(pack)).toThrow(InvalidPackError);
       }
     }
-    expect(byId["anthropic/claude-code-cli@1"]?.missingOperations).toHaveLength(7);
-    expect(byId["google/gemini-cli@1"]?.missingOperations).toHaveLength(7);
-    expect(byId["github/copilot-cli@1"]?.missingOperations).toHaveLength(7);
+    expect(byId["anthropic/claude-code-cli@1"]?.missingOperations).toEqual(["transform"]);
+    expect(byId["google/gemini-cli@1"]?.missingOperations).toEqual(["onSymlink", "transform"]);
+    expect(byId["github/copilot-cli@1"]?.missingOperations).toEqual([]);
+    expect(byId["github/copilot-cli@1"]?.engine).toBe("INTERPRET");
+    expect(byId["github/copilot-cli@1"]?.proof).toBe("ORACLE");
   });
 
   it("inventories Grok Build fixture axes without admitting a public reality", async () => {
@@ -202,8 +202,10 @@ describe("candidate reality conformance lab", () => {
     expect(lab).toContain("ADAPTER");
     expect(lab).not.toMatch(/\bOPS\b/u);
     expect(lab).toContain("0 ops");
-    expect(lab).toContain("7 ops");
-    expect(lab).toContain("context.cwd");
+    expect(lab).toContain("1 ops");
+    expect(lab).toContain("2 ops");
+    expect(lab).toContain("transform");
+    expect(lab).toContain("onSymlink");
     expect(lab).toContain("xai/grok-build-cli");
     expect(lab).toContain("NOT_ADMITTED");
     expect(lab).toContain("selection RECORDED");

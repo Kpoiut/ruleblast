@@ -42,14 +42,23 @@ export interface AncestorOrigin {
   readonly names: readonly string[];
 }
 
+export interface FrontmatterApply {
+  readonly kind: "frontmatter-glob";
+  readonly field: string;
+  readonly ifAbsent: "exclude";
+}
+
 export interface FixedOrigin {
   readonly kind: "fixed";
   readonly paths: readonly string[];
+  readonly scopeAnchor?: string;
 }
 
 export interface GlobOrigin {
   readonly kind: "glob";
   readonly pattern: string;
+  readonly scopeAnchor?: string;
+  readonly apply?: FrontmatterApply;
 }
 
 export type DiscoverOrigin = AncestorOrigin | FixedOrigin | GlobOrigin;
@@ -91,6 +100,7 @@ export interface ResolverSpec {
   readonly assemble: AssembleSpec;
   readonly fingerprint: FingerprintBuiltin;
   readonly onSymlink: "unknown-unfollowed" | "partial-unfollowed";
+  readonly onAtReference?: "ignore" | "partial-unexpanded";
 }
 
 export interface PackBundle {

@@ -1,4 +1,10 @@
 import { sha256, sha256MovingTarget } from "../canonical.js";
+import {
+  compareCodePoints,
+  joinRepositoryPath,
+  pathBasename,
+  pathDirname,
+} from "../domain/repository-path.js";
 import type { Projection, ResolvedSource } from "../model.js";
 import type { RepositorySnapshot, SnapshotEntry } from "../snapshot.js";
 import {
@@ -9,7 +15,8 @@ import {
   type ProfileDefinition,
 } from "../profiles/profile.js";
 import { InvalidPackError } from "./compile.js";
-import type { CompiledPack, ResolverSpec } from "./schema.js";
+import { interpretSelectAllPack } from "./interpret-all.js";
+import type { CompiledPack, DiscoverOrigin, ResolverSpec } from "./schema.js";
 
 const BOUNDARY_EVIDENCE =
   "UNSUPPORTED_BOUNDARY: named Codex instruction symlink was not followed";
@@ -20,6 +27,7 @@ interface Candidate {
   readonly kind: SnapshotEntry["kind"];
   readonly executable: boolean;
   readonly bytes: Uint8Array;
+  readonly digest: string;
 }
 
 interface Resolution {
@@ -29,87 +37,59 @@ interface Resolution {
   readonly evidence: readonly string[];
 }
 
-function compareCodePoints(left: string, right: string): number {
-  let leftIndex = 0;
-  let rightIndex = 0;
-  while (leftIndex < left.length && rightIndex < right.length) {
-    const leftPoint = left.codePointAt(leftIndex);
-    const rightPoint = right.codePointAt(rightIndex);
-    if (leftPoint === undefined || rightPoint === undefined) {
-      throw new Error("Unable to compare pack interpreter paths");
-    }
-    if (leftPoint !== rightPoint) return leftPoint < rightPoint ? -1 : 1;
-    leftIndex += leftPoint > 0xffff ? 2 : 1;
-    rightIndex += rightPoint > 0xffff ? 2 : 1;
-  }
-  return leftIndex === left.length ? (rightIndex === right.length ? 0 : -1) : 1;
-}
-
-function basename(path: string): string {
-  const slash = path.lastIndexOf("/");
-  return slash === -1 ? path : path.slice(slash + 1);
-}
-
-function dirname(path: string): string {
-  const slash = path.lastIndexOf("/");
-  return slash === -1 ? "." : path.slice(0, slash);
-}
-
-function ancestorDirectories(targetPath: string): string[] {
-  const targetDirectory = dirname(targetPath);
-  if (targetDirectory === ".") return ["."];
-  const segments = targetDirectory.split("/");
-  return [".", ...segments.map((_, index) => segments.slice(0, index + 1).join("/"))];
-}
-
-function candidatePath(directory: string, name: string): string {
-  return directory === "." ? name : `${directory}/${name}`;
+interface DirectoryState extends Resolution {
+  readonly remaining: number;
 }
 
 function source(
   path: string,
   disposition: ResolvedSource["disposition"],
-  digestBytes: Uint8Array,
+  digest: string,
   bytesUsed: number,
   truncated: boolean,
 ): ResolvedSource {
-  return { path, disposition, digest: sha256(digestBytes), bytesUsed, truncated };
+  return { path, disposition, digest, bytesUsed, truncated };
+}
+
+function originExecutable(origin: DiscoverOrigin, reasons: string[]): void {
+  if (origin.kind === "ancestors") {
+    if (origin.from !== "repositoryRoot" || origin.inclusive !== true) {
+      reasons.push("discover.range");
+    }
+    if (origin.to !== "cwd" && origin.to !== "dirname-target") reasons.push("discover.range");
+    if (origin.names.length === 0) reasons.push("discover.names");
+    return;
+  }
+  if (origin.kind === "fixed" || origin.kind === "glob") return;
+  reasons.push("discover.origin");
 }
 
 export function uninterpretableReasons(resolver: ResolverSpec): readonly string[] {
   const reasons: string[] = [];
-  if (resolver.context.cwd !== "dirname-target") reasons.push("context.cwd");
-  if (resolver.context.trigger !== "STARTUP") reasons.push("context.trigger");
-  if (resolver.assemble.mode !== "ordered") reasons.push("assemble.mode");
   if (resolver.onSymlink !== "unknown-unfollowed") reasons.push("onSymlink");
-  if (resolver.select.mode !== "first-per-directory") reasons.push("select.mode");
-  if (resolver.discover.origins.length !== 1) reasons.push("discover.origins");
-  const origin = resolver.discover.origins[0];
-  if (origin === undefined || origin.kind !== "ancestors") {
-    reasons.push("discover.origin");
-  } else {
-    if (origin.from !== "repositoryRoot" || origin.to !== "cwd" || origin.inclusive !== true) {
-      reasons.push("discover.range");
-    }
-    if (origin.names.length === 0) reasons.push("discover.names");
-    if (
-      resolver.select.names.length !== origin.names.length ||
-      origin.names.some((name, index) => name !== resolver.select.names[index])
-    ) {
-      reasons.push("select.names");
-    }
-  }
-  const transform = resolver.transform[0];
-  if (
-    resolver.transform.length !== 1 ||
-    transform === undefined ||
-    transform.kind !== "byte-budget" ||
-    typeof transform.bytes !== "number" ||
-    transform.bytes <= 0
+  if (resolver.discover.origins.length === 0) reasons.push("discover.origins");
+  for (const origin of resolver.discover.origins) originExecutable(origin, reasons);
+  const transform = resolver.transform;
+  if (transform.length === 0) {
+    /* unlimited payload: executable */
+  } else if (
+    transform.length === 1 &&
+    transform[0]?.kind === "byte-budget" &&
+    typeof transform[0].bytes === "number" &&
+    transform[0].bytes > 0
   ) {
+    /* Codex byte-budget: executable */
+  } else {
     reasons.push("transform");
   }
-  return Object.freeze(reasons);
+  if (
+    resolver.onAtReference !== undefined &&
+    resolver.onAtReference !== "ignore" &&
+    resolver.onAtReference !== "partial-unexpanded"
+  ) {
+    reasons.push("onAtReference");
+  }
+  return Object.freeze([...new Set(reasons)]);
 }
 
 export function canInterpretResolver(resolver: ResolverSpec): boolean {
@@ -126,7 +106,7 @@ function resolveDirectory(
   let selected: Candidate | undefined;
   let selectedName: string | undefined;
   for (const name of names) {
-    const found = candidates.get(candidatePath(directory, name));
+    const found = candidates.get(joinRepositoryPath(directory, name));
     if (found !== undefined) {
       selected = found;
       selectedName = name;
@@ -143,12 +123,12 @@ function resolveDirectory(
   const evidence: string[] = [];
   const shadowedNames = shadows[selectedName] ?? [];
   if (selected.kind === "symlink") {
-    sources.push(source(selected.path, "SELECTED", selected.bytes, 0, false));
+    sources.push(source(selected.path, "SELECTED", selected.digest, 0, false));
     evidence.push(`${BOUNDARY_EVIDENCE}: ${selected.path}`);
     for (const name of shadowedNames) {
-      const shadowed = candidates.get(candidatePath(directory, name));
+      const shadowed = candidates.get(joinRepositoryPath(directory, name));
       if (shadowed !== undefined) {
-        sources.push(source(shadowed.path, "SHADOWED", shadowed.bytes, 0, false));
+        sources.push(source(shadowed.path, "SHADOWED", shadowed.digest, 0, false));
       }
     }
     return { resolution: { status: "UNKNOWN", sources, contributions: [], evidence }, consumed: 0 };
@@ -161,14 +141,14 @@ function resolveDirectory(
   sources.push(source(
     selected.path,
     isEmpty ? "SELECTED_EMPTY" : "SELECTED",
-    raw,
+    selected.digest,
     isEmpty ? 0 : included.length,
     truncated,
   ));
   for (const name of shadowedNames) {
-    const shadowed = candidates.get(candidatePath(directory, name));
+    const shadowed = candidates.get(joinRepositoryPath(directory, name));
     if (shadowed !== undefined) {
-      sources.push(source(shadowed.path, "SHADOWED", shadowed.bytes, 0, false));
+      sources.push(source(shadowed.path, "SHADOWED", shadowed.digest, 0, false));
     }
   }
   return {
@@ -182,29 +162,33 @@ function resolveDirectory(
   };
 }
 
-function resolveTree(
+function emptyDirectoryState(byteLimit: number): DirectoryState {
+  return {
+    status: "COMPLETE",
+    sources: [],
+    contributions: [],
+    evidence: [],
+    remaining: byteLimit,
+  };
+}
+
+function advanceDirectory(
+  parent: DirectoryState,
   directory: string,
   candidates: ReadonlyMap<string, Candidate>,
-  byteLimit: number,
   names: readonly string[],
   shadows: Readonly<Record<string, readonly string[]>>,
-): Resolution {
-  let remaining = byteLimit;
-  const sources: ResolvedSource[] = [];
-  const contributions: string[] = [];
-  const evidence: string[] = [];
-  let status: Projection["status"] = "COMPLETE";
-  for (const ancestor of ancestorDirectories(
-    directory === "." ? "target" : `${directory}/target`,
-  )) {
-    const result = resolveDirectory(ancestor, candidates, remaining, names, shadows);
-    remaining -= result.consumed;
-    sources.push(...result.resolution.sources);
-    contributions.push(...result.resolution.contributions);
-    evidence.push(...result.resolution.evidence);
-    if (result.resolution.status === "UNKNOWN") status = "UNKNOWN";
-  }
-  return { status, sources, contributions, evidence };
+): DirectoryState {
+  const step = resolveDirectory(directory, candidates, parent.remaining, names, shadows);
+  return {
+    status: parent.status === "UNKNOWN" || step.resolution.status === "UNKNOWN"
+      ? "UNKNOWN"
+      : "COMPLETE",
+    sources: [...parent.sources, ...step.resolution.sources],
+    contributions: [...parent.contributions, ...step.resolution.contributions],
+    evidence: [...parent.evidence, ...step.resolution.evidence],
+    remaining: parent.remaining - step.consumed,
+  };
 }
 
 function assembleOrdered(contributions: readonly string[]): string {
@@ -216,6 +200,13 @@ export function interpretCompiledPack(pack: CompiledPack): ProfileDefinition {
     throw new InvalidPackError(
       `resolver spec is not data-interpretable: ${pack.pack.id}`,
     );
+  }
+  if (
+    pack.resolver.select.mode !== "first-per-directory" ||
+    pack.resolver.assemble.mode !== "ordered" ||
+    pack.resolver.transform[0]?.kind !== "byte-budget"
+  ) {
+    return interpretSelectAllPack(pack);
   }
   const names = pack.resolver.select.names;
   const shadows = pack.resolver.select.shadows;
@@ -234,12 +225,12 @@ export function interpretCompiledPack(pack: CompiledPack): ProfileDefinition {
       claim: item.claim,
     }))),
     isInstructionPath(path: string): boolean {
-      return nameSet.has(basename(path));
+      return nameSet.has(pathBasename(path));
     },
     async prepare(snapshot: RepositorySnapshot): Promise<PreparedProfile> {
       const paths = await snapshot.listPaths();
       const candidatePaths = [
-        ...new Set(paths.filter((path) => nameSet.has(basename(path)))),
+        ...new Set(paths.filter((path) => nameSet.has(pathBasename(path)))),
       ].sort(compareCodePoints);
       const candidates = new Map<string, Candidate>();
       for (const path of candidatePaths) {
@@ -270,11 +261,13 @@ export function interpretCompiledPack(pack: CompiledPack): ProfileDefinition {
         if (bytes === null) {
           throw new Error(`Missing pack candidate bytes during preparation: ${path}`);
         }
+        const copy = new Uint8Array(bytes);
         candidates.set(path, Object.freeze({
           path,
           kind,
           executable,
-          bytes: new Uint8Array(bytes),
+          bytes: copy,
+          digest: sha256(copy),
         }));
       }
       const cached = new Map<string, Projection>();
@@ -282,16 +275,25 @@ export function interpretCompiledPack(pack: CompiledPack): ProfileDefinition {
         readonly material: ReturnType<typeof projectMaterial>;
         readonly digestFor: (targetPath: string) => string;
       }>();
+      const directoryState = new Map<string, DirectoryState>();
+      const stateFor = (directory: string): DirectoryState => {
+        const hit = directoryState.get(directory);
+        if (hit !== undefined) return hit;
+        const parent = directory === "."
+          ? emptyDirectoryState(byteLimit)
+          : stateFor(pathDirname(directory));
+        const state = advanceDirectory(parent, directory, candidates, names, shadows);
+        directoryState.set(directory, state);
+        return state;
+      };
       return Object.freeze({
         id: pack.pack.id,
         sourceDependencyPaths: Object.freeze([...candidates.keys()].sort(compareCodePoints)),
         project(targetPath: string): Projection {
-          const directory = dirname(targetPath);
+          const directory = pathDirname(targetPath);
           let cachedMaterial = materials.get(directory);
           if (cachedMaterial === undefined) {
-            const material = projectMaterial(resolveTree(
-              directory, candidates, byteLimit, names, shadows,
-            ));
+            const material = projectMaterial(stateFor(directory));
             cachedMaterial = {
               material,
               digestFor: sha256MovingTarget((path) => ({
@@ -348,7 +350,7 @@ function makeProjection(
   digestFor: (targetPath: string) => string,
 ): Projection {
   const context = {
-    cwd: dirname(targetPath),
+    cwd: pathDirname(targetPath),
     trigger: "STARTUP" as const,
     targetPath,
     repositoryOnly: true as const,

@@ -2,6 +2,15 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.5.1 — SHIPPED TO MAIN
+
+- Copilot CLI is interpreted from `resolver.json`: multiple discover origins (fixed, glob, ancestors), `select.mode` all, `assemble.mode` unspecified, empty transform, `frontmatter-glob` `applyTo`, and `onAtReference: partial-unexpanded`. Live interpreter projections are byte-identical to `createCopilotProfile` on every packed Copilot fixture. Lab `INTERPRET` / `ORACLE`. The adapter remains the test oracle and is not imported by the interpreter. Not a fifth action. Not a fifth bundled reality.
+- Interpreter admission is the operations the engine can execute, not a Codex-only shape filter. Claude’s remaining gap is `transform` (HTML comments and `@path` imports). Gemini’s remaining gaps are `onSymlink` (`partial-unfollowed`) and `transform` (`at-path-import`). Those resolvers still fingerprint. Missing-operation lists shrank because those operations now run, not because the lab hides them.
+- One repository-path primitive (`compareCodePoints`, dirname, basename, ancestors, join) is shared by Git capture, snapshots, transitions, impact, the interpreter, and all four profile adapters.
+- Codex ordered/byte-budget interpretation caches ancestor-directory resolution and hashes each candidate once at prepare. Same digest recipe. Same adapter-oracle bytes.
+- Overlay wall still runs four baseline analyses and four analysis-plus-overlay samples. Overlay median/p95 add less than 500 ms. The 5 s test clock is unchanged.
+- The published CLI people install is still `ruleblast@2.5.0`.
+
 ## 2.5.0 — RELEASED
 
 - Candidate Reality Conformance Lab: `--detail` and `--receipt` print bundled INTERPRET versus FINGERPRINT coverage from a sealed `oracle.json` per pack. Codex `INTERPRET`/`ORACLE` is a live interpreter match of `sourceDependencyPaths` and projection digests on every existing Codex fixture snapshot packed beside the resolver. Tests still compare those probes to `createCodexProfile`. Claude, Gemini, and Copilot `FINGERPRINT`/`ADAPTER` is a live fingerprint-adapter match of the same digest fields on every existing fixture snapshot for that surface, plus the sealed missing-operation list; the interpreter still rejects those resolvers. A mismatched oracle fails closed. Candidate fixtures carry loadable snapshots (`LOADED`) and may only record UNKNOWN. Projection of a candidate remains `UNEXECUTED`. `RECORDED` is not a passing oracle. Grok Build CLI has those five axes and remains `NOT_ADMITTED`. Not a fifth action. Not a public `--reality`. Not a `--pack` loader. Not a model-quality score. `--json` stays canonical.

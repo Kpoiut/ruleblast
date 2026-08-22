@@ -1,4 +1,5 @@
 import { sha256 } from "../canonical.js";
+import { pathDirname } from "../domain/repository-path.js";
 import type { Projection, ResolvedSource } from "../model.js";
 import type { SnapshotEntry } from "../snapshot.js";
 
@@ -22,11 +23,6 @@ export interface GeminiExpansion {
   readonly sources: readonly ResolvedSource[];
   readonly contributions: readonly string[];
   readonly evidence: readonly string[];
-}
-
-function dirname(path: string): string {
-  const slash = path.lastIndexOf("/");
-  return slash === -1 ? "." : path.slice(0, slash);
 }
 
 function fenceRun(line: string): string | null {
@@ -122,7 +118,7 @@ export function resolveGeminiImportPath(
       DRIVE_OR_UNC.test(importedPath)) {
     return null;
   }
-  const base = dirname(containingPath);
+  const base = pathDirname(containingPath);
   const parts = base === "." ? [] : base.split("/");
   for (const part of slashed.split("/")) {
     if (part === "" || part === ".") continue;

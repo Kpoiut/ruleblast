@@ -1,6 +1,20 @@
 import { parseProfileId } from "../model.js";
 import { defineEvidenceRef } from "../profiles/profile.js";
 import {
+  decodeApply,
+  expectAllowedKeys,
+  expectBoolean,
+  expectEnum,
+  expectKeys,
+  expectSafeName,
+  expectString,
+  expectStringArray,
+  fail,
+  InvalidPackError,
+  isPlainObject,
+  ownKeys,
+} from "./compile-error.js";
+import {
   FINGERPRINT_BUILTINS,
   PACK_SCHEMA_ID,
   SOURCE_TYPES,
@@ -9,6 +23,8 @@ import {
   type DiscoverOrigin,
   type DiscoverSpec,
   type FingerprintBuiltin,
+  type FixedOrigin,
+  type GlobOrigin,
   type PackBundle,
   type PackClaim,
   type PackManifest,
@@ -18,81 +34,7 @@ import {
   type TransformSpec,
 } from "./schema.js";
 
-export class InvalidPackError extends TypeError {
-  public readonly code = "INVALID_PACK";
-
-  public constructor(detail: string) {
-    super(`INVALID_PACK: ${detail}`);
-    this.name = "InvalidPackError";
-  }
-}
-
-function fail(detail: string): never {
-  throw new InvalidPackError(detail);
-}
-
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function ownKeys(value: object): readonly string[] {
-  const keys = Reflect.ownKeys(value);
-  if (keys.some((key) => typeof key !== "string")) {
-    fail("object must not have symbol keys");
-  }
-  return keys as string[];
-}
-
-function expectKeys(value: unknown, keys: readonly string[], label: string): Record<string, unknown> {
-  if (!isPlainObject(value)) fail(`${label} must be an object`);
-  const actual = ownKeys(value);
-  if (actual.length !== keys.length || actual.some((key) => !keys.includes(key))) {
-    fail(`${label} has unknown or missing fields (${actual.join(",")})`);
-  }
-  return value;
-}
-
-function expectString(value: unknown, label: string): string {
-  if (typeof value !== "string" || value === "") fail(`${label} must be a non-empty string`);
-  return value;
-}
-
-function expectBoolean(value: unknown, expected: boolean, label: string): true {
-  if (value !== expected) fail(`${label} must be ${String(expected)}`);
-  return true;
-}
-
-function expectEnum<T extends string>(
-  value: unknown,
-  allowed: readonly T[],
-  label: string,
-): T {
-  if (typeof value !== "string" || !allowed.includes(value as T)) {
-    fail(`${label} must be one of ${allowed.join(", ")}`);
-  }
-  return value as T;
-}
-
-function expectStringArray(value: unknown, label: string): readonly string[] {
-  if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || item === "")) {
-    fail(`${label} must be a string array of non-empty strings`);
-  }
-  return Object.freeze([...value]);
-}
-
-function expectSafeName(value: string, label: string): string {
-  if (
-    value.includes("\0") ||
-    value.includes("\\") ||
-    value.includes(":") ||
-    /[\u0000-\u001f]/u.test(value) ||
-    value.startsWith("/") ||
-    value.split("/").some((part) => part === "" || part === "." || part === "..")
-  ) {
-    fail(`${label} is not a safe repository-relative name: ${JSON.stringify(value)}`);
-  }
-  return value;
-}
+export { InvalidPackError } from "./compile-error.js";
 
 function decodeClaim(value: unknown, index: number): PackClaim {
   const object = expectKeys(value, [
@@ -147,22 +89,54 @@ function decodeOrigin(value: unknown, index: number): DiscoverOrigin {
     });
   }
   if (kind === "fixed") {
-    const object = expectKeys(value, ["kind", "paths"], `discover.origins[${index}]`);
-    return Object.freeze({
+    const object = expectAllowedKeys(
+      value,
+      ["kind", "paths"],
+      ["scopeAnchor"],
+      `discover.origins[${index}]`,
+    );
+    const origin: FixedOrigin = {
       kind: "fixed",
       paths: Object.freeze(
         expectStringArray(object.paths, "discover.origin.paths").map((path) =>
           expectSafeName(path, "discover.origin.path"),
         ),
       ),
-    });
+    };
+    if (object.scopeAnchor !== undefined) {
+      return Object.freeze({
+        ...origin,
+        scopeAnchor: expectSafeName(
+          expectString(object.scopeAnchor, "discover.origin.scopeAnchor"),
+          "discover.origin.scopeAnchor",
+        ),
+      });
+    }
+    return Object.freeze(origin);
   }
   if (kind === "glob") {
-    const object = expectKeys(value, ["kind", "pattern"], `discover.origins[${index}]`);
-    return Object.freeze({
+    const object = expectAllowedKeys(
+      value,
+      ["kind", "pattern"],
+      ["scopeAnchor", "apply"],
+      `discover.origins[${index}]`,
+    );
+    const origin: GlobOrigin = {
       kind: "glob",
-      pattern: expectSafeName(expectString(object.pattern, "discover.origin.pattern"), "discover.origin.pattern"),
-    });
+      pattern: expectSafeName(
+        expectString(object.pattern, "discover.origin.pattern"),
+        "discover.origin.pattern",
+      ),
+    };
+    const scoped = object.scopeAnchor === undefined ? origin : {
+      ...origin,
+      scopeAnchor: expectSafeName(
+        expectString(object.scopeAnchor, "discover.origin.scopeAnchor"),
+        "discover.origin.scopeAnchor",
+      ),
+    };
+    if (object.apply === undefined) return Object.freeze(scoped);
+    return Object.freeze({ ...scoped, apply: decodeApply(object.apply, `discover.origins[${index}].apply`) });
   }
   fail(`unknown discover origin kind: ${kind}`);
 }
@@ -248,7 +222,7 @@ function decodeAssemble(value: unknown): AssembleSpec {
 }
 
 function decodeResolver(value: unknown): ResolverSpec {
-  const object = expectKeys(value, [
+  const object = expectAllowedKeys(value, [
     "context",
     "discover",
     "select",
@@ -256,7 +230,7 @@ function decodeResolver(value: unknown): ResolverSpec {
     "assemble",
     "fingerprint",
     "onSymlink",
-  ], "resolver");
+  ], ["onAtReference"], "resolver");
   const context = expectKeys(object.context, ["cwd", "trigger", "repositoryOnly"], "resolver.context");
   if (!Array.isArray(object.transform)) fail("resolver.transform must be an array");
   return Object.freeze({
@@ -275,6 +249,13 @@ function decodeResolver(value: unknown): ResolverSpec {
       ["unknown-unfollowed", "partial-unfollowed"],
       "resolver.onSymlink",
     ),
+    ...(object.onAtReference === undefined ? {} : {
+      onAtReference: expectEnum(
+        object.onAtReference,
+        ["ignore", "partial-unexpanded"],
+        "resolver.onAtReference",
+      ),
+    }),
   });
 }
 

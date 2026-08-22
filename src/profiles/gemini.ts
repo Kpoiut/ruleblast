@@ -1,5 +1,10 @@
 import { canonicalJson, sha256 } from "../canonical.js";
 import {
+  ancestorDirectories,
+  compareCodePoints,
+  joinRepositoryPath,
+} from "../domain/repository-path.js";
+import {
   GOOGLE_GEMINI_CLI_PROFILE_ID,
   type Projection,
   type ResolvedSource,
@@ -39,21 +44,7 @@ interface CapturedNode {
   readonly text: string;
 }
 
-function dirname(path: string): string {
-  const slash = path.lastIndexOf("/");
-  return slash === -1 ? "." : path.slice(0, slash);
-}
 
-function ancestorDirectories(path: string): readonly string[] {
-  const directory = dirname(path);
-  if (directory === ".") return ["."];
-  const parts = directory.split("/");
-  return [".", ...parts.map((_, index) => parts.slice(0, index + 1).join("/"))];
-}
-
-function joinPath(directory: string, name: string): string {
-  return directory === "." ? name : `${directory}/${name}`;
-}
 
 function decode(bytes: Uint8Array): string {
   return new TextDecoder().decode(bytes);
@@ -213,7 +204,7 @@ export function createGeminiProfile(config: {
     }
     return {
       id: config.id,
-      sourceDependencyPaths: Object.freeze([...sourceDependencyPaths]),
+      sourceDependencyPaths: Object.freeze([...sourceDependencyPaths].sort(compareCodePoints)),
       project(targetPath: string): Projection {
         const sources: ResolvedSource[] = [];
         const contributions: string[] = [];
@@ -228,7 +219,7 @@ export function createGeminiProfile(config: {
         const chain: GeminiFile[] = [];
         for (const directory of ancestorDirectories(targetPath)) {
           for (const fileName of fileNames) {
-            const path = joinPath(directory, fileName);
+            const path = joinRepositoryPath(directory, fileName);
             const node = nodes.get(path);
             if (node === undefined) continue;
             chain.push(node);

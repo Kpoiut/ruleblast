@@ -82,16 +82,18 @@ function repositoryIdentity(ownerValue, repoValue, repositoryUrlValue) {
 
 async function productionModules(outputRoot) {
   const load = (path) => import(pathToFileURL(join(outputRoot, path)).href);
-  const [canonical, git, impact, claude, codex] = await Promise.all([
+  const [canonical, git, impact, claude, codex, identity] = await Promise.all([
     load("canonical.js"),
     load("git.js"),
     load("impact.js"),
     load("profiles/claude.js"),
     load("profiles/codex.js"),
+    load("package-identity.js"),
   ]);
   return {
     canonicalJson: canonical.canonicalJson,
     sha256: canonical.sha256,
+    advertisedPackage: identity.advertisedPackage,
     openGitSnapshot: git.openGitSnapshot,
     analyzeDiff: impact.analyzeDiff,
     profiles: Object.freeze([claude.claudeProfile, codex.codexProfile]),
@@ -162,7 +164,7 @@ export async function captureCase(optionsValue) {
       coreDigest: production.sha256(coreJson),
       producer: artifact.producer,
       releaseReproductionCommand:
-        `npx ruleblast@${artifact.producer.packageVersion} diff ${options.base} --to ${options.head} --json`,
+        `npx ${production.advertisedPackage()} diff ${options.base} --to ${options.head} --json`,
     };
     bytes = Buffer.from(`${production.canonicalJson(receipt)}\n`, "utf8");
   } finally {

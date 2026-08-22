@@ -1,4 +1,4 @@
-import { compareCodePoints } from "./repository-path.js";
+import { compareCodePoints, pathDirname } from "./repository-path.js";
 import type {
   Finding,
   FindingCode,
@@ -104,18 +104,13 @@ export function effectiveSourcePaths(
   return paths;
 }
 
-function dirname(path: string): string {
-  const slash = path.lastIndexOf("/");
-  return slash === -1 ? "." : path.slice(0, slash);
-}
-
 function directoryDepth(path: string): number {
   return path === "." ? 0 : path.split("/").length;
 }
 
 function nearestCause(causes: readonly string[]): string | null {
   const sorted = [...causes].sort((left, right) => {
-    const depth = directoryDepth(dirname(right)) - directoryDepth(dirname(left));
+    const depth = directoryDepth(pathDirname(right)) - directoryDepth(pathDirname(left));
     return depth || compareCodePoints(left, right);
   });
   return sorted[0] ?? null;
@@ -132,7 +127,7 @@ export function buildImpactGroups(
   for (const path of paths) {
     const cause = nearestCause(path.causes);
     if (cause === null) continue;
-    const root = dirname(cause);
+    const root = pathDirname(cause);
     let group = groups.get(root);
     if (group === undefined) {
       group = {

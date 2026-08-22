@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { promisify } from "node:util";
 import type { SnapshotRef } from "./model.js";
 import { gitBlobOid } from "./domain/git-blob-identity.js";
+import { compareCodePoints } from "./domain/repository-path.js";
 import { GitSnapshotError } from "./git-errors.js";
 import type {
   GitObjectSnapshot,
@@ -18,22 +19,6 @@ const MAX_GIT_OUTPUT_BYTES = 256 * 1024 * 1024;
 
 interface TreeEntry extends SnapshotEntry {
   readonly oid: string;
-}
-
-function compareCodePoints(left: string, right: string): number {
-  let leftIndex = 0;
-  let rightIndex = 0;
-  while (leftIndex < left.length && rightIndex < right.length) {
-    const leftPoint = left.codePointAt(leftIndex);
-    const rightPoint = right.codePointAt(rightIndex);
-    if (leftPoint === undefined || rightPoint === undefined) {
-      throw new Error("Unable to compare Git paths");
-    }
-    if (leftPoint !== rightPoint) return leftPoint < rightPoint ? -1 : 1;
-    leftIndex += leftPoint > 0xffff ? 2 : 1;
-    rightIndex += rightPoint > 0xffff ? 2 : 1;
-  }
-  return leftIndex === left.length ? (rightIndex === right.length ? 0 : -1) : 1;
 }
 
 async function runGit(directory: string, args: readonly string[]): Promise<Buffer> {

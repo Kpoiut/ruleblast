@@ -8,11 +8,18 @@
     "origins": [
       {
         "kind": "fixed",
-        "paths": [".github/copilot-instructions.md"]
+        "paths": [".github/copilot-instructions.md"],
+        "scopeAnchor": ".github"
       },
       {
         "kind": "glob",
-        "pattern": ".github/instructions/**/*.instructions.md"
+        "pattern": ".github/instructions/**/*.instructions.md",
+        "scopeAnchor": ".github",
+        "apply": {
+          "kind": "frontmatter-glob",
+          "field": "applyTo",
+          "ifAbsent": "exclude"
+        }
       },
       {
         "kind": "ancestors",
@@ -36,5 +43,6 @@
     "claimIds": ["copilot.agent.1"]
   },
   "fingerprint": "copilot-v1",
-  "onSymlink": "unknown-unfollowed"
+  "onSymlink": "unknown-unfollowed",
+  "onAtReference": "partial-unexpanded"
 }
