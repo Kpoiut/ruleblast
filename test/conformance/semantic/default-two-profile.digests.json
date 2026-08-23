@@ -12,7 +12,7 @@
   "claude/import-external.json": "a6d512a01d638f0325f7d8d67f366e2dee40e47538dfd3899f5bdcad3d5afa47",
   "claude/import-missing.json": "a8ac4e4d27976f8ef8276d8544bef52a59ebde3591b800508a629945dff858f9",
   "claude/import-relative.json": "baa1c8256e09cd72dff39fba86d7cdeb8580771e1d52fce9cc0d46a85125337a",
-  "claude/instruction-symlink.json": "de0a08a9ae618d1710b0fda6563ea841465d0c9c54c0c6fa1db23c9241f0d11b",
+  "claude/instruction-symlink.json": "638df7c2c85e04186905e3744690b39213b28ce509fe8e7501acd28390bc42bf",
   "claude/local.json": "8602b18868d66e8f194177cf5d6d14943faee67ba9fa7f37e5d0e6b62abfd6b6",
   "claude/malformed-frontmatter.json": "6a2c93615a3547d8ae3561b2ba8cb24547719549712aa46f2b703f514926bd47",
   "claude/nested.json": "a3fb160120d784a18b482a185204bbb6c453cfe61f082707fc0cb333099cc482",

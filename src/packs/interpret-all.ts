@@ -1,7 +1,7 @@
 import { Minimatch } from "minimatch";
 import { sha256 } from "../canonical.js";
 import { compareCodePoints, pathBasename } from "../domain/repository-path.js";
-import type { Projection } from "../model.js";
+import type { Projection, ResolvedSource } from "../model.js";
 import type { RepositorySnapshot } from "../snapshot.js";
 import {
   defineEvidenceRef,
@@ -10,17 +10,22 @@ import {
 } from "../profiles/profile.js";
 import { InvalidPackError } from "./compile.js";
 import { projectCopilot, projectMarkdown, type Captured } from "./interpret-all-project.js";
+import { projectOrderedMarkdown } from "./interpret-ordered.js";
 import { parseFrontmatterGlobs } from "./ops-frontmatter.js";
 import {
   parseClaudeProjectSettings,
   parseClaudeRule,
   type ParsedClaudeRule,
 } from "./ops-glob.js";
+import { parseJsonUnionNames } from "./ops-json.js";
 import {
+  expandImportedMarkdown,
   listClaudeImportReferences,
   prepareClaudeDocument,
   resolveClaudeImportPath,
   type CapturedClaudeFile,
+  type ClaudeDocumentExpansion,
+  type ImportedMarkdownFile,
 } from "./ops-markdown.js";
 import type { CompiledPack, DiscoverOrigin, FrontmatterApply, TransformSpec } from "./schema.js";
 
@@ -34,14 +39,22 @@ function globMatch(pattern: string, path: string): boolean {
   return new Minimatch(pattern, { dot: true }).match(path);
 }
 
-function originHits(origin: DiscoverOrigin, path: string): boolean {
+function originHits(
+  origin: DiscoverOrigin,
+  path: string,
+  ancestorNames?: readonly string[],
+): boolean {
   if (origin.kind === "fixed") return origin.paths.includes(path);
   if (origin.kind === "glob") return globMatch(origin.pattern, path);
-  return origin.names.includes(pathBasename(path));
+  return (ancestorNames ?? origin.names).includes(pathBasename(path));
 }
 
 function jsonExclude(transform: readonly TransformSpec[]): TransformSpec | undefined {
   return transform.find((item) => item.kind === "json-exclude-globs");
+}
+
+function jsonUnion(transform: readonly TransformSpec[]): TransformSpec | undefined {
+  return transform.find((item) => item.kind === "json-union-names");
 }
 
 function importTransform(transform: readonly TransformSpec[]): TransformSpec | undefined {
@@ -70,7 +83,7 @@ function applyPatternsOf(
 
 export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
   const resolver = pack.resolver;
-  if (resolver.assemble.mode !== "unspecified" || resolver.select.mode !== "all") {
+  if (resolver.select.mode !== "all") {
     throw new InvalidPackError(`select-all interpreter rejected ${pack.pack.id}`);
   }
   const origins = resolver.discover.origins;
@@ -80,8 +93,10 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
   const markdown = usesMarkdownOps(resolver.transform);
   const stripComments = resolver.transform.some((item) => item.kind === "strip-html-comments");
   const excludes = jsonExclude(resolver.transform);
+  const union = jsonUnion(resolver.transform);
   const imported = importTransform(resolver.transform);
   const maxDepth = imported?.maxDepth ?? 4;
+  const orderedAssemble = resolver.assemble.mode === "ordered";
   return Object.freeze({
     id: pack.pack.id,
     evidence: Object.freeze(pack.evidence.map((item) => defineEvidenceRef({
@@ -91,22 +106,39 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
       claim: item.claim,
     }))),
     isInstructionPath(path: string): boolean {
-      return origins.some((origin) => originHits(origin, path));
+      return origins.some((origin) => originHits(origin, path, union?.union));
     },
     async prepare(snapshot: RepositorySnapshot): Promise<PreparedProfile> {
       const paths = await snapshot.listPaths();
+      let extraNames: readonly string[] | undefined = union?.union;
+      let unionStatus: Projection["status"] = "COMPLETE";
+      let unionEvidence: readonly string[] = [];
+      if (union?.path !== undefined && paths.includes(union.path)) {
+        const settingsBytes = await snapshot.read(union.path);
+        if (settingsBytes !== null) {
+          const parsed = parseJsonUnionNames(
+            new TextDecoder().decode(settingsBytes),
+            union.path,
+            union.field ?? "",
+            union.union ?? [],
+          );
+          extraNames = parsed.names;
+          unionStatus = parsed.status;
+          unionEvidence = parsed.evidence;
+        }
+      }
       const captured: Captured[] = [];
       const seen = new Map<string, number>();
       const queue: { path: string; depth: number }[] = [];
       for (const path of paths) {
-        const origin = origins.find((item) => originHits(item, path));
+        const origin = origins.find((item) => originHits(item, path, extraNames));
         if (origin === undefined) continue;
         queue.push({ path, depth: 0 });
         seen.set(path, 0);
       }
       for (let index = 0; index < queue.length; index += 1) {
         const { path, depth } = queue[index]!;
-        const origin = origins.find((item) => originHits(item, path));
+        const origin = origins.find((item) => originHits(item, path, extraNames));
         const entry = await snapshot.entry(path);
         if (entry === null) continue;
         const descriptors = Object.getOwnPropertyDescriptors(entry);
@@ -147,7 +179,8 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
           !markdown ||
           kind === "symlink" ||
           depth >= maxDepth ||
-          (excludes !== undefined && path === excludes.path)
+          (excludes !== undefined && path === excludes.path) ||
+          (union !== undefined && path === union.path)
         ) {
           continue;
         }
@@ -174,9 +207,12 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
       const settings = excludes?.path === undefined
         ? parseClaudeProjectSettings(undefined)
         : parseClaudeProjectSettings(files.get(excludes.path));
+      const skipPath = (path: string): boolean =>
+        (excludes !== undefined && path === excludes.path) ||
+        (union !== undefined && path === union.path);
       const documents = new Map(
         ordered
-          .filter((row) => excludes === undefined || row.path !== excludes.path)
+          .filter((row) => !skipPath(row.path))
           .map((row) => {
             const file = files.get(row.path)!;
             return [row.path, prepareClaudeDocument(file, row.content, stripComments)] as const;
@@ -190,6 +226,39 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
           if (file !== undefined) rules.set(row.path, parseClaudeRule(file));
         }
       }
+      const importedFiles = new Map<string, ImportedMarkdownFile>();
+      const expansions = new Map<string, ClaudeDocumentExpansion>();
+      const emptyPaths = new Set<string>();
+      if (markdown && orderedAssemble) {
+        for (const row of ordered) {
+          if (skipPath(row.path)) continue;
+          importedFiles.set(row.path, Object.freeze({
+            path: row.path, kind: row.kind, text: row.text,
+          }));
+          if (row.text.trim() === "") emptyPaths.add(row.path);
+        }
+        for (const row of ordered) {
+          if (!row.discovered || skipPath(row.path) || row.origin.kind === "glob") continue;
+          expansions.set(
+            row.path,
+            expandImportedMarkdown(
+              importedFiles.get(row.path)!,
+              importedFiles,
+              maxDepth,
+              resolver.onSymlink === "unknown-unfollowed" ? "UNKNOWN" : "PARTIAL",
+            ),
+          );
+        }
+      }
+      const chainCache = new Map<string, {
+        status: Projection["status"];
+        sources: readonly ResolvedSource[];
+        contributions: readonly string[];
+        evidence: readonly string[];
+      }>();
+      const ancestorNames = extraNames ??
+        origins.find((item) => item.kind === "ancestors")?.names ??
+        resolver.select.names;
       const cached = new Map<string, Projection>();
       return Object.freeze({
         id: pack.pack.id,
@@ -201,10 +270,15 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
             ? projectCopilot(
               pack, resolver, claims, atPartial, ordered, targetPath,
             )
-            : projectMarkdown(
-              pack, resolver, revisions, ordered, files, documents, settings,
-              rules, excludes?.path, maxDepth, targetPath,
-            );
+            : orderedAssemble
+              ? projectOrderedMarkdown(
+                pack, resolver, revisions, claims, ancestorNames, expansions, emptyPaths,
+                union?.path, unionStatus, unionEvidence, chainCache, targetPath,
+              )
+              : projectMarkdown(
+                pack, resolver, revisions, ordered, files, documents, settings,
+                rules, excludes?.path, maxDepth, targetPath,
+              );
           cached.set(targetPath, projection);
           return projection;
         },

@@ -212,6 +212,11 @@ export function resolveClaudeImportPath(
   return parts.length === 0 ? null : parts.join("/");
 }
 
+function markUnresolved(state: ExpansionState, mode: "UNKNOWN" | "PARTIAL"): void {
+  if (mode === "UNKNOWN") state.status = "UNKNOWN";
+  else if (state.status === "COMPLETE") state.status = "PARTIAL";
+}
+
 function expandFile(
   document: PreparedClaudeDocument,
   disposition: ResolvedSource["disposition"],
@@ -219,7 +224,8 @@ function expandFile(
   state: ExpansionState,
   stack: readonly string[],
   depth: number,
-  maxDepth = MAX_IMPORT_EDGES,
+  maxDepth: number,
+  unresolved: "UNKNOWN" | "PARTIAL",
 ): void {
   const { file, tokens } = document;
   const exclusion = environment.exclusion(file.path);
@@ -235,9 +241,9 @@ function expandFile(
   if (file.kind === "symlink") {
     state.sources.push(resolvedSource(file, "UNRESOLVED_IMPORT", false));
     state.evidence.push(
-      `UNSUPPORTED_BOUNDARY: Claude instruction symlink was not followed: ${file.path}`,
+      `UNSUPPORTED_BOUNDARY: instruction symlink was not followed: ${file.path}`,
     );
-    state.status = "UNKNOWN";
+    markUnresolved(state, unresolved);
     return;
   }
 
@@ -249,27 +255,42 @@ function expandFile(
     }
     const path = resolveClaudeImportPath(file.path, token.value);
     if (path === null) {
-      state.sources.push(unresolvedSource("<external-import>"));
-      state.evidence.push(`EXTERNAL_IMPORT: import from ${file.path} leaves the repository`);
-      state.status = "UNKNOWN";
+      if (unresolved === "PARTIAL") {
+        state.sources.push(unresolvedSource(token.value));
+        state.evidence.push(
+          `UNRESOLVED_IMPORT: ${token.value} from ${file.path} leaves the repository`,
+        );
+      } else {
+        state.sources.push(unresolvedSource("<external-import>"));
+        state.evidence.push(`EXTERNAL_IMPORT: import from ${file.path} leaves the repository`);
+      }
+      markUnresolved(state, unresolved);
     } else if (depth >= maxDepth) {
       state.sources.push(unresolvedSource(path));
       state.evidence.push(
-        `IMPORT_DEPTH_EXCEEDED: import from ${file.path} exceeds ${maxDepth === 4 ? "four" : String(maxDepth)} edges: ${path}`,
+        unresolved === "PARTIAL"
+          ? `IMPORT_DEPTH_EXCEEDED: import from ${file.path} exceeds ${maxDepth}: ${path}`
+          : `IMPORT_DEPTH_EXCEEDED: import from ${file.path} exceeds ${maxDepth === 4 ? "four" : String(maxDepth)} edges: ${path}`,
       );
-      state.status = "UNKNOWN";
+      markUnresolved(state, unresolved);
     } else if (stack.includes(path)) {
       state.sources.push(unresolvedSource(path));
       state.evidence.push(`IMPORT_CYCLE: ${[...stack, path].join(" -> ")}`);
-      state.status = "UNKNOWN";
+      markUnresolved(state, unresolved);
     } else {
       const imported = environment.documents.get(path);
       if (imported === undefined) {
         state.sources.push(unresolvedSource(path));
-        state.evidence.push(`MISSING_IMPORT: tracked snapshot does not contain ${path}`);
-        state.status = "UNKNOWN";
+        state.evidence.push(
+          unresolved === "PARTIAL"
+            ? `UNRESOLVED_IMPORT: missing ${path} from ${file.path}`
+            : `MISSING_IMPORT: tracked snapshot does not contain ${path}`,
+        );
+        markUnresolved(state, unresolved);
       } else {
-        expandFile(imported, "IMPORTED", environment, state, [...stack, path], depth + 1, maxDepth);
+        expandFile(
+          imported, "IMPORTED", environment, state, [...stack, path], depth + 1, maxDepth, unresolved,
+        );
       }
     }
   }
@@ -280,10 +301,56 @@ export function expandClaudeDocument(
   disposition: Exclude<ResolvedSource["disposition"], "IMPORTED" | "EXCLUDED" | "UNRESOLVED_IMPORT">,
   environment: ClaudeImportEnvironment,
   maxDepth = MAX_IMPORT_EDGES,
+  unresolved: "UNKNOWN" | "PARTIAL" = "UNKNOWN",
 ): ClaudeDocumentExpansion {
   const state: ExpansionState = {
     status: "COMPLETE", sources: [], contributions: [], evidence: [],
   };
-  expandFile(document, disposition, environment, state, [document.file.path], 0, maxDepth);
+  expandFile(
+    document, disposition, environment, state, [document.file.path], 0, maxDepth, unresolved,
+  );
   return state;
+}
+
+export interface ImportedMarkdownFile {
+  readonly path: string;
+  readonly kind: SnapshotEntry["kind"];
+  readonly text: string;
+}
+
+function noopExclusion(): {
+  readonly applies: boolean | null;
+  readonly status: Projection["status"];
+  readonly evidence: readonly string[];
+} {
+  return { applies: false, status: "COMPLETE", evidence: [] };
+}
+
+/** Same expander as Claude; PARTIAL records documented unfollowed imports. */
+export function expandImportedMarkdown(
+  file: ImportedMarkdownFile,
+  documents: ReadonlyMap<string, ImportedMarkdownFile>,
+  maxDepth: number,
+  unresolved: "UNKNOWN" | "PARTIAL" = "PARTIAL",
+): ClaudeDocumentExpansion {
+  const encoder = new TextEncoder();
+  const prepared = new Map<string, PreparedClaudeDocument>();
+  for (const doc of documents.values()) {
+    prepared.set(doc.path, prepareClaudeDocument(
+      { path: doc.path, kind: doc.kind, bytes: encoder.encode(doc.text) },
+      doc.text,
+      false,
+    ));
+  }
+  const document = prepared.get(file.path);
+  if (document === undefined) {
+    return { status: "COMPLETE", sources: [], contributions: [], evidence: [] };
+  }
+  return expandClaudeDocument(
+    document,
+    "SELECTED",
+    { documents: prepared, exclusion: noopExclusion },
+    maxDepth,
+    unresolved,
+  );
 }

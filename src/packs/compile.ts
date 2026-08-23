@@ -189,7 +189,13 @@ function decodeTransform(value: unknown, index: number): TransformSpec {
   if (!isPlainObject(value)) fail(`transform[${index}] must be an object`);
   const kind = expectEnum(
     value.kind,
-    ["byte-budget", "at-path-import", "strip-html-comments", "json-exclude-globs"],
+    [
+      "byte-budget",
+      "at-path-import",
+      "strip-html-comments",
+      "json-exclude-globs",
+      "json-union-names",
+    ],
     `transform[${index}].kind`,
   );
   const claimIds = expectStringArray(value.claimIds, `transform[${index}].claimIds`);
@@ -215,7 +221,7 @@ function decodeTransform(value: unknown, index: number): TransformSpec {
       maxDepth: value.maxDepth,
       lexer: expectEnum(
         value.lexer,
-        ["claude-markdown-v1", "gemini-markdown-v1"],
+        ["markdown-v1"],
         `transform[${index}].lexer`,
       ),
       claimIds,
@@ -227,6 +233,20 @@ function decodeTransform(value: unknown, index: number): TransformSpec {
       kind,
       path: expectSafeName(expectString(value.path, `transform[${index}].path`), `transform[${index}].path`),
       field: expectSafeName(expectString(value.field, `transform[${index}].field`), `transform[${index}].field`),
+      claimIds,
+    });
+  }
+  if (kind === "json-union-names") {
+    expectKeys(value, ["kind", "path", "field", "union", "claimIds"], `transform[${index}]`);
+    return Object.freeze({
+      kind,
+      path: expectSafeName(expectString(value.path, `transform[${index}].path`), `transform[${index}].path`),
+      field: expectSafeName(expectString(value.field, `transform[${index}].field`), `transform[${index}].field`),
+      union: Object.freeze(
+        expectStringArray(value.union, `transform[${index}].union`).map((name) =>
+          expectSafeName(name, `transform[${index}].union`),
+        ),
+      ),
       claimIds,
     });
   }

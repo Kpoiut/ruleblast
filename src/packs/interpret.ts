@@ -15,8 +15,11 @@ import {
   type ProfileDefinition,
 } from "../profiles/profile.js";
 import { InvalidPackError } from "./compile.js";
+import { canInterpretResolver } from "./interpret-admit.js";
 import { interpretSelectAllPack } from "./interpret-all.js";
-import type { CompiledPack, DiscoverOrigin, ResolverSpec } from "./schema.js";
+import type { CompiledPack } from "./schema.js";
+
+export { canInterpretResolver, uninterpretableReasons } from "./interpret-admit.js";
 
 const BOUNDARY_EVIDENCE =
   "UNSUPPORTED_BOUNDARY: named Codex instruction symlink was not followed";
@@ -49,74 +52,6 @@ function source(
   truncated: boolean,
 ): ResolvedSource {
   return { path, disposition, digest, bytesUsed, truncated };
-}
-
-function originExecutable(origin: DiscoverOrigin, reasons: string[]): void {
-  if (origin.kind === "ancestors") {
-    if (origin.from !== "repositoryRoot" || origin.inclusive !== true) {
-      reasons.push("discover.range");
-    }
-    if (origin.to !== "cwd" && origin.to !== "dirname-target") reasons.push("discover.range");
-    if (origin.names.length === 0) reasons.push("discover.names");
-    return;
-  }
-  if (origin.kind === "fixed" || origin.kind === "glob") return;
-  reasons.push("discover.origin");
-}
-
-function orderedBudgetFamily(resolver: ResolverSpec): boolean {
-  return resolver.select.mode === "first-per-directory" &&
-    resolver.assemble.mode === "ordered" &&
-    resolver.transform[0]?.kind === "byte-budget";
-}
-
-function selectAllFamily(resolver: ResolverSpec): boolean {
-  return resolver.select.mode === "all" && resolver.assemble.mode === "unspecified";
-}
-
-export function uninterpretableReasons(resolver: ResolverSpec): readonly string[] {
-  const reasons: string[] = [];
-  if (resolver.onSymlink !== "unknown-unfollowed") reasons.push("onSymlink");
-  if (resolver.discover.origins.length === 0) reasons.push("discover.origins");
-  for (const origin of resolver.discover.origins) originExecutable(origin, reasons);
-  for (const transform of resolver.transform) {
-    if (transform.kind === "byte-budget" && typeof transform.bytes === "number" && transform.bytes > 0) {
-      continue;
-    }
-    if (transform.kind === "strip-html-comments") continue;
-    if (
-      transform.kind === "at-path-import" &&
-      typeof transform.maxDepth === "number" &&
-      transform.maxDepth > 0 &&
-      (transform.lexer === "claude-markdown-v1" || transform.lexer === "gemini-markdown-v1")
-    ) {
-      continue;
-    }
-    if (
-      transform.kind === "json-exclude-globs" &&
-      typeof transform.path === "string" &&
-      typeof transform.field === "string"
-    ) {
-      continue;
-    }
-    reasons.push("transform");
-    break;
-  }
-  if (
-    resolver.onAtReference !== undefined &&
-    resolver.onAtReference !== "ignore" &&
-    resolver.onAtReference !== "partial-unexpanded"
-  ) {
-    reasons.push("onAtReference");
-  }
-  if (!orderedBudgetFamily(resolver) && !selectAllFamily(resolver)) {
-    reasons.push(resolver.select.mode === "all" ? "assemble" : "select");
-  }
-  return Object.freeze([...new Set(reasons)]);
-}
-
-export function canInterpretResolver(resolver: ResolverSpec): boolean {
-  return uninterpretableReasons(resolver).length === 0;
 }
 
 function resolveDirectory(

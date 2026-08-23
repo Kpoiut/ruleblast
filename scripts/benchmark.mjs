@@ -6,10 +6,12 @@ import { dirname, join, relative, resolve } from "node:path";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { inventoryConformanceLab } from "../dist/application/conformance-lab.js";
+import {
+  PROFILE_CATALOG,
+  defaultProfileDefinitions,
+} from "../dist/application/profile-catalog.js";
 import { diffExplain } from "../dist/cli-output.js";
 import { analyzeCurrent, analyzeDiff } from "../dist/impact.js";
-import { claudeProfile } from "../dist/profiles/claude.js";
-import { codexProfile } from "../dist/profiles/codex.js";
 import { explainPresentationContext, renderExplain } from "../dist/render-explain.js";
 import { ManifestSnapshot } from "../dist/snapshot.js";
 
@@ -21,7 +23,9 @@ const CEILING_P95_MS = 2_000;
 const REPOSITORY_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const GIF_PAIR_ROOT = join(REPOSITORY_ROOT, "test/fixtures/overlay-206");
 const GIF_EXPLAIN_PATH = "codex-rs/tui/src/bottom_pane/chat_composer.rs";
-const DEFAULT_PROFILES = Object.freeze([claudeProfile, codexProfile]);
+const DEFAULT_PROFILES = defaultProfileDefinitions();
+const ALL_PROFILES = Object.freeze(PROFILE_CATALOG.map((entry) => entry.definition));
+const HOT_TARGET = "packages/deep/src/file-00010.ts";
 
 function entry(path, text = "") {
   return {
@@ -37,6 +41,8 @@ export function createBenchmarkSnapshot() {
     entry("AGENTS.md", "Root benchmark instruction.\n"),
     entry("packages/deep/AGENTS.md", "Nested benchmark instruction.\n"),
     entry("packages/deep/CLAUDE.md", "Nested benchmark instruction.\n"),
+    entry("GEMINI.md", "Root Gemini benchmark instruction.\n"),
+    entry(".github/copilot-instructions.md", "Root Copilot benchmark instruction.\n"),
   ];
   for (let index = entries.length; index < PATH_COUNT; index += 1) {
     entries.push(entry(`packages/deep/src/file-${String(index).padStart(5, "0")}.ts`));
@@ -164,12 +170,17 @@ async function measureLab() {
   const gemini = byId["google/gemini-cli@1"];
   if (
     codex?.proof !== "ORACLE" || copilot?.proof !== "ORACLE" ||
-    claude?.proof !== "ORACLE" || gemini?.proof !== "ADAPTER"
+    claude?.proof !== "ORACLE" || gemini?.proof !== "ORACLE"
   ) {
-    throw new Error("Lab lost interpreter ORACLE or fingerprint ADAPTER proof");
+    throw new Error("Lab lost interpreter ORACLE proof on a bundled reality");
   }
-  if (gemini.missingOperations.join(",") !== "onSymlink,assemble") {
-    throw new Error("Lab lost Gemini fingerprint missing-operation recording");
+  if (gemini.missingOperations.length !== 0) {
+    throw new Error("Lab lost Gemini interpreter coverage");
+  }
+  const interpretOracleCount = lab.bundled.filter((row) => row.proof === "ORACLE").length;
+  const fingerprintAdapterCount = lab.bundled.filter((row) => row.proof === "ADAPTER").length;
+  if (interpretOracleCount !== 4 || fingerprintAdapterCount !== 0) {
+    throw new Error("Lab lost 4/4 interpreter ORACLE coverage");
   }
   const rows = lab.bundled.map((row) => ({
     id: row.id,
@@ -186,11 +197,44 @@ async function measureLab() {
     cachedMs: cached.elapsedMs,
     bundled: lab.bundled.length,
     candidates: lab.candidates.length,
-    interpretOracleCount: lab.bundled.filter((row) => row.proof === "ORACLE").length,
-    fingerprintAdapterCount: lab.bundled.filter((row) => row.proof === "ADAPTER").length,
+    interpretOracleCount,
+    fingerprintAdapterCount,
     sealedProbeCount: rows.reduce((sum, row) => sum + row.probeCount, 0),
     rows,
   };
+}
+
+async function measureInterpreterChain(snapshot) {
+  const engines = [];
+  for (const profile of ALL_PROFILES) {
+    const preparedAt = performance.now();
+    const prepared = await profile.prepare(snapshot);
+    const prepareMs = performance.now() - preparedAt;
+    const projectedAt = performance.now();
+    const projection = prepared.project(HOT_TARGET);
+    const projectMs = performance.now() - projectedAt;
+    if (prepared.sourceDependencyPaths.length < 1) {
+      throw new Error(`Benchmark interpreter ${profile.id} found no instruction sources`);
+    }
+    if (projection.profile !== profile.id) {
+      throw new Error(`Benchmark interpreter ${profile.id} lost its pack id`);
+    }
+    engines.push({
+      id: profile.id,
+      sourceDependencyPaths: prepared.sourceDependencyPaths.length,
+      status: projection.status,
+      prepareMs,
+      projectMs,
+    });
+  }
+  const { value, elapsedMs } = await timed(() => analyzeCurrent({
+    snapshot,
+    profiles: ALL_PROFILES,
+  }));
+  if (value.counts.candidatePathCount !== PATH_COUNT || value.counts.byProfile.length !== 4) {
+    throw new Error("Benchmark lost four-reality catalog analysis");
+  }
+  return { allCurrentMs: elapsedMs, engines };
 }
 
 export async function runBenchmark() {
@@ -201,10 +245,11 @@ export async function runBenchmark() {
   const current10k = await sample(() => measuredCurrent(snapshot));
   const gif = await measureGifPair();
   const lab = await measureLab();
+  const chain = await measureInterpreterChain(snapshot);
   const report = {
     benchmark: {
       candidatePathCount: PATH_COUNT,
-      instructionFileCount: 3,
+      instructionFileCount: 5,
       nestedInstructionCount: 2,
       warmupCount: WARMUP_COUNT,
       sampleCount: SAMPLE_COUNT,
@@ -224,6 +269,7 @@ export async function runBenchmark() {
         explainPath: gif.explainPath,
       },
       lab,
+      interpreters: chain,
     },
     environment: {
       node: process.version,
@@ -268,7 +314,10 @@ if (directEntry) {
         `${surfaces.gifPair.changedStackPathCount} changed stacks, ` +
         `diff p95 ${surfaces.gifDiff.p95Ms.toFixed(2)}ms, ` +
         `explain p95 ${surfaces.gifExplain.p95Ms.toFixed(2)}ms\n` +
-        `lab: first ${surfaces.lab.firstMs.toFixed(2)}ms, cached ${surfaces.lab.cachedMs.toFixed(2)}ms\n` +
+        `lab: first ${surfaces.lab.firstMs.toFixed(2)}ms, cached ${surfaces.lab.cachedMs.toFixed(2)}ms, ` +
+        `${surfaces.lab.interpretOracleCount} ORACLE\n` +
+        `interpreters: 4-reality current ${surfaces.interpreters.allCurrentMs.toFixed(2)}ms, ` +
+        `${surfaces.interpreters.engines.map((row) => `${row.id} ${row.sourceDependencyPaths} src`).join("; ")}\n` +
         `baseline: Node ${environment.node}, ${environment.os}, ${environment.arch}, ${environment.cpu}\n`,
       );
     }

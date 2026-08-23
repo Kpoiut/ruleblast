@@ -79,12 +79,18 @@ export interface SelectSpec {
 }
 
 export interface TransformSpec {
-  readonly kind: "byte-budget" | "at-path-import" | "strip-html-comments" | "json-exclude-globs";
+  readonly kind:
+    | "byte-budget"
+    | "at-path-import"
+    | "strip-html-comments"
+    | "json-exclude-globs"
+    | "json-union-names";
   readonly bytes?: number;
   readonly maxDepth?: number;
-  readonly lexer?: "claude-markdown-v1" | "gemini-markdown-v1";
+  readonly lexer?: "markdown-v1";
   readonly path?: string;
   readonly field?: string;
+  readonly union?: readonly string[];
   readonly claimIds: readonly string[];
 }
 

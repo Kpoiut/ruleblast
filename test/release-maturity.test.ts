@@ -994,9 +994,9 @@ describe("public release maturity", () => {
     }
     expect(read("CHANGELOG.md")).toContain("## 2.5.1 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.1 — SHIPPED TO MAIN/u);
-    expect(read("package.json")).toContain('"version": "2.5.2"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.2"');
-    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.5.2`");
+    expect(read("package.json")).toContain('"version": "2.5.3"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.3"');
+    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.5.3`");
     expect(read("README.md")).toContain("ruleblast-companion-2.5.1.vsix");
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.1"',
@@ -1006,7 +1006,7 @@ describe("public release maturity", () => {
   it("records v2.5.2 as Claude interpreted from resolver.json", () => {
     const roadmap = read("ROADMAP.md");
     const heading = "## **SHIPPED TO MAIN** — `v2.5.2`: Claude interpreted from resolver.json";
-    const next = roadmap.indexOf("## **NEXT** — Fingerprint resolver operations");
+    const next = roadmap.indexOf("## **SHIPPED TO MAIN** — `v2.5.3`: Gemini interpreted by composed operations");
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -1023,8 +1023,33 @@ describe("public release maturity", () => {
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.5.2 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.2 — RELEASED/u);
-    expect(read("package.json")).toContain('"version": "2.5.2"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.2"');
+    expect(read("package.json")).toContain('"version": "2.5.3"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.3"');
+    expect(read("src/package-identity.ts")).toContain(
+      'PUBLISHED_PACKAGE_VERSION = "2.5.1"',
+    );
+  });
+
+  it("records v2.5.3 as Gemini interpreted by composed operations", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading = "## **SHIPPED TO MAIN** — `v2.5.3`: Gemini interpreted by composed operations";
+    const next = roadmap.indexOf("## **NEXT** — Runtime calibration without a fifth reality");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toContain("2.5.3");
+    expect(shipped).toContain("2.5.1");
+    expect(shipped).toContain("ruleblast-companion-2.5.3.vsix");
+    expect(shipped).toContain("markdown-v1");
+    expect(shipped).toContain("json-union-names");
+    expect(shipped).toContain("createGeminiProfile");
+    expect(shipped).toContain("Not a fifth action");
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 2.5.3 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.3 — RELEASED/u);
+    expect(read("package.json")).toContain('"version": "2.5.3"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.3"');
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.1"',
     );

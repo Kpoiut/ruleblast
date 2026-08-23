@@ -160,13 +160,19 @@ function formatAxes(axes: readonly AxisCoverage[]): string {
   return axes.map((item) => `${item.axis} ${item.status}`).join("  ");
 }
 
-export async function renderConformanceLab(lab?: ConformanceLab): Promise<string> {
+export type LabRenderMode = "compact" | "identity";
+
+export async function renderConformanceLab(
+  lab?: ConformanceLab,
+  mode: LabRenderMode = "compact",
+): Promise<string> {
   const view = lab ?? await inventoryConformanceLab();
   const lines = ["LAB"];
   for (const row of view.bundled) {
     const label = presentationFor(row.id);
+    const identity = mode === "identity" ? `  ${row.id}` : "";
     lines.push(
-      `  ${label.badge} ${label.shortLabel}  ${row.engine}  ${row.proof}  ${formatOps(row.missingOperations)}  ${row.probeCount} probes`,
+      `  ${label.badge} ${label.shortLabel}${identity}  ${row.engine}  ${row.proof}  ${formatOps(row.missingOperations)}  ${row.probeCount} probes`,
     );
   }
   for (const row of view.candidates) {

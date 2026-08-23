@@ -121,7 +121,11 @@ describe("fingerprint adapter oracle probes", () => {
     await expectAdapterProbes("anthropic-claude-code-cli@1", "test/fixtures/claude");
   });
 
-  it("packs the Gemini fixture suite through the fingerprint adapter", async () => {
+  it("packs the Gemini fixture suite through the interpreter", async () => {
+    const oracle = readOracle("google-gemini-cli@1");
+    expect(oracle.kind).toBe("interpret");
+    expect(oracle.packId).toBe("google/gemini-cli@1");
+    expect(oracle.missingOperations).toBeUndefined();
     await expectAdapterProbes("google-gemini-cli@1", "test/fixtures/gemini");
   });
 

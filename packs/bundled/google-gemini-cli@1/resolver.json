@@ -28,9 +28,16 @@
   },
   "transform": [
     {
+      "kind": "json-union-names",
+      "path": ".gemini/settings.json",
+      "field": "context.fileName",
+      "union": ["GEMINI.md"],
+      "claimIds": ["gemini.names.1"]
+    },
+    {
       "kind": "at-path-import",
       "maxDepth": 5,
-      "lexer": "gemini-markdown-v1",
+      "lexer": "markdown-v1",
       "claimIds": ["gemini.imports.1"]
     }
   ],

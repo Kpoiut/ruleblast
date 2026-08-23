@@ -17,6 +17,7 @@ import {
   type PreparedProfile,
   type ProfileDefinition,
 } from "./profile.js";
+import { parseJsonUnionNames } from "../packs/ops-json.js";
 import { GEMINI_EVIDENCE } from "./gemini-evidence.js";
 import {
   GEMINI_IMPORT_DEPTH,
@@ -31,13 +32,6 @@ export const GEMINI_REALITY = GOOGLE_GEMINI_CLI_PROFILE_ID;
 export const DEFAULT_GEMINI_FILENAME = "GEMINI.md";
 export const GEMINI_SETTINGS_PATH = ".gemini/settings.json";
 
-const SETTINGS_BOUNDARY =
-  "User, system, and runtime context.fileName settings are outside repository-only analysis.";
-const IGNORE_BOUNDARY =
-  "GEMINIIGNORE_MEMORY_EFFECT is UNSPECIFIED: .geminiignore is not modeled as a hierarchical-memory filter.";
-const DOCS_DRIFT =
-  "Configuration prose still describes downward discovery; v0.55.1 implementation is JIT/upward.";
-
 interface CapturedNode {
   readonly path: string;
   readonly kind: SnapshotEntry["kind"];
@@ -50,81 +44,17 @@ function decode(bytes: Uint8Array): string {
   return new TextDecoder().decode(bytes);
 }
 
-function normalizeFileName(value: string): string | null {
-  const trimmed = value.trim().replace(/\\/g, "/");
-  if (trimmed === "" || trimmed.startsWith("/") || trimmed.includes("\0")) {
-    return null;
-  }
-  const parts = trimmed.split("/");
-  if (parts.some((part) => part === "" || part === "." || part === "..")) {
-    return null;
-  }
-  return parts.join("/");
-}
-
-function unionFileNames(configured: readonly string[]): readonly string[] {
-  const names: string[] = [];
-  for (const name of [...configured, DEFAULT_GEMINI_FILENAME]) {
-    if (!names.includes(name)) names.push(name);
-  }
-  return Object.freeze(names);
-}
-
 export function parseGeminiFileNames(settingsText: string): {
   readonly names: readonly string[];
   readonly status: Projection["status"];
   readonly evidence: readonly string[];
 } {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(settingsText);
-  } catch {
-    return {
-      names: [DEFAULT_GEMINI_FILENAME],
-      status: "PARTIAL",
-      evidence: ["Tracked .gemini/settings.json is not strict JSON; context.fileName was not applied."],
-    };
-  }
-  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-    return {
-      names: [DEFAULT_GEMINI_FILENAME],
-      status: "PARTIAL",
-      evidence: ["Tracked .gemini/settings.json is not an object; context.fileName was not applied."],
-    };
-  }
-  const context = (parsed as { readonly context?: unknown }).context;
-  if (context === undefined) {
-    return { names: [DEFAULT_GEMINI_FILENAME], status: "COMPLETE", evidence: [] };
-  }
-  if (typeof context !== "object" || context === null || Array.isArray(context)) {
-    return {
-      names: [DEFAULT_GEMINI_FILENAME],
-      status: "PARTIAL",
-      evidence: ["Tracked context is not an object; context.fileName was not applied."],
-    };
-  }
-  const fileName = (context as { readonly fileName?: unknown }).fileName;
-  if (fileName === undefined) {
-    return { names: [DEFAULT_GEMINI_FILENAME], status: "COMPLETE", evidence: [] };
-  }
-  const raw = typeof fileName === "string" ? [fileName] : fileName;
-  if (!Array.isArray(raw) || raw.some((item) => typeof item !== "string")) {
-    return {
-      names: [DEFAULT_GEMINI_FILENAME],
-      status: "PARTIAL",
-      evidence: ["Tracked context.fileName is not a string or string array."],
-    };
-  }
-  const configured = raw
-    .map((item) => normalizeFileName(item))
-    .filter((item): item is string => item !== null);
-  return {
-    names: unionFileNames(configured),
-    status: "COMPLETE",
-    evidence: [
-      "Tracked project context.fileName is unioned with default GEMINI.md, matching setGeminiMdFilename.",
-    ],
-  };
+  return parseJsonUnionNames(
+    settingsText,
+    GEMINI_SETTINGS_PATH,
+    "context.fileName",
+    [DEFAULT_GEMINI_FILENAME],
+  );
 }
 
 function matchesFileName(path: string, fileName: string): boolean {
@@ -209,10 +139,7 @@ export function createGeminiProfile(config: {
         const sources: ResolvedSource[] = [];
         const contributions: string[] = [];
         const evidence = [
-          ...GEMINI_EVIDENCE.map((item) => item.claim),
-          SETTINGS_BOUNDARY,
-          IGNORE_BOUNDARY,
-          DOCS_DRIFT,
+          ...config.evidence.map((item) => item.claim),
           ...parsedNames.evidence,
         ];
         let status: Projection["status"] = parsedNames.status;

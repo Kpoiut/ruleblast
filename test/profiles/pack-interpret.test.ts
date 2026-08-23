@@ -13,6 +13,7 @@ import { profileFromCompiledPack } from "../../src/packs/profile.js";
 import { createClaudeProfile } from "../../src/profiles/claude.js";
 import { createCodexProfile, codexProfile } from "../../src/profiles/codex.js";
 import { createCopilotProfile } from "../../src/profiles/copilot.js";
+import { createGeminiProfile } from "../../src/profiles/gemini.js";
 import { ManifestSnapshot } from "../../src/snapshot.js";
 
 const repositoryRoot = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
@@ -48,7 +49,7 @@ describe("spec-driven pack interpreter", () => {
       loadBundledPack("github-copilot-cli@1").resolver,
     );
     expect(claude).toEqual([]);
-    expect(gemini).toEqual(["onSymlink", "assemble"]);
+    expect(gemini).toEqual([]);
     expect(copilot).toEqual([]);
     const oracleOps = (directory: string): readonly string[] => {
       const oracle = JSON.parse(
@@ -74,8 +75,24 @@ describe("spec-driven pack interpreter", () => {
       .not.toContain("createClaudeProfile");
     expect(readFileSync(join(repositoryRoot, "src/packs/interpret-all-project.ts"), "utf8"))
       .not.toContain("createClaudeProfile");
-    expect(uninterpretableReasons({ ...geminiResolver, onSymlink: "unknown-unfollowed" }))
-      .toEqual(["assemble"]);
+    expect(readFileSync(join(repositoryRoot, "src/packs/interpret.ts"), "utf8"))
+      .not.toContain("createGeminiProfile");
+    expect(readFileSync(join(repositoryRoot, "src/packs/interpret-all.ts"), "utf8"))
+      .not.toContain("createGeminiProfile");
+    expect(readFileSync(join(repositoryRoot, "src/packs/interpret-ordered.ts"), "utf8"))
+      .not.toContain("createGeminiProfile");
+    expect(readFileSync(join(repositoryRoot, "src/packs/interpret-admit.ts"), "utf8"))
+      .not.toMatch(/orderedBudgetFamily|selectAllFamily|createGeminiProfile/u);
+    expect(readFileSync(join(repositoryRoot, "src/packs/ops-json.ts"), "utf8"))
+      .not.toContain("setGeminiMdFilename");
+    expect(readFileSync(join(repositoryRoot, "src/packs/interpret-ordered.ts"), "utf8"))
+      .not.toContain("GEMINIIGNORE");
+    expect(readFileSync(join(repositoryRoot, "src/packs/ops-markdown.ts"), "utf8"))
+      .not.toContain("Gemini instruction symlink");
+    expect(readFileSync(join(repositoryRoot, "src/packs/ops-markdown.ts"), "utf8"))
+      .not.toContain("Claude instruction symlink");
+    expect(uninterpretableReasons({ ...geminiResolver, assemble: { ...geminiResolver.assemble, mode: "unspecified" } }))
+      .toEqual([]);
   });
 
   it("keeps shared-prefix nested targets byte-identical to the adapter oracle", async () => {
@@ -163,6 +180,80 @@ describe("spec-driven pack interpreter", () => {
         );
       }
     }
+  });
+
+  it("interprets the bundled Gemini pack onto the adapter oracle", async () => {
+    const pack = loadBundledPack("google-gemini-cli@1");
+    expect(uninterpretableReasons(pack.resolver)).toEqual([]);
+    expect(pack.resolver.transform.some((item) => item.lexer === "markdown-v1")).toBe(true);
+    expect(JSON.stringify(pack.resolver)).not.toMatch(/claude-markdown-v1|gemini-markdown-v1/u);
+    const interpreted = interpretCompiledPack(pack);
+    const catalog = profileFromCompiledPack(pack);
+    const geminiRoot = join(repositoryRoot, "test/fixtures/gemini");
+    const files = readdirSync(geminiRoot).filter((name) => name.endsWith(".json")).sort();
+    expect(files.length).toBeGreaterThan(2);
+    for (const file of files) {
+      const snapshot = new ManifestSnapshot(
+        JSON.parse(readFileSync(join(geminiRoot, file), "utf8")),
+      );
+      const adapter = await createGeminiProfile({
+        id: pack.pack.id,
+        evidence: catalog.evidence,
+      }).prepare(snapshot);
+      const engine = await interpreted.prepare(snapshot);
+      expect([...engine.sourceDependencyPaths], file).toEqual([...adapter.sourceDependencyPaths]);
+      const paths = await snapshot.listPaths();
+      const targets = paths.length === 0 ? ["file.ts"] : paths;
+      for (const target of targets) {
+        expect(canonicalJson(engine.project(target)), `${file} ${target}`).toBe(
+          canonicalJson(adapter.project(target)),
+        );
+      }
+    }
+  });
+
+  it("unions json field names onto ordered assemble without a vendor family", async () => {
+    const pack = loadBundledPack("google-gemini-cli@1");
+    const snapshot = new ManifestSnapshot({
+      schemaVersion: 1,
+      label: "union-names",
+      entries: [
+        {
+          path: ".gemini/settings.json",
+          kind: "file",
+          executable: false,
+          base64: Buffer.from(JSON.stringify({ context: { fileName: ["AGENTS.md"] } })).toString("base64"),
+        },
+        {
+          path: "AGENTS.md",
+          kind: "file",
+          executable: false,
+          base64: Buffer.from("agents\n").toString("base64"),
+        },
+        {
+          path: "GEMINI.md",
+          kind: "file",
+          executable: false,
+          base64: Buffer.from("gemini\n").toString("base64"),
+        },
+        {
+          path: "src/file.ts",
+          kind: "file",
+          executable: false,
+          base64: Buffer.from("code\n").toString("base64"),
+        },
+      ],
+    });
+    const catalog = profileFromCompiledPack(pack);
+    const adapter = await createGeminiProfile({
+      id: pack.pack.id,
+      evidence: catalog.evidence,
+    }).prepare(snapshot);
+    const engine = await interpretCompiledPack(pack).prepare(snapshot);
+    expect([...engine.sourceDependencyPaths]).toEqual([...adapter.sourceDependencyPaths]);
+    expect(canonicalJson(engine.project("src/file.ts"))).toBe(
+      canonicalJson(adapter.project("src/file.ts")),
+    );
   });
 
   it("interprets the bundled Codex pack onto the adapter oracle", async () => {

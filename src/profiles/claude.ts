@@ -199,7 +199,7 @@ function resolveTarget(
     else if (file.kind === "symlink") {
       state.sources.push(boundarySource(file, "SELECTED"));
       state.evidence.push(
-        `UNSUPPORTED_BOUNDARY: Claude instruction symlink was not followed: ${file.path}`);
+        `UNSUPPORTED_BOUNDARY: instruction symlink was not followed: ${file.path}`);
       state.status = "UNKNOWN";
     } else if (liveRootCount === 2) {
       state.sources.push(boundarySource(file, "SELECTED"));
@@ -225,7 +225,7 @@ function resolveTarget(
       } else if (memory.kind === "symlink") {
         state.sources.push(boundarySource(memory, "SELECTED"));
         state.evidence.push(
-          `UNSUPPORTED_BOUNDARY: Claude instruction symlink was not followed: ${path}`);
+          `UNSUPPORTED_BOUNDARY: instruction symlink was not followed: ${path}`);
         state.status = "UNKNOWN";
       } else {
         selectedMemoryCount += 1;

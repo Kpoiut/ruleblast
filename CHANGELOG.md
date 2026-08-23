@@ -2,6 +2,14 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.5.3 — SHIPPED TO MAIN
+
+- Gemini CLI is interpreted from `resolver.json` by composing existing operations: `select.mode` all, `assemble.mode` ordered, `onSymlink` partial-unfollowed, `at-path-import` with lexer `markdown-v1`, and `json-union-names` for tracked `context.fileName`. Live interpreter projections are byte-identical to `createGeminiProfile` on every packed Gemini fixture and on union-name snapshots. Lab `INTERPRET` / `ORACLE` for all four bundled realities. No third interpreter family. The adapter remains the test oracle and is not imported by the interpreter. Not a fifth action. Not a fifth bundled reality.
+- Lexer `markdown-v1` is the mechanism. Pack id is the lookup key. HTML-comment strip is a separate transform. `onSymlink` selects UNKNOWN vs PARTIAL on one markdown import expander. Ordered-assemble evidence is pack claims plus union parse plus expansion, not interpreter-hardcoded Gemini strings. `json-union-names` has no vendor field branch.
+- Admission checks executable select/assemble/symlink/transform capabilities. Select-all prepares import expansions once and caches ancestor-directory chains for ordered assemble.
+- Lab `--detail` prints pack id beside engine, proof, ops, and sealed probe counts so an agent can look up the executing reality. Compact `--receipt` keeps badges only. Benchmark 10k/GIF uses catalog interpreters (the CLI path), records all four engines on the same snapshot, and requires four ORACLE rows. Overlay wall and the 5 s clock are unchanged.
+- The published CLI people install is still `ruleblast@2.5.1`.
+
 ## 2.5.2 — SHIPPED TO MAIN
 
 - Claude Code is interpreted from `resolver.json`: `strip-html-comments`, `at-path-import` (`claude-markdown-v1`, four edges), `json-exclude-globs` on `.claude/settings.json`, frontmatter-glob `paths` with brace-budget matching, and same-basename partial for dual root memory. Live interpreter projections are byte-identical to `createClaudeProfile` on every packed Claude fixture. Lab `INTERPRET` / `ORACLE`. The adapter remains the test oracle and is not imported by the interpreter. Not a fifth action. Not a fifth bundled reality.

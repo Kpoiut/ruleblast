@@ -213,7 +213,7 @@ export function projectMarkdown(
         path: row.path, disposition: "SELECTED", digest: row.digest, bytesUsed: 0, truncated: false,
       });
       state.evidence.push(
-        `UNSUPPORTED_BOUNDARY: Claude instruction symlink was not followed: ${row.path}`,
+        `UNSUPPORTED_BOUNDARY: instruction symlink was not followed: ${row.path}`,
       );
       state.status = "UNKNOWN";
       return;

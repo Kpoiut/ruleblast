@@ -47,7 +47,7 @@
     {
       "kind": "at-path-import",
       "maxDepth": 4,
-      "lexer": "claude-markdown-v1",
+      "lexer": "markdown-v1",
       "claimIds": ["claude.imports.1"]
     },
     {

@@ -3,16 +3,15 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { canonicalJson, sha256 } from "../../../src/canonical.js";
+import { defaultProfileDefinitions } from "../../../src/application/profile-catalog.js";
 import { analyzeCurrent } from "../../../src/impact.js";
-import { claudeProfile } from "../../../src/profiles/claude.js";
-import { codexProfile } from "../../../src/profiles/codex.js";
 import { ManifestSnapshot } from "../../../src/snapshot.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixtureRoot = join(here, "../../fixtures");
 const digestPath = join(here, "default-two-profile.digests.json");
 
-const DEFAULT_PROFILES = Object.freeze([claudeProfile, codexProfile]);
+const DEFAULT_PROFILES = defaultProfileDefinitions();
 
 function fixtureFiles(): readonly string[] {
   const files: string[] = [];

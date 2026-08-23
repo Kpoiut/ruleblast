@@ -86,6 +86,15 @@ describe("P1/B0 plan gate", () => {
     expect(read("scripts/release-check.mjs")).toContain("filesBelow(join(repositoryRoot, \"src\"))");
   });
 
+  it("benchmarks catalog interpreters, not adapter exports", () => {
+    const bench = read("scripts/benchmark.mjs");
+    expect(bench).toContain("defaultProfileDefinitions()");
+    expect(bench).toContain("PROFILE_CATALOG");
+    expect(bench).toContain("measureInterpreterChain");
+    expect(bench).not.toContain("claudeProfile");
+    expect(bench).not.toContain("codexProfile");
+  });
+
   it("does not raise kill-clocks or restore duplicate Verify smokes", () => {
     expect(read("vitest.config.ts")).not.toMatch(/testTimeout/u);
     const verify = read(".github/workflows/verify.yml");
@@ -101,6 +110,6 @@ describe("P1/B0 plan gate", () => {
     expect(changelog).toMatch(/^## 2\.3\.0 — RELEASED/mu);
     expect(changelog).not.toMatch(/^## 2\.3\.0 — SHIPPED TO MAIN/mu);
     expect(read("ROADMAP.md")).toMatch(/## \*\*RELEASED\*\* — `v2\.3\.0`/u);
-    expect(read("package.json")).toContain('"version": "2.5.2"');
+    expect(read("package.json")).toContain('"version": "2.5.3"');
   });
 });

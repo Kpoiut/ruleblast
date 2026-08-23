@@ -52,4 +52,22 @@ export const GEMINI_EVIDENCE: readonly EvidenceRef[] = Object.freeze([
     revision: GEMINI_IMPLEMENTATION_REVISION,
     claim: "Configuration prose still mentions downward subdirectory discovery and discoveryMaxDirs default 200. v0.55.1 implementation is JIT/upward and wins for resolver semantics.",
   }),
+  defineEvidenceRef({
+    url: "https://github.com/google-gemini/gemini-cli/blob/v0.55.1/packages/cli/src/config/config.ts",
+    retrievedAt: "2026-08-14",
+    revision: GEMINI_IMPLEMENTATION_REVISION,
+    claim: "User, system, and runtime context.fileName settings are outside repository-only analysis.",
+  }),
+  defineEvidenceRef({
+    url: "https://raw.githubusercontent.com/google-gemini/gemini-cli/main/docs/cli/gemini-ignore.md",
+    retrievedAt: "2026-08-14",
+    revision: GEMINI_IMPLEMENTATION_REVISION,
+    claim: "GEMINIIGNORE_MEMORY_EFFECT is UNSPECIFIED: .geminiignore is not modeled as a hierarchical-memory filter.",
+  }),
+  defineEvidenceRef({
+    url: "https://raw.githubusercontent.com/google-gemini/gemini-cli/main/docs/reference/configuration.md",
+    retrievedAt: "2026-08-14",
+    revision: GEMINI_IMPLEMENTATION_REVISION,
+    claim: "Configuration prose still describes downward discovery; v0.55.1 implementation is JIT/upward.",
+  }),
 ]);

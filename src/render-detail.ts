@@ -181,7 +181,7 @@ export async function renderDetail(
     "",
     ...renderEvidenceReveal().trimEnd().split("\n"),
     "",
-    ...(await renderConformanceLab()).trimEnd().split("\n"),
+    ...(await renderConformanceLab(undefined, "identity")).trimEnd().split("\n"),
   );
   return extra.length === 0 ? `${summary}\n` : `${summary}\n\n${extra.join("\n")}\n`;
 }
