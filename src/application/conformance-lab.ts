@@ -184,6 +184,7 @@ export async function renderConformanceLab(
     lines.push(`    blocked ${row.blocked.join("; ")}`);
   }
   lines.push("Not model quality.");
+  lines.push("IDs name runtimes, not models.");
   lines.push("RECORDED is not a passing oracle.");
   return `${lines.join("\n")}\n`;
 }

@@ -1,0 +1,26 @@
+{
+  "schema": "ruleblast.candidate.v1",
+  "id": "moonshot/kimi-code-cli",
+  "label": "Kimi Code CLI",
+  "admission": "not-admitted",
+  "stability": "watch",
+  "reason": "Official Kimi Code CLI docs describe project AGENTS.md, .kimi-code/AGENTS.md, and user-level $KIMI_CODE_HOME/AGENTS.md. User-level files are outside repository-only analysis. Instruction semantics are still changing. Not a public --reality. Not the Kimi model.",
+  "evidence": [
+    {
+      "claimId": "kimi.project.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://www.kimi.com/code/docs/en/kimi-code-cli/configuration/data-locations.html",
+      "retrievedAt": "2026-08-24",
+      "sourceRevision": "2026-08-21",
+      "claim": "Kimi Code CLI stores Kimi-specific global AGENTS.md under $KIMI_CODE_HOME (default ~/.kimi-code/). That path is outside repository-only analysis."
+    },
+    {
+      "claimId": "kimi.repo.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://www.kimi.com/code/docs/kimi-code-cli/customization/agents.html",
+      "retrievedAt": "2026-08-24",
+      "sourceRevision": "2026-08-21",
+      "claim": "Kimi Code CLI reads project-level .kimi-code/AGENTS.md or AGENTS.md from the nearest .git project root. Exact compose/precedence is not a sealed interpreter operation."
+    }
+  ]
+}

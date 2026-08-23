@@ -1,0 +1,27 @@
+{
+  "schema": "ruleblast.candidate-fixture.v1",
+  "axis": "selection",
+  "id": "qwen.selection.root-qwenmd",
+  "claimId": "qwen.qwenmd.1",
+  "expectedStatus": "UNKNOWN",
+  "expectedComposition": "UNSPECIFIED",
+  "reason": "Official Qwen Code docs describe a project-root QWEN.md. No interpreter-admissible resolver exists, so this record does not claim a complete projection.",
+  "snapshot": {
+    "schemaVersion": 1,
+    "label": "qwen root QWEN.md",
+    "entries": [
+      {
+        "path": "QWEN.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "cXdlbg=="
+      },
+      {
+        "path": "src/app.ts",
+        "kind": "file",
+        "executable": false,
+        "base64": "dGFyZ2V0"
+      }
+    ]
+  }
+}

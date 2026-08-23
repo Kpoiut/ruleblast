@@ -1,0 +1,21 @@
+{
+  "schema": "ruleblast.candidate-fixture.v1",
+  "axis": "rejection",
+  "id": "qwen.rejection.home-out-of-scope",
+  "claimId": "qwen.hierarchy.1",
+  "expectedStatus": "UNKNOWN",
+  "expectedComposition": "UNSPECIFIED",
+  "reason": "Official Qwen Code docs load ~/.qwen/QWEN.md as user-level context. Repository-only analysis does not read home files. No interpreter-admissible resolver exists.",
+  "snapshot": {
+    "schemaVersion": 1,
+    "label": "qwen repo without home context",
+    "entries": [
+      {
+        "path": "src/app.ts",
+        "kind": "file",
+        "executable": false,
+        "base64": "dGFyZ2V0"
+      }
+    ]
+  }
+}

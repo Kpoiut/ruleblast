@@ -1,0 +1,42 @@
+{
+  "schema": "ruleblast.candidate.v1",
+  "id": "qwen/qwen-code-cli",
+  "label": "Qwen Code CLI",
+  "admission": "not-admitted",
+  "stability": "forming",
+  "reason": "Official Qwen Code docs describe hierarchical QWEN.md context and AGENTS.md compatibility. No sealed resolver revision exists. Not a public --reality. Not the Qwen model.",
+  "evidence": [
+    {
+      "claimId": "qwen.qwenmd.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://qwenlm.github.io/qwen-code-docs/en/users/features/memory/",
+      "retrievedAt": "2026-08-24",
+      "sourceRevision": "2026-08-07",
+      "claim": "Qwen Code CLI loads a project-root QWEN.md as committed team instructions."
+    },
+    {
+      "claimId": "qwen.hierarchy.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://qwenlm.github.io/qwen-code-docs/",
+      "retrievedAt": "2026-08-24",
+      "sourceRevision": "2026-06-04",
+      "claim": "Qwen Code CLI searches for the configured context file from the working directory through parent directories up to the project root identified by .git, or the user home. Home and ~/.qwen/ files are outside repository-only analysis."
+    },
+    {
+      "claimId": "qwen.agents.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://qwenlm.github.io/qwen-code-docs/en/users/features/memory/",
+      "retrievedAt": "2026-08-24",
+      "sourceRevision": "2026-08-07",
+      "claim": "If a repository already has AGENTS.md, Qwen Code CLI reads that file too."
+    },
+    {
+      "claimId": "qwen.filename.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://qwenlm.github.io/qwen-code-docs/",
+      "retrievedAt": "2026-08-24",
+      "sourceRevision": "2026-06-04",
+      "claim": "The context file name defaults to QWEN.md and may be replaced via context.fileName. That substitution is not a sealed interpreter operation."
+    }
+  ]
+}

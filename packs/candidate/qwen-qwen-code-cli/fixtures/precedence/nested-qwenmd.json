@@ -1,0 +1,33 @@
+{
+  "schema": "ruleblast.candidate-fixture.v1",
+  "axis": "precedence",
+  "id": "qwen.precedence.nested-qwenmd",
+  "claimId": "qwen.hierarchy.1",
+  "expectedStatus": "UNKNOWN",
+  "expectedComposition": "UNSPECIFIED",
+  "reason": "Official Qwen Code docs load context files hierarchically from cwd through ancestors. Nested QWEN.md precedence is not a sealed interpreter operation.",
+  "snapshot": {
+    "schemaVersion": 1,
+    "label": "qwen nested QWEN.md",
+    "entries": [
+      {
+        "path": "QWEN.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "cm9vdA=="
+      },
+      {
+        "path": "packages/QWEN.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "bmVzdGVk"
+      },
+      {
+        "path": "packages/api/file.ts",
+        "kind": "file",
+        "executable": false,
+        "base64": "dGFyZ2V0"
+      }
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "ruleblast.candidate-fixture.v1",
+  "axis": "unknown",
+  "id": "qwen.unknown.context-filename",
+  "claimId": "qwen.filename.1",
+  "expectedStatus": "UNKNOWN",
+  "expectedComposition": "UNSPECIFIED",
+  "reason": "Official Qwen Code docs allow replacing QWEN.md via context.fileName. That setting is not a sealed interpreter operation.",
+  "snapshot": {
+    "schemaVersion": 1,
+    "label": "qwen context.fileName setting",
+    "entries": [
+      {
+        "path": ".qwen/settings.json",
+        "kind": "file",
+        "executable": false,
+        "base64": "e30="
+      },
+      {
+        "path": "src/app.ts",
+        "kind": "file",
+        "executable": false,
+        "base64": "dGFyZ2V0"
+      }
+    ]
+  }
+}

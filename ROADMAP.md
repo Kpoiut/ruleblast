@@ -479,6 +479,12 @@ This tree is `2.5.5`. Latest independently verified public npm distribution rema
 
 Git analysis and Diff From `git log` share `runGit()` with `windowsHide`. Omitted presentation context uses `hostShellDialect()`, so companion Show Detail matches CLI/MCP quoting. Interpreter and Codex/Claude adapter prepare capture entries through `ownSnapshotEntry()`. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
 
+## **SHIPPED TO MAIN** — `v2.5.6`: Runtime IDs, not model names
+
+This tree is `2.5.6`. Latest independently verified public npm distribution remains `2.5.1`. Companion version is `2.5.6`. Pack `ruleblast-companion-2.5.6.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+IDs name runtimes, not models. Candidate roster is generic: `xai/grok-build-cli`, `qwen/qwen-code-cli`, `deepseek/dsh-harness`, `moonshot/kimi-code-cli`. `--reality grok-4` is a model name. `--reality xai/grok-build-cli` is a known not-admitted candidate. No public fifth `--reality`. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
+
 ## **NEXT** — Runtime calibration without a fifth reality
 
 ORACLE remains an implementation-oracle: interpreter bytes match the adapter oracle. A later calibration against vendor-runtime introspection, if a surface exposes it deterministically, does not add a fifth bundled reality.

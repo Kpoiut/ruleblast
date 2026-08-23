@@ -39,7 +39,7 @@ describe("companion host purity", () => {
     expect(icon.readUInt32BE(16)).toBe(128);
     expect(icon.readUInt32BE(20)).toBe(128);
     expect(manifest.icon).toBe("media/icon.png");
-    expect(manifest.version).toBe("2.5.5");
+    expect(manifest.version).toBe("2.5.6");
   });
 
   it("uses a currentColor SVG on the activity bar instead of the opaque marketplace PNG", () => {

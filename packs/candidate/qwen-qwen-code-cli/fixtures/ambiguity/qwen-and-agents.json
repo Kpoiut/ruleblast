@@ -1,0 +1,33 @@
+{
+  "schema": "ruleblast.candidate-fixture.v1",
+  "axis": "ambiguity",
+  "id": "qwen.ambiguity.qwen-and-agents",
+  "claimId": "qwen.agents.1",
+  "expectedStatus": "UNKNOWN",
+  "expectedComposition": "UNSPECIFIED",
+  "reason": "Official Qwen Code docs also read AGENTS.md when present. How QWEN.md and AGENTS.md compose is not a sealed interpreter operation.",
+  "snapshot": {
+    "schemaVersion": 1,
+    "label": "qwen QWEN.md plus AGENTS.md",
+    "entries": [
+      {
+        "path": "QWEN.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "cXdlbg=="
+      },
+      {
+        "path": "AGENTS.md",
+        "kind": "file",
+        "executable": false,
+        "base64": "YWdlbnRz"
+      },
+      {
+        "path": "src/app.ts",
+        "kind": "file",
+        "executable": false,
+        "base64": "dGFyZ2V0"
+      }
+    ]
+  }
+}

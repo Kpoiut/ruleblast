@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { compareCodePoints } from "../domain/repository-path.js";
 import { ManifestSnapshot } from "../snapshot.js";
 import { InvalidPackError, decodePackEvidence } from "./compile.js";
+import { isRuntimeClassId } from "../domain/runtime-id.js";
 import { bundledDirectoryForPackId, listContainedDirectories } from "./load.js";
 import type { PackClaim } from "./schema.js";
 
@@ -28,8 +29,6 @@ export const FIXTURE_AXES = Object.freeze([
 
 export type FixtureAxis = (typeof FIXTURE_AXES)[number];
 
-const CANDIDATE_ID_PATTERN =
-  /^[a-z0-9][a-z0-9-]*\/[a-z0-9][a-z0-9-]*(@[1-9][0-9]*)?$/u;
 const FIXTURE_ID_PATTERN = /^[a-z0-9]+(?:\.[a-z0-9-]+)+$/u;
 
 export interface CandidateSurface {
@@ -100,7 +99,7 @@ export function decodeCandidateSurface(value: unknown): CandidateSurface {
   const schema = expectString(object.schema, "candidate.schema");
   if (schema !== CANDIDATE_SCHEMA_ID) fail(`unsupported candidate schema: ${schema}`);
   const id = expectString(object.id, "candidate.id");
-  if (CANDIDATE_ID_PATTERN.exec(id)?.[0] !== id) {
+  if (!isRuntimeClassId(id)) {
     fail(`candidate.id is not a runtime surface id: ${JSON.stringify(id)}`);
   }
   const admission = expectString(object.admission, "candidate.admission");

@@ -1,0 +1,26 @@
+{
+  "schema": "ruleblast.candidate.v1",
+  "id": "deepseek/dsh-harness",
+  "label": "DeepSeek Harness",
+  "admission": "not-admitted",
+  "stability": "watch",
+  "reason": "DeepSeek Harness is a developer-preview runtime with a first-party AGENTS.md/CLAUDE.md instruction loader. Compatibility-breaking changes are expected. Not a public --reality. Not the DeepSeek model.",
+  "evidence": [
+    {
+      "claimId": "dsh.loader.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://www.npmjs.com/package/@deepseek-ai/dsh-agent-instructions",
+      "retrievedAt": "2026-08-24",
+      "sourceRevision": "0.1.0-rc.6",
+      "claim": "@deepseek-ai/dsh-agent-instructions is a workspace context loader for AGENTS.md and CLAUDE.md instruction files."
+    },
+    {
+      "claimId": "dsh.preview.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://github.com/deepseek-ai/deepseek-harness",
+      "retrievedAt": "2026-08-24",
+      "sourceRevision": "developer-preview",
+      "claim": "DeepSeek Harness is in developer preview and documents that compatibility-breaking changes will happen. That is not a sealed resolver revision."
+    }
+  ]
+}

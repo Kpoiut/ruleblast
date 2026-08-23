@@ -1,4 +1,5 @@
-import { isOptInRealityId, OPT_IN_REALITY_IDS } from "./application/opt-in-realities.js";
+import { isOptInRealityId } from "./application/opt-in-realities.js";
+import { publicRealityRefusal } from "./application/runtime-surfaces.js";
 import {
   captureArgv,
   parseTokens,
@@ -134,13 +135,9 @@ function parsedRealities(
       "--reality cannot be used with the packaged case; that receipt remains two-profile",
     );
   }
-  const allowed = OPT_IN_REALITY_IDS;
   for (const value of parsed.realities) {
     if (value === "all" || !isOptInRealityId(value)) {
-      return usage(
-        "OPTION_CONFLICT",
-        `--reality must be one of ${allowed.join(" | ")}; editor and hosted surfaces are distinct and unsupported`,
-      );
+      return usage("OPTION_CONFLICT", publicRealityRefusal(value));
     }
   }
   return Object.freeze([...parsed.realities].sort());

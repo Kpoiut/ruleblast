@@ -8,6 +8,7 @@ import {
   scanRepository,
 } from "./application/authority.js";
 import { isOptInReality, optInRealityIds } from "./application/profile-catalog.js";
+import { publicRealityRefusal } from "./application/runtime-surfaces.js";
 import {
   OVERLAY_UNAVAILABLE,
   renderBlastOverlay,
@@ -153,7 +154,7 @@ function realitiesOf(params: Record<string, unknown>): readonly string[] {
   const unique = [...new Set(value as string[])].sort();
   for (const id of unique) {
     if (id === "all" || !isOptInReality(id)) {
-      throw new TypeError(`realities must be one of ${ALLOWED.join(" | ")}`);
+      throw new TypeError(publicRealityRefusal(id));
     }
   }
   return unique;

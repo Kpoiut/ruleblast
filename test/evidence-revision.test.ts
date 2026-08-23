@@ -198,7 +198,13 @@ describe("offline evidence-revision reveal", () => {
     expect(grok?.admission).toBe("not-admitted");
     expect(grok?.stability).toBe("forming");
     expect(grok?.label).toBe("Grok Build CLI");
-    expect(reveal.candidates.some((row) => /glm|composer|llama|deepseek-v4|qwen-model/i.test(row.id)))
+    expect(reveal.candidates.map((row) => row.id)).toEqual([
+      "deepseek/dsh-harness",
+      "moonshot/kimi-code-cli",
+      "qwen/qwen-code-cli",
+      "xai/grok-build-cli",
+    ]);
+    expect(reveal.candidates.some((row) => /glm|composer|llama|deepseek-v4|qwen-model|gpt-4|grok-4/i.test(row.id)))
       .toBe(false);
   });
 
@@ -211,10 +217,10 @@ describe("offline evidence-revision reveal", () => {
     ]);
     expect(() => profilesForReality("xai/grok-build-cli")).toThrow(/Unknown opt-in reality/);
     expect(() => profilesForReality("xai/grok-build-cli@1")).toThrow(/Unknown opt-in reality/);
-    expect(() => parseArgs([".", "--reality", "grok-4"])).toThrow(/must be one of/);
-    expect(() => parseArgs([".", "--reality", "cursor/composer@1"])).toThrow(/must be one of/);
-    expect(() => parseArgs([".", "--reality", "zai/glm-5.3@1"])).toThrow(/must be one of/);
-    expect(() => parseArgs([".", "--reality", "meta/llama@1"])).toThrow(/must be one of/);
+    expect(() => parseArgs([".", "--reality", "grok-4"])).toThrow(/model name, not a runtime surface id/u);
+    expect(() => parseArgs([".", "--reality", "cursor/composer@1"])).toThrow(/model name, not a runtime surface id/u);
+    expect(() => parseArgs([".", "--reality", "zai/glm-5.3@1"])).toThrow(/model name, not a runtime surface id/u);
+    expect(() => parseArgs([".", "--reality", "meta/llama@1"])).toThrow(/model name, not a runtime surface id/u);
     expect(() => parseArgs([".", "--pack", "qwen"])).toThrow(/Unknown option/);
   });
 

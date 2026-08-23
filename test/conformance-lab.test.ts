@@ -157,9 +157,15 @@ describe("candidate reality conformance lab", () => {
       "ambiguity",
       "unknown",
     ]);
-    expect(lab.candidates).toHaveLength(1);
-    const grok = lab.candidates[0];
-    expect(grok?.id).toBe("xai/grok-build-cli");
+    const ids = lab.candidates.map((row) => row.id);
+    expect(ids).toEqual([
+      "deepseek/dsh-harness",
+      "moonshot/kimi-code-cli",
+      "qwen/qwen-code-cli",
+      "xai/grok-build-cli",
+    ]);
+    expect(ids.every((id) => !/glm|gpt-4|grok-4|llama|composer/u.test(id))).toBe(true);
+    const grok = lab.candidates.find((row) => row.id === "xai/grok-build-cli");
     expect(grok?.label).toBe("Grok Build CLI");
     expect(grok?.admission).toBe("not-admitted");
     expect(grok?.stability).toBe("forming");
@@ -176,8 +182,19 @@ describe("candidate reality conformance lab", () => {
     ]);
     expect(grok?.axes.every((axis) => axis.fixtures.length === 1)).toBe(true);
     expect(grok?.blocked).toEqual(["no interpreter-admissible resolver"]);
+    const qwen = lab.candidates.find((row) => row.id === "qwen/qwen-code-cli");
+    expect(qwen?.stability).toBe("forming");
+    expect(qwen?.load).toBe("LOADED");
+    expect(qwen?.proof).toBe("UNEXECUTED");
+    const dsh = lab.candidates.find((row) => row.id === "deepseek/dsh-harness");
+    expect(dsh?.stability).toBe("watch");
+    expect(dsh?.load).toBe("ABSENT");
+    const kimi = lab.candidates.find((row) => row.id === "moonshot/kimi-code-cli");
+    expect(kimi?.stability).toBe("watch");
+    expect(kimi?.load).toBe("ABSENT");
     expect(() => profilesForReality("xai/grok-build-cli")).toThrow(/Unknown opt-in reality/);
-    expect(() => parseArgs([".", "--reality", "xai/grok-build-cli"])).toThrow(/must be one of/);
+    expect(() => parseArgs([".", "--reality", "xai/grok-build-cli"]))
+      .toThrow(/not-admitted candidate runtime/u);
     expect([...FINGERPRINT_BUILTINS]).toHaveLength(4);
   });
 
@@ -214,6 +231,10 @@ describe("candidate reality conformance lab", () => {
     expect(lab).not.toContain("ADAPTER");
     expect(lab).toContain("probes");
     expect(lab).toContain("xai/grok-build-cli");
+    expect(lab).toContain("qwen/qwen-code-cli");
+    expect(lab).toContain("deepseek/dsh-harness");
+    expect(lab).toContain("moonshot/kimi-code-cli");
+    expect(lab).toContain("IDs name runtimes, not models.");
     expect(lab).toContain("NOT_ADMITTED");
     expect(lab).toContain("selection RECORDED");
     expect(lab).toContain("rejection RECORDED");

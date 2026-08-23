@@ -2,6 +2,12 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.5.6 — SHIPPED TO MAIN
+
+- Runtime surface IDs name CLIs and harnesses, not model products. `xai/grok-build-cli` is a not-admitted candidate runtime. `grok-4`, `glm-5.3`, and `gpt-4` are model names. `--reality` and MCP refuse them with distinct text. Not a fifth bundled reality. Not a public `--pack`.
+- Candidate inventory is a generic roster keyed by those IDs: Grok Build CLI (forming, fixture-complete), Qwen Code CLI (forming, fixture-complete), DeepSeek Harness and Kimi Code CLI (watch). Lab and evidence reveal print the IDs. Projection of a candidate remains `UNEXECUTED`.
+- The published CLI people install is still `ruleblast@2.5.1`.
+
 ## 2.5.5 — SHIPPED TO MAIN
 
 - Git analysis and companion Diff From share one `runGit()` spawn: same lock/fsmonitor flags, `windowsHide` on Windows. Not a second Git engine.
