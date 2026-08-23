@@ -46,12 +46,12 @@ MCP stdio: `ruleblast --mcp`. Four tools: scan, diff, explain, case.
 
 | Symptom | Command |
 |---|---|
-| What does each pinned CLI project now? | `npx --yes ruleblast@2.5.1 . --color=never` |
-| Which stacks moved? | `npx --yes ruleblast@2.5.1 diff HEAD~1 --to HEAD --color=never` |
-| Why this path? | `npx --yes ruleblast@2.5.1 explain <path> --from HEAD~1 --to HEAD --json` |
-| Teaching receipt, no clone | `npx --yes ruleblast@2.5.1 case --color=never` |
+| What does each pinned CLI project now? | `npx --yes ruleblast@2.5.7 . --color=never` |
+| Which stacks moved? | `npx --yes ruleblast@2.5.7 diff HEAD~1 --to HEAD --color=never` |
+| Why this path? | `npx --yes ruleblast@2.5.7 explain <path> --from HEAD~1 --to HEAD --json` |
+| Teaching receipt, no clone | `npx --yes ruleblast@2.5.7 case --color=never` |
 
-Published CLI: `npx --yes ruleblast@2.5.1`. MCP stdio: `npx --yes ruleblast@2.5.1 --mcp`. Add `--receipt` for the compact scoreboard (per-profile inheritance, not live agent telemetry). Add `--witness` for why-edges. Add `--paths-only` for one attention path per line. Add `--index` for the compact SOURCE/CONTINUE/REJECT map (every row; large-repo agent form). Add `--detail` for EVIDENCE and the Candidate Reality Conformance Lab (sealed oracle.json interpreter and fingerprint-adapter proof and candidate fixture axes; RECORDED is not a passing oracle). Add `--compare` on explain for two selected-reality stacks. Add `--reality github/copilot-cli@1` or `--reality google/gemini-cli@1` only when that surface is requested. Repeat `--reality` for both. Default `--json` stays two-profile.
+Published CLI: `npx --yes ruleblast@2.5.7`. MCP stdio: `npx --yes ruleblast@2.5.7 --mcp`. Add `--receipt` for the compact scoreboard (per-profile inheritance, not live agent telemetry). Add `--witness` for why-edges. Add `--paths-only` for one attention path per line. Add `--index` for the compact SOURCE/CONTINUE/REJECT map (every row; large-repo agent form). Add `--detail` for EVIDENCE and the Candidate Reality Conformance Lab (sealed oracle.json interpreter and fingerprint-adapter proof and candidate fixture axes; RECORDED is not a passing oracle). Add `--compare` on explain for two selected-reality stacks. Add `--reality github/copilot-cli@1` or `--reality google/gemini-cli@1` only when that surface is requested. Repeat `--reality` for both. Default `--json` stays two-profile.
 
 ## Rules
 

@@ -2,12 +2,18 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 2.5.7 — SHIPPED TO MAIN
+## 2.5.7 — RELEASED
 
 - Runtime classification is an allowlist of catalog and candidate ids, exact match only. `xai/grok-build-cli@1` is not the forming candidate. A denylist of model product names is not a gate. Empty watch stubs are not inventory.
 - Candidate records declare `surface` (`cli` / `harness` / `agent`) instead of inferring a runtime from the id spelling. `--reality` names a not-admitted candidate only when that exact id is committed. Otherwise it is unknown. Catalog IDs name runtimes, not models. Not a fifth bundled reality.
 - CLI and MCP share one `HostProcess` (`cwd`, `env`, `platform` → shell dialect). Companion Show Detail still uses the process host default. Not a third host class. Not a fifth action.
-- The published CLI people install is still `ruleblast@2.5.1`.
+- This package also contains `2.5.2`–`2.5.6` development, not separate npm versions: `cda8834b3bc79f52123eb4f05019b35d775c9655` Claude interpreted from `resolver.json`; `796c5d9abdde755f5827351358b747ce30260cb1` Gemini interpreted by composed operations; `f4154fd063e99f0f6e43e78b2e62ce2516cbdf0e` host quoting and macOS verify; `7b99d529355383977ad4589d746fe83c87a59185` shared Git spawn and snapshot entry; `742e27d07cec76e72a18c40598315e0b11b2b146` runtime IDs rather than model names; `cf6badd2ab376f1aa7f6f9b1d3be9559c1457503` exact allowlist and `HostProcess`. Four bundled realities are `INTERPRET` / `ORACLE`. Overlay wall and the 5 s clock are unchanged.
+- [npm `ruleblast@2.5.7`](https://www.npmjs.com/package/ruleblast/v/2.5.7) reports integrity `sha512-SzTP41slyb4hvPPYZ0KHj97SLf8sesfHz2morW/O55tQ9FTG4QoIhYgprxgNNT1YhXdTq5kQBJKDLD+Wm/eQVQ==`. The registry download is the 185,439-byte tarball with SHA-256 `8873e179d261ecb7715b88c9268abcd7233720b40fcb7657bbd024f419c5d426`. Pack `ruleblast-companion-2.5.7.vsix` (167,204 bytes, SHA-256 `afac7b99c17afd07fee7255e6abca78fa04c518416f2cb8a2309b9728b93155e`). Exact-tarball publication means registry `gitHead` is absent. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+### Release artifact
+
+- Annotated tag object `dd46f4a9c08d10a9de1f113092b6036091e0f2da` for [`v2.5.7`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.7) targets commit `cf6badd2ab376f1aa7f6f9b1d3be9559c1457503`.
+- npm and the GitHub Release serve the same 185,439-byte tarball with SHA-256 `8873e179d261ecb7715b88c9268abcd7233720b40fcb7657bbd024f419c5d426`. The GitHub Release also serves the 167,204-byte `ruleblast-companion-2.5.7.vsix` with SHA-256 `afac7b99c17afd07fee7255e6abca78fa04c518416f2cb8a2309b9728b93155e`.
 
 ## 2.5.6 — SHIPPED TO MAIN
 

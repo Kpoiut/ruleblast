@@ -485,11 +485,13 @@ This tree is `2.5.6`. Latest independently verified public npm distribution rema
 
 IDs name runtimes, not models. Candidate roster is generic: `xai/grok-build-cli`, `qwen/qwen-code-cli`, `deepseek/dsh-harness`, `moonshot/kimi-code-cli`. `--reality grok-4` is a model name. `--reality xai/grok-build-cli` is a known not-admitted candidate. No public fifth `--reality`. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
 
-## **SHIPPED TO MAIN** — `v2.5.7`: Exact runtime allowlist
+## **RELEASED** — `v2.5.7`: Exact runtime allowlist
 
-This tree is `2.5.7`. Latest independently verified public npm distribution remains `2.5.1`. Companion version is `2.5.7`. Pack `ruleblast-companion-2.5.7.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+This tree is `2.5.7`. Latest independently verified public npm distribution is `2.5.7`. Companion version is `2.5.7`. Pack `ruleblast-companion-2.5.7.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
 
-Catalog and candidate ids are an allowlist. No model-name denylist. No invented empty stubs. Forming candidates keep their unversioned id; `@1` is not implied. Candidate JSON names `surface` as data. CLI and MCP share one `HostProcess` for platform quoting. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
+**Verified publication receipt.** Annotated tag object `dd46f4a9c08d10a9de1f113092b6036091e0f2da` for [`v2.5.7`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.7) targets commit `cf6badd2ab376f1aa7f6f9b1d3be9559c1457503`. [npm `ruleblast@2.5.7`](https://www.npmjs.com/package/ruleblast/v/2.5.7) reports integrity `sha512-SzTP41slyb4hvPPYZ0KHj97SLf8sesfHz2morW/O55tQ9FTG4QoIhYgprxgNNT1YhXdTq5kQBJKDLD+Wm/eQVQ==`. Exact-tarball publication means registry `gitHead is absent` rather than invented. The registry download is the 185,439-byte tarball with SHA-256 `8873e179d261ecb7715b88c9268abcd7233720b40fcb7657bbd024f419c5d426`. The GitHub Release serves that same tarball and the 167,204-byte `ruleblast-companion-2.5.7.vsix` with SHA-256 `afac7b99c17afd07fee7255e6abca78fa04c518416f2cb8a2309b9728b93155e`. These are independently verified external records, not facts inferred from this checkout.
+
+Catalog and candidate ids are an allowlist. No model-name denylist. No invented empty stubs. Forming candidates keep their unversioned id; `@1` is not implied. Candidate JSON names `surface` as data. CLI and MCP share one `HostProcess` for platform quoting. This package includes `2.5.2`–`2.5.6`: Claude and Gemini interpreted from `resolver.json` (all four bundled realities `INTERPRET` / `ORACLE`), host quoting and macOS verify, shared Git spawn and `ownSnapshotEntry()`. Included development commits: `cda8834b3bc79f52123eb4f05019b35d775c9655`, `796c5d9abdde755f5827351358b747ce30260cb1`, `f4154fd063e99f0f6e43e78b2e62ce2516cbdf0e`, `7b99d529355383977ad4589d746fe83c87a59185`, `742e27d07cec76e72a18c40598315e0b11b2b146`, `cf6badd2ab376f1aa7f6f9b1d3be9559c1457503`. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
 
 ## **NEXT** — Runtime calibration without a fifth reality
 
