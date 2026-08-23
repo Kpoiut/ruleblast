@@ -485,6 +485,12 @@ This tree is `2.5.6`. Latest independently verified public npm distribution rema
 
 IDs name runtimes, not models. Candidate roster is generic: `xai/grok-build-cli`, `qwen/qwen-code-cli`, `deepseek/dsh-harness`, `moonshot/kimi-code-cli`. `--reality grok-4` is a model name. `--reality xai/grok-build-cli` is a known not-admitted candidate. No public fifth `--reality`. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
 
+## **SHIPPED TO MAIN** — `v2.5.7`: Exact runtime allowlist
+
+This tree is `2.5.7`. Latest independently verified public npm distribution remains `2.5.1`. Companion version is `2.5.7`. Pack `ruleblast-companion-2.5.7.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+Catalog and candidate ids are an allowlist. No model-name denylist. No invented empty stubs. Forming candidates keep their unversioned id; `@1` is not implied. Candidate JSON names `surface` as data. CLI and MCP share one `HostProcess` for platform quoting. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
+
 ## **NEXT** — Runtime calibration without a fifth reality
 
 ORACLE remains an implementation-oracle: interpreter bytes match the adapter oracle. A later calibration against vendor-runtime introspection, if a surface exposes it deterministically, does not add a fifth bundled reality.

@@ -4,6 +4,7 @@
   "label": "Grok Build CLI",
   "admission": "not-admitted",
   "stability": "forming",
+  "surface": "cli",
   "reason": "Official Grok Build CLI docs describe repository instruction discovery. No sealed resolver revision exists. Not a public --reality. Not the Grok model. Cursor Composer, GLM, and Llama remain model names or hosts, not this surface.",
   "evidence": [
     {

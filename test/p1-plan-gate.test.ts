@@ -110,7 +110,7 @@ describe("P1/B0 plan gate", () => {
     expect(changelog).toMatch(/^## 2\.3\.0 — RELEASED/mu);
     expect(changelog).not.toMatch(/^## 2\.3\.0 — SHIPPED TO MAIN/mu);
     expect(read("ROADMAP.md")).toMatch(/## \*\*RELEASED\*\* — `v2\.3\.0`/u);
-    expect(read("package.json")).toContain('"version": "2.5.6"');
+    expect(read("package.json")).toContain('"version": "2.5.7"');
   });
 
   it("records select-all discover origin once per queued path", () => {
@@ -146,5 +146,18 @@ describe("P1/B0 plan gate", () => {
     expect(read("src/profiles/claude.ts")).toContain("ownSnapshotEntry");
     expect(read("src/packs/interpret.ts")).not.toContain("ENTRY_FIELDS");
     expect(read("src/packs/interpret-all.ts")).not.toContain("ENTRY_FIELDS");
+  });
+
+  it("gives CLI and MCP one host process for dialect, not a third copy", () => {
+    const host = read("src/application/host-process.ts");
+    expect(host).toContain("export function currentHostProcess");
+    expect(host).toContain("export function hostProcessDialect");
+    expect(host).toContain("export function hostTextContext");
+    expect(read("src/cli.ts")).toContain("currentHostProcess");
+    expect(read("src/cli.ts")).toContain("hostProcessDialect");
+    expect(read("src/mcp-stdio.ts")).toContain("hostTextContext");
+    expect(read("src/mcp-stdio.ts")).toContain("hostProcessDialect");
+    expect(read("src/mcp-stdio.ts")).not.toContain("function mcpTextContext");
+    expect(read("src/mcp-stdio.ts")).not.toContain("function mcpShellDialect");
   });
 });

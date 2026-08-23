@@ -159,12 +159,11 @@ describe("candidate reality conformance lab", () => {
     ]);
     const ids = lab.candidates.map((row) => row.id);
     expect(ids).toEqual([
-      "deepseek/dsh-harness",
-      "moonshot/kimi-code-cli",
       "qwen/qwen-code-cli",
       "xai/grok-build-cli",
     ]);
-    expect(ids.every((id) => !/glm|gpt-4|grok-4|llama|composer/u.test(id))).toBe(true);
+    expect(ids).not.toContain("deepseek/dsh-harness");
+    expect(ids).not.toContain("moonshot/kimi-code-cli");
     const grok = lab.candidates.find((row) => row.id === "xai/grok-build-cli");
     expect(grok?.label).toBe("Grok Build CLI");
     expect(grok?.admission).toBe("not-admitted");
@@ -186,12 +185,8 @@ describe("candidate reality conformance lab", () => {
     expect(qwen?.stability).toBe("forming");
     expect(qwen?.load).toBe("LOADED");
     expect(qwen?.proof).toBe("UNEXECUTED");
-    const dsh = lab.candidates.find((row) => row.id === "deepseek/dsh-harness");
-    expect(dsh?.stability).toBe("watch");
-    expect(dsh?.load).toBe("ABSENT");
-    const kimi = lab.candidates.find((row) => row.id === "moonshot/kimi-code-cli");
-    expect(kimi?.stability).toBe("watch");
-    expect(kimi?.load).toBe("ABSENT");
+    expect(lab.candidates.every((row) => row.load === "LOADED")).toBe(true);
+    expect(lab.candidates.every((row) => row.proof === "UNEXECUTED")).toBe(true);
     expect(() => profilesForReality("xai/grok-build-cli")).toThrow(/Unknown opt-in reality/);
     expect(() => parseArgs([".", "--reality", "xai/grok-build-cli"]))
       .toThrow(/not-admitted candidate runtime/u);
@@ -232,8 +227,8 @@ describe("candidate reality conformance lab", () => {
     expect(lab).toContain("probes");
     expect(lab).toContain("xai/grok-build-cli");
     expect(lab).toContain("qwen/qwen-code-cli");
-    expect(lab).toContain("deepseek/dsh-harness");
-    expect(lab).toContain("moonshot/kimi-code-cli");
+    expect(lab).not.toContain("deepseek/dsh-harness");
+    expect(lab).not.toContain("moonshot/kimi-code-cli");
     expect(lab).toContain("IDs name runtimes, not models.");
     expect(lab).toContain("NOT_ADMITTED");
     expect(lab).toContain("selection RECORDED");
@@ -275,6 +270,7 @@ describe("candidate reality conformance lab", () => {
       label: "Grok Build CLI",
       admission: "not-admitted",
       stability: "forming",
+      surface: "cli",
       reason: "isolated lab fixture",
       evidence: [{
         claimId: "grok.discover.1",
@@ -374,6 +370,7 @@ describe("candidate reality conformance lab", () => {
       label: "Grok Build CLI",
       admission: "not-admitted",
       stability: "forming",
+      surface: "cli",
       reason: "isolated",
       evidence: [{
         claimId: "grok.discover.1",
@@ -403,6 +400,7 @@ describe("candidate reality conformance lab", () => {
       label: "Grok Build CLI",
       admission: "not-admitted",
       stability: "forming",
+      surface: "cli",
       reason: "isolated",
       evidence: [{
         claimId: "grok.discover.1",

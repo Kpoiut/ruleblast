@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { compareCodePoints } from "../domain/repository-path.js";
 import { ManifestSnapshot } from "../snapshot.js";
 import { InvalidPackError, decodePackEvidence } from "./compile.js";
-import { isRuntimeClassId } from "../domain/runtime-id.js";
+import { isCandidateIdShape } from "../domain/runtime-id.js";
 import { bundledDirectoryForPackId, listContainedDirectories } from "./load.js";
 import type { PackClaim } from "./schema.js";
 
@@ -29,6 +29,10 @@ export const FIXTURE_AXES = Object.freeze([
 
 export type FixtureAxis = (typeof FIXTURE_AXES)[number];
 
+export const CANDIDATE_SURFACES = Object.freeze(["cli", "harness", "agent"] as const);
+
+export type CandidateSurfaceKind = (typeof CANDIDATE_SURFACES)[number];
+
 const FIXTURE_ID_PATTERN = /^[a-z0-9]+(?:\.[a-z0-9-]+)+$/u;
 
 export interface CandidateSurface {
@@ -37,6 +41,7 @@ export interface CandidateSurface {
   readonly label: string;
   readonly admission: "not-admitted";
   readonly stability: CandidateStability;
+  readonly surface: CandidateSurfaceKind;
   readonly reason: string;
   readonly evidence: readonly PackClaim[];
 }
@@ -93,13 +98,14 @@ export function decodeCandidateSurface(value: unknown): CandidateSurface {
     "label",
     "admission",
     "stability",
+    "surface",
     "reason",
     "evidence",
   ], "candidate");
   const schema = expectString(object.schema, "candidate.schema");
   if (schema !== CANDIDATE_SCHEMA_ID) fail(`unsupported candidate schema: ${schema}`);
   const id = expectString(object.id, "candidate.id");
-  if (!isRuntimeClassId(id)) {
+  if (!isCandidateIdShape(id)) {
     fail(`candidate.id is not a runtime surface id: ${JSON.stringify(id)}`);
   }
   const admission = expectString(object.admission, "candidate.admission");
@@ -108,12 +114,17 @@ export function decodeCandidateSurface(value: unknown): CandidateSurface {
   if (!(CANDIDATE_STABILITIES as readonly string[]).includes(stability)) {
     fail(`candidate.stability must be one of ${CANDIDATE_STABILITIES.join(", ")}`);
   }
+  const surface = expectString(object.surface, "candidate.surface");
+  if (!(CANDIDATE_SURFACES as readonly string[]).includes(surface)) {
+    fail(`candidate.surface must be one of ${CANDIDATE_SURFACES.join(", ")}`);
+  }
   return Object.freeze({
     schema: CANDIDATE_SCHEMA_ID,
     id,
     label: expectString(object.label, "candidate.label"),
     admission: "not-admitted",
     stability: stability as CandidateStability,
+    surface: surface as CandidateSurfaceKind,
     reason: expectString(object.reason, "candidate.reason"),
     evidence: decodePackEvidence(object.evidence),
   });

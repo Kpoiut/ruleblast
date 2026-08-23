@@ -2,6 +2,13 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.5.7 — SHIPPED TO MAIN
+
+- Runtime classification is an allowlist of catalog and candidate ids, exact match only. `xai/grok-build-cli@1` is not the forming candidate. A denylist of model product names is not a gate. Empty watch stubs are not inventory.
+- Candidate records declare `surface` (`cli` / `harness` / `agent`) instead of inferring a runtime from the id spelling. `--reality` names a not-admitted candidate only when that exact id is committed. Otherwise it is unknown. Catalog IDs name runtimes, not models. Not a fifth bundled reality.
+- CLI and MCP share one `HostProcess` (`cwd`, `env`, `platform` → shell dialect). Companion Show Detail still uses the process host default. Not a third host class. Not a fifth action.
+- The published CLI people install is still `ruleblast@2.5.1`.
+
 ## 2.5.6 — SHIPPED TO MAIN
 
 - Runtime surface IDs name CLIs and harnesses, not model products. `xai/grok-build-cli` is a not-admitted candidate runtime. `grok-4`, `glm-5.3`, and `gpt-4` are model names. `--reality` and MCP refuse them with distinct text. Not a fifth bundled reality. Not a public `--pack`.

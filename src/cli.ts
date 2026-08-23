@@ -5,7 +5,11 @@ import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { CliUsageError, parseArgs } from "./args.js";
 import { packageVersion } from "./package-identity.js";
-import { displayText, hostShellDialect } from "./render-format.js";
+import {
+  currentHostProcess,
+  hostProcessDialect,
+} from "./application/host-process.js";
+import { displayText } from "./render-format.js";
 import {
   captureInvocation,
   CliRuntimeError,
@@ -41,7 +45,7 @@ function unsupportedAnalysis(): never {
 
 const LIGHT_DEPENDENCIES: CliDependencies = Object.freeze({
   version: packageVersion(),
-  shellDialect: hostShellDialect(),
+  shellDialect: hostProcessDialect(currentHostProcess()),
   profiles: Object.freeze([]),
   resolvePath: resolve,
   findRepositoryRoot: async () => unsupportedAnalysis(),
@@ -67,7 +71,7 @@ async function loadDefaultDependencies(): Promise<CliDependencies> {
   ]);
   return Object.freeze({
     version: packageVersion(),
-    shellDialect: hostShellDialect(),
+    shellDialect: hostProcessDialect(currentHostProcess()),
     profiles: defaultProfileDefinitions(),
     resolvePath: resolve,
     findRepositoryRoot,

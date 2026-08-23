@@ -127,6 +127,7 @@ describe("offline evidence-revision reveal", () => {
       label: "Codex CLI",
       admission: "not-admitted",
       stability: "watch",
+      surface: "cli",
       reason: "later retrieved claims for the same surface",
       evidence: [{
         claimId: "codex.discover.1",
@@ -163,6 +164,7 @@ describe("offline evidence-revision reveal", () => {
       label: "Codex CLI",
       admission: "not-admitted",
       stability: "watch",
+      surface: "cli",
       reason: "same claims as the sealed pack",
       evidence,
     }));
@@ -199,13 +201,11 @@ describe("offline evidence-revision reveal", () => {
     expect(grok?.stability).toBe("forming");
     expect(grok?.label).toBe("Grok Build CLI");
     expect(reveal.candidates.map((row) => row.id)).toEqual([
-      "deepseek/dsh-harness",
-      "moonshot/kimi-code-cli",
       "qwen/qwen-code-cli",
       "xai/grok-build-cli",
     ]);
-    expect(reveal.candidates.some((row) => /glm|composer|llama|deepseek-v4|qwen-model|gpt-4|grok-4/i.test(row.id)))
-      .toBe(false);
+    expect(reveal.candidates.map((row) => row.id)).not.toContain("deepseek/dsh-harness");
+    expect(reveal.candidates.map((row) => row.id)).not.toContain("moonshot/kimi-code-cli");
   });
 
   it("does not grow fingerprint builtins or public --reality ids", () => {
@@ -217,10 +217,10 @@ describe("offline evidence-revision reveal", () => {
     ]);
     expect(() => profilesForReality("xai/grok-build-cli")).toThrow(/Unknown opt-in reality/);
     expect(() => profilesForReality("xai/grok-build-cli@1")).toThrow(/Unknown opt-in reality/);
-    expect(() => parseArgs([".", "--reality", "grok-4"])).toThrow(/model name, not a runtime surface id/u);
-    expect(() => parseArgs([".", "--reality", "cursor/composer@1"])).toThrow(/model name, not a runtime surface id/u);
-    expect(() => parseArgs([".", "--reality", "zai/glm-5.3@1"])).toThrow(/model name, not a runtime surface id/u);
-    expect(() => parseArgs([".", "--reality", "meta/llama@1"])).toThrow(/model name, not a runtime surface id/u);
+    expect(() => parseArgs([".", "--reality", "grok-4"])).toThrow(/Catalog IDs name runtimes, not models/u);
+    expect(() => parseArgs([".", "--reality", "cursor/composer@1"])).toThrow(/Catalog IDs name runtimes, not models/u);
+    expect(() => parseArgs([".", "--reality", "zai/glm-5.3@1"])).toThrow(/Catalog IDs name runtimes, not models/u);
+    expect(() => parseArgs([".", "--reality", "meta/llama@1"])).toThrow(/Catalog IDs name runtimes, not models/u);
     expect(() => parseArgs([".", "--pack", "qwen"])).toThrow(/Unknown option/);
   });
 

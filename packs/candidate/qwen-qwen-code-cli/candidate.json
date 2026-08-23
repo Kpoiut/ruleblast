@@ -4,6 +4,7 @@
   "label": "Qwen Code CLI",
   "admission": "not-admitted",
   "stability": "forming",
+  "surface": "cli",
   "reason": "Official Qwen Code docs describe hierarchical QWEN.md context and AGENTS.md compatibility. No sealed resolver revision exists. Not a public --reality. Not the Qwen model.",
   "evidence": [
     {

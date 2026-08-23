@@ -8,6 +8,12 @@ import {
   scanRepository,
 } from "./application/authority.js";
 import { isOptInReality, optInRealityIds } from "./application/profile-catalog.js";
+import {
+  currentHostProcess,
+  hostProcessDialect,
+  hostTextContext,
+  type HostProcess,
+} from "./application/host-process.js";
 import { publicRealityRefusal } from "./application/runtime-surfaces.js";
 import {
   OVERLAY_UNAVAILABLE,
@@ -28,7 +34,6 @@ import { renderResultIndex } from "./application/result-index.js";
 import { canonicalJson } from "./canonical.js";
 import { packageVersion } from "./package-identity.js";
 import { renderDetail } from "./render-detail.js";
-import { hostShellDialect, type ShellDialect } from "./render-format.js";
 import {
   isGitObjectSnapshot,
   isWorktreeIdentitySource,
@@ -48,18 +53,15 @@ export const MCP_TOOL_NAMES = Object.freeze(["scan", "diff", "explain", "case"])
 export interface McpHost {
   readonly cwd: string;
   readonly env: Readonly<Record<string, string | undefined>>;
-  readonly platform?: NodeJS.Platform | string;
+  readonly platform?: string;
 }
 
-function mcpShellDialect(host: McpHost): ShellDialect {
-  return hostShellDialect(host.platform ?? process.platform);
-}
-
-function mcpTextContext<T extends object>(
-  host: McpHost,
-  fields: T,
-): T & { readonly shellDialect: ShellDialect } {
-  return { ...fields, shellDialect: mcpShellDialect(host) };
+function mcpHostProcess(host: McpHost): HostProcess {
+  return currentHostProcess(
+    host.platform === undefined
+      ? { cwd: host.cwd, env: host.env }
+      : { cwd: host.cwd, env: host.env, platform: host.platform },
+  );
 }
 
 const ALLOWED = optInRealityIds();
@@ -191,7 +193,7 @@ async function runScan(host: McpHost, params: Record<string, unknown>): Promise<
   return canonicalJson(await withDetail({
     metrics: replayMetricsFromResult(result),
     result,
-  }, params, result, mcpTextContext(host, {
+  }, params, result, hostTextContext(mcpHostProcess(host), {
     currentLabel: "WORKTREE",
     caseLabel: null,
   })));
@@ -237,7 +239,7 @@ async function runDiff(host: McpHost, params: Record<string, unknown>): Promise<
       to: to === "WORKTREE" ? "WORKTREE" : to,
     });
   }
-  return canonicalJson(await withDetail(payload, params, pair.result, mcpTextContext(host, {
+  return canonicalJson(await withDetail(payload, params, pair.result, hostTextContext(mcpHostProcess(host), {
     beforeLabel: base,
     afterLabel: to === "WORKTREE" ? "WORKTREE" : to,
     caseLabel: null,
@@ -256,24 +258,24 @@ async function runExplain(host: McpHost, params: Record<string, unknown>): Promi
     const snapshot = await openTrackedWorktree(root);
     const explained = await explainRepository({ snapshot, path, realities });
     if (wantsDetail(params)) {
-      return renderDetail(explained.explain, mcpTextContext(host, {
+      return renderDetail(explained.explain, hostTextContext(mcpHostProcess(host), {
         currentLabel: "WORKTREE",
         caseLabel: null,
       }), false);
     }
-    return presentExplain(explained.explain, mcpShellDialect(host));
+    return presentExplain(explained.explain, hostProcessDialect(mcpHostProcess(host)));
   }
   const before = await openGitSnapshot(root, from);
   const after = to === "WORKTREE" ? await openTrackedWorktree(root) : await openGitSnapshot(root, to);
   const explained = await explainRepository({ before, after, path, realities });
   if (wantsDetail(params)) {
-    return renderDetail(explained.explain, mcpTextContext(host, {
+    return renderDetail(explained.explain, hostTextContext(mcpHostProcess(host), {
       beforeLabel: from,
       afterLabel: to === "WORKTREE" ? "WORKTREE" : to,
       caseLabel: null,
     }), false);
   }
-  return presentExplain(explained.explain, mcpShellDialect(host));
+  return presentExplain(explained.explain, hostProcessDialect(mcpHostProcess(host)));
 }
 
 async function runCase(host: McpHost, params: Record<string, unknown>): Promise<string> {
@@ -290,7 +292,7 @@ async function runCase(host: McpHost, params: Record<string, unknown>): Promise<
     return canonicalJson(await withDetail({
       metrics: replayMetricsFromResult(result),
       result,
-    }, params, result, mcpTextContext(host, {
+    }, params, result, hostTextContext(mcpHostProcess(host), {
       beforeLabel: presentation.beforeLabel,
       afterLabel: presentation.afterLabel,
       caseLabel: presentation.label,
@@ -299,13 +301,13 @@ async function runCase(host: McpHost, params: Record<string, unknown>): Promise<
   const { explain } = explainExistingResult(result, explainPath);
   const presentation = packagedCasePresentation();
   if (wantsDetail(params)) {
-    return renderDetail(explain, mcpTextContext(host, {
+    return renderDetail(explain, hostTextContext(mcpHostProcess(host), {
       beforeLabel: presentation.beforeLabel,
       afterLabel: presentation.afterLabel,
       caseLabel: presentation.label,
     }), false);
   }
-  return presentExplain(explain, mcpShellDialect(host));
+  return presentExplain(explain, hostProcessDialect(mcpHostProcess(host)));
 }
 
 async function callTool(host: McpHost, params: Record<string, unknown>): Promise<unknown> {
