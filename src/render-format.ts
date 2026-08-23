@@ -4,6 +4,13 @@ const SAFE_SHELL_TOKEN = /^[A-Za-z0-9_./@:+~-]+$/;
 
 export type ShellDialect = "posix" | "powershell";
 
+/** Windows hosts quote as PowerShell; Linux and macOS quote as POSIX. */
+export function hostShellDialect(
+  platform: NodeJS.Platform | string = process.platform,
+): ShellDialect {
+  return platform === "win32" ? "powershell" : "posix";
+}
+
 function quotedShellToken(value: string, shellDialect: ShellDialect): string {
   const escaped = shellDialect === "posix"
     ? value.replace(/'/g, `'"'"'`)

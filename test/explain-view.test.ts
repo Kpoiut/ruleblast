@@ -9,7 +9,8 @@ import {
   type DiffRuleBlastResult,
   type Projection,
 } from "../src/model.js";
-import { renderExplain } from "../src/render-explain.js";
+import { explainPresentationContext, renderExplain } from "../src/render-explain.js";
+import { hostShellDialect } from "../src/render-format.js";
 
 function projection(
   profile: string,
@@ -231,10 +232,18 @@ describe("visual explain text", () => {
     const presented = presentExplain(explain);
     const rendered = renderExplain(
       explain,
-      { currentLabel: "WORKTREE", caseLabel: null, shellDialect: "posix" },
+      explainPresentationContext(explain),
       false,
     );
+    expect(explainPresentationContext(explain).shellDialect).toBe(hostShellDialect());
     expect(presented).toBe(rendered);
+    expect(presentExplain(explain, "powershell")).toBe(
+      renderExplain(
+        explain,
+        explainPresentationContext(explain, "powershell"),
+        false,
+      ),
+    );
     expect(presented).toContain("CC Claude Code CLI");
   });
 });

@@ -2,6 +2,13 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.5.4 — SHIPPED TO MAIN
+
+- Host shell quoting follows the process platform: Windows PowerShell, POSIX on Linux and macOS. CLI, MCP stdio, companion `presentExplain`, and GIF explain share `hostShellDialect()`. MCP no longer hardcodes POSIX CTAs on Windows. Not a fifth action. Not a fifth bundled reality.
+- Verify runs ubuntu-latest, windows-latest, and macos-latest on Node 20/22/24/26. Same 20-minute cell clock.
+- Select-all prepare records the matching discover origin once per captured path instead of scanning origins again.
+- The published CLI people install is still `ruleblast@2.5.1`.
+
 ## 2.5.3 — SHIPPED TO MAIN
 
 - Gemini CLI is interpreted from `resolver.json` by composing existing operations: `select.mode` all, `assemble.mode` ordered, `onSymlink` partial-unfollowed, `at-path-import` with lexer `markdown-v1`, and `json-union-names` for tracked `context.fileName`. Live interpreter projections are byte-identical to `createGeminiProfile` on every packed Gemini fixture and on union-name snapshots. Lab `INTERPRET` / `ORACLE` for all four bundled realities. No third interpreter family. The adapter remains the test oracle and is not imported by the interpreter. Not a fifth action. Not a fifth bundled reality.

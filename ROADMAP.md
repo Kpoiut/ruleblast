@@ -467,6 +467,12 @@ This tree is `2.5.3`. Latest independently verified public npm distribution rema
 
 The interpreter executes Gemini’s pack by composing operations the engine already has: select-all, ordered assemble, partial-unfollowed symlinks, `markdown-v1` imports, and `json-union-names`. Projections match `createGeminiProfile` on every packed Gemini fixture. Lab `INTERPRET` / `ORACLE` for Codex, Copilot, Claude, and Gemini. Lexer `markdown-v1` is the shared mechanism; pack id is the lookup key on `--detail`, not on compact `--receipt`. Admission is capability-based, not a third family. Benchmark 10k/GIF uses catalog interpreters and records all four engines. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
 
+## **SHIPPED TO MAIN** — `v2.5.4`: Host platform quoting and macOS verify
+
+This tree is `2.5.4`. Latest independently verified public npm distribution remains `2.5.1`. Companion version is `2.5.4`. Pack `ruleblast-companion-2.5.4.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+CLI, MCP, and companion explain CTAs use `hostShellDialect()`: PowerShell on Windows, POSIX on Linux and macOS. MCP no longer hardcodes POSIX. Verify matrix adds `macos-latest` beside ubuntu and windows on Node 20/22/24/26. Select-all prepare keeps the matching origin with each captured path. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
+
 ## **NEXT** — Runtime calibration without a fifth reality
 
 ORACLE remains an implementation-oracle: interpreter bytes match the adapter oracle. A later calibration against vendor-runtime introspection, if a surface exposes it deterministically, does not add a fifth bundled reality.

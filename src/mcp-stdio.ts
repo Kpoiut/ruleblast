@@ -27,6 +27,7 @@ import { renderResultIndex } from "./application/result-index.js";
 import { canonicalJson } from "./canonical.js";
 import { packageVersion } from "./package-identity.js";
 import { renderDetail } from "./render-detail.js";
+import { hostShellDialect, type ShellDialect } from "./render-format.js";
 import {
   isGitObjectSnapshot,
   isWorktreeIdentitySource,
@@ -46,6 +47,18 @@ export const MCP_TOOL_NAMES = Object.freeze(["scan", "diff", "explain", "case"])
 export interface McpHost {
   readonly cwd: string;
   readonly env: Readonly<Record<string, string | undefined>>;
+  readonly platform?: NodeJS.Platform | string;
+}
+
+function mcpShellDialect(host: McpHost): ShellDialect {
+  return hostShellDialect(host.platform ?? process.platform);
+}
+
+function mcpTextContext<T extends object>(
+  host: McpHost,
+  fields: T,
+): T & { readonly shellDialect: ShellDialect } {
+  return { ...fields, shellDialect: mcpShellDialect(host) };
 }
 
 const ALLOWED = optInRealityIds();
@@ -177,11 +190,10 @@ async function runScan(host: McpHost, params: Record<string, unknown>): Promise<
   return canonicalJson(await withDetail({
     metrics: replayMetricsFromResult(result),
     result,
-  }, params, result, {
+  }, params, result, mcpTextContext(host, {
     currentLabel: "WORKTREE",
     caseLabel: null,
-    shellDialect: "posix",
-  }));
+  })));
 }
 
 async function runDiff(host: McpHost, params: Record<string, unknown>): Promise<string> {
@@ -224,12 +236,11 @@ async function runDiff(host: McpHost, params: Record<string, unknown>): Promise<
       to: to === "WORKTREE" ? "WORKTREE" : to,
     });
   }
-  return canonicalJson(await withDetail(payload, params, pair.result, {
+  return canonicalJson(await withDetail(payload, params, pair.result, mcpTextContext(host, {
     beforeLabel: base,
     afterLabel: to === "WORKTREE" ? "WORKTREE" : to,
     caseLabel: null,
-    shellDialect: "posix",
-  }));
+  })));
 }
 
 async function runExplain(host: McpHost, params: Record<string, unknown>): Promise<string> {
@@ -244,29 +255,27 @@ async function runExplain(host: McpHost, params: Record<string, unknown>): Promi
     const snapshot = await openTrackedWorktree(root);
     const explained = await explainRepository({ snapshot, path, realities });
     if (wantsDetail(params)) {
-      return renderDetail(explained.explain, {
+      return renderDetail(explained.explain, mcpTextContext(host, {
         currentLabel: "WORKTREE",
         caseLabel: null,
-        shellDialect: "posix",
-      }, false);
+      }), false);
     }
-    return presentExplain(explained.explain);
+    return presentExplain(explained.explain, mcpShellDialect(host));
   }
   const before = await openGitSnapshot(root, from);
   const after = to === "WORKTREE" ? await openTrackedWorktree(root) : await openGitSnapshot(root, to);
   const explained = await explainRepository({ before, after, path, realities });
   if (wantsDetail(params)) {
-    return renderDetail(explained.explain, {
+    return renderDetail(explained.explain, mcpTextContext(host, {
       beforeLabel: from,
       afterLabel: to === "WORKTREE" ? "WORKTREE" : to,
       caseLabel: null,
-      shellDialect: "posix",
-    }, false);
+    }), false);
   }
-  return presentExplain(explained.explain);
+  return presentExplain(explained.explain, mcpShellDialect(host));
 }
 
-async function runCase(params: Record<string, unknown>): Promise<string> {
+async function runCase(host: McpHost, params: Record<string, unknown>): Promise<string> {
   const result = await openPackagedCase();
   const explainPath = stringField(params, "explainPath");
   if (explainPath === undefined) {
@@ -280,24 +289,22 @@ async function runCase(params: Record<string, unknown>): Promise<string> {
     return canonicalJson(await withDetail({
       metrics: replayMetricsFromResult(result),
       result,
-    }, params, result, {
+    }, params, result, mcpTextContext(host, {
       beforeLabel: presentation.beforeLabel,
       afterLabel: presentation.afterLabel,
       caseLabel: presentation.label,
-      shellDialect: "posix",
-    }));
+    })));
   }
   const { explain } = explainExistingResult(result, explainPath);
   const presentation = packagedCasePresentation();
   if (wantsDetail(params)) {
-    return renderDetail(explain, {
+    return renderDetail(explain, mcpTextContext(host, {
       beforeLabel: presentation.beforeLabel,
       afterLabel: presentation.afterLabel,
       caseLabel: presentation.label,
-      shellDialect: "posix",
-    }, false);
+    }), false);
   }
-  return presentExplain(explain);
+  return presentExplain(explain, mcpShellDialect(host));
 }
 
 async function callTool(host: McpHost, params: Record<string, unknown>): Promise<unknown> {
@@ -315,7 +322,7 @@ async function callTool(host: McpHost, params: Record<string, unknown>): Promise
   if (name === "scan") return toolResult(await runScan(host, args));
   if (name === "diff") return toolResult(await runDiff(host, args));
   if (name === "explain") return toolResult(await runExplain(host, args));
-  return toolResult(await runCase(args));
+  return toolResult(await runCase(host, args));
 }
 
 export async function dispatchMcpRequest(

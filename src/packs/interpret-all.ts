@@ -129,16 +129,15 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
       }
       const captured: Captured[] = [];
       const seen = new Map<string, number>();
-      const queue: { path: string; depth: number }[] = [];
+      const queue: { path: string; depth: number; origin: DiscoverOrigin | undefined }[] = [];
       for (const path of paths) {
         const origin = origins.find((item) => originHits(item, path, extraNames));
         if (origin === undefined) continue;
-        queue.push({ path, depth: 0 });
+        queue.push({ path, depth: 0, origin });
         seen.set(path, 0);
       }
       for (let index = 0; index < queue.length; index += 1) {
-        const { path, depth } = queue[index]!;
-        const origin = origins.find((item) => originHits(item, path, extraNames));
+        const { path, depth, origin } = queue[index]!;
         const entry = await snapshot.entry(path);
         if (entry === null) continue;
         const descriptors = Object.getOwnPropertyDescriptors(entry);
@@ -192,7 +191,11 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
           const prior = seen.get(dependency);
           if (prior !== undefined && prior <= nextDepth) continue;
           seen.set(dependency, nextDepth);
-          queue.push({ path: dependency, depth: nextDepth });
+          queue.push({
+            path: dependency,
+            depth: nextDepth,
+            origin: origins.find((item) => originHits(item, dependency, extraNames)),
+          });
         }
       }
       const ordered = [...captured].sort((left, right) => compareCodePoints(left.path, right.path));

@@ -6,6 +6,7 @@ import {
   encodeMcpFrame,
 } from "../src/mcp-protocol.js";
 import { dispatchMcpRequest, MCP_TOOL_NAMES } from "../src/mcp-stdio.js";
+import { hostShellDialect } from "../src/render-format.js";
 
 const host = {
   cwd: process.cwd(),
@@ -122,5 +123,17 @@ describe("MCP stdio transport", () => {
       .result;
     expect(result.isError).toBe(true);
     expect(result.content[0]?.text).toMatch(/ASK/u);
+  });
+
+  it("quotes CTAs for the host platform instead of hardcoding posix", () => {
+    expect(hostShellDialect("win32")).toBe("powershell");
+    expect(hostShellDialect("darwin")).toBe("posix");
+    expect(hostShellDialect("linux")).toBe("posix");
+    const source = readFileSync(new URL("../src/mcp-stdio.ts", import.meta.url), "utf8");
+    expect(source).toContain("hostShellDialect");
+    expect(source).toContain("mcpTextContext");
+    expect(source).not.toMatch(/shellDialect:\s*"posix"/u);
+    expect(readFileSync(new URL("../src/cli.ts", import.meta.url), "utf8"))
+      .toContain("hostShellDialect()");
   });
 });

@@ -110,6 +110,18 @@ describe("P1/B0 plan gate", () => {
     expect(changelog).toMatch(/^## 2\.3\.0 — RELEASED/mu);
     expect(changelog).not.toMatch(/^## 2\.3\.0 — SHIPPED TO MAIN/mu);
     expect(read("ROADMAP.md")).toMatch(/## \*\*RELEASED\*\* — `v2\.3\.0`/u);
-    expect(read("package.json")).toContain('"version": "2.5.3"');
+    expect(read("package.json")).toContain('"version": "2.5.4"');
+  });
+
+  it("records select-all discover origin once per queued path", () => {
+    const source = read("src/packs/interpret-all.ts");
+    expect(source).toContain(
+      "queue: { path: string; depth: number; origin: DiscoverOrigin | undefined }[]",
+    );
+    expect(source).toContain("const { path, depth, origin } = queue[index]!");
+    expect(source).toContain(
+      "origin: origins.find((item) => originHits(item, dependency, extraNames))",
+    );
+    expect(source.match(/originHits\(item, path/gu)).toHaveLength(1);
   });
 });

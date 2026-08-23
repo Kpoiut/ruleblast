@@ -13,6 +13,8 @@ import {
   displayText,
   formatCount,
   heading,
+  hostShellDialect,
+  type ShellDialect,
 } from "./render-format.js";
 import type { TextPresentationContext } from "./render-text.js";
 
@@ -166,18 +168,19 @@ export function renderExplain(
 
 export function explainPresentationContext(
   value: ExplainResult,
+  shellDialect: ShellDialect = hostShellDialect(),
 ): TextPresentationContext {
   if (value.analysisMode === "current") {
     return {
       currentLabel: value.snapshot.label,
       caseLabel: null,
-      shellDialect: "posix",
+      shellDialect,
     };
   }
   return {
     beforeLabel: value.before.label,
     afterLabel: value.after.label,
     caseLabel: null,
-    shellDialect: "posix",
+    shellDialect,
   };
 }

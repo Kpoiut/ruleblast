@@ -111,8 +111,13 @@ export async function explainRepository(
 
 export function presentExplain(
   explain: CurrentExplainResult | DiffExplainResult,
+  shellDialect?: Parameters<typeof explainPresentationContext>[1],
 ): string {
-  return renderExplain(explain, explainPresentationContext(explain), false);
+  return renderExplain(
+    explain,
+    explainPresentationContext(explain, shellDialect),
+    false,
+  );
 }
 
 export { explainExistingResult };

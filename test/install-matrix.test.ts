@@ -63,7 +63,7 @@ describe("candidate installation matrix", () => {
       new URL("../.github/workflows/verify.yml", import.meta.url),
       "utf8",
     );
-    expect(workflow).toContain("os: [ubuntu-latest, windows-latest]");
+    expect(workflow).toContain("os: [ubuntu-latest, windows-latest, macos-latest]");
     expect(workflow).toContain("node: [20, 22, 24, 26]");
     expect(workflow).toContain("workflow_dispatch:");
     const jobs = workflow.slice(workflow.indexOf("jobs:"));
@@ -128,7 +128,7 @@ describe("candidate installation matrix", () => {
     const job = parsed.jobs.verify;
     expect(job["timeout-minutes"]).toBeLessThanOrEqual(20);
     expect(job.strategy.matrix).toEqual({
-      os: ["ubuntu-latest", "windows-latest"],
+      os: ["ubuntu-latest", "windows-latest", "macos-latest"],
       node: [20, 22, 24, 26],
     });
     const registryStep = job.steps.find(
@@ -165,7 +165,7 @@ describe("candidate installation matrix", () => {
       local: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 2.5.3",
+        version: "ruleblast 2.5.4",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,
@@ -178,7 +178,7 @@ describe("candidate installation matrix", () => {
       global: {
         installed: true,
         shim: process.platform === "win32" ? "cmd" : "posix",
-        version: "ruleblast 2.5.3",
+        version: "ruleblast 2.5.4",
         caseVerified: true,
         analysisVerified: true,
         repositoryUnchanged: true,
