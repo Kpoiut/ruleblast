@@ -30,6 +30,7 @@ export interface BundledLabRow {
   readonly engine: LabEngine;
   readonly proof: OracleProof;
   readonly missingOperations: readonly string[];
+  readonly probeCount: number;
 }
 
 export interface AxisCoverage {
@@ -91,6 +92,7 @@ async function bundledRow(directory: string): Promise<BundledLabRow> {
     engine: verified.engine,
     proof: verified.proof,
     missingOperations: verified.missingOperations,
+    probeCount: verified.probeCount,
   });
 }
 
@@ -164,7 +166,7 @@ export async function renderConformanceLab(lab?: ConformanceLab): Promise<string
   for (const row of view.bundled) {
     const label = presentationFor(row.id);
     lines.push(
-      `  ${label.badge} ${label.shortLabel}  ${row.engine}  ${row.proof}  ${formatOps(row.missingOperations)}`,
+      `  ${label.badge} ${label.shortLabel}  ${row.engine}  ${row.proof}  ${formatOps(row.missingOperations)}  ${row.probeCount} probes`,
     );
   }
   for (const row of view.candidates) {

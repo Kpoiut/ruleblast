@@ -7,19 +7,27 @@
   "discover": {
     "origins": [
       {
+        "kind": "fixed",
+        "paths": [".claude/CLAUDE.md", ".claude/settings.json"],
+        "scopeAnchor": ".claude"
+      },
+      {
+        "kind": "glob",
+        "pattern": ".claude/rules/**/*.md",
+        "apply": {
+          "kind": "frontmatter-glob",
+          "field": "paths",
+          "ifAbsent": "include",
+          "onMatch": "APPLIED_RULE",
+          "matcher": "brace-budget"
+        }
+      },
+      {
         "kind": "ancestors",
         "from": "repositoryRoot",
         "to": "dirname-target",
         "inclusive": true,
         "names": ["CLAUDE.md", "CLAUDE.local.md"]
-      },
-      {
-        "kind": "fixed",
-        "paths": [".claude/CLAUDE.md", ".claude/settings.json"]
-      },
-      {
-        "kind": "glob",
-        "pattern": ".claude/rules/**/*.md"
       }
     ],
     "claimIds": ["claude.memory.1", "claude.ancestors.1", "claude.rules.1"]
@@ -28,7 +36,8 @@
     "mode": "all",
     "names": ["CLAUDE.md", "CLAUDE.local.md"],
     "shadows": {},
-    "claimIds": ["claude.memory.1"]
+    "claimIds": ["claude.memory.1"],
+    "onSameBasename": "partial-no-payload"
   },
   "transform": [
     {
@@ -40,6 +49,12 @@
       "maxDepth": 4,
       "lexer": "claude-markdown-v1",
       "claimIds": ["claude.imports.1"]
+    },
+    {
+      "kind": "json-exclude-globs",
+      "path": ".claude/settings.json",
+      "field": "claudeMdExcludes",
+      "claimIds": ["claude.excludes.1"]
     }
   ],
   "assemble": {

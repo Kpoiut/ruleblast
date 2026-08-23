@@ -17,6 +17,7 @@ export interface PackVerification {
   readonly engine: "INTERPRET" | "FINGERPRINT";
   readonly proof: OracleProof;
   readonly missingOperations: readonly string[];
+  readonly probeCount: number;
 }
 
 function fail(detail: string): never {
@@ -162,6 +163,7 @@ async function verifyInterpret(
     engine: "INTERPRET",
     proof: "ORACLE",
     missingOperations: Object.freeze([] as string[]),
+    probeCount: Array.isArray(oracle.probes) ? oracle.probes.length : 0,
   });
 }
 
@@ -189,6 +191,7 @@ async function verifyFingerprint(
     engine: "FINGERPRINT",
     proof: "ADAPTER",
     missingOperations: missing,
+    probeCount: Array.isArray(oracle.probes) ? oracle.probes.length : 0,
   });
 }
 

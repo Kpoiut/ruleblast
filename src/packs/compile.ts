@@ -153,7 +153,12 @@ function decodeDiscover(value: unknown): DiscoverSpec {
 }
 
 function decodeSelect(value: unknown): SelectSpec {
-  const object = expectKeys(value, ["mode", "names", "shadows", "claimIds"], "select");
+  const object = expectAllowedKeys(
+    value,
+    ["mode", "names", "shadows", "claimIds"],
+    ["onSameBasename"],
+    "select",
+  );
   if (!isPlainObject(object.shadows)) fail("select.shadows must be an object");
   const shadows: Record<string, readonly string[]> = {};
   for (const key of ownKeys(object.shadows)) {
@@ -170,6 +175,13 @@ function decodeSelect(value: unknown): SelectSpec {
     ),
     shadows: Object.freeze(shadows),
     claimIds: expectStringArray(object.claimIds, "select.claimIds"),
+    ...(object.onSameBasename === undefined ? {} : {
+      onSameBasename: expectEnum(
+        object.onSameBasename,
+        ["all", "partial-no-payload"],
+        "select.onSameBasename",
+      ),
+    }),
   });
 }
 
@@ -177,7 +189,7 @@ function decodeTransform(value: unknown, index: number): TransformSpec {
   if (!isPlainObject(value)) fail(`transform[${index}] must be an object`);
   const kind = expectEnum(
     value.kind,
-    ["byte-budget", "at-path-import", "strip-html-comments"],
+    ["byte-budget", "at-path-import", "strip-html-comments", "json-exclude-globs"],
     `transform[${index}].kind`,
   );
   const claimIds = expectStringArray(value.claimIds, `transform[${index}].claimIds`);
@@ -206,6 +218,15 @@ function decodeTransform(value: unknown, index: number): TransformSpec {
         ["claude-markdown-v1", "gemini-markdown-v1"],
         `transform[${index}].lexer`,
       ),
+      claimIds,
+    });
+  }
+  if (kind === "json-exclude-globs") {
+    expectKeys(value, ["kind", "path", "field", "claimIds"], `transform[${index}]`);
+    return Object.freeze({
+      kind,
+      path: expectSafeName(expectString(value.path, `transform[${index}].path`), `transform[${index}].path`),
+      field: expectSafeName(expectString(value.field, `transform[${index}].field`), `transform[${index}].field`),
       claimIds,
     });
   }

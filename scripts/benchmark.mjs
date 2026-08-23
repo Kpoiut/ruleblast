@@ -157,16 +157,39 @@ async function measureLab() {
   const first = await timed(() => inventoryConformanceLab());
   const cached = await timed(() => inventoryConformanceLab());
   const lab = first.value;
-  const codex = lab.bundled.find((row) => row.id === "openai/codex-cli@1");
-  const claude = lab.bundled.find((row) => row.id === "anthropic/claude-code-cli@1");
-  if (codex?.proof !== "ORACLE" || claude?.proof !== "ADAPTER") {
+  const byId = Object.fromEntries(lab.bundled.map((row) => [row.id, row]));
+  const codex = byId["openai/codex-cli@1"];
+  const copilot = byId["github/copilot-cli@1"];
+  const claude = byId["anthropic/claude-code-cli@1"];
+  const gemini = byId["google/gemini-cli@1"];
+  if (
+    codex?.proof !== "ORACLE" || copilot?.proof !== "ORACLE" ||
+    claude?.proof !== "ORACLE" || gemini?.proof !== "ADAPTER"
+  ) {
     throw new Error("Lab lost interpreter ORACLE or fingerprint ADAPTER proof");
+  }
+  if (gemini.missingOperations.join(",") !== "onSymlink,assemble") {
+    throw new Error("Lab lost Gemini fingerprint missing-operation recording");
+  }
+  const rows = lab.bundled.map((row) => ({
+    id: row.id,
+    engine: row.engine,
+    proof: row.proof,
+    missingOperations: row.missingOperations,
+    probeCount: row.probeCount,
+  }));
+  if (rows.some((row) => row.probeCount < 1)) {
+    throw new Error("Lab lost sealed oracle probe counts");
   }
   return {
     firstMs: first.elapsedMs,
     cachedMs: cached.elapsedMs,
     bundled: lab.bundled.length,
     candidates: lab.candidates.length,
+    interpretOracleCount: lab.bundled.filter((row) => row.proof === "ORACLE").length,
+    fingerprintAdapterCount: lab.bundled.filter((row) => row.proof === "ADAPTER").length,
+    sealedProbeCount: rows.reduce((sum, row) => sum + row.probeCount, 0),
+    rows,
   };
 }
 

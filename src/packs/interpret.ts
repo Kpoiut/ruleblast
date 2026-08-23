@@ -64,23 +64,43 @@ function originExecutable(origin: DiscoverOrigin, reasons: string[]): void {
   reasons.push("discover.origin");
 }
 
+function orderedBudgetFamily(resolver: ResolverSpec): boolean {
+  return resolver.select.mode === "first-per-directory" &&
+    resolver.assemble.mode === "ordered" &&
+    resolver.transform[0]?.kind === "byte-budget";
+}
+
+function selectAllFamily(resolver: ResolverSpec): boolean {
+  return resolver.select.mode === "all" && resolver.assemble.mode === "unspecified";
+}
+
 export function uninterpretableReasons(resolver: ResolverSpec): readonly string[] {
   const reasons: string[] = [];
   if (resolver.onSymlink !== "unknown-unfollowed") reasons.push("onSymlink");
   if (resolver.discover.origins.length === 0) reasons.push("discover.origins");
   for (const origin of resolver.discover.origins) originExecutable(origin, reasons);
-  const transform = resolver.transform;
-  if (transform.length === 0) {
-    /* unlimited payload: executable */
-  } else if (
-    transform.length === 1 &&
-    transform[0]?.kind === "byte-budget" &&
-    typeof transform[0].bytes === "number" &&
-    transform[0].bytes > 0
-  ) {
-    /* Codex byte-budget: executable */
-  } else {
+  for (const transform of resolver.transform) {
+    if (transform.kind === "byte-budget" && typeof transform.bytes === "number" && transform.bytes > 0) {
+      continue;
+    }
+    if (transform.kind === "strip-html-comments") continue;
+    if (
+      transform.kind === "at-path-import" &&
+      typeof transform.maxDepth === "number" &&
+      transform.maxDepth > 0 &&
+      (transform.lexer === "claude-markdown-v1" || transform.lexer === "gemini-markdown-v1")
+    ) {
+      continue;
+    }
+    if (
+      transform.kind === "json-exclude-globs" &&
+      typeof transform.path === "string" &&
+      typeof transform.field === "string"
+    ) {
+      continue;
+    }
     reasons.push("transform");
+    break;
   }
   if (
     resolver.onAtReference !== undefined &&
@@ -88,6 +108,9 @@ export function uninterpretableReasons(resolver: ResolverSpec): readonly string[
     resolver.onAtReference !== "partial-unexpanded"
   ) {
     reasons.push("onAtReference");
+  }
+  if (!orderedBudgetFamily(resolver) && !selectAllFamily(resolver)) {
+    reasons.push(resolver.select.mode === "all" ? "assemble" : "select");
   }
   return Object.freeze([...new Set(reasons)]);
 }

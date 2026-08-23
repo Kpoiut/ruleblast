@@ -1,61 +1,30 @@
 import { Minimatch } from "minimatch";
-import { canonicalJson, sha256 } from "../canonical.js";
-import { compareCodePoints, pathDirname } from "../domain/repository-path.js";
-import type { Projection, ResolvedSource } from "../model.js";
-import type { RepositorySnapshot, SnapshotEntry } from "../snapshot.js";
+import { sha256 } from "../canonical.js";
+import { compareCodePoints, pathBasename } from "../domain/repository-path.js";
+import type { Projection } from "../model.js";
+import type { RepositorySnapshot } from "../snapshot.js";
 import {
   defineEvidenceRef,
-  digestNormalizedPayload,
-  unitizePayloadContributions,
   type PreparedProfile,
   type ProfileDefinition,
 } from "../profiles/profile.js";
 import { InvalidPackError } from "./compile.js";
-import type { CompiledPack, DiscoverOrigin, FrontmatterApply } from "./schema.js";
+import { projectCopilot, projectMarkdown, type Captured } from "./interpret-all-project.js";
+import { parseFrontmatterGlobs } from "./ops-frontmatter.js";
+import {
+  parseClaudeProjectSettings,
+  parseClaudeRule,
+  type ParsedClaudeRule,
+} from "./ops-glob.js";
+import {
+  listClaudeImportReferences,
+  prepareClaudeDocument,
+  resolveClaudeImportPath,
+  type CapturedClaudeFile,
+} from "./ops-markdown.js";
+import type { CompiledPack, DiscoverOrigin, FrontmatterApply, TransformSpec } from "./schema.js";
 
-const FILE_REFERENCE = /(?:^|\s)@([A-Za-z0-9_./-]+)/u;
 const ENTRY_FIELDS = ["path", "kind", "executable"] as const;
-const AT_REFERENCE_EVIDENCE =
-  "Documented @ file references are visible but not expanded in this revision.";
-
-interface Captured {
-  readonly path: string;
-  readonly kind: SnapshotEntry["kind"];
-  readonly digest: string;
-  readonly text: string;
-  readonly origin: DiscoverOrigin;
-}
-
-function isAncestor(scope: string, targetPath: string): boolean {
-  return scope === "." || targetPath === scope || targetPath.startsWith(`${scope}/`);
-}
-
-function scopeOf(path: string, origin: DiscoverOrigin): string {
-  const anchor = origin.kind === "ancestors" ? undefined : origin.scopeAnchor;
-  if (anchor === undefined) return pathDirname(path);
-  const token = `/${anchor}/`;
-  const index = path.indexOf(token);
-  if (index > 0) return path.slice(0, index);
-  if (path.startsWith(`${anchor}/`)) return ".";
-  return pathDirname(path);
-}
-
-function parseApplyTo(text: string, field: string): readonly string[] | null {
-  if (!text.startsWith("---")) return null;
-  const close = text.indexOf("\n---", 3);
-  if (close === -1) return null;
-  const match = new RegExp(`(?:^|\\n)${field}:\\s*(.+)\\s*`, "u").exec(text.slice(3, close));
-  if (match === null) return null;
-  const raw = match[1]!.trim().replace(/^["']|["']$/gu, "");
-  if (raw === "") return [];
-  return Object.freeze(raw.split(",").map((part) => part.trim()).filter(Boolean));
-}
-
-function matchesApplyTo(patterns: readonly string[], targetPath: string): boolean {
-  return patterns.some((pattern) =>
-    new Minimatch(pattern, { dot: true, nobrace: false }).match(targetPath)
-  );
-}
 
 function applyOf(origin: DiscoverOrigin): FrontmatterApply | undefined {
   return origin.kind === "glob" ? origin.apply : undefined;
@@ -68,9 +37,35 @@ function globMatch(pattern: string, path: string): boolean {
 function originHits(origin: DiscoverOrigin, path: string): boolean {
   if (origin.kind === "fixed") return origin.paths.includes(path);
   if (origin.kind === "glob") return globMatch(origin.pattern, path);
-  const slash = path.lastIndexOf("/");
-  const name = slash === -1 ? path : path.slice(slash + 1);
-  return origin.names.includes(name);
+  return origin.names.includes(pathBasename(path));
+}
+
+function jsonExclude(transform: readonly TransformSpec[]): TransformSpec | undefined {
+  return transform.find((item) => item.kind === "json-exclude-globs");
+}
+
+function importTransform(transform: readonly TransformSpec[]): TransformSpec | undefined {
+  return transform.find((item) => item.kind === "at-path-import");
+}
+
+function usesMarkdownOps(transform: readonly TransformSpec[]): boolean {
+  return transform.some(
+    (item) => item.kind === "strip-html-comments" || item.kind === "at-path-import",
+  );
+}
+
+function applyPatternsOf(
+  text: string,
+  origin: DiscoverOrigin | undefined,
+): { readonly patterns: readonly string[] | null; readonly content: string } {
+  const apply = origin === undefined ? undefined : applyOf(origin);
+  if (apply === undefined) return { patterns: null, content: text };
+  const parsed = parseFrontmatterGlobs(text, apply.field, apply.matcher === "brace-budget");
+  if (parsed.kind === "malformed") {
+    return { patterns: apply.matcher === "brace-budget" ? [] : null, content: text };
+  }
+  if (parsed.kind !== "ok") return { patterns: null, content: text };
+  return { patterns: parsed.patterns, content: parsed.body };
 }
 
 export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
@@ -80,7 +75,13 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
   }
   const origins = resolver.discover.origins;
   const claims = Object.freeze(pack.evidence.map((item) => item.claim));
+  const revisions = Object.freeze(pack.evidence.map((item) => item.sourceRevision));
   const atPartial = resolver.onAtReference === "partial-unexpanded";
+  const markdown = usesMarkdownOps(resolver.transform);
+  const stripComments = resolver.transform.some((item) => item.kind === "strip-html-comments");
+  const excludes = jsonExclude(resolver.transform);
+  const imported = importTransform(resolver.transform);
+  const maxDepth = imported?.maxDepth ?? 4;
   return Object.freeze({
     id: pack.pack.id,
     evidence: Object.freeze(pack.evidence.map((item) => defineEvidenceRef({
@@ -95,9 +96,17 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
     async prepare(snapshot: RepositorySnapshot): Promise<PreparedProfile> {
       const paths = await snapshot.listPaths();
       const captured: Captured[] = [];
+      const seen = new Map<string, number>();
+      const queue: { path: string; depth: number }[] = [];
       for (const path of paths) {
         const origin = origins.find((item) => originHits(item, path));
         if (origin === undefined) continue;
+        queue.push({ path, depth: 0 });
+        seen.set(path, 0);
+      }
+      for (let index = 0; index < queue.length; index += 1) {
+        const { path, depth } = queue[index]!;
+        const origin = origins.find((item) => originHits(item, path));
         const entry = await snapshot.entry(path);
         if (entry === null) continue;
         const descriptors = Object.getOwnPropertyDescriptors(entry);
@@ -122,90 +131,82 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
         const bytes = await snapshot.read(path);
         if (bytes === null) continue;
         const text = new TextDecoder().decode(bytes);
+        const frontmatter = applyPatternsOf(text, origin);
         captured.push(Object.freeze({
           path,
           kind,
           text,
+          bytes: new Uint8Array(bytes),
           digest: sha256(text),
-          origin,
+          origin: origin ?? origins[0]!,
+          discovered: origin !== undefined,
+          applyPatterns: frontmatter.patterns,
+          content: frontmatter.content,
         }));
+        if (
+          !markdown ||
+          kind === "symlink" ||
+          depth >= maxDepth ||
+          (excludes !== undefined && path === excludes.path)
+        ) {
+          continue;
+        }
+        const content = frontmatter.content;
+        for (const reference of listClaudeImportReferences(content, stripComments)) {
+          const dependency = resolveClaudeImportPath(path, reference);
+          if (dependency === null || !paths.includes(dependency)) continue;
+          const nextDepth = depth + 1;
+          const prior = seen.get(dependency);
+          if (prior !== undefined && prior <= nextDepth) continue;
+          seen.set(dependency, nextDepth);
+          queue.push({ path: dependency, depth: nextDepth });
+        }
       }
       const ordered = [...captured].sort((left, right) => compareCodePoints(left.path, right.path));
+      const files = new Map<string, CapturedClaudeFile>();
+      for (const row of ordered) {
+        files.set(row.path, Object.freeze({
+          path: row.path,
+          kind: row.kind,
+          bytes: row.bytes,
+        }));
+      }
+      const settings = excludes?.path === undefined
+        ? parseClaudeProjectSettings(undefined)
+        : parseClaudeProjectSettings(files.get(excludes.path));
+      const documents = new Map(
+        ordered
+          .filter((row) => excludes === undefined || row.path !== excludes.path)
+          .map((row) => {
+            const file = files.get(row.path)!;
+            return [row.path, prepareClaudeDocument(file, row.content, stripComments)] as const;
+          }),
+      );
+      const rules = new Map<string, ParsedClaudeRule>();
+      if (markdown) {
+        for (const row of ordered) {
+          if (!row.discovered || row.origin.kind !== "glob") continue;
+          const file = files.get(row.path);
+          if (file !== undefined) rules.set(row.path, parseClaudeRule(file));
+        }
+      }
+      const cached = new Map<string, Projection>();
       return Object.freeze({
         id: pack.pack.id,
         sourceDependencyPaths: Object.freeze(ordered.map((item) => item.path)),
         project(targetPath: string): Projection {
-          const sources: ResolvedSource[] = [];
-          const contributions: string[] = [];
-          let partial = false;
-          for (const document of ordered) {
-            if (!isAncestor(scopeOf(document.path, document.origin), targetPath)) continue;
-            const apply = applyOf(document.origin);
-            if (apply !== undefined) {
-              const patterns = parseApplyTo(document.text, apply.field);
-              if (patterns === null && apply.ifAbsent === "exclude") {
-                sources.push({
-                  path: document.path,
-                  disposition: "EXCLUDED",
-                  digest: document.digest,
-                  bytesUsed: 0,
-                  truncated: false,
-                });
-                continue;
-              }
-              if (patterns !== null && !matchesApplyTo(patterns, targetPath)) {
-                sources.push({
-                  path: document.path,
-                  disposition: "EXCLUDED",
-                  digest: document.digest,
-                  bytesUsed: 0,
-                  truncated: false,
-                });
-                continue;
-              }
-            }
-            const empty = document.text.trim() === "";
-            sources.push({
-              path: document.path,
-              disposition: empty ? "SELECTED_EMPTY" : "SELECTED",
-              digest: document.digest,
-              bytesUsed: empty ? 0 : Buffer.byteLength(document.text),
-              truncated: false,
-            });
-            if (!empty) contributions.push(document.text);
-            if (atPartial && apply === undefined && FILE_REFERENCE.test(document.text)) {
-              partial = true;
-            }
-          }
-          const units = unitizePayloadContributions(contributions);
-          const context = {
-            cwd: resolver.context.cwd === "repository-root" ? "." : pathDirname(targetPath),
-            trigger: resolver.context.trigger,
-            targetPath,
-            repositoryOnly: true as const,
-          };
-          const evidence = [...claims];
-          if (partial) evidence.push(AT_REFERENCE_EVIDENCE);
-          const status = partial ? "PARTIAL" : "COMPLETE";
-          return {
-            profile: pack.pack.id,
-            context,
-            status,
-            composition: "UNSPECIFIED",
-            sources,
-            normalizedPayloadUnits: units,
-            projectionDigest: sha256(canonicalJson({
-              profile: pack.pack.id,
-              context,
-              sources: sources.map((source) => ({
-                path: source.path,
-                disposition: source.disposition,
-                digest: source.digest,
-              })),
-            })),
-            normalizedPayloadDigest: digestNormalizedPayload(units, "UNSPECIFIED"),
-            evidence,
-          };
+          const hit = cached.get(targetPath);
+          if (hit !== undefined) return hit;
+          const projection = !markdown
+            ? projectCopilot(
+              pack, resolver, claims, atPartial, ordered, targetPath,
+            )
+            : projectMarkdown(
+              pack, resolver, revisions, ordered, files, documents, settings,
+              rules, excludes?.path, maxDepth, targetPath,
+            );
+          cached.set(targetPath, projection);
+          return projection;
         },
       });
     },

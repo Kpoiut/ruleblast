@@ -45,7 +45,9 @@ export interface AncestorOrigin {
 export interface FrontmatterApply {
   readonly kind: "frontmatter-glob";
   readonly field: string;
-  readonly ifAbsent: "exclude";
+  readonly ifAbsent: "exclude" | "include";
+  readonly onMatch?: "SELECTED" | "APPLIED_RULE";
+  readonly matcher?: "minimatch" | "brace-budget";
 }
 
 export interface FixedOrigin {
@@ -73,13 +75,16 @@ export interface SelectSpec {
   readonly names: readonly string[];
   readonly shadows: Readonly<Record<string, readonly string[]>>;
   readonly claimIds: readonly string[];
+  readonly onSameBasename?: "all" | "partial-no-payload";
 }
 
 export interface TransformSpec {
-  readonly kind: "byte-budget" | "at-path-import" | "strip-html-comments";
+  readonly kind: "byte-budget" | "at-path-import" | "strip-html-comments" | "json-exclude-globs";
   readonly bytes?: number;
   readonly maxDepth?: number;
   readonly lexer?: "claude-markdown-v1" | "gemini-markdown-v1";
+  readonly path?: string;
+  readonly field?: string;
   readonly claimIds: readonly string[];
 }
 

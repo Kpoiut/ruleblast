@@ -10,6 +10,7 @@ import {
   uninterpretableReasons,
 } from "../../src/packs/interpret.js";
 import { profileFromCompiledPack } from "../../src/packs/profile.js";
+import { createClaudeProfile } from "../../src/profiles/claude.js";
 import { createCodexProfile, codexProfile } from "../../src/profiles/codex.js";
 import { createCopilotProfile } from "../../src/profiles/copilot.js";
 import { ManifestSnapshot } from "../../src/snapshot.js";
@@ -41,14 +42,13 @@ describe("spec-driven pack interpreter", () => {
     const claude = uninterpretableReasons(
       loadBundledPack("anthropic-claude-code-cli@1").resolver,
     );
-    const gemini = uninterpretableReasons(
-      loadBundledPack("google-gemini-cli@1").resolver,
-    );
+    const geminiResolver = loadBundledPack("google-gemini-cli@1").resolver;
+    const gemini = uninterpretableReasons(geminiResolver);
     const copilot = uninterpretableReasons(
       loadBundledPack("github-copilot-cli@1").resolver,
     );
-    expect(claude).toEqual(["transform"]);
-    expect(gemini).toEqual(["onSymlink", "transform"]);
+    expect(claude).toEqual([]);
+    expect(gemini).toEqual(["onSymlink", "assemble"]);
     expect(copilot).toEqual([]);
     const oracleOps = (directory: string): readonly string[] => {
       const oracle = JSON.parse(
@@ -63,11 +63,19 @@ describe("spec-driven pack interpreter", () => {
     )).toMatchObject({ kind: "interpret", packId: "github/copilot-cli@1" });
     expect(claude.join("\n")).not.toMatch(/fingerprint/iu);
     expect(canInterpretResolver(loadBundledPack("anthropic-claude-code-cli@1").resolver))
-      .toBe(false);
+      .toBe(true);
     const profile = readFileSync(join(repositoryRoot, "src/packs/profile.ts"), "utf8");
     expect(profile).toContain("createClaudeProfile");
     expect(profile).toContain("createGeminiProfile");
     expect(profile).toContain("createCopilotProfile");
+    expect(readFileSync(join(repositoryRoot, "src/packs/interpret.ts"), "utf8"))
+      .not.toContain("createClaudeProfile");
+    expect(readFileSync(join(repositoryRoot, "src/packs/interpret-all.ts"), "utf8"))
+      .not.toContain("createClaudeProfile");
+    expect(readFileSync(join(repositoryRoot, "src/packs/interpret-all-project.ts"), "utf8"))
+      .not.toContain("createClaudeProfile");
+    expect(uninterpretableReasons({ ...geminiResolver, onSymlink: "unknown-unfollowed" }))
+      .toEqual(["assemble"]);
   });
 
   it("keeps shared-prefix nested targets byte-identical to the adapter oracle", async () => {
@@ -97,6 +105,35 @@ describe("spec-driven pack interpreter", () => {
     expect(right.sources.map((source) => source.path)).toEqual(left.sources.map((source) => source.path));
     expect(canonicalJson(left)).toBe(canonicalJson(adapter.project("src/a/one.ts")));
     expect(canonicalJson(right)).toBe(canonicalJson(adapter.project("src/a/two.ts")));
+  });
+
+  it("interprets the bundled Claude pack onto the adapter oracle", async () => {
+    const pack = loadBundledPack("anthropic-claude-code-cli@1");
+    expect(uninterpretableReasons(pack.resolver)).toEqual([]);
+    const interpreted = interpretCompiledPack(pack);
+    const catalog = profileFromCompiledPack(pack);
+    expect(catalog.id).toBe(interpreted.id);
+    const claudeRoot = join(repositoryRoot, "test/fixtures/claude");
+    const files = readdirSync(claudeRoot).filter((name) => name.endsWith(".json")).sort();
+    expect(files.length).toBeGreaterThan(10);
+    for (const file of files) {
+      const snapshot = new ManifestSnapshot(
+        JSON.parse(readFileSync(join(claudeRoot, file), "utf8")),
+      );
+      const adapter = await createClaudeProfile({
+        id: pack.pack.id,
+        evidence: catalog.evidence,
+      }).prepare(snapshot);
+      const engine = await interpreted.prepare(snapshot);
+      expect([...engine.sourceDependencyPaths], file).toEqual([...adapter.sourceDependencyPaths]);
+      const paths = await snapshot.listPaths();
+      const targets = paths.length === 0 ? ["file.ts"] : paths;
+      for (const target of targets) {
+        expect(canonicalJson(engine.project(target)), `${file} ${target}`).toBe(
+          canonicalJson(adapter.project(target)),
+        );
+      }
+    }
   });
 
   it("interprets the bundled Copilot pack onto the adapter oracle", async () => {

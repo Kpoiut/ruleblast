@@ -116,8 +116,8 @@ describe("candidate reality conformance lab", () => {
     expect(byId["openai/codex-cli@1"]?.engine).toBe("INTERPRET");
     expect(byId["openai/codex-cli@1"]?.proof).toBe("ORACLE");
     expect(byId["openai/codex-cli@1"]?.missingOperations).toEqual([]);
-    expect(byId["anthropic/claude-code-cli@1"]?.engine).toBe("FINGERPRINT");
-    expect(byId["anthropic/claude-code-cli@1"]?.proof).toBe("ADAPTER");
+    expect(byId["anthropic/claude-code-cli@1"]?.engine).toBe("INTERPRET");
+    expect(byId["anthropic/claude-code-cli@1"]?.proof).toBe("ORACLE");
     expect(byId["google/gemini-cli@1"]?.proof).toBe("ADAPTER");
     expect(byId["google/gemini-cli@1"]?.engine).toBe("FINGERPRINT");
     const bundledRoot = join(repositoryRoot, "packs/bundled");
@@ -139,8 +139,10 @@ describe("candidate reality conformance lab", () => {
         expect(() => interpretCompiledPack(pack)).toThrow(InvalidPackError);
       }
     }
-    expect(byId["anthropic/claude-code-cli@1"]?.missingOperations).toEqual(["transform"]);
-    expect(byId["google/gemini-cli@1"]?.missingOperations).toEqual(["onSymlink", "transform"]);
+    expect(byId["anthropic/claude-code-cli@1"]?.missingOperations).toEqual([]);
+    expect(byId["google/gemini-cli@1"]?.missingOperations).toEqual(["onSymlink", "assemble"]);
+    expect(byId["google/gemini-cli@1"]?.probeCount).toBeGreaterThan(0);
+    expect(byId["anthropic/claude-code-cli@1"]?.probeCount).toBeGreaterThan(0);
     expect(byId["github/copilot-cli@1"]?.missingOperations).toEqual([]);
     expect(byId["github/copilot-cli@1"]?.engine).toBe("INTERPRET");
     expect(byId["github/copilot-cli@1"]?.proof).toBe("ORACLE");
@@ -202,10 +204,10 @@ describe("candidate reality conformance lab", () => {
     expect(lab).toContain("ADAPTER");
     expect(lab).not.toMatch(/\bOPS\b/u);
     expect(lab).toContain("0 ops");
-    expect(lab).toContain("1 ops");
     expect(lab).toContain("2 ops");
-    expect(lab).toContain("transform");
     expect(lab).toContain("onSymlink");
+    expect(lab).toContain("assemble");
+    expect(lab).toContain("probes");
     expect(lab).toContain("xai/grok-build-cli");
     expect(lab).toContain("NOT_ADMITTED");
     expect(lab).toContain("selection RECORDED");
@@ -418,8 +420,8 @@ describe("candidate reality conformance lab", () => {
       }],
     }));
     await expect(verifyBundledPack(root, pack)).rejects.toThrow(/oracle\.probes\[0\] projection digest mismatch/u);
-    const claude = JSON.parse(
-      readFileSync(join(repositoryRoot, "packs/bundled/anthropic-claude-code-cli@1/oracle.json"), "utf8"),
+    const gemini = JSON.parse(
+      readFileSync(join(repositoryRoot, "packs/bundled/google-gemini-cli@1/oracle.json"), "utf8"),
     ) as {
       readonly missingOperations: readonly string[];
       readonly probes: readonly {
@@ -428,7 +430,7 @@ describe("candidate reality conformance lab", () => {
         readonly projectionDigests: Readonly<Record<string, string>>;
       }[];
     };
-    const adapterProbe = claude.probes[0];
+    const adapterProbe = gemini.probes[0];
     expect(adapterProbe).toBeDefined();
     const adapterBroken = { ...adapterProbe!.projectionDigests };
     const adapterTarget = Object.keys(adapterBroken)[0];
@@ -438,25 +440,25 @@ describe("candidate reality conformance lab", () => {
     writeFileSync(join(adapterRoot, "oracle.json"), JSON.stringify({
       schema: "ruleblast.interpreter-oracle.v1",
       kind: "uninterpretable",
-      packId: "anthropic/claude-code-cli@1",
-      missingOperations: claude.missingOperations,
+      packId: "google/gemini-cli@1",
+      missingOperations: gemini.missingOperations,
       probes: [{
         snapshot: adapterProbe!.snapshot,
         sourceDependencyPaths: adapterProbe!.sourceDependencyPaths,
         projectionDigests: adapterBroken,
       }],
     }));
-    await expect(verifyBundledPack(adapterRoot, loadBundledPack("anthropic-claude-code-cli@1")))
+    await expect(verifyBundledPack(adapterRoot, loadBundledPack("google-gemini-cli@1")))
       .rejects.toThrow(/oracle\.probes\[0\] projection digest mismatch/u);
     const opsRoot = mkdtempSync(join(tmpdir(), "ruleblast-oracle-ops-"));
     writeFileSync(join(opsRoot, "oracle.json"), JSON.stringify({
       schema: "ruleblast.interpreter-oracle.v1",
       kind: "uninterpretable",
-      packId: "anthropic/claude-code-cli@1",
+      packId: "google/gemini-cli@1",
       missingOperations: ["context.cwd"],
-      probes: claude.probes,
+      probes: gemini.probes,
     }));
-    await expect(verifyBundledPack(opsRoot, loadBundledPack("anthropic-claude-code-cli@1")))
+    await expect(verifyBundledPack(opsRoot, loadBundledPack("google-gemini-cli@1")))
       .rejects.toThrow(/oracle missingOperations mismatch/u);
     const missing = mkdtempSync(join(tmpdir(), "ruleblast-oracle-missing-"));
     await expect(verifyBundledPack(missing, pack)).rejects.toThrow(InvalidPackError);

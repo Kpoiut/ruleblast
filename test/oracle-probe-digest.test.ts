@@ -113,13 +113,11 @@ describe("codex interpreter oracle probes", () => {
 });
 
 describe("fingerprint adapter oracle probes", () => {
-  it("packs the Claude fixture suite through the fingerprint adapter, not OPS-only", async () => {
+  it("packs the Claude fixture suite through the interpreter", async () => {
     const oracle = readOracle("anthropic-claude-code-cli@1");
-    expect(oracle.kind).toBe("uninterpretable");
+    expect(oracle.kind).toBe("interpret");
     expect(oracle.packId).toBe("anthropic/claude-code-cli@1");
-    expect(oracle.missingOperations?.length).toBeGreaterThan(0);
-    expect(() => interpretCompiledPack(loadBundledPack("anthropic-claude-code-cli@1")))
-      .toThrow(InvalidPackError);
+    expect(oracle.missingOperations).toBeUndefined();
     await expectAdapterProbes("anthropic-claude-code-cli@1", "test/fixtures/claude");
   });
 

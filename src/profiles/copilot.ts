@@ -1,6 +1,7 @@
 import { Minimatch } from "minimatch";
 import { canonicalJson, sha256 } from "../canonical.js";
 import { compareCodePoints, pathBasename, pathDirname } from "../domain/repository-path.js";
+import { parseFrontmatterGlobs } from "../packs/ops-frontmatter.js";
 import {
   GITHUB_COPILOT_CLI_PROFILE_ID,
   type Projection,
@@ -97,14 +98,9 @@ function scopeOf(path: string, kind: CopilotDocument["kind"]): string {
 }
 
 function parseApplyTo(text: string): readonly string[] | null {
-  if (!text.startsWith("---")) return null;
-  const close = text.indexOf("\n---", 3);
-  if (close === -1) return null;
-  const match = /(?:^|\n)applyTo:\s*(.+)\s*/u.exec(text.slice(3, close));
-  if (match === null) return null;
-  const raw = match[1]!.trim().replace(/^["']|["']$/gu, "");
-  if (raw === "") return [];
-  return Object.freeze(raw.split(",").map((part) => part.trim()).filter(Boolean));
+  const parsed = parseFrontmatterGlobs(text, "applyTo", false);
+  if (parsed.kind !== "ok") return null;
+  return parsed.patterns;
 }
 
 function matchesApplyTo(patterns: readonly string[], targetPath: string): boolean {

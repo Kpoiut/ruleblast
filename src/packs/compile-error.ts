@@ -91,12 +91,22 @@ export function expectSafeName(value: string, label: string): string {
 }
 
 export function decodeApply(value: unknown, label: string): FrontmatterApply {
-  const object = expectKeys(value, ["kind", "field", "ifAbsent"], label);
-  const field = expectString(object.field, `${label}.field`);
-  if (field !== "applyTo") fail(`${label}.field must be applyTo`);
+  const object = expectAllowedKeys(
+    value,
+    ["kind", "field", "ifAbsent"],
+    ["onMatch", "matcher"],
+    label,
+  );
+  const field = expectSafeName(expectString(object.field, `${label}.field`), `${label}.field`);
   return Object.freeze({
     kind: expectEnum(object.kind, ["frontmatter-glob"], `${label}.kind`),
     field,
-    ifAbsent: expectEnum(object.ifAbsent, ["exclude"], `${label}.ifAbsent`),
+    ifAbsent: expectEnum(object.ifAbsent, ["exclude", "include"], `${label}.ifAbsent`),
+    ...(object.onMatch === undefined ? {} : {
+      onMatch: expectEnum(object.onMatch, ["SELECTED", "APPLIED_RULE"], `${label}.onMatch`),
+    }),
+    ...(object.matcher === undefined ? {} : {
+      matcher: expectEnum(object.matcher, ["minimatch", "brace-budget"], `${label}.matcher`),
+    }),
   });
 }

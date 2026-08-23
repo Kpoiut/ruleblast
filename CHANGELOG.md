@@ -2,6 +2,15 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.5.2 — SHIPPED TO MAIN
+
+- Claude Code is interpreted from `resolver.json`: `strip-html-comments`, `at-path-import` (`claude-markdown-v1`, four edges), `json-exclude-globs` on `.claude/settings.json`, frontmatter-glob `paths` with brace-budget matching, and same-basename partial for dual root memory. Live interpreter projections are byte-identical to `createClaudeProfile` on every packed Claude fixture. Lab `INTERPRET` / `ORACLE`. The adapter remains the test oracle and is not imported by the interpreter. Not a fifth action. Not a fifth bundled reality.
+- Frontmatter apply is narrow YAML: one mapping field to a string scalar (comma-split) or a string sequence. Copilot `applyTo` and Claude `paths` share that decoder. Maps, aliases, and merge keys fail closed.
+- Transform admission is the operations the engine executes (`byte-budget`, `strip-html-comments`, `at-path-import` with a named lexer, `json-exclude-globs`). Markdown tokenize/import and glob-budget matchers live under `src/packs/ops-*` and are reused by adapters as the same primitive, not a third vendor interpreter.
+- Interpreter admission matches the two executable families: first-per-directory / ordered / byte-budget, or select-all / unspecified assemble. Gemini stays fingerprint on `onSymlink` (`partial-unfollowed`) and ordered `assemble`. Flipping the symlink policy does not admit a third family. Select-all prepares frontmatter, rule parse, and document tokens once, then caches projections.
+- Lab `--detail` / `--receipt` records Codex, Copilot, and Claude as `INTERPRET` / `ORACLE` and Gemini as `FINGERPRINT` / `ADAPTER` with sealed probe counts. Benchmark lab recording counts ORACLE vs ADAPTER rows, missing operations, and probes. Overlay wall and the 5 s clock are unchanged.
+- The published CLI people install is still `ruleblast@2.5.1`.
+
 ## 2.5.1 — RELEASED
 
 - Copilot CLI is interpreted from `resolver.json`: multiple discover origins (fixed, glob, ancestors), `select.mode` all, `assemble.mode` unspecified, empty transform, `frontmatter-glob` `applyTo`, and `onAtReference: partial-unexpanded`. Live interpreter projections are byte-identical to `createCopilotProfile` on every packed Copilot fixture. Lab `INTERPRET` / `ORACLE`. The adapter remains the test oracle and is not imported by the interpreter. Not a fifth action. Not a fifth bundled reality.

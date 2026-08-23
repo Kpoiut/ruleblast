@@ -455,9 +455,15 @@ This tree is `2.5.1`. Latest independently verified public npm distribution is `
 
 The interpreter executes Copilot’s pack: multi-origin discover, select-all, unspecified assemble, frontmatter-glob `applyTo`, unexpanded `@` mention. Projections match `createCopilotProfile` on every packed Copilot fixture. Lab `INTERPRET` / `ORACLE`. The adapter stays the oracle and is not imported by the interpreter. Claude remains fingerprint on `transform`. Gemini remains fingerprint on `onSymlink` and `transform`. Those lists shrank because generic operations now run, not because gaps were hidden. One path primitive. Codex prefix-directory cache. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
 
+## **SHIPPED TO MAIN** — `v2.5.2`: Claude interpreted from resolver.json
+
+This tree is `2.5.2`. Latest independently verified public npm distribution remains `2.5.1`. Companion version is `2.5.2`. Pack `ruleblast-companion-2.5.2.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+The interpreter executes Claude’s pack: `strip-html-comments`, `@path` import with the `claude-markdown-v1` lexer, `json-exclude-globs`, frontmatter `paths` with brace-budget matching, and dual-root same-basename partial. Projections match `createClaudeProfile` on every packed Claude fixture. Lab `INTERPRET` / `ORACLE`. The adapter stays the oracle and is not imported by the interpreter. Admission matches the two executable families; Gemini remains fingerprint on `onSymlink` (`partial-unfollowed`) and ordered `assemble`. Frontmatter apply is narrow YAML shared with Copilot and Claude rules. Markdown tokenize is shared with the Gemini adapter (HTML comments stay when that lexer does not strip). Lab recording counts three ORACLE realities, one ADAPTER, and sealed probe counts. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
+
 ## **NEXT** — Fingerprint resolver operations
 
-Claude and Gemini stay fingerprint engines until `transform` (and Gemini `partial-unfollowed`) are data-complete. Closing those operation gaps does not add a fifth bundled reality.
+Gemini stays a fingerprint engine until `onSymlink` (`partial-unfollowed`) and ordered `assemble` are data-complete. Closing those gaps does not add a fifth bundled reality.
 
 ## **HORIZON** — `v3`: Prove the overlay at corpus scale
 
