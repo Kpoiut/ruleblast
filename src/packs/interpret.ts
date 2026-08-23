@@ -6,7 +6,7 @@ import {
   pathDirname,
 } from "../domain/repository-path.js";
 import type { Projection, ResolvedSource } from "../model.js";
-import type { RepositorySnapshot, SnapshotEntry } from "../snapshot.js";
+import { ownSnapshotEntry, type RepositorySnapshot, type SnapshotEntry } from "../snapshot.js";
 import {
   defineEvidenceRef,
   digestNormalizedPayload,
@@ -23,7 +23,6 @@ export { canInterpretResolver, uninterpretableReasons } from "./interpret-admit.
 
 const BOUNDARY_EVIDENCE =
   "UNSUPPORTED_BOUNDARY: named Codex instruction symlink was not followed";
-const ENTRY_FIELDS = ["path", "kind", "executable"] as const;
 
 interface Candidate {
   readonly path: string;
@@ -192,29 +191,11 @@ export function interpretCompiledPack(pack: CompiledPack): ProfileDefinition {
       ].sort(compareCodePoints);
       const candidates = new Map<string, Candidate>();
       for (const path of candidatePaths) {
-        const entry = await snapshot.entry(path);
-        if (entry === null) {
+        const raw = await snapshot.entry(path);
+        if (raw === null) {
           throw new Error(`Missing pack candidate entry during preparation: ${path}`);
         }
-        const descriptors = Object.getOwnPropertyDescriptors(entry);
-        if (
-          Reflect.ownKeys(entry).length !== ENTRY_FIELDS.length ||
-          ENTRY_FIELDS.some((field) => {
-            const descriptor = descriptors[field];
-            return descriptor === undefined || !("value" in descriptor);
-          })
-        ) {
-          throw new TypeError(`Pack candidate entry must contain only own data fields: ${path}`);
-        }
-        const kind = descriptors.kind?.value;
-        const executable = descriptors.executable?.value;
-        if (
-          descriptors.path?.value !== path ||
-          (kind !== "file" && kind !== "symlink") ||
-          typeof executable !== "boolean"
-        ) {
-          throw new TypeError(`Invalid pack candidate entry: ${path}`);
-        }
+        const entry = ownSnapshotEntry(raw, path);
         const bytes = await snapshot.read(path);
         if (bytes === null) {
           throw new Error(`Missing pack candidate bytes during preparation: ${path}`);
@@ -222,8 +203,8 @@ export function interpretCompiledPack(pack: CompiledPack): ProfileDefinition {
         const copy = new Uint8Array(bytes);
         candidates.set(path, Object.freeze({
           path,
-          kind,
-          executable,
+          kind: entry.kind,
+          executable: entry.executable,
           bytes: copy,
           digest: sha256(copy),
         }));

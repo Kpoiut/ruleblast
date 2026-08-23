@@ -1,5 +1,5 @@
 import type { SnapshotRef } from "./model.js";
-import { referenceLabel, type ShellDialect } from "./render-format.js";
+import { hostShellDialect, referenceLabel, type ShellDialect } from "./render-format.js";
 
 export interface CurrentTextPresentationContext {
   readonly currentLabel: string;
@@ -57,11 +57,12 @@ function isCurrentSubject(value: TextPresentationSubject): boolean {
 function defaultContext(
   value: TextPresentationSubject,
 ): TextPresentationContext {
+  const shellDialect = hostShellDialect();
   if (value.mode === "current") {
     return {
       currentLabel: referenceLabel(value.snapshot),
       caseLabel: null,
-      shellDialect: "posix",
+      shellDialect,
     };
   }
   if (value.mode === "diff") {
@@ -69,20 +70,20 @@ function defaultContext(
       beforeLabel: referenceLabel(value.before),
       afterLabel: referenceLabel(value.after),
       caseLabel: null,
-      shellDialect: "posix",
+      shellDialect,
     };
   }
   return value.analysisMode === "current"
     ? {
         currentLabel: referenceLabel(value.snapshot),
         caseLabel: null,
-        shellDialect: "posix",
+        shellDialect,
       }
     : {
         beforeLabel: referenceLabel(value.before),
         afterLabel: referenceLabel(value.after),
         caseLabel: null,
-        shellDialect: "posix",
+        shellDialect,
       };
 }
 

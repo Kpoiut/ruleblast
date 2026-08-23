@@ -2,7 +2,7 @@ import { Minimatch } from "minimatch";
 import { sha256 } from "../canonical.js";
 import { compareCodePoints, pathBasename } from "../domain/repository-path.js";
 import type { Projection, ResolvedSource } from "../model.js";
-import type { RepositorySnapshot } from "../snapshot.js";
+import { ownSnapshotEntry, type RepositorySnapshot } from "../snapshot.js";
 import {
   defineEvidenceRef,
   type PreparedProfile,
@@ -28,8 +28,6 @@ import {
   type ImportedMarkdownFile,
 } from "./ops-markdown.js";
 import type { CompiledPack, DiscoverOrigin, FrontmatterApply, TransformSpec } from "./schema.js";
-
-const ENTRY_FIELDS = ["path", "kind", "executable"] as const;
 
 function applyOf(origin: DiscoverOrigin): FrontmatterApply | undefined {
   return origin.kind === "glob" ? origin.apply : undefined;
@@ -138,34 +136,16 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
       }
       for (let index = 0; index < queue.length; index += 1) {
         const { path, depth, origin } = queue[index]!;
-        const entry = await snapshot.entry(path);
-        if (entry === null) continue;
-        const descriptors = Object.getOwnPropertyDescriptors(entry);
-        if (
-          Reflect.ownKeys(entry).length !== ENTRY_FIELDS.length ||
-          ENTRY_FIELDS.some((field) => {
-            const descriptor = descriptors[field];
-            return descriptor === undefined || !("value" in descriptor);
-          })
-        ) {
-          throw new TypeError(`Pack candidate entry must contain only own data fields: ${path}`);
-        }
-        const kind = descriptors.kind?.value;
-        const executable = descriptors.executable?.value;
-        if (
-          descriptors.path?.value !== path ||
-          (kind !== "file" && kind !== "symlink") ||
-          typeof executable !== "boolean"
-        ) {
-          throw new TypeError(`Invalid pack candidate entry: ${path}`);
-        }
+        const raw = await snapshot.entry(path);
+        if (raw === null) continue;
+        const entry = ownSnapshotEntry(raw, path);
         const bytes = await snapshot.read(path);
         if (bytes === null) continue;
         const text = new TextDecoder().decode(bytes);
         const frontmatter = applyPatternsOf(text, origin);
         captured.push(Object.freeze({
           path,
-          kind,
+          kind: entry.kind,
           text,
           bytes: new Uint8Array(bytes),
           digest: sha256(text),
@@ -176,7 +156,7 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
         }));
         if (
           !markdown ||
-          kind === "symlink" ||
+          entry.kind === "symlink" ||
           depth >= maxDepth ||
           (excludes !== undefined && path === excludes.path) ||
           (union !== undefined && path === union.path)

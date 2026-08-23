@@ -110,7 +110,7 @@ describe("P1/B0 plan gate", () => {
     expect(changelog).toMatch(/^## 2\.3\.0 — RELEASED/mu);
     expect(changelog).not.toMatch(/^## 2\.3\.0 — SHIPPED TO MAIN/mu);
     expect(read("ROADMAP.md")).toMatch(/## \*\*RELEASED\*\* — `v2\.3\.0`/u);
-    expect(read("package.json")).toContain('"version": "2.5.4"');
+    expect(read("package.json")).toContain('"version": "2.5.5"');
   });
 
   it("records select-all discover origin once per queued path", () => {
@@ -123,5 +123,28 @@ describe("P1/B0 plan gate", () => {
       "origin: origins.find((item) => originHits(item, dependency, extraNames))",
     );
     expect(source.match(/originHits\(item, path/gu)).toHaveLength(1);
+  });
+
+  it("shares host Git spawn, omitted-context dialect, and snapshot entry capture", () => {
+    const gitExec = read("src/git-exec.ts");
+    expect(gitExec).toContain("export async function runGit");
+    expect(gitExec).toContain("windowsHide: true");
+    expect(gitExec).not.toContain("shell: true");
+    expect(read("src/git.ts")).toContain('from "./git-exec.js"');
+    expect(read("src/git.ts")).not.toContain("node:child_process");
+    expect(read("src/application/recent-commits.ts")).toContain('from "../git-exec.js"');
+    expect(read("src/application/recent-commits.ts")).not.toContain("node:child_process");
+
+    expect(read("src/render-context.ts")).toContain("hostShellDialect");
+    expect(read("src/render-context.ts")).not.toMatch(/shellDialect:\s*"posix"/u);
+    expect(read("hosts/vscode/src/extension.ts")).toContain("await renderDetail(state.result)");
+
+    expect(read("src/snapshot.ts")).toContain("export function ownSnapshotEntry");
+    expect(read("src/packs/interpret.ts")).toContain("ownSnapshotEntry");
+    expect(read("src/packs/interpret-all.ts")).toContain("ownSnapshotEntry");
+    expect(read("src/profiles/codex.ts")).toContain("ownSnapshotEntry");
+    expect(read("src/profiles/claude.ts")).toContain("ownSnapshotEntry");
+    expect(read("src/packs/interpret.ts")).not.toContain("ENTRY_FIELDS");
+    expect(read("src/packs/interpret-all.ts")).not.toContain("ENTRY_FIELDS");
   });
 });

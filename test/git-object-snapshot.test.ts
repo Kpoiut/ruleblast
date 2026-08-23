@@ -72,13 +72,14 @@ describe("Git object snapshot", () => {
   });
 
   it("pins --no-replace-objects on every git spawn", async () => {
-    const source = await import("node:fs/promises").then(async () =>
-      (await import("node:fs")).readFileSync(
-        new URL("../src/git.ts", import.meta.url),
-        "utf8",
-      ),
-    );
-    expect(source).toContain("--no-replace-objects");
+    const read = (await import("node:fs")).readFileSync;
+    const spawn = read(new URL("../src/git-exec.ts", import.meta.url), "utf8");
+    const git = read(new URL("../src/git.ts", import.meta.url), "utf8");
+    const log = read(new URL("../src/application/recent-commits.ts", import.meta.url), "utf8");
+    expect(spawn).toContain("--no-replace-objects");
+    expect(spawn).toContain("windowsHide: true");
+    expect(git).toContain('from "./git-exec.js"');
+    expect(log).toContain('from "../git-exec.js"');
   });
 
   it("conforms sha1 storage object names", async () => {

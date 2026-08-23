@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { ManifestSnapshot } from "../src/snapshot.js";
+import { ManifestSnapshot, ownSnapshotEntry } from "../src/snapshot.js";
 import type { RepositorySnapshot } from "../src/snapshot.js";
 
 const textDecoder = new TextDecoder();
@@ -42,6 +42,27 @@ function loadBasicFixture(): unknown {
     ),
   ) as unknown;
 }
+
+describe("ownSnapshotEntry", () => {
+  it("accepts a closed file or symlink record and rejects extra fields", () => {
+    expect(ownSnapshotEntry(
+      { path: "AGENTS.md", kind: "file", executable: false },
+      "AGENTS.md",
+    )).toEqual({ path: "AGENTS.md", kind: "file", executable: false });
+    expect(ownSnapshotEntry(
+      { path: "link", kind: "symlink", executable: false },
+      "link",
+    )).toEqual({ path: "link", kind: "symlink", executable: false });
+    expect(() => ownSnapshotEntry(
+      { path: "AGENTS.md", kind: "file", executable: false, extra: true },
+      "AGENTS.md",
+    )).toThrow(/own data fields/u);
+    expect(() => ownSnapshotEntry(
+      { path: "other.md", kind: "file", executable: false },
+      "AGENTS.md",
+    )).toThrow(/Invalid pack candidate entry/u);
+  });
+});
 
 describe("ManifestSnapshot", () => {
   it("uses the checked fixture label for a deterministic fixture ref", async () => {

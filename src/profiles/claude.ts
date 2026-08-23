@@ -4,7 +4,7 @@ import {
   type Projection,
   type ResolvedSource,
 } from "../model.js";
-import type { RepositorySnapshot } from "../snapshot.js";
+import { ownSnapshotEntry, type RepositorySnapshot } from "../snapshot.js";
 import {
   expandClaudeDocument,
   listClaudeImportReferences,
@@ -43,7 +43,6 @@ const ROOT_MEMORY = "CLAUDE.md";
 const DOT_ROOT_MEMORY = ".claude/CLAUDE.md";
 const SETTINGS_PATH = ".claude/settings.json";
 const MEMORY_NAMES = new Set(["CLAUDE.md", "CLAUDE.local.md"]);
-const ENTRY_FIELDS = ["path", "kind", "executable"] as const;
 
 /** Rules match full paths; without rules, resolution changes only by directory. */
 function claudeResolutionCacheKey(targetPath: string, hasRules: boolean): string {
@@ -56,25 +55,6 @@ function isMemoryPath(path: string): boolean {
 
 function isDirectCandidate(path: string): boolean {
   return isMemoryPath(path) || isClaudeRulePath(path) || path === SETTINGS_PATH;
-}
-
-function captureEntry(value: unknown, expectedPath: string): Omit<CapturedClaudeFile, "bytes"> {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    throw new TypeError(`Claude candidate entry must be an object: ${expectedPath}`);
-  }
-  const descriptors = Object.getOwnPropertyDescriptors(value);
-  if (Reflect.ownKeys(value).length !== ENTRY_FIELDS.length ||
-      ENTRY_FIELDS.some((field) => !Object.hasOwn(descriptors, field) ||
-        !("value" in descriptors[field]!))) {
-    throw new TypeError(`Claude candidate entry must contain only own data fields: ${expectedPath}`);
-  }
-  const path = descriptors.path?.value;
-  const kind = descriptors.kind?.value;
-  if (path !== expectedPath || (kind !== "file" && kind !== "symlink") ||
-      typeof descriptors.executable?.value !== "boolean") {
-    throw new TypeError(`Invalid Claude candidate entry: ${expectedPath}`);
-  }
-  return Object.freeze({ path, kind });
 }
 
 function combineStatus(
@@ -288,10 +268,14 @@ async function captureDependencies(
     const { path, depth } = pending.shift()!;
     const entry = await snapshot.entry(path);
     if (entry === null) throw new Error(`Missing Claude snapshot entry during preparation: ${path}`);
-    const captured = captureEntry(entry, path);
+    const captured = ownSnapshotEntry(entry, path);
     const bytes = await snapshot.read(path);
     if (bytes === null) throw new Error(`Missing Claude snapshot bytes during preparation: ${path}`);
-    const file = Object.freeze({ ...captured, bytes: new Uint8Array(bytes) });
+    const file = Object.freeze({
+      path: captured.path,
+      kind: captured.kind,
+      bytes: new Uint8Array(bytes),
+    });
     files.set(path, file);
     if (file.kind === "symlink" || path === SETTINGS_PATH || depth >= 4) continue;
     const rule = isClaudeRulePath(path) ? parseClaudeRule(file) : null;

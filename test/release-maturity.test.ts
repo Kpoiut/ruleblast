@@ -994,9 +994,9 @@ describe("public release maturity", () => {
     }
     expect(read("CHANGELOG.md")).toContain("## 2.5.1 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.1 — SHIPPED TO MAIN/u);
-    expect(read("package.json")).toContain('"version": "2.5.4"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.4"');
-    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.5.4`");
+    expect(read("package.json")).toContain('"version": "2.5.5"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.5"');
+    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.5.5`");
     expect(read("README.md")).toContain("ruleblast-companion-2.5.1.vsix");
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.1"',
@@ -1023,8 +1023,8 @@ describe("public release maturity", () => {
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.5.2 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.2 — RELEASED/u);
-    expect(read("package.json")).toContain('"version": "2.5.4"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.4"');
+    expect(read("package.json")).toContain('"version": "2.5.5"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.5"');
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.1"',
     );
@@ -1050,8 +1050,8 @@ describe("public release maturity", () => {
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.5.3 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.3 — RELEASED/u);
-    expect(read("package.json")).toContain('"version": "2.5.4"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.4"');
+    expect(read("package.json")).toContain('"version": "2.5.5"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.5"');
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.1"',
     );
@@ -1061,7 +1061,9 @@ describe("public release maturity", () => {
     const roadmap = read("ROADMAP.md");
     const heading =
       "## **SHIPPED TO MAIN** — `v2.5.4`: Host platform quoting and macOS verify";
-    const next = roadmap.indexOf("## **NEXT** — Runtime calibration without a fifth reality");
+    const next = roadmap.indexOf(
+      "## **SHIPPED TO MAIN** — `v2.5.5`: Host Git spawn and shared snapshot entry",
+    );
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
     expect(next).toBeGreaterThan(start);
@@ -1075,9 +1077,35 @@ describe("public release maturity", () => {
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.5.4 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.4 — RELEASED/u);
-    expect(read("package.json")).toContain('"version": "2.5.4"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.4"');
+    expect(read("package.json")).toContain('"version": "2.5.5"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.5"');
     expect(read(".github/workflows/verify.yml")).toContain("macos-latest");
+    expect(read("src/package-identity.ts")).toContain(
+      'PUBLISHED_PACKAGE_VERSION = "2.5.1"',
+    );
+  });
+
+  it("records v2.5.5 as host Git spawn and shared snapshot entry", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading =
+      "## **SHIPPED TO MAIN** — `v2.5.5`: Host Git spawn and shared snapshot entry";
+    const next = roadmap.indexOf("## **NEXT** — Runtime calibration without a fifth reality");
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toContain("2.5.5");
+    expect(shipped).toContain("2.5.1");
+    expect(shipped).toContain("ruleblast-companion-2.5.5.vsix");
+    expect(shipped).toContain("runGit()");
+    expect(shipped).toContain("windowsHide");
+    expect(shipped).toContain("ownSnapshotEntry()");
+    expect(shipped).toContain("Not a fifth action");
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 2.5.5 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.5 — RELEASED/u);
+    expect(read("package.json")).toContain('"version": "2.5.5"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.5"');
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.1"',
     );

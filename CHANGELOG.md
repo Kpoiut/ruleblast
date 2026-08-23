@@ -2,6 +2,13 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.5.5 — SHIPPED TO MAIN
+
+- Git analysis and companion Diff From share one `runGit()` spawn: same lock/fsmonitor flags, `windowsHide` on Windows. Not a second Git engine.
+- Omitted text presentation context uses `hostShellDialect()`, so companion Show Detail CTAs match the host. CLI and MCP still pass the dialect explicitly.
+- Interpreter and Codex/Claude adapter prepare capture snapshot entries through `ownSnapshotEntry()`. Same closed-record check. Not a fifth action. Not a fifth bundled reality.
+- The published CLI people install is still `ruleblast@2.5.1`.
+
 ## 2.5.4 — SHIPPED TO MAIN
 
 - Host shell quoting follows the process platform: Windows PowerShell, POSIX on Linux and macOS. CLI, MCP stdio, companion `presentExplain`, and GIF explain share `hostShellDialect()`. MCP no longer hardcodes POSIX CTAs on Windows. Not a fifth action. Not a fifth bundled reality.

@@ -1,12 +1,11 @@
-import { execFile } from "node:child_process";
 import { constants, type BigIntStats } from "node:fs";
 import { lstat, open, readFile, readlink, realpath } from "node:fs/promises";
 import { join } from "node:path";
-import { promisify } from "node:util";
 import type { SnapshotRef } from "./model.js";
 import { gitBlobOid } from "./domain/git-blob-identity.js";
 import { compareCodePoints } from "./domain/repository-path.js";
 import { GitSnapshotError } from "./git-errors.js";
+import { runGit } from "./git-exec.js";
 import type {
   GitObjectSnapshot,
   GitStorageObjectFormat,
@@ -14,36 +13,8 @@ import type {
   SnapshotEntry,
 } from "./snapshot.js";
 
-const execFileAsync = promisify(execFile);
-const MAX_GIT_OUTPUT_BYTES = 256 * 1024 * 1024;
-
 interface TreeEntry extends SnapshotEntry {
   readonly oid: string;
-}
-
-async function runGit(directory: string, args: readonly string[]): Promise<Buffer> {
-  const result = await execFileAsync(
-    "git",
-    [
-      "--no-optional-locks",
-      "--no-replace-objects",
-      "-c",
-      "core.fsmonitor=false",
-      "-C",
-      directory,
-      ...args,
-    ],
-    {
-      encoding: "buffer",
-      env: {
-        ...process.env,
-        GIT_NO_LAZY_FETCH: "1",
-        GIT_OPTIONAL_LOCKS: "0",
-      },
-      maxBuffer: MAX_GIT_OUTPUT_BYTES,
-    },
-  );
-  return Buffer.from(result.stdout);
 }
 
 function parseTree(output: Buffer): Map<string, TreeEntry> {

@@ -473,6 +473,12 @@ This tree is `2.5.4`. Latest independently verified public npm distribution rema
 
 CLI, MCP, and companion explain CTAs use `hostShellDialect()`: PowerShell on Windows, POSIX on Linux and macOS. MCP no longer hardcodes POSIX. Verify matrix adds `macos-latest` beside ubuntu and windows on Node 20/22/24/26. Select-all prepare keeps the matching origin with each captured path. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
 
+## **SHIPPED TO MAIN** — `v2.5.5`: Host Git spawn and shared snapshot entry
+
+This tree is `2.5.5`. Latest independently verified public npm distribution remains `2.5.1`. Companion version is `2.5.5`. Pack `ruleblast-companion-2.5.5.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+Git analysis and Diff From `git log` share `runGit()` with `windowsHide`. Omitted presentation context uses `hostShellDialect()`, so companion Show Detail matches CLI/MCP quoting. Interpreter and Codex/Claude adapter prepare capture entries through `ownSnapshotEntry()`. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
+
 ## **NEXT** — Runtime calibration without a fifth reality
 
 ORACLE remains an implementation-oracle: interpreter bytes match the adapter oracle. A later calibration against vendor-runtime introspection, if a surface exposes it deterministically, does not add a fifth bundled reality.

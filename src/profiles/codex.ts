@@ -11,7 +11,7 @@ import {
   type Projection,
   type ResolvedSource,
 } from "../model.js";
-import type { RepositorySnapshot, SnapshotEntry } from "../snapshot.js";
+import { ownSnapshotEntry, type RepositorySnapshot, type SnapshotEntry } from "../snapshot.js";
 import {
   defineEvidenceRef,
   digestNormalizedPayload,
@@ -31,40 +31,6 @@ interface Candidate {
   readonly kind: SnapshotEntry["kind"];
   readonly executable: boolean;
   readonly bytes: Uint8Array;
-}
-
-const CANDIDATE_ENTRY_FIELDS = ["path", "kind", "executable"] as const;
-
-function captureCandidateEntry(
-  value: unknown,
-  expectedPath: string,
-): Omit<Candidate, "bytes"> {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    throw new TypeError(`Codex candidate entry must be an object: ${expectedPath}`);
-  }
-  const descriptors = Object.getOwnPropertyDescriptors(value);
-  if (
-    Reflect.ownKeys(value).length !== CANDIDATE_ENTRY_FIELDS.length ||
-    CANDIDATE_ENTRY_FIELDS.some((field) => {
-      const descriptor = descriptors[field];
-      return descriptor === undefined || !("value" in descriptor);
-    })
-  ) {
-    throw new TypeError(
-      `Codex candidate entry must contain only own data fields: ${expectedPath}`,
-    );
-  }
-  const path = descriptors.path?.value;
-  const kind = descriptors.kind?.value;
-  const executable = descriptors.executable?.value;
-  if (
-    path !== expectedPath ||
-    (kind !== "file" && kind !== "symlink") ||
-    typeof executable !== "boolean"
-  ) {
-    throw new TypeError(`Invalid Codex candidate entry: ${expectedPath}`);
-  }
-  return Object.freeze({ path, kind, executable });
 }
 
 interface Resolution {
@@ -271,7 +237,7 @@ export function createCodexProfile(config: {
         if (entry === null) {
           throw new Error(`Missing Codex candidate entry during preparation: ${path}`);
         }
-        const capturedEntry = captureCandidateEntry(entry, path);
+        const capturedEntry = ownSnapshotEntry(entry, path);
         const bytes = await snapshot.read(path);
         if (bytes === null) {
           throw new Error(`Missing Codex candidate bytes during preparation: ${path}`);

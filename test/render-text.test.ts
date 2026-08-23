@@ -17,6 +17,8 @@ import {
   type ResolvedSource,
   type SnapshotRef,
 } from "../src/model.js";
+import { captureTextPresentationContext } from "../src/render-context.js";
+import { hostShellDialect } from "../src/render-format.js";
 import {
   renderText,
   type ShellDialect,
@@ -684,6 +686,11 @@ describe("renderText", () => {
     }
     expect(text).toContain("\\n\\u001b[31m\\u202e");
     expect(renderText(diffResult())).toContain("aaaaaaaaaaaa → WORKTREE");
+    expect(captureTextPresentationContext({
+      mode: "diff",
+      before: gitRef("a"),
+      after: { kind: "worktree", label: "WORKTREE", oid: null },
+    }, undefined).shellDialect).toBe(hostShellDialect());
 
     const shellText = renderText(value, {
       beforeLabel: "$(touch ref)",

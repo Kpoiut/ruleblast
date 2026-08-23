@@ -36,6 +36,35 @@ export function isWorktreeIdentitySource(
   return typeof (snapshot as WorktreeIdentitySource).withObjectIdentity === "function";
 }
 
+const SNAPSHOT_ENTRY_FIELDS = ["path", "kind", "executable"] as const;
+
+export function ownSnapshotEntry(value: unknown, expectedPath: string): SnapshotEntry {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new TypeError(`Pack candidate entry must be an object: ${expectedPath}`);
+  }
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  if (
+    Reflect.ownKeys(value).length !== SNAPSHOT_ENTRY_FIELDS.length ||
+    SNAPSHOT_ENTRY_FIELDS.some((field) => {
+      const descriptor = descriptors[field];
+      return descriptor === undefined || !("value" in descriptor);
+    })
+  ) {
+    throw new TypeError(`Pack candidate entry must contain only own data fields: ${expectedPath}`);
+  }
+  const path = descriptors.path?.value;
+  const kind = descriptors.kind?.value;
+  const executable = descriptors.executable?.value;
+  if (
+    path !== expectedPath ||
+    (kind !== "file" && kind !== "symlink") ||
+    typeof executable !== "boolean"
+  ) {
+    throw new TypeError(`Invalid pack candidate entry: ${expectedPath}`);
+  }
+  return Object.freeze({ path, kind, executable });
+}
+
 interface StoredEntry extends SnapshotEntry {
   readonly bytes: Uint8Array;
 }
