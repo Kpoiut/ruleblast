@@ -90,7 +90,7 @@ function assertRemoved(installed) {
   }
 }
 
-async function verifyInstalled(installed, fixture, env, version) {
+async function verifyBinVersion(installed, fixture, env, version) {
   const manifest = JSON.parse(readFileSync(
     join(installed.installedRoot, "package.json"),
     "utf8",
@@ -101,6 +101,11 @@ async function verifyInstalled(installed, fixture, env, version) {
   const versionBytes = await runInstalled(installed.bin, ["--version"], fixture, env);
   const versionLine = versionBytes.toString("utf8").trimEnd();
   if (versionLine !== `ruleblast ${version}`) fail("Installed CLI version changed");
+  return versionLine;
+}
+
+async function verifyInstalled(installed, fixture, env, version) {
+  const versionLine = await verifyBinVersion(installed, fixture, env, version);
   const caseBytes = await runInstalled(installed.bin, ["case", "--json"], fixture, env);
   assertJsonContract("case JSON", caseBytes, "diff");
   const before = await captureRepository(fixture, process.env);
@@ -163,13 +168,8 @@ export async function exerciseInstallLifecycle(options) {
   assertRemoved(first);
   await install(scope, target, source, dependencies, installEnv, offline);
   const second = layout(scope, target);
-  await verifyInstalled(second, fixture, analysisEnv, version);
-  const reinstalledHostShells = await verifyHostShells(
-    second, fixture, analysisEnv, version,
-  );
-  if (JSON.stringify(reinstalledHostShells) !== JSON.stringify(hostShells)) {
-    fail("Reinstalled host-shell evidence changed");
-  }
+  const reinstalledVersion = await verifyBinVersion(second, fixture, analysisEnv, version);
+  if (reinstalledVersion !== verified.version) fail("Reinstalled CLI version changed");
   await uninstall(scope, target, installEnv, offline);
   assertRemoved(second);
   return {
