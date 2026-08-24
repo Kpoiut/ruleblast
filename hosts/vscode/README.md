@@ -1,6 +1,6 @@
 # RuleBlast companion
 
-RuleBlast — Git diff for AI agent repository instructions. Change `AGENTS.md`. See every file that now inherits a different instruction stack. Companion version `2.5.9`. Published npm CLI is `2.5.7`. Status Bar follows the active file. Compare selected realities opens two stacks.
+RuleBlast — Git diff for AI agent repository instructions. Change `AGENTS.md`. See every file that now inherits a different instruction stack. Companion version `2.5.9`. Published npm CLI is `2.5.9`. Status Bar follows the active file. Compare selected realities opens two stacks.
 
 Scan, Diff, Explain, and Case — the same four actions as the CLI. One adapter for VS Code, GitHub Copilot Chat, Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, Trae, VSCodium, and Roo Code. JetBrains, Visual Studio, and Neovim use `--mcp`.
 

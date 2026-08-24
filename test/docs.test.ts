@@ -100,7 +100,7 @@ describe("README story contract", () => {
       "WORK MAP",
       "CHANGE ALIGNMENT",
       "assets/ruleblast-causal-proof.gif",
-      "npx --yes ruleblast@2.5.7 .",
+      "npx --yes ruleblast@2.5.9 .",
       "## What Git missed",
       "assets/ruleblast-visual-benchmark.png",
       "which-files-inherit-agents-md.md",
@@ -108,7 +108,7 @@ describe("README story contract", () => {
       "PROOF.md",
       "## Install",
       "## Run the verified case",
-      "npx --yes ruleblast@2.5.7 case --json",
+      "npx --yes ruleblast@2.5.9 case --json",
       "Exact packaged-case terminal transcript",
       "## Explain one path",
       "## Scope",
@@ -192,21 +192,21 @@ describe("README story contract", () => {
   it("documents one-command, global, local, maintenance, and source installs", () => {
     for (const command of [
       "node --version",
-      "npm view ruleblast@2.5.7 version",
-      "npx --yes ruleblast@2.5.7",
-      "npx --yes ruleblast@2.5.7 --help",
+      "npm view ruleblast@2.5.9 version",
+      "npx --yes ruleblast@2.5.9",
+      "npx --yes ruleblast@2.5.9 --help",
       "cd <your-git-repository>",
-      "npm install --global ruleblast@2.5.7",
+      "npm install --global ruleblast@2.5.9",
       "ruleblast --version",
       "ruleblast --help",
       "ruleblast",
-      "npm install --save-dev --save-exact ruleblast@2.5.7",
+      "npm install --save-dev --save-exact ruleblast@2.5.9",
       "npx ruleblast --version",
       "npx ruleblast --help",
       "npm uninstall --global ruleblast",
       "npm uninstall --save-dev ruleblast",
       "npm cache verify",
-      "git clone --branch v2.5.7 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v2.5.9 --depth 1 https://github.com/Kpoiut/ruleblast.git",
       "npm ci --ignore-scripts",
       "npm run build",
       "node dist/cli.js --version",
@@ -218,10 +218,10 @@ describe("README story contract", () => {
       expect(readme).toContain(command);
     }
     for (const action of [
-      "npx --yes ruleblast@2.5.7 .",
-      "npx --yes ruleblast@2.5.7 diff HEAD~1",
-      "npx --yes ruleblast@2.5.7 explain src/args.ts --from HEAD~1",
-      "npx --yes ruleblast@2.5.7 case",
+      "npx --yes ruleblast@2.5.9 .",
+      "npx --yes ruleblast@2.5.9 diff HEAD~1",
+      "npx --yes ruleblast@2.5.9 explain src/args.ts --from HEAD~1",
+      "npx --yes ruleblast@2.5.9 case",
     ]) {
       expect(readme).toContain(action);
     }

@@ -2,13 +2,19 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
-## 2.5.9 — SHIPPED TO MAIN
+## 2.5.9 — RELEASED
 
 - macOS Verify no longer treats `/var` → `/private/var` as a hostile repository root. Release packing, case capture, and `isDirectEntry` compare realpath-canonical paths. A leaf symlink or junction is still rejected. Not a fifth action.
 - Compact `--receipt` / lab print `ORACLE` and `CALIBRATED` as separate proofs: implementation oracle is not a vendor dump. Bundled `calibration.json` seals vendor-source observations executed offline (Codex `agents_md.rs`, Gemini `memoryDiscovery.ts` including `@path` inlining, Claude memory docs, Copilot instruction docs). Probe schema is `ruleblast.runtime-observation.v1`: loaded files plus `vendorAssembly` recomputed from those files; interpreter-shaped `contributions` and copied `oracle.json` `projectionDigests` fail closed. Verify re-runs the vendor-source observer on each sealed snapshot; mismatch fails closed. Interpreter payload equality is `ORACLE`, not the `CALIBRATED` gate. Vendor-dump calibration requires runtime surface, revision, `sealed-offline-dump`, artifact digest bound to probe bytes, and probe schema. `NO_INTROSPECTION` remains when a dump is absent. Vendor CLI is not live authority.
 - MCP tools accept `pathsOnly` and `witness` (same exclusivity as CLI presentation flags). `pathsOnly` is refused on explain. Candidate directories may not carry `admission.json`.
 - Payload relation uses units as the law. `normalizedPayloadDigest` is a seal of those units: a forged digest fails closed instead of minting SAME/DIFFERENT. An ORDERED digest short-circuit runs only after the seal matches. `projectionDigest` is the semantic stack identity seal (profile, context, status, composition, source path/disposition/truncated, units, evidence — not raw unused file bytes). A forged stack digest fails closed. `ORACLE` stores that identity seal and re-runs the interpreter against it; it is not a hash of an object that already contains the digest. Overlay `DIVERGENT` requires a proven DIFFERENT pair event on an observed other path, not an `isSplit` stamp. Replay metrics fold from path rows, not a counts stamp. Pair topology is one path-event walk: PAIR/NEWPAIR/CONVPAIR/INDPAIR counts are the fold of PAIRPATH/NEWPAIRPATH/CONVPAIRPATH/INDPAIRPATH rows. Path `isSplit` / `payloadRelation` and split counts fold from those same events. Canonical JSON field names are unchanged.
-- Benchmark records four-runtime pair counts and sealed `CALIBRATED` rows. Published CLI remains `ruleblast@2.5.7`.
+- Benchmark records four-runtime pair counts and sealed `CALIBRATED` rows. This package also contains `2.5.8` development, not a separate npm version: `384d4c621d6226854a67773e2000ddeb0b0b139f` sealed runtime calibration and host discovery; `e841da784e18b87f706bd266aad7c07b2f1d2b60` identity seal, vendor-source calibration, and pair-topology fold; `8cc3a9f737c344c6f360ba9df5eceeceb170dfa8` companion `Uri.joinPath` stub. Overlay wall and the 5 s clock are unchanged.
+- [npm `ruleblast@2.5.9`](https://www.npmjs.com/package/ruleblast/v/2.5.9) reports integrity `sha512-6u2kdervEjkbPjXgEKxJ3oBGmi+b2j3TpkIZJ7kKwWKv9g/cgIH+YtEDBOXq/rcQX+mXqzsl6+EpfUUHWd12hw==`. The registry download is the 204,749-byte tarball with SHA-256 `96debe28b646e914cbb60ed53b8f2c72202b3f241e3cf3958e25cd8f8c22493f`. Pack `ruleblast-companion-2.5.9.vsix` (185,323 bytes, SHA-256 `6aadb190b06442ece123811cc950010cfa4616906553da6bd8f904122aa7ff7f`). Exact-tarball publication means registry `gitHead` is absent. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+### Release artifact
+
+- Annotated tag object `f924055b3f646d6ef53d5215a58cdee9e8ad8fdd` for [`v2.5.9`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.9) targets commit `8cc3a9f737c344c6f360ba9df5eceeceb170dfa8`.
+- npm and the GitHub Release serve the same 204,749-byte tarball with SHA-256 `96debe28b646e914cbb60ed53b8f2c72202b3f241e3cf3958e25cd8f8c22493f`. The GitHub Release also serves the 185,323-byte `ruleblast-companion-2.5.9.vsix` with SHA-256 `6aadb190b06442ece123811cc950010cfa4616906553da6bd8f904122aa7ff7f`.
 
 ## 2.5.8 — SHIPPED TO MAIN
 
