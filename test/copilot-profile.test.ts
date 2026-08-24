@@ -38,6 +38,23 @@ describe("github/copilot-cli@1", () => {
     )).toBe(true);
   });
 
+  it("keeps an instruction symlink UNKNOWN and does not follow it into payload", async () => {
+    const prepared = await copilotProfile.prepare(fixture("symlink-instructions"));
+    const projection = prepared.project("src/file.ts");
+    expect(projection.status).toBe("UNKNOWN");
+    expect(projection.sources).toEqual([
+      expect.objectContaining({
+        path: ".github/copilot-instructions.md",
+        disposition: "SELECTED",
+        bytesUsed: 0,
+        truncated: false,
+      }),
+    ]);
+    expect(projection.normalizedPayloadUnits).toEqual([]);
+    expect(projection.evidence.some((item) => /symlink/iu.test(item))).toBe(true);
+    expect(JSON.stringify(projection.normalizedPayloadUnits)).not.toContain("actual-body");
+  });
+
   it("discovers tracked .claude/CLAUDE.md from the Copilot CLI instruction table", async () => {
     const resolver = JSON.parse(
       readFileSync(join(repositoryRoot, "packs/bundled/github-copilot-cli@1/resolver.json"), "utf8"),

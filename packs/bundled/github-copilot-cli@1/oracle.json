@@ -133,6 +133,40 @@
         "src/core.ts": "f43144c2aec06f827efe9970b9adfc10e31cd322097eb693ec4cbfc24081635a",
         "web/app.ts": "8518cc847882b92aef4ba1a3226231d25b187b5d1719d9d0855465d39b84ff9d"
       }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "copilot symlink instructions",
+        "entries": [
+          {
+            "path": ".github/copilot-instructions.md",
+            "kind": "symlink",
+            "executable": false,
+            "base64": "YWN0dWFsLm1k"
+          },
+          {
+            "path": "actual.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "YWN0dWFsLWJvZHk="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQ=="
+          }
+        ]
+      },
+      "sourceDependencyPaths": [
+        ".github/copilot-instructions.md"
+      ],
+      "projectionDigests": {
+        ".github/copilot-instructions.md": "b270ba68b7e47d0a2d44d7a9862600f4f558715271068c31437879d54928bd02",
+        "actual.md": "d24b9176efb42b2d4e06be4db39d8d7837fbd071969a14cf6532ed31bd488ce2",
+        "src/file.ts": "7445f55c4b9f1763e90657f0c91c20d115f7657fa4b633236139303c8477332e"
+      }
     }
   ]
 }

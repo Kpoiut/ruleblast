@@ -1,4 +1,4 @@
-import { execFile } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import {
   lstat,
@@ -26,17 +26,16 @@ function gitEnvironment() {
   };
 }
 
+const GIT_PREFIX = [
+  "--no-optional-locks",
+  "--no-replace-objects",
+  "-c",
+  "core.fsmonitor=false",
+];
+
 export async function readOnlyGit(root, args, allowEmpty = false) {
   try {
-    const result = await runFile("git", [
-      "--no-optional-locks",
-      "--no-replace-objects",
-      "-c",
-      "core.fsmonitor=false",
-      "-C",
-      root,
-      ...args,
-    ], {
+    const result = await runFile("git", [...GIT_PREFIX, "-C", root, ...args], {
       encoding: "buffer",
       env: gitEnvironment(),
       maxBuffer: 16 * 1024 * 1024,
@@ -47,6 +46,33 @@ export async function readOnlyGit(root, args, allowEmpty = false) {
     if (allowEmpty && error?.code === 1) return Buffer.alloc(0);
     throw error;
   }
+}
+
+export function readOnlyGitStdin(root, args, input) {
+  return new Promise((resolvePromise, reject) => {
+    const child = spawn("git", [...GIT_PREFIX, "-C", root, ...args], {
+      env: gitEnvironment(),
+      windowsHide: true,
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+    const stdout = [];
+    const stderr = [];
+    child.stdout.on("data", (chunk) => stdout.push(chunk));
+    child.stderr.on("data", (chunk) => stderr.push(chunk));
+    child.on("error", reject);
+    child.on("close", (code) => {
+      if (code !== 0) {
+        const detail = Buffer.concat(stderr).toString("utf8").trim();
+        reject(Object.assign(
+          new Error(detail === "" ? `git ${args[0]} failed` : detail),
+          { code },
+        ));
+        return;
+      }
+      resolvePromise(Buffer.concat(stdout));
+    });
+    child.stdin.end(input);
+  });
 }
 
 function remoteIdentity(value) {

@@ -51,13 +51,13 @@ import {
   isWorktreeIdentitySource,
 } from "./snapshot.js";
 import {
-  asJsonRpcRequest,
+  classifyJsonRpcMessage,
   consumeMcpBuffer,
   encodeMcpFrame,
-  isJsonRpcParseError,
   MCP_PROTOCOL_VERSION,
   type JsonRpcMessage,
   type JsonRpcRequest,
+  type McpStdioFraming,
 } from "./mcp-protocol.js";
 
 export const MCP_TOOL_NAMES = Object.freeze(["scan", "diff", "explain", "case"]);
@@ -294,11 +294,22 @@ async function runCase(host: McpHost, params: Record<string, unknown>): Promise<
   return presentExplain(explain, hostProcessDialect(mcpHostProcess(host)));
 }
 
+function initializeParams(value: unknown): boolean {
+  const params = objectParams(value);
+  const client = params.clientInfo;
+  return typeof params.protocolVersion === "string" && params.protocolVersion !== "" &&
+    typeof params.capabilities === "object" && params.capabilities !== null &&
+    !Array.isArray(params.capabilities) &&
+    typeof client === "object" && client !== null && !Array.isArray(client) &&
+    typeof (client as { name?: unknown }).name === "string" &&
+    (client as { name: string }).name !== "";
+}
+
 async function callTool(host: McpHost, params: Record<string, unknown>): Promise<unknown> {
   const name = stringField(params, "name");
   const args = objectParams(params.arguments);
   if (name === undefined || !MCP_TOOL_NAMES.includes(name)) {
-    return toolResult(`Unknown tool: ${JSON.stringify(name)}`, true);
+    throw new TypeError(`Unknown tool: ${JSON.stringify(name)}`);
   }
   if (resolveAgentAllow({ env: host.env, cwd: host.cwd }) !== "yes") {
     return toolResult(
@@ -316,10 +327,12 @@ export async function dispatchMcpRequest(
   request: JsonRpcRequest,
   host: McpHost,
 ): Promise<JsonRpcMessage | null> {
-  if (request.id === null && request.method.startsWith("notifications/")) return null;
   const id = request.id;
   try {
     if (request.method === "initialize") {
+      if (!initializeParams(request.params)) {
+        return fail(id, -32602, "Invalid params");
+      }
       return ok(id, {
         protocolVersion: MCP_PROTOCOL_VERSION,
         capabilities: { tools: {} },
@@ -328,7 +341,14 @@ export async function dispatchMcpRequest(
     }
     if (request.method === "ping") return ok(id, {});
     if (request.method === "tools/list") return ok(id, { tools: MCP_TOOLS });
-    if (request.method === "tools/call") return ok(id, await callTool(host, objectParams(request.params)));
+    if (request.method === "tools/call") {
+      const params = objectParams(request.params);
+      const name = stringField(params, "name");
+      if (name === undefined || !MCP_TOOL_NAMES.includes(name)) {
+        return fail(id, -32602, `Unknown tool: ${JSON.stringify(name)}`);
+      }
+      return ok(id, await callTool(host, params));
+    }
     return fail(id, -32601, `Method not found: ${request.method}`);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "MCP tool failed";
@@ -343,22 +363,33 @@ export async function serveMcpStdio(
   host: McpHost,
 ): Promise<number> {
   let buffer = Buffer.alloc(0);
+  let framing: McpStdioFraming = "ndjson";
+  let initialized = false;
   const write = (message: JsonRpcMessage): void => {
-    stdout.write(encodeMcpFrame(message));
+    stdout.write(encodeMcpFrame(message, framing));
   };
   for await (const chunk of stdin) {
     const piece = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
     buffer = Buffer.concat([buffer, piece]);
     const consumed = consumeMcpBuffer(buffer);
     buffer = Buffer.from(consumed.rest);
+    if (consumed.framing !== null) framing = consumed.framing;
     for (const raw of consumed.messages) {
-      if (isJsonRpcParseError(raw)) {
-        write(raw);
+      const classified = classifyJsonRpcMessage(raw);
+      if (classified.kind === "parse-error" || classified.kind === "invalid-request") {
+        write(classified.message);
         continue;
       }
-      const request = asJsonRpcRequest(raw);
-      if (request === null) continue;
+      if (classified.kind === "notification") continue;
+      const request = classified.request;
+      if (!initialized && request.method !== "initialize") {
+        write(fail(request.id, -32600, "Server not initialized"));
+        continue;
+      }
       const response = await dispatchMcpRequest(request, host);
+      if (response !== null && request.method === "initialize" && "result" in response) {
+        initialized = true;
+      }
       if (response !== null) write(response);
     }
   }

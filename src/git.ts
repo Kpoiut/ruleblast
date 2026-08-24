@@ -391,8 +391,8 @@ export async function openTrackedWorktree(root: string): Promise<RepositorySnaps
       const sameIndex = captured.index.bytes === null ? afterIndex.bytes === null : afterIndex.bytes !== null && captured.index.bytes.equals(afterIndex.bytes);
       if (sameInventory(captured.inventory, afterInventory) && stableNodes.every(Boolean) && stableAncestors.every(Boolean) && sameIndex && captured.index.mtime === afterIndex.mtime) return new WorktreeSnapshot(captured.entries);
     } catch (error: unknown) {
+      if (error instanceof GitSnapshotError && error.code !== "WORKTREE_CHANGED_DURING_SNAPSHOT") throw error;
       const code = (error as NodeJS.ErrnoException).code;
-      if (error instanceof GitSnapshotError && (error.code === "UNSUPPORTED_WORKTREE_NODE" || error.code === "UNMERGED_INDEX")) throw error;
       if (!(error instanceof GitSnapshotError) && code !== "ELOOP" && code !== "ENOENT" && code !== "ENOTDIR" && code !== "EINVAL" && code !== "EISDIR") throw error;
     }
   }

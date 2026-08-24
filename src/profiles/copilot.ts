@@ -23,9 +23,13 @@ export const COPILOT_REALITY = GITHUB_COPILOT_CLI_PROFILE_ID;
 
 const FILE_REFERENCE = /(?:^|\s)@([A-Za-z0-9_./-]+)/u;
 
+const SYMLINK_EVIDENCE =
+  "UNSUPPORTED_BOUNDARY: named Copilot instruction symlink was not followed";
+
 interface CopilotDocument {
   readonly path: string;
   readonly kind: "repository-wide" | "modular" | "agent";
+  readonly nodeKind: "file" | "symlink";
   readonly text: string;
   readonly applyTo: readonly string[] | null;
   readonly scope: string;
@@ -127,12 +131,15 @@ export function createCopilotProfile(config: {
     for (const path of await snapshot.listPaths()) {
       const kind = classify(path);
       if (kind === null) continue;
+      const node = await snapshot.entry(path);
+      if (node === null) continue;
       const bytes = await snapshot.read(path);
       if (bytes === null) continue;
       const text = decode(bytes);
       documents.push({
         path,
         kind,
+        nodeKind: node.kind,
         text,
         applyTo: kind === "modular" ? parseApplyTo(text) : null,
         scope: scopeOf(path, kind),
@@ -147,8 +154,20 @@ export function createCopilotProfile(config: {
         const sources: ResolvedSource[] = [];
         const contributions: string[] = [];
         let partial = false;
+        let unknown = false;
         for (const document of documents) {
           if (!isAncestor(document.scope, targetPath)) continue;
+          if (document.nodeKind === "symlink") {
+            unknown = true;
+            sources.push({
+              path: document.path,
+              disposition: "SELECTED",
+              digest: sha256(document.text),
+              bytesUsed: 0,
+              truncated: false,
+            });
+            continue;
+          }
           if (document.kind === "modular" && document.applyTo === null) {
             sources.push({
               path: document.path,
@@ -191,22 +210,24 @@ export function createCopilotProfile(config: {
           repositoryOnly: true as const,
         };
         const evidence = [...config.evidence.map((item) => item.claim)];
+        if (unknown) evidence.push(SYMLINK_EVIDENCE);
         if (partial) {
           evidence.push(
             "Documented @ file references are visible but not expanded in this revision.",
           );
         }
+        const status = unknown ? "UNKNOWN" : partial ? "PARTIAL" : "COMPLETE";
         return {
           profile: config.id,
           context,
-          status: partial ? "PARTIAL" : "COMPLETE",
+          status,
           composition: "UNSPECIFIED",
           sources,
           normalizedPayloadUnits: units,
           projectionDigest: digestProjectionIdentity({
             profile: config.id,
             context,
-            status: partial ? "PARTIAL" : "COMPLETE",
+            status,
             composition: "UNSPECIFIED",
             sources,
             normalizedPayloadUnits: units,

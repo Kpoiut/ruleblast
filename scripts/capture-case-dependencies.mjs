@@ -178,6 +178,23 @@ async function collectClosure(projectRoot, packages, includeBuildDependencies) {
   return [...selected.entries()].sort(([left], [right]) => compareCodePoints(left, right));
 }
 
+async function mapPool(items, concurrency, mapper) {
+  if (items.length === 0) return [];
+  const results = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (true) {
+      const index = next;
+      next += 1;
+      if (index >= items.length) return;
+      results[index] = await mapper(items[index], index);
+    }
+  }
+  const workers = Math.min(Math.max(concurrency, 1), items.length);
+  await Promise.all(Array.from({ length: workers }, () => worker()));
+  return results;
+}
+
 async function packageFiles(root, directory = root) {
   const files = [];
   const entries = await readdir(directory, { withFileTypes: true });
@@ -226,9 +243,12 @@ export async function digestDependencyClosure(projectRoot, lockBytes) {
       version: captured.entry.version,
     }), "utf8");
     record(hash, `dependency:${path}`, metadata);
-    for (const file of await packageFiles(captured.directory)) {
-      const relativePath = relative(captured.directory, file).split(sep).join("/");
-      record(hash, `${path}/${relativePath}`, await readFile(file));
+    const files = await packageFiles(captured.directory);
+    const bodies = await mapPool(files, 32, (file) => readFile(file));
+    for (let index = 0; index < files.length; index += 1) {
+      const relativePath = relative(captured.directory, files[index])
+        .split(sep).join("/");
+      record(hash, `${path}/${relativePath}`, bodies[index]);
     }
   }
   return hash.digest("hex");

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "label": "copilot symlink instructions",
+  "entries": [
+    {
+      "path": ".github/copilot-instructions.md",
+      "kind": "symlink",
+      "executable": false,
+      "base64": "YWN0dWFsLm1k"
+    },
+    {
+      "path": "actual.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "YWN0dWFsLWJvZHk="
+    },
+    {
+      "path": "src/file.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQ=="
+    }
+  ]
+}

@@ -95,6 +95,35 @@ describe("spec-driven pack interpreter", () => {
       .toEqual([]);
   });
 
+  it("rejects transform combinations the live interpreter does not fully execute", () => {
+    const codex = loadBundledPack("openai-codex-cli@1").resolver;
+    const claude = loadBundledPack("anthropic-claude-code-cli@1").resolver;
+    const copilot = loadBundledPack("github-copilot-cli@1").resolver;
+    const extraComment = {
+      kind: "strip-html-comments" as const,
+      claimIds: ["probe"],
+    };
+    const budget = {
+      kind: "byte-budget" as const,
+      bytes: 32768,
+      claimIds: ["probe"],
+    };
+    const imported = claude.transform.find((item) => item.kind === "at-path-import");
+    expect(imported).toBeDefined();
+    expect(uninterpretableReasons({
+      ...codex,
+      transform: [...codex.transform, extraComment],
+    })).toContain("transform");
+    expect(uninterpretableReasons({
+      ...copilot,
+      transform: [budget],
+    })).toContain("transform");
+    expect(uninterpretableReasons({
+      ...claude,
+      transform: [...claude.transform, imported!],
+    })).toContain("transform");
+  });
+
   it("keeps shared-prefix nested targets byte-identical to the adapter oracle", async () => {
     const pack = loadBundledPack("openai-codex-cli@1");
     const snapshot = new ManifestSnapshot({

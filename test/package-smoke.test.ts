@@ -1,7 +1,7 @@
 import { execFile } from "node:child_process";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
@@ -9,6 +9,41 @@ import { describe, expect, it } from "vitest";
 const runFile = promisify(execFile);
 
 describe("packed package smoke", () => {
+  it("keeps package-smoke temp roots free of spaces so Windows npm exec can address them", async () => {
+    const moduleUrl = new URL("../scripts/package-smoke-runtime.mjs", import.meta.url).href;
+    const runtime = await import(moduleUrl) as {
+      PACKAGE_SMOKE_TEMP_PREFIX: string;
+      createTempRoot(): string;
+      cleanupTempRoot(root: string): void;
+    };
+    expect(runtime.PACKAGE_SMOKE_TEMP_PREFIX).not.toMatch(/\s/u);
+    const root = runtime.createTempRoot();
+    try {
+      expect(root).not.toMatch(/\s/u);
+      expect(root.includes(runtime.PACKAGE_SMOKE_TEMP_PREFIX)).toBe(true);
+    } finally {
+      runtime.cleanupTempRoot(root);
+    }
+  });
+
+  it("selects a space-free temp parent instead of hanging npm exec on a spaced tmpdir", async () => {
+    const moduleUrl = new URL("../scripts/package-smoke-runtime.mjs", import.meta.url).href;
+    const runtime = await import(moduleUrl) as {
+      packageSmokeTempParent: (candidates?: readonly string[]) => string;
+    };
+    const root = await mkdtemp(join(tmpdir(), "ruleblast-temp-pick-"));
+    const spaced = join(root, "has space");
+    const clean = join(root, "clean");
+    try {
+      await mkdir(spaced);
+      await mkdir(clean);
+      expect(runtime.packageSmokeTempParent([spaced, clean])).toBe(resolve(clean));
+      expect(() => runtime.packageSmokeTempParent([spaced])).toThrow(/space-free/i);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
   it("materializes runtime packages without source lifecycle scripts", async () => {
     const root = await mkdtemp(join(tmpdir(), "ruleblast-offline-runtime-"));
     try {

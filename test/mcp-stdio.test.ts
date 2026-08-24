@@ -1,11 +1,12 @@
 import { readFileSync } from "node:fs";
+import { PassThrough } from "node:stream";
 import { describe, expect, it } from "vitest";
 import {
   asJsonRpcRequest,
   consumeMcpBuffer,
   encodeMcpFrame,
 } from "../src/mcp-protocol.js";
-import { dispatchMcpRequest, MCP_TOOL_NAMES } from "../src/mcp-stdio.js";
+import { dispatchMcpRequest, MCP_TOOL_NAMES, serveMcpStdio } from "../src/mcp-stdio.js";
 import {
   currentHostProcess,
   hostProcessDialect,
@@ -18,22 +19,52 @@ const host = {
 };
 
 describe("MCP stdio transport", () => {
-  it("frames and parses Content-Length messages", () => {
+  it("writes newline-delimited JSON-RPC as MCP stdio requires", () => {
     const frame = encodeMcpFrame({ jsonrpc: "2.0", id: 1, method: "ping" });
-    const { messages, rest } = consumeMcpBuffer(frame);
+    const text = frame.toString("utf8");
+    expect(text.startsWith("{")).toBe(true);
+    expect(text.endsWith("\n")).toBe(true);
+    expect(text.trimEnd().includes("\n")).toBe(false);
+    expect(text).not.toMatch(/^Content-Length:/iu);
+    const { messages, rest, framing } = consumeMcpBuffer(frame);
     expect(rest.length).toBe(0);
+    expect(framing).toBe("ndjson");
     expect(asJsonRpcRequest(messages[0])).toMatchObject({ method: "ping", id: 1 });
   });
 
-  it("consumes UTF-8 Content-Length as bytes, not UTF-16 units", () => {
+  it("consumes newline-delimited JSON-RPC, including UTF-8 payloads", () => {
+    const leftover = Buffer.from(
+      '{"jsonrpc":"2.0","id":1,"method":"ping","params":{"q":"é khắc phục"}}\n',
+      "utf8",
+    );
+    const { messages, rest, framing } = consumeMcpBuffer(leftover);
+    expect(rest.length).toBe(0);
+    expect(framing).toBe("ndjson");
+    expect(asJsonRpcRequest(messages[0])).toMatchObject({
+      method: "ping",
+      id: 1,
+      params: { q: "é khắc phục" },
+    });
+  });
+
+  it("waits for an incomplete newline-delimited JSON line", () => {
+    const leftover = Buffer.from('{"jsonrpc":"2.0","id":1,"method":"ping"}', "utf8");
+    const { messages, rest } = consumeMcpBuffer(leftover);
+    expect(messages).toEqual([]);
+    expect(rest.equals(leftover)).toBe(true);
+  });
+
+  it("still consumes Content-Length host-dialect frames by UTF-8 bytes", () => {
     const frame = encodeMcpFrame({
       jsonrpc: "2.0",
       id: 7,
       method: "ping",
       params: { q: "é khắc phục" },
-    });
-    const { messages, rest } = consumeMcpBuffer(frame);
+    }, "content-length");
+    expect(frame.toString("ascii").startsWith("Content-Length:")).toBe(true);
+    const { messages, rest, framing } = consumeMcpBuffer(frame);
     expect(rest.length).toBe(0);
+    expect(framing).toBe("content-length");
     expect(asJsonRpcRequest(messages[0])).toMatchObject({ method: "ping", id: 7 });
     const splitAt = Math.floor(frame.length / 2);
     const first = consumeMcpBuffer(frame.subarray(0, splitAt));
@@ -41,6 +72,144 @@ describe("MCP stdio transport", () => {
     const second = consumeMcpBuffer(Buffer.concat([first.rest, frame.subarray(splitAt)]));
     expect(second.rest.length).toBe(0);
     expect(asJsonRpcRequest(second.messages[0])).toMatchObject({ method: "ping", id: 7 });
+  });
+
+  it("fails closed when a Content-Length header is complete without a byte length", () => {
+    const frame = Buffer.from(
+      "Content-Length:\r\n\r\n{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\"}",
+      "utf8",
+    );
+    expect(() => consumeMcpBuffer(frame)).toThrow(/Content-Length/u);
+  });
+
+  it("does not answer a notification, and rejects null or fractional ids", async () => {
+    const stdin = new PassThrough();
+    const stdout = new PassThrough();
+    const chunks: Buffer[] = [];
+    stdout.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
+    const done = serveMcpStdio(stdin, stdout, host);
+    stdin.write('{"jsonrpc":"2.0","method":"ping"}\n');
+    stdin.write('{"jsonrpc":"2.0","id":null,"method":"ping"}\n');
+    stdin.write('{"jsonrpc":"2.0","id":1.5,"method":"ping"}\n');
+    stdin.end();
+    await done;
+    const messages = Buffer.concat(chunks).toString("utf8").split("\n").filter(Boolean).map(
+      (line) => JSON.parse(line) as { id: unknown; error?: { code: number } },
+    );
+    expect(messages).toHaveLength(2);
+    expect(messages.every((message) => message.error?.code === -32600)).toBe(true);
+    expect(asJsonRpcRequest({ jsonrpc: "2.0", method: "ping" })).toBeNull();
+    expect(asJsonRpcRequest({ jsonrpc: "2.0", id: null, method: "ping" })).toBeNull();
+    expect(asJsonRpcRequest({ jsonrpc: "2.0", id: 1.5, method: "ping" })).toBeNull();
+  });
+
+  it("returns -32600 for a JSON object without method instead of swallowing it", async () => {
+    const stdin = new PassThrough();
+    const stdout = new PassThrough();
+    const chunks: Buffer[] = [];
+    stdout.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
+    const done = serveMcpStdio(stdin, stdout, host);
+    stdin.write('{"jsonrpc":"2.0","id":3}\n');
+    stdin.end();
+    await done;
+    const out = Buffer.concat(chunks).toString("utf8");
+    expect(out.length).toBeGreaterThan(0);
+    expect(JSON.parse(out.trimEnd())).toMatchObject({
+      jsonrpc: "2.0",
+      id: 3,
+      error: { code: -32600 },
+    });
+  });
+
+  it("echoes NDJSON replies to NDJSON requests", async () => {
+    const stdin = new PassThrough();
+    const stdout = new PassThrough();
+    const chunks: Buffer[] = [];
+    stdout.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
+    const done = serveMcpStdio(stdin, stdout, host);
+    stdin.write(JSON.stringify({
+      jsonrpc: "2.0",
+      id: 0,
+      method: "initialize",
+      params: {
+        protocolVersion: "2024-11-05",
+        capabilities: {},
+        clientInfo: { name: "test", version: "0" },
+      },
+    }) + "\n");
+    stdin.write('{"jsonrpc":"2.0","id":1,"method":"ping"}\n');
+    stdin.end();
+    await done;
+    const messages = Buffer.concat(chunks).toString("utf8").split("\n").filter(Boolean).map(
+      (line) => JSON.parse(line) as { id: unknown; result?: unknown },
+    );
+    expect(messages).toHaveLength(2);
+    expect(messages[1]).toMatchObject({ jsonrpc: "2.0", id: 1, result: {} });
+  });
+
+  it("echoes Content-Length replies to Content-Length host-dialect requests", async () => {
+    const stdin = new PassThrough();
+    const stdout = new PassThrough();
+    const chunks: Buffer[] = [];
+    stdout.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
+    const done = serveMcpStdio(stdin, stdout, host);
+    stdin.write(encodeMcpFrame({
+      jsonrpc: "2.0",
+      id: 0,
+      method: "initialize",
+      params: {
+        protocolVersion: "2024-11-05",
+        capabilities: {},
+        clientInfo: { name: "test", version: "0" },
+      },
+    }, "content-length"));
+    stdin.write(encodeMcpFrame({ jsonrpc: "2.0", id: 1, method: "ping" }, "content-length"));
+    stdin.end();
+    await done;
+    const out = Buffer.concat(chunks);
+    expect(out.toString("ascii")).toMatch(/^Content-Length:/u);
+    const { messages } = consumeMcpBuffer(out);
+    expect(messages[1]).toMatchObject({ jsonrpc: "2.0", id: 1, result: {} });
+  });
+
+  it("refuses initialize without negotiation params and unknown tools as protocol errors", async () => {
+    const missing = await dispatchMcpRequest(
+      { jsonrpc: "2.0", id: 1, method: "initialize" },
+      host,
+    );
+    expect(missing).toMatchObject({
+      jsonrpc: "2.0",
+      id: 1,
+      error: { code: -32602 },
+    });
+    const unknown = await dispatchMcpRequest({
+      jsonrpc: "2.0",
+      id: 2,
+      method: "tools/call",
+      params: { name: "scan-extra", arguments: {} },
+    }, host);
+    expect(unknown).toMatchObject({
+      jsonrpc: "2.0",
+      id: 2,
+      error: { code: -32602 },
+    });
+    expect(unknown).not.toHaveProperty("result");
+  });
+
+  it("refuses requests before initialize on the stdio session", async () => {
+    const stdin = new PassThrough();
+    const stdout = new PassThrough();
+    const chunks: Buffer[] = [];
+    stdout.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
+    const done = serveMcpStdio(stdin, stdout, host);
+    stdin.write('{"jsonrpc":"2.0","id":1,"method":"ping"}\n');
+    stdin.end();
+    await done;
+    expect(JSON.parse(Buffer.concat(chunks).toString("utf8").trimEnd())).toMatchObject({
+      jsonrpc: "2.0",
+      id: 1,
+      error: { code: -32600 },
+    });
   });
 
   it("returns a JSON-RPC parse error instead of throwing on invalid frames", () => {

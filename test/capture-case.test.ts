@@ -525,6 +525,12 @@ describe("captureCase", () => {
     await expect(assertCleanProducer(producerRoot)).resolves.toBe(producerCommit);
   }, 15_000);
 
+  it("materializes producer blobs through one git cat-file batch instead of one spawn per path", () => {
+    const source = readFileSync(join(projectRoot, "scripts", "capture-case-producer.mjs"), "utf8");
+    expect(source).toContain('["cat-file", "--batch"]');
+    expect(source).not.toMatch(/"cat-file", "blob"/u);
+  });
+
   it("resolves a Windows 8.3 alias without embedding cmd quotes", () => {
     if (process.platform !== "win32") return;
     const root = mkdtempSync(join(tmpdir(), "ruleblast short path "));

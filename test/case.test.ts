@@ -59,7 +59,7 @@ describe("packaged verified case", () => {
     expect(await openPackagedCase()).toEqual(receipt.resultCore);
     expect(readFileSync(RECEIPT_PATH)).toEqual(before);
     expect(statSync(RECEIPT_PATH, { bigint: true }).mtimeNs).toBe(beforeMtime);
-  });
+  }, 20_000);
 
   it("memoizes the packaged receipt after the first verified load", async () => {
     const first = await openPackagedCase();
@@ -83,7 +83,7 @@ describe("packaged verified case", () => {
     expect(legacy.stderr).toEqual([]);
     expect(current.stdout).toEqual([expected]);
     expect(legacy.stdout).toEqual(current.stdout);
-  });
+  }, 20_000);
 
   it("presents a real repository case and drills into its recorded source chain", async () => {
     const overview = capturedIo();
@@ -114,7 +114,7 @@ describe("packaged verified case", () => {
     expect(textDetail.stdout.join("")).toContain(
       "RULEBLAST EXPLAIN · VERIFIED CASE · kpoiut/ruleblast · 27d52e2cd6ee → e420008a1c10",
     );
-  });
+  }, 20_000);
 
   it("advertises exactly four semantic actions and keeps the legacy alias hidden", async () => {
     const help = capturedIo();

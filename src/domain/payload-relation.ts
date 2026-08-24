@@ -74,10 +74,9 @@ export function comparePayloadRelation(
   }
 
   if (left.composition === "ORDERED" && right.composition === "ORDERED" &&
-      left.normalizedPayloadDigest !== null && right.normalizedPayloadDigest !== null) {
-    return left.normalizedPayloadDigest === right.normalizedPayloadDigest
-      ? "SAME"
-      : "DIFFERENT";
+      left.normalizedPayloadDigest !== null && right.normalizedPayloadDigest !== null &&
+      left.normalizedPayloadDigest !== right.normalizedPayloadDigest) {
+    return "DIFFERENT";
   }
 
   const sameMultiset = equalMultiset(

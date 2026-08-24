@@ -10,7 +10,7 @@ import {
 } from "node:fs/promises";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { promisify } from "node:util";
-import { readOnlyGit } from "./capture-case-boundary.mjs";
+import { readOnlyGit, readOnlyGitStdin } from "./capture-case-boundary.mjs";
 import { digestDependencyClosure } from "./capture-case-dependencies.mjs";
 
 export { digestDependencyClosure } from "./capture-case-dependencies.mjs";
@@ -125,18 +125,60 @@ function parseTree(output) {
   return entries.sort((left, right) => compareCodePoints(left.path, right.path));
 }
 
+function parseCatFileBatch(output, expected) {
+  const blobs = [];
+  let offset = 0;
+  while (offset < output.length) {
+    const lineEnd = output.indexOf(0x0a, offset);
+    if (lineEnd < 0) throw new Error("Producer blob batch is truncated");
+    const header = output.subarray(offset, lineEnd).toString("ascii");
+    if (header.endsWith(" missing")) {
+      throw new Error(`Producer blob is missing: ${header.slice(0, -" missing".length)}`);
+    }
+    const parts = header.split(" ");
+    const oid = parts[0];
+    const type = parts[1];
+    const size = Number(parts[2]);
+    if (oid === undefined || type === undefined || !Number.isInteger(size) || size < 0) {
+      throw new Error("Producer blob batch header is invalid");
+    }
+    const start = lineEnd + 1;
+    const end = start + size;
+    if (end >= output.length || output[end] !== 0x0a) {
+      throw new Error("Producer blob batch is truncated");
+    }
+    blobs.push({ oid, type, contents: output.subarray(start, end) });
+    offset = end + 1;
+  }
+  if (blobs.length !== expected) {
+    throw new Error("Producer blob batch does not match the committed tree");
+  }
+  return blobs;
+}
+
 async function materializeProducer(projectRoot, commit, sourceRoot) {
   const tree = parseTree(await readOnlyGit(projectRoot, [
     "ls-tree", "-rz", "--full-tree", commit, "--", ...TREE_PATHS,
   ]));
-  for (const entry of tree) {
+  const directories = new Set(tree.map((entry) =>
+    dirname(join(sourceRoot, ...entry.path.split("/")))));
+  await Promise.all([...directories].map((directory) => mkdir(directory, { recursive: true })));
+  const packed = await readOnlyGitStdin(
+    projectRoot,
+    ["cat-file", "--batch"],
+    Buffer.from(`${tree.map((entry) => entry.oid).join("\n")}\n`, "ascii"),
+  );
+  const blobs = parseCatFileBatch(packed, tree.length);
+  for (let index = 0; index < tree.length; index += 1) {
+    const entry = tree[index];
+    const blob = blobs[index];
+    if (blob.oid !== entry.oid || blob.type !== "blob") {
+      throw new Error("Producer blob batch does not match the committed tree");
+    }
     const path = join(sourceRoot, ...entry.path.split("/"));
-    await mkdir(dirname(path), { recursive: true });
     const handle = await open(path, "wx", entry.executable ? 0o755 : 0o644);
     try {
-      await handle.writeFile(await readOnlyGit(projectRoot, [
-        "cat-file", "blob", entry.oid,
-      ]));
+      await handle.writeFile(blob.contents);
     } finally {
       await handle.close();
     }
@@ -173,8 +215,17 @@ async function artifactDigest(root) {
   return hash.digest("hex");
 }
 
+function phase(label, startedAt) {
+  if (process.env.RULEBLAST_CAPTURE_PHASES !== "1") return;
+  process.stderr.write(`capture-phase ${label} ${Math.round(performance.now() - startedAt)}ms\n`);
+}
+
 export async function createProductionArtifact(projectRoot) {
+  const totalAt = performance.now();
+  let startedAt = totalAt;
   const gitCommit = await assertCleanProducer(projectRoot);
+  phase("assertCleanProducer", startedAt);
+  startedAt = performance.now();
   const temporaryRoot = await mkdtemp(join(
     projectRoot,
     "node_modules",
@@ -184,11 +235,15 @@ export async function createProductionArtifact(projectRoot) {
   const outputRoot = join(temporaryRoot, "dist");
   try {
     await materializeProducer(projectRoot, gitCommit, sourceRoot);
+    phase("materializeProducer", startedAt);
+    startedAt = performance.now();
     const lockBytes = await readFile(join(sourceRoot, "package-lock.json"));
     const dependencyClosureDigest = await digestDependencyClosure(
       projectRoot,
       lockBytes,
     );
+    phase("digestDependencyClosure", startedAt);
+    startedAt = performance.now();
     await runFile(process.execPath, [
       join(projectRoot, "node_modules", "typescript", "bin", "tsc"),
       "-p",
@@ -201,6 +256,8 @@ export async function createProductionArtifact(projectRoot) {
       windowsHide: true,
       maxBuffer: 16 * 1024 * 1024,
     });
+    phase("tsc", startedAt);
+    startedAt = performance.now();
     const artifact = Object.freeze({
       projectRoot: resolve(projectRoot),
       outputRoot,
@@ -215,7 +272,11 @@ export async function createProductionArtifact(projectRoot) {
         dependencyClosureDigest,
       }),
     });
-    await verifyProductionArtifact(artifact);
+    phase("artifactDigest", startedAt);
+    startedAt = performance.now();
+    await verifyProductionArtifact(artifact, false);
+    phase("verifyProductionArtifact", startedAt);
+    phase("createProductionArtifact.total", totalAt);
     return artifact;
   } catch (error) {
     await removeProductionArtifact({ projectRoot, temporaryRoot });
@@ -223,18 +284,20 @@ export async function createProductionArtifact(projectRoot) {
   }
 }
 
-export async function verifyProductionArtifact(artifact) {
+export async function verifyProductionArtifact(artifact, checkDependencies = true) {
   const finalCommit = await assertCleanProducer(artifact.projectRoot);
   if (finalCommit !== artifact.producer.gitCommit) {
     throw new Error("Producer HEAD changed during artifact construction");
   }
-  const [artifactNow, dependenciesNow] = await Promise.all([
-    artifactDigest(artifact.outputRoot),
-    digestDependencyClosure(artifact.projectRoot, artifact.lockBytes),
-  ]);
+  const artifactNow = await artifactDigest(artifact.outputRoot);
   if (artifactNow !== artifact.producer.artifactDigest) {
     throw new Error("Production artifact changed during case capture");
   }
+  if (!checkDependencies) return;
+  const dependenciesNow = await digestDependencyClosure(
+    artifact.projectRoot,
+    artifact.lockBytes,
+  );
   if (dependenciesNow !== artifact.producer.dependencyClosureDigest) {
     throw new Error("Installed dependency closure changed during case capture");
   }

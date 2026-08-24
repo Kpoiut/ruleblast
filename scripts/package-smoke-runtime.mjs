@@ -14,27 +14,53 @@ import { basename, dirname, join, resolve } from "node:path";
 import { assertContained } from "./package-pack.mjs";
 import { runProcess, runStrict } from "./release-process.mjs";
 
-const TEMP_PREFIX = "ruleblast package smoke-";
+export const PACKAGE_SMOKE_TEMP_PREFIX = "ruleblast-package-smoke-";
+const TEMP_PREFIX = PACKAGE_SMOKE_TEMP_PREFIX;
 
 function fail(message) {
   throw new Error(message);
 }
 
-export function createTempRoot() {
-  const root = resolve(mkdtempSync(join(tmpdir(), TEMP_PREFIX)));
-  const parent = resolve(tmpdir());
-  if (dirname(root) !== parent || !basename(root).startsWith(TEMP_PREFIX)) {
+function defaultTempParentCandidates() {
+  const roots = [tmpdir(), process.env.TMPDIR, process.env.TEMP, process.env.TMP];
+  if (process.platform === "win32") {
+    roots.push(join(process.env.SystemRoot ?? "C:\\Windows", "Temp"));
+  } else {
+    roots.push("/tmp");
+  }
+  return roots.filter((value) => typeof value === "string" && value !== "");
+}
+
+export function packageSmokeTempParent(candidates = defaultTempParentCandidates()) {
+  for (const candidate of candidates) {
+    const parent = resolve(candidate);
+    if (!/\s/u.test(parent) && existsSync(parent) && lstatSync(parent).isDirectory()) {
+      return parent;
+    }
+  }
+  fail("No space-free temporary directory for package smoke");
+}
+
+function assertSmokeTempRoot(root) {
+  const resolved = resolve(root);
+  const parent = dirname(resolved);
+  if (
+    /\s/u.test(resolved) ||
+    parent !== packageSmokeTempParent() ||
+    !basename(resolved).startsWith(TEMP_PREFIX)
+  ) {
     fail("Refusing an unexpected package-smoke temporary root");
   }
-  return root;
+  return resolved;
+}
+
+export function createTempRoot() {
+  const root = resolve(mkdtempSync(join(packageSmokeTempParent(), TEMP_PREFIX)));
+  return assertSmokeTempRoot(root);
 }
 
 export function cleanupTempRoot(root) {
-  const parent = resolve(tmpdir());
-  if (dirname(root) !== parent || !basename(root).startsWith(TEMP_PREFIX)) {
-    fail("Refusing unsafe package-smoke cleanup");
-  }
-  rmSync(root, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+  rmSync(assertSmokeTempRoot(root), { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
 }
 
 async function git(root, args, suppressFsmonitor = true, environment = process.env) {

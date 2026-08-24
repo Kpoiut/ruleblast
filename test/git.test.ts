@@ -198,6 +198,26 @@ describe("Git commit snapshots", () => {
     expect(decoder.decode((await snapshot.read("run.sh"))!)).toBe("#!/bin/sh\necho run\n");
   });
 
+  it("fails closed on a Git tree pathname that is not UTF-8", async () => {
+    const root = repository();
+    const blob = decoder.decode(
+      gitInput(root, ["hash-object", "-w", "--stdin"], Buffer.from("x")),
+    ).trim();
+    const record = Buffer.concat([
+      Buffer.from(`100644 blob ${blob}\t`),
+      Buffer.from([0xff, 0xfe]),
+      Buffer.from("\0"),
+    ]);
+    const tree = decoder.decode(gitInput(root, ["mktree", "-z"], record)).trim();
+    const oid = decoder.decode(git(root, ["commit-tree", tree, "-m", "bad path"])).trim();
+    git(root, ["update-ref", "HEAD", oid]);
+
+    await expect(openGitSnapshot(root, "HEAD")).rejects.toMatchObject({
+      name: "GitSnapshotError",
+      code: "INVALID_PATHNAME_ENCODING",
+    });
+  });
+
   it("reads committed blobs larger than the default execFile buffer", async () => {
     const root = repository();
     const expected = Buffer.alloc(2 * 1024 * 1024, 0xa5);
@@ -240,10 +260,18 @@ describe("Git commit snapshots", () => {
   it("excludes gitlinks", async () => {
     const child = repository();
     writeFileSync(join(child, "child.txt"), "child");
-    commit(child);
+    const childCommit = commit(child);
     const root = repository();
-    git(root, ["-c", "protocol.file.allow=always", "submodule", "add", child, "vendor/child"]);
-    commit(root);
+    const gitmodules = Buffer.from(
+      `[submodule "vendor/child"]\n\tpath = vendor/child\n\turl = ${child.replaceAll("\\", "/")}\n`,
+    );
+    const gitmodulesOid = decoder.decode(
+      gitInput(root, ["hash-object", "-w", "--stdin"], gitmodules),
+    ).trim();
+    gitInput(root, ["update-index", "--index-info"], Buffer.from(
+      `100644 ${gitmodulesOid} 0\t.gitmodules\n160000 ${childCommit} 0\tvendor/child\n`,
+    ));
+    git(root, ["commit", "-m", "gitlink"]);
 
     const snapshot = await openGitSnapshot(root, "HEAD");
     expect(await snapshot.listPaths()).toEqual([".gitmodules"]);
@@ -440,6 +468,29 @@ describe("tracked worktree snapshots", () => {
     const oid = decoder.decode(git(root, ["rev-parse", "HEAD:node"])).trim();
     gitInput(root, ["update-index", "--index-info"], Buffer.from(`100644 ${oid} 1\tnode\n`));
     await expect(openTrackedWorktree(root)).rejects.toMatchObject({ code: "UNMERGED_INDEX" });
+  });
+
+  it("fails closed on a tracked index pathname that is not UTF-8 instead of calling it a changing worktree", async () => {
+    const root = repository();
+    writeFileSync(join(root, "ok.txt"), "ok");
+    commit(root);
+    const blob = decoder.decode(
+      gitInput(root, ["hash-object", "-w", "--stdin"], Buffer.from("x")),
+    ).trim();
+    gitInput(
+      root,
+      ["update-index", "-z", "--index-info"],
+      Buffer.concat([
+        Buffer.from(`100644 ${blob} 0\t`),
+        Buffer.from([0xff, 0xfe]),
+        Buffer.from("\0"),
+      ]),
+    );
+
+    await expect(openTrackedWorktree(root)).rejects.toMatchObject({
+      name: "GitSnapshotError",
+      code: "INVALID_PATHNAME_ENCODING",
+    });
   });
 
   it("uses the stage-zero blob for a missing skip-worktree path", async () => {

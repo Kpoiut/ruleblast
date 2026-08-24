@@ -1,4 +1,4 @@
-import type { DiscoverOrigin, ResolverSpec } from "./schema.js";
+import type { DiscoverOrigin, ResolverSpec, TransformSpec } from "./schema.js";
 
 function originExecutable(origin: DiscoverOrigin, reasons: string[]): void {
   if (origin.kind === "ancestors") {
@@ -24,6 +24,11 @@ function selectAllPath(resolver: ResolverSpec): boolean {
     (resolver.assemble.mode === "ordered" || resolver.assemble.mode === "unspecified");
 }
 
+function uniqueTransformKinds(transform: readonly TransformSpec[]): boolean {
+  const kinds = transform.map((item) => item.kind);
+  return new Set(kinds).size === kinds.length;
+}
+
 export function uninterpretableReasons(resolver: ResolverSpec): readonly string[] {
   const reasons: string[] = [];
   if (resolver.onSymlink !== "unknown-unfollowed" && resolver.onSymlink !== "partial-unfollowed") {
@@ -33,6 +38,14 @@ export function uninterpretableReasons(resolver: ResolverSpec): readonly string[
   }
   if (resolver.discover.origins.length === 0) reasons.push("discover.origins");
   for (const origin of resolver.discover.origins) originExecutable(origin, reasons);
+  if (!uniqueTransformKinds(resolver.transform)) reasons.push("transform");
+  if (orderedBudgetPath(resolver) && resolver.transform.length !== 1) {
+    reasons.push("transform");
+  }
+  if (selectAllPath(resolver) &&
+      resolver.transform.some((item) => item.kind === "byte-budget")) {
+    reasons.push("transform");
+  }
   for (const transform of resolver.transform) {
     if (transform.kind === "byte-budget" && typeof transform.bytes === "number" && transform.bytes > 0) {
       continue;

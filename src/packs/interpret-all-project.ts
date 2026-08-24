@@ -22,6 +22,8 @@ import type { CompiledPack, DiscoverOrigin, FrontmatterApply } from "./schema.js
 const FILE_REFERENCE = /(?:^|\s)@([A-Za-z0-9_./-]+)/u;
 const AT_REFERENCE_EVIDENCE =
   "Documented @ file references are visible but not expanded in this revision.";
+const COPILOT_SYMLINK_EVIDENCE =
+  "UNSUPPORTED_BOUNDARY: named Copilot instruction symlink was not followed";
 
 export interface Captured {
   readonly path: string;
@@ -70,8 +72,20 @@ export function projectCopilot(
   const sources: ResolvedSource[] = [];
   const contributions: string[] = [];
   let partial = false;
+  let unknown = false;
   for (const document of ordered) {
     if (!isAncestor(scopeOf(document.path, document.origin), targetPath)) continue;
+    if (document.kind === "symlink") {
+      unknown = true;
+      sources.push({
+        path: document.path,
+        disposition: "SELECTED",
+        digest: document.digest,
+        bytesUsed: 0,
+        truncated: false,
+      });
+      continue;
+    }
     const apply = applyOf(document.origin);
     if (apply !== undefined) {
       const patterns = document.applyPatterns;
@@ -117,8 +131,9 @@ export function projectCopilot(
     repositoryOnly: true as const,
   };
   const evidence = [...claims];
+  if (unknown) evidence.push(COPILOT_SYMLINK_EVIDENCE);
   if (partial) evidence.push(AT_REFERENCE_EVIDENCE);
-  const status = partial ? "PARTIAL" : "COMPLETE";
+  const status = unknown ? "UNKNOWN" : partial ? "PARTIAL" : "COMPLETE";
   return {
     profile: pack.pack.id,
     context,

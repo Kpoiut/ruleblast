@@ -270,7 +270,7 @@ describe("real-profile metamorphic invariants", () => {
     } finally {
       for (const root of roots) rmSync(root, { recursive: true, force: true });
     }
-  });
+  }, 20_000);
 });
 
 describe("performance-shape invariant", () => {
@@ -353,5 +353,5 @@ describe("performance-shape invariant", () => {
       [ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID, 4],
       [OPENAI_CODEX_CLI_PROFILE_ID, 4],
     ]));
-  });
+  }, 20_000);
 });

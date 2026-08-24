@@ -14,7 +14,9 @@ const IMPLICIT_VITEST_MS = 5_000;
 /** Per-file ceiling for explicit Vitest hook/it timeouts. Do not raise. */
 const TEST_TIMEOUT_CEILINGS: Readonly<Record<string, number>> = {
   "test/capture-case.test.ts": 180_000,
+  "test/case.test.ts": 20_000,
   "test/install-matrix.test.ts": 120_000,
+  "test/metamorphic.test.ts": 20_000,
   "test/package-smoke.test.ts": 120_000,
   "test/release-candidate.test.ts": 120_000,
 };
@@ -101,6 +103,10 @@ describe("CI kill-clock ceilings", () => {
       .toBeLessThanOrEqual(120_000);
     expect(Math.max(...explicitTimeouts(read("test/package-smoke.test.ts"))))
       .toBeLessThanOrEqual(120_000);
+    expect(Math.max(...explicitTimeouts(read("test/case.test.ts"))))
+      .toBeLessThanOrEqual(20_000);
+    expect(Math.max(...explicitTimeouts(read("test/metamorphic.test.ts"))))
+      .toBeLessThanOrEqual(20_000);
     const workflow = parse(read(".github/workflows/verify.yml")) as {
       readonly jobs: { readonly verify: { readonly "timeout-minutes": number } };
     };
