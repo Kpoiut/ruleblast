@@ -87,6 +87,13 @@ describe("README story contract", () => {
     }
   });
 
+  it("keeps README status badges as closed img tags without stray text", () => {
+    expect(readme).not.toMatch(/<img\b[^>]*>>/u);
+    expect(readme).toContain(
+      '<a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.9"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.5.9"></a>',
+    );
+  });
+
   it("leads with the exact first command, then verified evidence and install detail", () => {
     expect(readme).toMatch(
       /^<h1 align="center">RuleBlast — Git diff for AI agent repository instructions<\/h1>\s/u,
