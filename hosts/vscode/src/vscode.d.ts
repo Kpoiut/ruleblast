@@ -77,6 +77,7 @@ declare module "vscode" {
     readonly query: string;
     static file(path: string): Uri;
     static parse(value: string): Uri;
+    static joinPath(base: Uri, ...pathSegments: string[]): Uri;
   }
   export enum TreeItemCollapsibleState { None = 0, Collapsed = 1, Expanded = 2 }
   export enum StatusBarAlignment { Left = 1, Right = 2 }
