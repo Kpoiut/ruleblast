@@ -16,11 +16,15 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 
 const runFile = promisify(execFile);
 const repositoryRoot = dirname(dirname(fileURLToPath(import.meta.url)));
-const temporaryRoots: string[] = [];
+const persistentRoots: string[] = [];
+const ephemeralRoots: string[] = [];
+let packedRoot = "";
+let outsideSentinel = "";
+let packCache = "";
 const lifecycleScripts = [
   "preinstall",
   "install",
@@ -47,33 +51,40 @@ function digest(algorithm: "sha256" | "sha512", bytes: Buffer): string {
   return createHash(algorithm).update(bytes).digest("hex");
 }
 
-function createIsolatedRoot(): string {
-  const root = mkdtempSync(join(tmpdir(), "ruleblast release test "));
-  temporaryRoots.push(root);
+function trackRoot(root: string, persistent: boolean): string {
+  (persistent ? persistentRoots : ephemeralRoots).push(root);
   return root;
 }
 
-function createIsolatedRepository(): string {
-  const root = createIsolatedRoot();
+function createIsolatedRoot(persistent = false): string {
+  return trackRoot(mkdtempSync(join(tmpdir(), "ruleblast release test ")), persistent);
+}
+
+function copyNamed(root: string, name: string): void {
+  const destination = join(root, name);
+  mkdirSync(dirname(destination), { recursive: true });
+  cpSync(join(repositoryRoot, name), destination, { recursive: true });
+}
+
+function createIsolatedRepository(persistent = false): string {
+  const root = createIsolatedRoot(persistent);
   for (const name of [
-    "assets",
     "cases",
     "packs",
     "schemas",
     "scripts",
     "src",
-    "test",
+    "test/golden",
     "CONTRACT.md",
     "LICENSE",
     "AGENT_USAGE.md",
     "README.md",
-    "EXTRACTION_REVIEWS.json",
     "package-lock.json",
     "package.json",
     "tsconfig.build.json",
     "tsconfig.json",
   ]) {
-    cpSync(join(repositoryRoot, name), join(root, name), { recursive: true });
+    copyNamed(root, name);
   }
   symlinkSync(
     join(repositoryRoot, "node_modules"),
@@ -83,9 +94,19 @@ function createIsolatedRepository(): string {
   return root;
 }
 
+function packedRelease(root: string): string {
+  return join(root, "artifacts", "release");
+}
+
+function copyPackedRelease(fromRoot: string): { root: string; release: string } {
+  const root = createIsolatedRoot();
+  mkdirSync(join(root, "artifacts"), { recursive: true });
+  cpSync(join(fromRoot, "package.json"), join(root, "package.json"));
+  cpSync(packedRelease(fromRoot), packedRelease(root), { recursive: true });
+  return { root, release: packedRelease(root) };
+}
+
 async function buildArtifact(root: string): Promise<void> {
-  const emptyCache = mkdtempSync(join(tmpdir(), "ruleblast release empty cache "));
-  temporaryRoots.push(emptyCache);
   const moduleUrl = new URL("../scripts/release-artifact.mjs", import.meta.url).href;
   const program = [
     `import { buildReleaseArtifact } from ${JSON.stringify(moduleUrl)};`,
@@ -93,15 +114,42 @@ async function buildArtifact(root: string): Promise<void> {
   ].join("\n");
   await runFile(process.execPath, ["--input-type=module", "--eval", program], {
     cwd: root,
-    env: { ...process.env, npm_config_cache: emptyCache },
+    env: { ...process.env, npm_config_cache: packCache },
     maxBuffer: 20 * 1024 * 1024,
   });
 }
 
-afterEach(() => {
-  for (const root of temporaryRoots.splice(0)) {
+function removeTracked(roots: string[]): void {
+  for (const root of roots.splice(0)) {
     rmSync(root, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
   }
+}
+
+beforeAll(async () => {
+  packCache = trackRoot(
+    mkdtempSync(join(tmpdir(), "ruleblast release empty cache ")),
+    true,
+  );
+  const protectedRoot = trackRoot(
+    mkdtempSync(join(tmpdir(), "ruleblast approved artifact ")),
+    true,
+  );
+  const protectedRelease = join(protectedRoot, "artifacts", "release");
+  mkdirSync(protectedRelease, { recursive: true });
+  outsideSentinel = join(protectedRelease, "approved.tgz");
+  writeFileSync(outsideSentinel, "approved");
+  packedRoot = createIsolatedRepository(true);
+  expect(existsSync(join(packedRoot, "dist"))).toBe(false);
+  await buildArtifact(packedRoot);
+  expect(readFileSync(outsideSentinel, "utf8")).toBe("approved");
+}, 120_000);
+
+afterEach(() => {
+  removeTracked(ephemeralRoots);
+});
+
+afterAll(() => {
+  removeTracked(persistentRoots);
 });
 
 describe("2.5.9 package identity", () => {
@@ -156,12 +204,22 @@ describe("2.5.9 package identity", () => {
 });
 
 describe("release artifact", () => {
+  it("isolates a pack fixture without demo assets or the test tree", () => {
+    const isolated = createIsolatedRepository();
+    expect(existsSync(join(isolated, "assets"))).toBe(false);
+    expect(existsSync(join(isolated, "test", "fixtures"))).toBe(false);
+    expect(existsSync(join(isolated, "test", "install-matrix.test.ts"))).toBe(false);
+    expect(existsSync(join(isolated, "test", "golden", "diff-case.txt"))).toBe(true);
+    expect(existsSync(join(isolated, "src", "cli.ts"))).toBe(true);
+    expect(existsSync(join(isolated, "packs", "bundled"))).toBe(true);
+    expect(existsSync(join(isolated, "scripts", "release-artifact.mjs"))).toBe(true);
+  });
+
   it("packs once, verifies that exact tarball, and records canonical digests and inventory", async () => {
-    const isolatedRoot = createIsolatedRepository();
-    const isolatedRelease = join(isolatedRoot, "artifacts", "release");
+    const isolatedRoot = packedRoot;
+    const isolatedRelease = packedRelease(isolatedRoot);
     const isolatedManifest = join(isolatedRelease, "manifest.json");
-    expect(existsSync(join(isolatedRoot, "dist"))).toBe(false);
-    await buildArtifact(isolatedRoot);
+    expect(existsSync(join(isolatedRoot, "dist"))).toBe(true);
 
     const manifestBytes = readFileSync(isolatedManifest);
     expect(manifestBytes.at(-1)).toBe(0x0a);
@@ -241,7 +299,7 @@ describe("release artifact", () => {
     for (const [name, bytes] of before) {
       expect(readFileSync(join(isolatedRelease, name))).toEqual(bytes);
     }
-  }, 120_000);
+  }, 15_000);
 
   it("confines cleanup to the owned release directory", async () => {
     const isolatedRoot = createIsolatedRoot();
@@ -279,8 +337,10 @@ describe("release artifact", () => {
 
   it("refuses cleanup through a symlinked artifact ancestor", async () => {
     const isolatedRoot = createIsolatedRoot();
-    const outside = mkdtempSync(join(tmpdir(), "ruleblast release outside "));
-    temporaryRoots.push(outside);
+    const outside = trackRoot(
+      mkdtempSync(join(tmpdir(), "ruleblast release outside ")),
+      false,
+    );
     const outsideRelease = join(outside, "release");
     mkdirSync(outsideRelease);
     const marker = join(outsideRelease, "keep.txt");
@@ -328,10 +388,8 @@ describe("release artifact", () => {
   }, 120_000);
 
   it("rejects closed-schema and tar-inventory manifest tampering", async () => {
-    const isolatedRoot = createIsolatedRepository();
-    const isolatedRelease = join(isolatedRoot, "artifacts", "release");
+    const { root: isolatedRoot, release: isolatedRelease } = copyPackedRelease(packedRoot);
     const isolatedManifest = join(isolatedRelease, "manifest.json");
-    await buildArtifact(isolatedRoot);
     const moduleUrl = new URL("../scripts/release-artifact.mjs", import.meta.url).href;
     const verify = async (): Promise<void> => {
       const program = [
@@ -363,12 +421,10 @@ describe("release artifact", () => {
     await expect(verify()).rejects.toMatchObject({
       stderr: expect.stringMatching(/inventory|tarball/iu),
     });
-  }, 120_000);
+  }, 15_000);
 
   it("rejects a release tarball symlink that escapes its directory", async () => {
-    const isolatedRoot = createIsolatedRepository();
-    const isolatedRelease = join(isolatedRoot, "artifacts", "release");
-    await buildArtifact(isolatedRoot);
+    const { root: isolatedRoot, release: isolatedRelease } = copyPackedRelease(packedRoot);
     const manifest = readJson(join(isolatedRelease, "manifest.json")) as {
       tarball: { file: string };
     };
@@ -387,17 +443,10 @@ describe("release artifact", () => {
       ["--input-type=module", "--eval", program],
       { cwd: isolatedRoot },
     )).rejects.toMatchObject({ stderr: expect.stringMatching(/regular file|contained|symlink/iu) });
-  }, 120_000);
+  }, 15_000);
 
-  it("never removes an existing release artifact outside its selected repository", async () => {
-    const selected = createIsolatedRepository();
-    const protectedRoot = mkdtempSync(join(tmpdir(), "ruleblast approved artifact "));
-    temporaryRoots.push(protectedRoot);
-    const protectedRelease = join(protectedRoot, "artifacts", "release");
-    mkdirSync(protectedRelease, { recursive: true });
-    const sentinel = join(protectedRelease, "approved.tgz");
-    writeFileSync(sentinel, "approved");
-    await buildArtifact(selected);
-    expect(readFileSync(sentinel, "utf8")).toBe("approved");
-  }, 120_000);
+  it("never removes an existing release artifact outside its selected repository", () => {
+    expect(readFileSync(outsideSentinel, "utf8")).toBe("approved");
+    expect(existsSync(packedRelease(packedRoot))).toBe(true);
+  });
 });
