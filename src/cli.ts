@@ -90,6 +90,7 @@ const GIT_ERROR_MESSAGES: Readonly<Record<GitSnapshotErrorCode, string>> = {
   UNMERGED_INDEX: "The Git index contains unmerged entries",
   UNSUPPORTED_WORKTREE_NODE: "A tracked path has an unsupported worktree node",
   WORKTREE_CHANGED_DURING_SNAPSHOT: "The tracked worktree changed during capture",
+  INVALID_PATHNAME_ENCODING: "A Git pathname is not valid UTF-8",
 };
 
 interface KnownError {
@@ -111,6 +112,7 @@ const GIT_RECOVERY: Readonly<Record<GitSnapshotErrorCode, string>> = {
   UNMERGED_INDEX: "Resolve the unmerged index entries and retry.",
   UNSUPPORTED_WORKTREE_NODE: "Restore the tracked path as a regular file or symlink and retry.",
   WORKTREE_CHANGED_DURING_SNAPSHOT: "Wait for repository writes to finish and retry.",
+  INVALID_PATHNAME_ENCODING: "Rename the path to UTF-8 or keep it out of the tracked snapshot.",
 };
 
 function knownError(error: unknown): KnownError | null {

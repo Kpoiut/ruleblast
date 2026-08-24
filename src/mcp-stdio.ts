@@ -342,15 +342,15 @@ export async function serveMcpStdio(
   stdout: Writable,
   host: McpHost,
 ): Promise<number> {
-  let buffer = "";
+  let buffer = Buffer.alloc(0);
   const write = (message: JsonRpcMessage): void => {
     stdout.write(encodeMcpFrame(message));
   };
-  stdin.setEncoding("utf8");
   for await (const chunk of stdin) {
-    buffer += typeof chunk === "string" ? chunk : String(chunk);
+    const piece = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    buffer = Buffer.concat([buffer, piece]);
     const consumed = consumeMcpBuffer(buffer);
-    buffer = consumed.rest;
+    buffer = Buffer.from(consumed.rest);
     for (const raw of consumed.messages) {
       if (isJsonRpcParseError(raw)) {
         write(raw);

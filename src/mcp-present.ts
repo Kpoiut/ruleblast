@@ -78,11 +78,19 @@ export function mcpWitnessText(
   ));
 }
 
+const MCP_TOOL_ANNOTATIONS = Object.freeze({
+  readOnlyHint: true,
+  destructiveHint: false,
+  idempotentHint: true,
+  openWorldHint: false,
+});
+
 export const MCP_TOOLS = Object.freeze([
   Object.freeze({
     name: "scan",
     description:
       "Current instruction stacks. Same as ruleblast [path]. Ask the human before running.",
+    annotations: MCP_TOOL_ANNOTATIONS,
     inputSchema: {
       type: "object",
       properties: {
@@ -100,6 +108,7 @@ export const MCP_TOOLS = Object.freeze([
     name: "diff",
     description:
       "Which tracked stacks moved. Same as ruleblast diff [base]. Ask the human before running.",
+    annotations: MCP_TOOL_ANNOTATIONS,
     inputSchema: {
       type: "object",
       properties: {
@@ -119,6 +128,7 @@ export const MCP_TOOLS = Object.freeze([
     name: "explain",
     description:
       "Why one path inherited this stack. Same as ruleblast explain <path>. Ask the human first.",
+    annotations: MCP_TOOL_ANNOTATIONS,
     inputSchema: {
       type: "object",
       required: ["path"],
@@ -139,6 +149,7 @@ export const MCP_TOOLS = Object.freeze([
     name: "case",
     description:
       "Packaged 33→106 teaching receipt. Same as ruleblast case. Ask the human first.",
+    annotations: MCP_TOOL_ANNOTATIONS,
     inputSchema: {
       type: "object",
       properties: {

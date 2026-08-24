@@ -3,7 +3,7 @@ import { lstat, open, readFile, readlink, realpath } from "node:fs/promises";
 import { join } from "node:path";
 import type { SnapshotRef } from "./model.js";
 import { gitBlobOid } from "./domain/git-blob-identity.js";
-import { compareCodePoints } from "./domain/repository-path.js";
+import { compareCodePoints, decodeGitPathname } from "./domain/repository-path.js";
 import { GitSnapshotError } from "./git-errors.js";
 import { runGit } from "./git-exec.js";
 import type {
@@ -17,19 +17,27 @@ interface TreeEntry extends SnapshotEntry {
   readonly oid: string;
 }
 
+function gitPath(bytes: Buffer): string {
+  try {
+    return decodeGitPathname(bytes);
+  } catch {
+    throw new GitSnapshotError("INVALID_PATHNAME_ENCODING");
+  }
+}
+
 function parseTree(output: Buffer): Map<string, TreeEntry> {
   const entries = new Map<string, TreeEntry>();
   let offset = 0;
   while (offset < output.length) {
     const terminator = output.indexOf(0, offset);
     if (terminator === -1) throw new Error("Invalid git ls-tree output");
-    const record = output.subarray(offset, terminator).toString("utf8");
+    const record = output.subarray(offset, terminator);
     offset = terminator + 1;
-    if (record === "") continue;
-    const tab = record.indexOf("\t");
+    if (record.length === 0) continue;
+    const tab = record.indexOf(0x09);
     if (tab === -1) throw new Error("Invalid git ls-tree record");
-    const metadata = record.slice(0, tab).split(" ");
-    const path = record.slice(tab + 1);
+    const metadata = record.subarray(0, tab).toString("ascii").split(" ");
+    const path = gitPath(record.subarray(tab + 1));
     const mode = metadata[0];
     const type = metadata[1];
     const oid = metadata[2];
@@ -171,14 +179,15 @@ async function trackedInventory(root: string): Promise<Map<string, IndexEntry>> 
   ]);
   const skip = new Set<string>();
   for (const record of nulRecords(flagsOutput)) {
-    const text = record.toString("utf8");
-    if (text.length >= 3 && (text[0] === "S" || text[0] === "s") && text[1] === " ") skip.add(text.slice(2));
+    if (record.length >= 3 && (record[0] === 0x53 || record[0] === 0x73) && record[1] === 0x20) {
+      skip.add(gitPath(record.subarray(2)));
+    }
   }
   const entries = new Map<string, IndexEntry>();
   for (const record of nulRecords(stageOutput)) {
     const tab = record.indexOf(9); if (tab < 0) throw new Error("Invalid git index record");
-    const [mode, oid, stageText] = record.subarray(0, tab).toString("utf8").split(" ");
-    const path = record.subarray(tab + 1).toString("utf8");
+    const [mode, oid, stageText] = record.subarray(0, tab).toString("ascii").split(" ");
+    const path = gitPath(record.subarray(tab + 1));
     const stage = Number(stageText);
     if (!Number.isInteger(stage) || !mode || !oid || !path) throw new Error("Invalid git index record");
     if (stage !== 0) throw new GitSnapshotError("UNMERGED_INDEX");

@@ -38,6 +38,24 @@ describe("github/copilot-cli@1", () => {
     )).toBe(true);
   });
 
+  it("discovers tracked .claude/CLAUDE.md from the Copilot CLI instruction table", async () => {
+    const resolver = JSON.parse(
+      readFileSync(join(repositoryRoot, "packs/bundled/github-copilot-cli@1/resolver.json"), "utf8"),
+    ) as {
+      readonly discover: {
+        readonly origins: readonly { readonly kind: string; readonly paths?: readonly string[] }[];
+      };
+    };
+    expect(resolver.discover.origins.some((origin) =>
+      origin.kind === "fixed" && origin.paths?.includes(".claude/CLAUDE.md")
+    )).toBe(true);
+    const prepared = await copilotProfile.prepare(fixture("dot-claude"));
+    const projection = prepared.project("src/file.ts");
+    expect(projection.status).toBe("COMPLETE");
+    expect(projection.sources.map((source) => source.path)).toEqual([".claude/CLAUDE.md"]);
+    expect(projection.sources[0]?.disposition).toBe("SELECTED");
+  });
+
   it("selects documented agent instruction files without claiming precedence", async () => {
     const prepared = await copilotProfile.prepare(fixture("agents-claude"));
     const projection = prepared.project("src/file.ts");

@@ -12,6 +12,11 @@
         "scopeAnchor": ".github"
       },
       {
+        "kind": "fixed",
+        "paths": [".claude/CLAUDE.md"],
+        "scopeAnchor": ".claude"
+      },
+      {
         "kind": "glob",
         "pattern": ".github/instructions/**/*.instructions.md",
         "scopeAnchor": ".github",

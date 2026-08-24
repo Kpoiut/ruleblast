@@ -27,7 +27,7 @@ export function resolveAgentAllow(input: {
   const path = join(input.cwd, ALLOW_FILE);
   if (!existsSync(path)) return "ask";
   try {
-    return parseToken(readFileSync(path, "utf8")) ?? "yes";
+    return parseToken(readFileSync(path, "utf8")) ?? "ask";
   } catch {
     return "ask";
   }

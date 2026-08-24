@@ -186,8 +186,14 @@ async function measureLab() {
   const calibratedCount = lab.bundled.filter((row) =>
     row.calibration === "CALIBRATED"
   ).length;
+  const noIntrospectionCount = lab.bundled.filter((row) =>
+    row.calibration === "NO_INTROSPECTION"
+  ).length;
   if (calibratedCount !== 4) {
     throw new Error("Lab lost sealed CALIBRATED vendor-source dumps on a bundled reality");
+  }
+  if (noIntrospectionCount !== 0) {
+    throw new Error("Lab labeled a bundled reality NO_INTROSPECTION while CALIBRATED dumps exist");
   }
   const rows = lab.bundled.map((row) => ({
     id: row.id,

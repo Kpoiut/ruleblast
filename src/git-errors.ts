@@ -3,7 +3,8 @@ export type GitSnapshotErrorCode =
   | "REF_NOT_FOUND"
   | "UNMERGED_INDEX"
   | "UNSUPPORTED_WORKTREE_NODE"
-  | "WORKTREE_CHANGED_DURING_SNAPSHOT";
+  | "WORKTREE_CHANGED_DURING_SNAPSHOT"
+  | "INVALID_PATHNAME_ENCODING";
 
 export class GitSnapshotError extends Error {
   public constructor(public readonly code: GitSnapshotErrorCode) {

@@ -33,9 +33,36 @@
         "CLAUDE.md"
       ],
       "projectionDigests": {
-        "AGENTS.md": "2fefd1e56d1dd4bd78f0e682b87fe17bdf1eed98747e9a48b15841b0b03e00da",
-        "CLAUDE.md": "7fdf086baaf9ac813be92f42ea696ad0e24a44f5c4c75380a63314dca6fd2b7f",
-        "src/file.ts": "849b6055082bf3a43728227071cda9eb8c76c727ee8e272d2a7f72f73590a177"
+        "AGENTS.md": "81437a4ef3112c513ce992b3038e8bd0e2b152a17ec3109f333b65ea0eac2fdd",
+        "CLAUDE.md": "001bbcd2ed9a0b69737c836468578ab12c0f27dd4b1d481a1f5c093509c211fb",
+        "src/file.ts": "d8c0cfa5d5cba12051f88aa90272a7f9c9fc6893fd46a5f87da08a50c36600b0"
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "copilot .claude/CLAUDE.md",
+        "entries": [
+          {
+            "path": ".claude/CLAUDE.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "bmVzdGVkLWNsYXVkZQ=="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQ=="
+          }
+        ]
+      },
+      "sourceDependencyPaths": [
+        ".claude/CLAUDE.md"
+      ],
+      "projectionDigests": {
+        ".claude/CLAUDE.md": "778fc396bc4d9f1004731e4b314977816b8d1830e93e66dd6a0f519c467bddaf",
+        "src/file.ts": "47171ab7b5f5d253eaf6c6f8d2f0c29546969b7617a8e52259c67339bb22d172"
       }
     },
     {
@@ -61,8 +88,8 @@
         ".github/instructions/loose.instructions.md"
       ],
       "projectionDigests": {
-        ".github/instructions/loose.instructions.md": "9f1f8af919517e4300ee941c15bd18bd24f51007da4dc63988939162f825c1a1",
-        "src/file.ts": "5a98909119b4a05be374d97df191785bf28b37dcba794718ca187c58ae21c32f"
+        ".github/instructions/loose.instructions.md": "17ebcb5ce931c363ffb8e2b91ba04e9a40c58cdf001f2727a7a6fa78c497edf1",
+        "src/file.ts": "0d94db42a8d567da620d376afd81385d781afe6ee01907d4eef11814180167e7"
       }
     },
     {
@@ -101,10 +128,10 @@
         ".github/instructions/front.instructions.md"
       ],
       "projectionDigests": {
-        ".github/copilot-instructions.md": "bc93527fd644acbbdff3a9ce9254227b181b6b293991e27a0864349c6056f612",
-        ".github/instructions/front.instructions.md": "d44a3919db9bc06f31d1dfd37da0e6917f087ce31b518ee42258c944131b62df",
-        "src/core.ts": "a7302df33b18e84e02b5b90dc771dc3afc25f46dd0ce8a0f9ec1a34f5a21ddb7",
-        "web/app.ts": "12181207ea5ddb3366982d08e9bc3bd170ef17593347b4b6e1caaad140383b4f"
+        ".github/copilot-instructions.md": "45d3ada315d0b3ccae4afa48ea1585cb360871728e0744fc100b133a8d0fcf19",
+        ".github/instructions/front.instructions.md": "ec9c48e90ba367731f4563e946472e36d4c9d0b1dbe223c5a82fc9ba3c0fbc01",
+        "src/core.ts": "f43144c2aec06f827efe9970b9adfc10e31cd322097eb693ec4cbfc24081635a",
+        "web/app.ts": "8518cc847882b92aef4ba1a3226231d25b187b5d1719d9d0855465d39b84ff9d"
       }
     }
   ]

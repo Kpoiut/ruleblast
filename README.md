@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
-  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.9"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.5.9"></a>
+  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.9"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.5.10"></a>
   <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/ruleblast" alt="Apache-2.0 license"></a>
 </p>
@@ -32,7 +32,7 @@ npx --yes ruleblast@2.5.9 .
 npx --yes ruleblast@2.5.9 diff HEAD~1
 ```
 
-<p align="center"><sub>This tree is 2.5.9. Published CLI is ruleblast@2.5.9. Local · read-only · deterministic · no network or model call</sub></p>
+<p align="center"><sub>This tree is 2.5.10. Published CLI is ruleblast@2.5.9. Local · read-only · deterministic · no network or model call</sub></p>
 
 <p align="center">
   A Status Bar can say <code>Δ206</code> before anyone opens RuleBlast.<br>
@@ -256,7 +256,7 @@ npm run build
 npm run host:build
 ```
 
-Install the unpacked `hosts/vscode` folder, or pack `ruleblast-companion-2.5.9.vsix` with `npm run host:pack`. GitHub Release [`v2.5.9`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.9) serves `ruleblast-companion-2.5.9.vsix`. The Status Bar follows the active file from the last result. Compare selected realities opens the two stacks in the editor diff. Saving a file marks the last result stale; it does not start another analysis. Claude Desktop, ChatGPT/Codex desktop, and Zed use `--mcp`. Marketplace / Open VSX listings are separate publisher operations.
+Install the unpacked `hosts/vscode` folder, or pack `ruleblast-companion-2.5.10.vsix` with `npm run host:pack`. GitHub Release [`v2.5.9`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.9) serves `ruleblast-companion-2.5.9.vsix`. The Status Bar follows the active file from the last result. Compare selected realities opens the two stacks in the editor diff. Saving a file marks the last result stale; it does not start another analysis. Claude Desktop, ChatGPT/Codex desktop, and Zed use `--mcp`. Marketplace / Open VSX listings are separate publisher operations.
 
 ## Give your agent RuleBlast
 
@@ -322,7 +322,7 @@ Promoted Blast Case: official evidence, retrieval date, manifests, expected JSON
 
 ## Roadmap
 
-This tree is `2.5.9`. Published CLI is `ruleblast@2.5.9`. The product is overlay, work map, change alignment, and intent — which files now receive different AI instructions, and whether later work should CONTINUE or REJECT that inheritance. REJECT is not a recommendation to discard the Git change. Glance, `--paths-only`, `--index`, `explain --compare`, and a `PROOF` line disclose that same result. Offline `--detail` / `--receipt` can say a pinned evidence revision is SEALED, NO_KNOWN_DRIFT, or POSSIBLY_STALE, and print the Candidate Reality Conformance Lab, without a network fetch. Lab `ORACLE` is a sealed interpreter match on every packed Codex, Copilot, Claude, and Gemini fixture probe. Pack id is the lookup key for the executing reality. `RECORDED` is not a passing oracle. Candidate `LOADED` is a snapshot that constructed, not a passing projection. Candidate runtimes sit in the lab as `NOT_ADMITTED` under runtime IDs such as `xai/grok-build-cli` and `qwen/qwen-code-cli`. A model name is never a `--reality`. It is not a model-quality score.
+This tree is `2.5.10`. Published CLI is `ruleblast@2.5.9`. The product is overlay, work map, change alignment, and intent — which files now receive different AI instructions, and whether later work should CONTINUE or REJECT that inheritance. REJECT is not a recommendation to discard the Git change. Glance, `--paths-only`, `--index`, `explain --compare`, and a `PROOF` line disclose that same result. Offline `--detail` / `--receipt` can say a pinned evidence revision is SEALED, NO_KNOWN_DRIFT, or POSSIBLY_STALE, and print the Candidate Reality Conformance Lab, without a network fetch. Lab `ORACLE` is a sealed interpreter match on every packed Codex, Copilot, Claude, and Gemini fixture probe. Pack id is the lookup key for the executing reality. `RECORDED` is not a passing oracle. Candidate `LOADED` is a snapshot that constructed, not a passing projection. Candidate runtimes sit in the lab as `NOT_ADMITTED` under runtime IDs such as `xai/grok-build-cli` and `qwen/qwen-code-cli`. A model name is never a `--reality`. It is not a model-quality score.
 
 Today: Codex, Claude Code, opt-in Copilot CLI, and opt-in Gemini CLI. Same companion in VS Code-family editors, including Copilot Chat. Same four actions over `--mcp` for Claude Desktop and Codex desktop.
 

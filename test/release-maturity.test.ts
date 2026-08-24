@@ -994,9 +994,9 @@ describe("public release maturity", () => {
     }
     expect(read("CHANGELOG.md")).toContain("## 2.5.1 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.1 — SHIPPED TO MAIN/u);
-    expect(read("package.json")).toContain('"version": "2.5.9"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.9"');
-    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.5.9`");
+    expect(read("package.json")).toContain('"version": "2.5.10"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.10"');
+    expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.5.10`");
     expect(read("README.md")).toContain("ruleblast-companion-2.5.9.vsix");
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
@@ -1023,8 +1023,8 @@ describe("public release maturity", () => {
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.5.2 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.2 — RELEASED/u);
-    expect(read("package.json")).toContain('"version": "2.5.9"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.9"');
+    expect(read("package.json")).toContain('"version": "2.5.10"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.10"');
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
     );
@@ -1050,8 +1050,8 @@ describe("public release maturity", () => {
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.5.3 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.3 — RELEASED/u);
-    expect(read("package.json")).toContain('"version": "2.5.9"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.9"');
+    expect(read("package.json")).toContain('"version": "2.5.10"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.10"');
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
     );
@@ -1077,8 +1077,8 @@ describe("public release maturity", () => {
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.5.4 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.4 — RELEASED/u);
-    expect(read("package.json")).toContain('"version": "2.5.9"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.9"');
+    expect(read("package.json")).toContain('"version": "2.5.10"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.10"');
     expect(read(".github/workflows/verify.yml")).toContain("macos-latest");
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
@@ -1106,8 +1106,8 @@ describe("public release maturity", () => {
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.5.5 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.5 — RELEASED/u);
-    expect(read("package.json")).toContain('"version": "2.5.9"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.9"');
+    expect(read("package.json")).toContain('"version": "2.5.10"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.10"');
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
     );
@@ -1134,8 +1134,8 @@ describe("public release maturity", () => {
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.5.6 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.6 — RELEASED/u);
-    expect(read("package.json")).toContain('"version": "2.5.9"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.9"');
+    expect(read("package.json")).toContain('"version": "2.5.10"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.10"');
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
     );
@@ -1179,8 +1179,8 @@ describe("public release maturity", () => {
     }
     expect(read("CHANGELOG.md")).toContain("## 2.5.7 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.7 — SHIPPED TO MAIN/u);
-    expect(read("package.json")).toContain('"version": "2.5.9"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.9"');
+    expect(read("package.json")).toContain('"version": "2.5.10"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.10"');
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
     );
@@ -1212,8 +1212,8 @@ describe("public release maturity", () => {
     expect(shipped).not.toMatch(/\bRELEASED\b/u);
     expect(read("CHANGELOG.md")).toContain("## 2.5.8 — SHIPPED TO MAIN");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.8 — RELEASED/u);
-    expect(read("package.json")).toContain('"version": "2.5.9"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.9"');
+    expect(read("package.json")).toContain('"version": "2.5.10"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.10"');
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
     );
@@ -1224,7 +1224,7 @@ describe("public release maturity", () => {
     const heading =
       "## **RELEASED** — `v2.5.9`: Honest calibration, macOS realpath, and MCP flags";
     const next = roadmap.indexOf(
-      "## **NEXT** — Vendor CLI dump when a surface publishes one",
+      "## **SHIPPED TO MAIN** — `v2.5.10`: Fail-closed allow, MCP bytes, and Git path encoding",
     );
     const start = roadmap.indexOf(heading);
     expect(start).toBeGreaterThan(-1);
@@ -1257,8 +1257,36 @@ describe("public release maturity", () => {
     }
     expect(read("CHANGELOG.md")).toContain("## 2.5.9 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.9 — SHIPPED TO MAIN/u);
-    expect(read("package.json")).toContain('"version": "2.5.9"');
-    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.9"');
+    expect(read("package.json")).toContain('"version": "2.5.10"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.10"');
+    expect(read("src/package-identity.ts")).toContain(
+      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+    );
+  });
+
+  it("records v2.5.10 as fail-closed allow, MCP bytes, and Git path encoding", () => {
+    const roadmap = read("ROADMAP.md");
+    const heading =
+      "## **SHIPPED TO MAIN** — `v2.5.10`: Fail-closed allow, MCP bytes, and Git path encoding";
+    const next = roadmap.indexOf(
+      "## **NEXT** — Vendor CLI dump when a surface publishes one",
+    );
+    const start = roadmap.indexOf(heading);
+    expect(start).toBeGreaterThan(-1);
+    expect(next).toBeGreaterThan(start);
+    const shipped = roadmap.slice(start, next);
+    expect(shipped).toContain("2.5.10");
+    expect(shipped).toContain("2.5.9");
+    expect(shipped).toContain("ruleblast-companion-2.5.10.vsix");
+    expect(shipped).toContain(".ruleblast-allow");
+    expect(shipped).toContain("UTF-8");
+    expect(shipped).toContain(".claude/CLAUDE.md");
+    expect(shipped).toContain("Not a fifth action");
+    expect(shipped).not.toMatch(/\bRELEASED\b/u);
+    expect(read("CHANGELOG.md")).toContain("## 2.5.10 — SHIPPED TO MAIN");
+    expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.10 — RELEASED/u);
+    expect(read("package.json")).toContain('"version": "2.5.10"');
+    expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.10"');
     expect(read("src/package-identity.ts")).toContain(
       'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
     );

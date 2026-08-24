@@ -676,6 +676,7 @@ describe("runCli", () => {
       "UNMERGED_INDEX",
       "UNSUPPORTED_WORKTREE_NODE",
       "WORKTREE_CHANGED_DURING_SNAPSHOT",
+      "INVALID_PATHNAME_ENCODING",
     ] as const) {
       const h = harness({
         openTrackedWorktree: vi.fn(async () => { throw new GitSnapshotError(code); }),

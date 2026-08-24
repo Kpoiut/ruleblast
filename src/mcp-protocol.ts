@@ -1,4 +1,5 @@
 export const MCP_PROTOCOL_VERSION = "2024-11-05";
+export const MCP_MAX_FRAME_BYTES = 32 * 1024 * 1024;
 
 export interface JsonRpcRequest {
   readonly jsonrpc: "2.0";
@@ -21,9 +22,16 @@ export interface JsonRpcFailure {
 
 export type JsonRpcMessage = JsonRpcSuccess | JsonRpcFailure;
 
-export function encodeMcpFrame(payload: unknown): string {
-  const body = JSON.stringify(payload);
-  return `Content-Length: ${Buffer.byteLength(body, "utf8")}\r\n\r\n${body}`;
+function asBuffer(value: Buffer | Uint8Array | string): Buffer {
+  if (Buffer.isBuffer(value)) return value;
+  if (typeof value === "string") return Buffer.from(value, "utf8");
+  return Buffer.from(value);
+}
+
+export function encodeMcpFrame(payload: unknown): Buffer {
+  const body = Buffer.from(JSON.stringify(payload), "utf8");
+  const header = Buffer.from(`Content-Length: ${body.length}\r\n\r\n`, "ascii");
+  return Buffer.concat([header, body]);
 }
 
 function parseJsonRpcBody(body: string): unknown {
@@ -38,30 +46,54 @@ function parseJsonRpcBody(body: string): unknown {
   }
 }
 
-export function consumeMcpBuffer(buffer: string): {
+function headerEnd(buffer: Buffer): number {
+  for (let index = 0; index + 1 < buffer.length; index += 1) {
+    if (buffer[index] === 0x0d && buffer[index + 1] === 0x0a &&
+        buffer[index + 2] === 0x0d && buffer[index + 3] === 0x0a) {
+      return index + 4;
+    }
+    if (buffer[index] === 0x0a && buffer[index + 1] === 0x0a) return index + 2;
+  }
+  return -1;
+}
+
+function contentLength(header: Buffer): number | null {
+  const text = header.toString("ascii");
+  const match = /^Content-Length:\s*(\d+)\r?$/imu.exec(text);
+  if (match === null) return null;
+  const length = Number(match[1]);
+  return Number.isInteger(length) && length >= 0 ? length : null;
+}
+
+export function consumeMcpBuffer(buffer: Buffer | Uint8Array | string): {
   readonly messages: unknown[];
-  readonly rest: string;
+  readonly rest: Buffer;
 } {
   const messages: unknown[] = [];
-  let rest = buffer;
+  let rest = asBuffer(buffer);
   while (rest.length > 0) {
-    const match = /^(?:Content-Length:\s*(\d+)\r?\n)(?:[A-Za-z0-9-]+:[^\n]*\n)*\r?\n/iu
-      .exec(rest);
-    if (match === null) {
-      const line = /^([^\r\n]+)\r?\n/u.exec(rest);
-      if (line !== null && line[1]!.startsWith("{")) {
-        messages.push(parseJsonRpcBody(line[1]!));
-        rest = rest.slice(line[0].length);
+    const end = headerEnd(rest);
+    if (end === -1) {
+      if (rest.length > MCP_MAX_FRAME_BYTES) {
+        throw new RangeError("MCP frame exceeded maximum size");
+      }
+      const lineEnd = rest.indexOf(0x0a);
+      if (lineEnd > 0 && rest[0] === 0x7b) {
+        const line = rest.subarray(0, rest[lineEnd - 1] === 0x0d ? lineEnd - 1 : lineEnd);
+        messages.push(parseJsonRpcBody(line.toString("utf8")));
+        rest = rest.subarray(lineEnd + 1);
         continue;
       }
       break;
     }
-    const length = Number(match[1]);
-    const start = match[0].length;
-    if (rest.length < start + length) break;
-    const body = rest.slice(start, start + length);
-    messages.push(parseJsonRpcBody(body));
-    rest = rest.slice(start + length);
+    const length = contentLength(rest.subarray(0, end));
+    if (length === null) break;
+    if (length > MCP_MAX_FRAME_BYTES) {
+      throw new RangeError("MCP frame exceeded maximum size");
+    }
+    if (rest.length < end + length) break;
+    messages.push(parseJsonRpcBody(rest.subarray(end, end + length).toString("utf8")));
+    rest = rest.subarray(end + length);
   }
   return { messages, rest };
 }

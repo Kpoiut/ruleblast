@@ -46,9 +46,9 @@ const COPILOT_EVIDENCE = Object.freeze([
   }),
   defineEvidenceRef({
     url: "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",
-    retrievedAt: "2026-08-14",
-    revision: "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-14",
-    claim: "Copilot CLI also discovers AGENTS.md, CLAUDE.md, and GEMINI.md in standard locations and does not define a general precedence order.",
+    retrievedAt: "2026-08-24",
+    revision: "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-24",
+    claim: "Copilot CLI also discovers AGENTS.md, CLAUDE.md, .claude/CLAUDE.md, and GEMINI.md in standard locations and does not define a general precedence order.",
   }),
   defineEvidenceRef({
     url: "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",

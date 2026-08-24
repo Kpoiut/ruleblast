@@ -73,6 +73,17 @@ export function joinRepositoryPath(directory: string, name: string): string {
   return directory === "." ? name : `${directory}/${name}`;
 }
 
+const UTF8 = new TextDecoder("utf-8", { fatal: true });
+
+/** Git pathnames are raw bytes. Decode strictly or fail closed. */
+export function decodeGitPathname(bytes: Buffer | Uint8Array): string {
+  try {
+    return UTF8.decode(bytes);
+  } catch {
+    throw new TypeError("Git pathname encoding is not UTF-8");
+  }
+}
+
 const WINDOWS_DRIVE_PATTERN = /^[A-Za-z]:/;
 
 export function assertCanonicalRepositoryPath(

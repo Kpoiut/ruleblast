@@ -21,12 +21,30 @@ describe("MCP stdio transport", () => {
   it("frames and parses Content-Length messages", () => {
     const frame = encodeMcpFrame({ jsonrpc: "2.0", id: 1, method: "ping" });
     const { messages, rest } = consumeMcpBuffer(frame);
-    expect(rest).toBe("");
+    expect(rest.length).toBe(0);
     expect(asJsonRpcRequest(messages[0])).toMatchObject({ method: "ping", id: 1 });
   });
 
+  it("consumes UTF-8 Content-Length as bytes, not UTF-16 units", () => {
+    const frame = encodeMcpFrame({
+      jsonrpc: "2.0",
+      id: 7,
+      method: "ping",
+      params: { q: "é khắc phục" },
+    });
+    const { messages, rest } = consumeMcpBuffer(frame);
+    expect(rest.length).toBe(0);
+    expect(asJsonRpcRequest(messages[0])).toMatchObject({ method: "ping", id: 7 });
+    const splitAt = Math.floor(frame.length / 2);
+    const first = consumeMcpBuffer(frame.subarray(0, splitAt));
+    expect(first.messages).toEqual([]);
+    const second = consumeMcpBuffer(Buffer.concat([first.rest, frame.subarray(splitAt)]));
+    expect(second.rest.length).toBe(0);
+    expect(asJsonRpcRequest(second.messages[0])).toMatchObject({ method: "ping", id: 7 });
+  });
+
   it("returns a JSON-RPC parse error instead of throwing on invalid frames", () => {
-    const frame = `Content-Length: 12\r\n\r\n{not-json!!!`;
+    const frame = Buffer.from("Content-Length: 12\r\n\r\n{not-json!!!", "utf8");
     expect(() => consumeMcpBuffer(frame)).not.toThrow();
     const { messages } = consumeMcpBuffer(frame);
     expect(messages).toEqual([{
@@ -42,8 +60,27 @@ describe("MCP stdio transport", () => {
       host,
     );
     expect(listed).toMatchObject({ jsonrpc: "2.0", id: 1 });
-    const tools = (listed as { result: { tools: readonly { name: string }[] } }).result.tools;
+    const tools = (listed as {
+      result: {
+        tools: readonly {
+          name: string;
+          annotations?: {
+            readOnlyHint?: boolean;
+            destructiveHint?: boolean;
+            openWorldHint?: boolean;
+          };
+        }[];
+      };
+    }).result.tools;
     expect(tools.map((tool) => tool.name)).toEqual([...MCP_TOOL_NAMES]);
+    for (const tool of tools) {
+      expect(tool.annotations).toEqual({
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      });
+    }
 
     const called = await dispatchMcpRequest({
       jsonrpc: "2.0",

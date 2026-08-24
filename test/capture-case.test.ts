@@ -318,7 +318,7 @@ describe("captureCase", () => {
       resolverRevision: 1,
       producer: {
         gitCommit: producerCommit,
-        packageVersion: "2.5.9",
+        packageVersion: "2.5.10",
         dependencyClosureDigest: expect.stringMatching(/^[0-9a-f]{64}$/u),
       },
       releaseReproductionCommand:

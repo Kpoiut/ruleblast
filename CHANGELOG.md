@@ -2,6 +2,14 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.5.10 — SHIPPED TO MAIN
+
+- Agent-allow is fail-closed: `.ruleblast-allow` empty, whitespace, garbage, or unreadable is `ask`, not `yes`. Env tokens are unchanged. RuleBlast still does not write that file.
+- MCP frames `Content-Length` as UTF-8 bytes on a `Buffer`. A payload with `é` / Vietnamese is consumed whole. Incomplete frames wait. A frame larger than 32 MiB fails closed. Tools advertise `readOnlyHint`, `destructiveHint: false`, `idempotentHint: true`, `openWorldHint: false`. Protocol id stays `2024-11-05`. Not a fifth action.
+- Git `ls-tree` / `ls-files` pathnames decode as strict UTF-8. Invalid bytes fail closed as `INVALID_PATHNAME_ENCODING` instead of a replacement-character path that could COMPLETE. Canonical JSON path strings are unchanged for valid UTF-8.
+- Copilot CLI discover includes tracked `.claude/CLAUDE.md` from the documented instruction table (retrieved 2026-08-24). `@path` stays `partial-unexpanded`. Adapter and interpreter match on that fixture. Vendor CLI is not live authority.
+- `EXTRACTION_REVIEWS.json` is `{path, sha256, reason, followUp}`. No production module is over 400 lines, so `reviews` is empty. Check includes that bind. `npm run benchmark` counts `NO_INTROSPECTION` rows instead of a missing identifier. Gemini pack pin is not moved without a loader-claim delta. Published CLI remains `ruleblast@2.5.9`. Overlay wall and the 5 s clock are unchanged.
+
 ## 2.5.9 — RELEASED
 
 - macOS Verify no longer treats `/var` → `/private/var` as a hostile repository root. Release packing, case capture, and `isDirectEntry` compare realpath-canonical paths. A leaf symlink or junction is still rejected. Not a fifth action.

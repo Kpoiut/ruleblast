@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
   ancestorDirectories,
   compareCodePoints,
+  decodeGitPathname,
   joinRepositoryPath,
   pathBasename,
   pathDirname,
@@ -34,6 +35,12 @@ function localHelpers(pattern: string): string[] {
 }
 
 describe("repository path primitives", () => {
+  it("decodes Git pathnames as strict UTF-8 and rejects invalid bytes", () => {
+    expect(decodeGitPathname(Buffer.from("src/file.ts"))).toBe("src/file.ts");
+    expect(decodeGitPathname(Buffer.from("tiếng Việt.md", "utf8"))).toBe("tiếng Việt.md");
+    expect(() => decodeGitPathname(Buffer.from([0xff, 0xfe]))).toThrow(/pathname encoding/i);
+  });
+
   it("keeps one compareCodePoints implementation in production source", () => {
     expect(localHelpers("function compareCodePoints")).toEqual([]);
   });

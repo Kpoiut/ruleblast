@@ -106,6 +106,10 @@ export function calibrationSnapshots(packId: CalibrationPackId): readonly unknow
       ["CLAUDE.md", "claude\n"],
       ["src/file.ts", "code\n"],
     ]),
+    calibrationManifest("copilot-dot-claude", [
+      [".claude/CLAUDE.md", "nested-claude\n"],
+      ["src/file.ts", "code\n"],
+    ]),
     calibrationManifest("copilot-apply", [
       [
         ".github/instructions/ts.instructions.md",

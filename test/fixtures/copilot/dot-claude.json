@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "label": "copilot .claude/CLAUDE.md",
+  "entries": [
+    {
+      "path": ".claude/CLAUDE.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "bmVzdGVkLWNsYXVkZQ=="
+    },
+    {
+      "path": "src/file.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQ=="
+    }
+  ]
+}

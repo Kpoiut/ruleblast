@@ -1,4 +1,4 @@
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -30,5 +30,20 @@ describe("user-owned agent-allow gate", () => {
       env: { RULEBLAST_AGENT_ALLOW: "yes" },
       cwd,
     })).toBe("yes");
+  });
+
+  it("fails closed when .ruleblast-allow is empty, garbage, or unreadable", () => {
+    const cwd = mkdtempSync(join(tmpdir(), "ruleblast-allow-closed-"));
+    writeFileSync(join(cwd, ".ruleblast-allow"), "");
+    expect(resolveAgentAllow({ env: {}, cwd })).toBe("ask");
+    writeFileSync(join(cwd, ".ruleblast-allow"), "   \n");
+    expect(resolveAgentAllow({ env: {}, cwd })).toBe("ask");
+    writeFileSync(join(cwd, ".ruleblast-allow"), "maybe\n");
+    expect(resolveAgentAllow({ env: {}, cwd })).toBe("ask");
+    mkdirSync(join(cwd, "blocked"));
+    writeFileSync(join(cwd, "blocked", ".ruleblast-allow"), "yes\n");
+    rmSync(join(cwd, "blocked", ".ruleblast-allow"));
+    mkdirSync(join(cwd, "blocked", ".ruleblast-allow"));
+    expect(resolveAgentAllow({ env: {}, cwd: join(cwd, "blocked") })).toBe("ask");
   });
 });

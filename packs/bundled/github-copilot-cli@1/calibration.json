@@ -122,6 +122,44 @@
     {
       "snapshot": {
         "schemaVersion": 1,
+        "label": "copilot-dot-claude",
+        "entries": [
+          {
+            "path": ".claude/CLAUDE.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "bmVzdGVkLWNsYXVkZQo="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "targets": {
+        ".claude/CLAUDE.md": {
+          "loadedPaths": [
+            ".claude/CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "nested-claude\n"
+          ],
+          "vendorAssembly": "nested-claude\n",
+          "truncated": false
+        },
+        "src/file.ts": {
+          "loadedPaths": [],
+          "loadedTexts": [],
+          "vendorAssembly": "",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
         "label": "copilot-apply",
         "entries": [
           {
@@ -174,7 +212,7 @@
     "surfaceId": "github/copilot-cli@1",
     "revision": "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-24",
     "observationMethod": "sealed-offline-dump",
-    "artifactDigest": "8861bf0cdf31f734fa8c32ed2d88d1a5d8cfa6b509ac485eb4402ae59fbf319c",
+    "artifactDigest": "f4022a74a909a72184bfb99656f6b7b329070c47f22bb99a8198bdcfa8e48f7e",
     "probeSchema": "ruleblast.runtime-observation.v1"
   }
 }
