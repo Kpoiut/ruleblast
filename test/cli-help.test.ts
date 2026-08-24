@@ -32,6 +32,12 @@ describe("route catalog", () => {
     expect(help).toContain("Repeat to add both");
     expect(help).toContain("--mcp");
     expect(help).toContain("Stdio transport of scan, diff, explain, and case");
+    expect(help).toContain("VSCodium");
+    expect(help).toContain("JetBrains");
+    expect(help).toContain("Visual Studio");
+    expect(help).toContain("Neovim");
+    expect(help).toContain("Windsurf Cascade");
+    expect(help).toContain("Roo Code");
     expect(help).toContain("Shows the blast radius of AGENTS.md and CLAUDE.md changes");
     expect(help).toContain("Git diff for AI agent repository instructions");
     expect(help).toContain("OTHER TRACKED CHANGES");
@@ -39,7 +45,7 @@ describe("route catalog", () => {
     expect(help).toContain("--json stays canonical");
     expect(help).toContain("--paths-only");
     expect(help).toContain("--index");
-    expect(help).toContain("SOURCE, CONTINUE, REJECT");
+    expect(help).toContain("PAIR, NEWPAIR, SOURCE, CONTINUE, REJECT");
     expect(help).toContain("--compare");
     expect(help).toContain("--detail");
     expect(help).toContain("Includes EVIDENCE and LAB");

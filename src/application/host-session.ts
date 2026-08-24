@@ -31,11 +31,14 @@ export interface HostWorkspace {
   readonly selectedFolder?: string;
 }
 
+export type StaleCause = "workspace" | "realities";
+
 export interface CompanionState {
   readonly lifecycle: AnalysisLifecycle;
   readonly completeness: Completeness;
   readonly dirtyBuffer: boolean;
   readonly realities: readonly string[];
+  readonly staleCause: StaleCause | null;
   readonly action: HostCommand | null;
   readonly result: RuleBlastResult | null;
   readonly overlay: BlastOverlayView | null;
@@ -96,6 +99,7 @@ export function initialCompanionState(): CompanionState {
     completeness: "COMPLETE",
     dirtyBuffer: false,
     realities: Object.freeze([]),
+    staleCause: null,
     action: null,
     result: null,
     overlay: null,
@@ -161,7 +165,7 @@ export function toRepositoryRelativePath(
 
 export function companionMarkStale(state: CompanionState): CompanionState {
   if (state.lifecycle !== "CURRENT" && state.lifecycle !== "STALE") return state;
-  return Object.freeze({ ...state, lifecycle: "STALE" });
+  return Object.freeze({ ...state, lifecycle: "STALE", staleCause: "workspace" });
 }
 
 export function companionNoteDirty(
@@ -194,6 +198,7 @@ export function companionSucceed(
   return Object.freeze({
     ...state,
     lifecycle: "CURRENT",
+    staleCause: null,
     completeness: completenessFromResult(result),
     result,
     overlay: adjunct.overlay ?? null,
@@ -266,6 +271,9 @@ export function companionSetRealities(
     ...state,
     realities: Object.freeze(unique),
     lifecycle: stale ? "STALE" : state.lifecycle,
+    staleCause: stale
+      ? (state.staleCause === "workspace" ? "workspace" : "realities")
+      : state.staleCause,
   });
 }
 

@@ -32,7 +32,7 @@ Same skill body at every official path. Not discovered from `node_modules`.
 - Windsurf Cascade: `.windsurf/skills/ruleblast/SKILL.md`
 - Kiro: `.kiro/skills/ruleblast/SKILL.md` — https://kiro.dev/docs/skills
 
-VS Code-family companion: `hosts/vscode`. Same folder in VS Code, GitHub Copilot Chat, Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, Trae. Not a second engine. A host is not a modeled reality.
+VS Code-family companion: `hosts/vscode`. Same folder in VS Code, GitHub Copilot Chat, Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, Trae, VSCodium, Roo Code. Not a second engine. A host is not a modeled reality.
 
 MCP stdio: `ruleblast --mcp`. Four tools: scan, diff, explain, case.
 
@@ -40,7 +40,7 @@ MCP stdio: `ruleblast --mcp`. Four tools: scan, diff, explain, case.
 - GitHub Copilot in VS Code: `.vscode/mcp.json`
 - Codex desktop / CLI / IDE: `.codex/config.toml`
 - Cursor, Kiro, Antigravity, Continue: workspace MCP JSON next to this skill
-- Claude Desktop, Cline, Zed: paste snippets in `discovery/`
+- Claude Desktop, Cline, Zed, JetBrains AI Assistant, Visual Studio Copilot, Neovim, Windsurf Cascade, Roo Code: paste snippets in `discovery/`
 
 ## Routes
 
@@ -51,7 +51,7 @@ MCP stdio: `ruleblast --mcp`. Four tools: scan, diff, explain, case.
 | Why this path? | `npx --yes ruleblast@2.5.7 explain <path> --from HEAD~1 --to HEAD --json` |
 | Teaching receipt, no clone | `npx --yes ruleblast@2.5.7 case --color=never` |
 
-Published CLI: `npx --yes ruleblast@2.5.7`. MCP stdio: `npx --yes ruleblast@2.5.7 --mcp`. Add `--receipt` for the compact scoreboard (per-profile inheritance, not live agent telemetry). Add `--witness` for why-edges. Add `--paths-only` for one attention path per line. Add `--index` for the compact SOURCE/CONTINUE/REJECT map (every row; large-repo agent form). Add `--detail` for EVIDENCE and the Candidate Reality Conformance Lab (sealed oracle.json interpreter and fingerprint-adapter proof and candidate fixture axes; RECORDED is not a passing oracle). Add `--compare` on explain for two selected-reality stacks. Add `--reality github/copilot-cli@1` or `--reality google/gemini-cli@1` only when that surface is requested. Repeat `--reality` for both. Default `--json` stays two-profile.
+Published CLI: `npx --yes ruleblast@2.5.7`. MCP stdio: `npx --yes ruleblast@2.5.7 --mcp`. Add `--receipt` for the compact scoreboard (per-profile inheritance, not live agent telemetry). Add `--witness` for why-edges. Add `--paths-only` for one attention path per line. Add `--index` for the compact PAIR/NEWPAIR/SOURCE/CONTINUE/REJECT map (every row; large-repo agent form). Add `--detail` for EVIDENCE and the Candidate Reality Conformance Lab (sealed oracle.json interpreter proof, sealed calibration.json, and candidate fixture axes; RECORDED is not a passing oracle; NO_INTROSPECTION is not a vendor dump). Add `--compare` on explain for two selected-reality stacks. Add `--reality github/copilot-cli@1` or `--reality google/gemini-cli@1` only when that surface is requested. Repeat `--reality` for both. Default `--json` stays two-profile.
 
 ## Rules
 

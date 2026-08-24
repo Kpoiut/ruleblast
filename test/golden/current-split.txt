@@ -3,6 +3,8 @@ RULEBLAST · WORKTREE
 2
 tracked paths are split across profiles.
 
+CC≠CX  2 different
+
 Pick one path. See every source:
   ruleblast explain src/a.ts
 

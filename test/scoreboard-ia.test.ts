@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 import { companionTree } from "../src/application/scoreboard-tree.js";
 import {
   companionMarkStale,
+  companionSetReality,
   companionSucceed,
   initialCompanionState,
 } from "../src/application/host-session.js";
+import { GOOGLE_GEMINI_CLI_PROFILE_ID } from "../src/model.js";
 import { diffRepository, scanRepository } from "../src/application/authority.js";
 import { ManifestSnapshot } from "../src/snapshot.js";
 
@@ -54,6 +56,8 @@ describe("Scoreboard IA", () => {
     );
     expect(nodes.some((node) => node.id === "metric-changed")).toBe(false);
     expect(nodes.some((node) => node.id === "stale")).toBe(true);
+    expect(nodes.find((node) => node.id === "stale")?.accessibleLabel)
+      .toContain("workspace changed");
     expect(nodes.some((node) => node.id === "blast")).toBe(true);
   });
 
@@ -75,7 +79,7 @@ describe("Scoreboard IA", () => {
     expect(blast?.children).toHaveLength(4);
   });
 
-  it("does not use ≠ on a scan tree", async () => {
+  it("does not use Δ on a scan tree and names the disagreeing pair", async () => {
     const scan = await scanRepository({
       snapshot: snapshot({
         "AGENTS.md": "codex",
@@ -83,10 +87,28 @@ describe("Scoreboard IA", () => {
         "src/a.ts": "code",
       }),
     });
-    const labels = companionTree(companionSucceed(initialCompanionState(), scan))
-      .map((node) => node.label)
-      .join("\n");
-    expect(labels).not.toContain("≠");
+    const nodes = companionTree(companionSucceed(initialCompanionState(), scan));
+    const labels = nodes.map((node) => node.label).join("\n");
+    expect(nodes.some((node) => node.id === "metric-changed")).toBe(false);
+    expect(nodes.some((node) => node.id === "metric-split")).toBe(false);
     expect(labels).not.toContain("Δ");
+    const pairs = nodes.find((node) => node.id === "pairs");
+    expect(pairs?.label).toBe("Runtime pairs");
+    expect(pairs?.children?.some((node) => node.label.includes("CC≠CX"))).toBe(true);
+  });
+
+  it("names selected-reality STALE separately from a workspace change", async () => {
+    const scan = await scanRepository({
+      snapshot: snapshot({
+        "AGENTS.md": "codex",
+        "CLAUDE.md": "claude",
+        "src/a.ts": "code",
+      }),
+    });
+    const nodes = companionTree(
+      companionSetReality(companionSucceed(initialCompanionState(), scan), GOOGLE_GEMINI_CLI_PROFILE_ID),
+    );
+    expect(nodes.find((node) => node.id === "stale")?.accessibleLabel)
+      .toContain("selected realities changed");
   });
 });

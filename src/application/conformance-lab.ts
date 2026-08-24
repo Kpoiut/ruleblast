@@ -14,6 +14,10 @@ import {
   listContainedDirectories,
   readPackDirectory,
 } from "../packs/load.js";
+import {
+  verifyPackCalibration,
+  type CalibrationProof,
+} from "../packs/calibration.js";
 import { verifyBundledPack, type OracleProof } from "../packs/verify.js";
 import { presentationFor } from "./profile-catalog.js";
 
@@ -29,6 +33,7 @@ export interface BundledLabRow {
   readonly id: string;
   readonly engine: LabEngine;
   readonly proof: OracleProof;
+  readonly calibration: CalibrationProof;
   readonly missingOperations: readonly string[];
   readonly probeCount: number;
 }
@@ -49,6 +54,7 @@ export interface CandidateLabRow {
   readonly load: "LOADED" | "ABSENT";
   readonly interpreter: "NONE";
   readonly proof: "UNEXECUTED";
+  readonly calibration: "UNEXECUTED";
   readonly blocked: readonly string[];
 }
 
@@ -87,10 +93,12 @@ async function bundledRow(directory: string): Promise<BundledLabRow> {
     );
   }
   const verified = await verifyBundledPack(directory, pack);
+  const calibration = await verifyPackCalibration(directory, pack);
   return Object.freeze({
     id: pack.pack.id,
     engine: verified.engine,
     proof: verified.proof,
+    calibration,
     missingOperations: verified.missingOperations,
     probeCount: verified.probeCount,
   });
@@ -116,6 +124,7 @@ function candidateRow(
     load: fixtures.length > 0 ? "LOADED" : "ABSENT",
     interpreter: "NONE",
     proof: "UNEXECUTED",
+    calibration: "UNEXECUTED",
     blocked: blockedReasons(axes),
   });
 }
@@ -171,8 +180,9 @@ export async function renderConformanceLab(
   for (const row of view.bundled) {
     const label = presentationFor(row.id);
     const identity = mode === "identity" ? `  ${row.id}` : "";
+    const calibration = mode === "identity" ? `  ${row.calibration}` : "";
     lines.push(
-      `  ${label.badge} ${label.shortLabel}${identity}  ${row.engine}  ${row.proof}  ${formatOps(row.missingOperations)}  ${row.probeCount} probes`,
+      `  ${label.badge} ${label.shortLabel}${identity}  ${row.engine}  ${row.proof}${calibration}  ${formatOps(row.missingOperations)}  ${row.probeCount} probes`,
     );
   }
   for (const row of view.candidates) {
@@ -181,6 +191,7 @@ export async function renderConformanceLab(
     lines.push(`    load ${row.load}`);
     lines.push(`    interpreter ${row.interpreter}`);
     lines.push(`    proof ${row.proof}`);
+    if (mode === "identity") lines.push(`    calibration ${row.calibration}`);
     lines.push(`    blocked ${row.blocked.join("; ")}`);
   }
   lines.push("Not model quality.");

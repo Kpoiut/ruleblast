@@ -1,0 +1,16 @@
+{
+  "schema": "ruleblast.runtime-calibration.v1",
+  "packId": "openai/codex-cli@1",
+  "observation": "no-introspection",
+  "evidence": [
+    {
+      "claimId": "codex.calibration.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://learn.chatgpt.com/docs/agent-configuration/agents-md",
+      "retrievedAt": "2026-08-24",
+      "sourceRevision": "2026-08-24",
+      "claim": "Codex documents AGENTS.md hierarchy loading. It does not document a deterministic offline dump of the resolved repository-instruction set. Calibration is no-introspection. Codex CLI is not a live analysis authority."
+    }
+  ],
+  "probes": []
+}

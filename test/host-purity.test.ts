@@ -39,7 +39,7 @@ describe("companion host purity", () => {
     expect(icon.readUInt32BE(16)).toBe(128);
     expect(icon.readUInt32BE(20)).toBe(128);
     expect(manifest.icon).toBe("media/icon.png");
-    expect(manifest.version).toBe("2.5.7");
+    expect(manifest.version).toBe("2.5.8");
   });
 
   it("uses a currentColor SVG on the activity bar instead of the opaque marketplace PNG", () => {
@@ -57,6 +57,47 @@ describe("companion host purity", () => {
     expect(svg).not.toContain("#C5C5C5");
     expect(manifest.contributes.viewsWelcome?.[0]?.view).toBe("ruleblast.scoreboard");
     expect(manifest.contributes.viewsWelcome?.[0]?.contents).toContain("command:ruleblast.scanWorkspace");
+    expect(manifest.contributes.viewsWelcome?.[0]?.contents).toContain("command:ruleblast.showDetail");
+    expect(manifest.contributes.viewsWelcome?.[0]?.contents).toContain("command:ruleblast.showIndex");
+    expect(manifest.contributes.viewsWelcome?.[0]?.contents).toContain("command:ruleblast.selectReality");
+    const pkg = JSON.parse(
+      readFileSync(join(repositoryRoot, "hosts/vscode/package.json"), "utf8"),
+    ) as {
+      readonly contributes: {
+        readonly menus: {
+          readonly "view/title": readonly { readonly command: string }[];
+        };
+      };
+    };
+    const titleCommands = pkg.contributes.menus["view/title"].map((item) => item.command);
+    expect(titleCommands).toContain("ruleblast.showDetail");
+    expect(titleCommands).toContain("ruleblast.showIndex");
+    expect(titleCommands).toContain("ruleblast.selectReality");
+  });
+
+  it("activates in a Git or instruction workspace without auto-analyzing", () => {
+    const manifest = JSON.parse(
+      readFileSync(join(repositoryRoot, "hosts/vscode/package.json"), "utf8"),
+    ) as { readonly activationEvents?: readonly string[] };
+    expect(manifest.activationEvents).toContain("workspaceContains:.git");
+    expect(manifest.activationEvents).toContain("workspaceContains:AGENTS.md");
+    expect(manifest.activationEvents).toContain("workspaceContains:CLAUDE.md");
+    const source = readFileSync(join(repositoryRoot, "hosts/vscode/src/extension.ts"), "utf8");
+    const activate = source.indexOf("export function activate");
+    const firstScan = source.indexOf("registerCommand(\"ruleblast.scanWorkspace\"");
+    expect(activate).toBeGreaterThan(-1);
+    expect(firstScan).toBeGreaterThan(activate);
+    const idle = source.slice(activate, firstScan);
+    expect(idle).toContain("commitPresentation(state, status)");
+    expect(idle).not.toContain("scanRepository");
+  });
+
+  it("quotes companion explain for the process host and asks to rescan after Select Reality", () => {
+    const source = readFileSync(join(repositoryRoot, "hosts/vscode/src/extension.ts"), "utf8");
+    expect(source).toContain("hostProcessDialect(currentHostProcess())");
+    expect(source).toContain("Scan or Diff again to apply selected realities.");
+    expect(source).not.toContain("Default only");
+    expect(source).toContain("None = Codex + Claude Code");
   });
 
   it("keeps the VS Code adapter off the npm analysis package", () => {
@@ -87,8 +128,14 @@ describe("companion host purity", () => {
     expect(commands).toContain("ruleblast.explainScoreboardPath");
     expect(commands).toContain("ruleblast.showDetail");
     expect(commands).toContain("ruleblast.showIndex");
-    expect(readFileSync(join(repositoryRoot, "hosts/vscode/src/extension.ts"), "utf8"))
-      .toContain("await renderDetail(state.result)");
+    const extension = readFileSync(join(repositoryRoot, "hosts/vscode/src/extension.ts"), "utf8");
+    expect(extension).toContain("renderDetail(");
+    expect(extension).toContain("hostTextContext(host");
+    expect(extension).toContain("workspaceFileUri");
+    expect(readFileSync(join(repositoryRoot, "hosts/vscode/src/tree.ts"), "utf8"))
+      .toContain("workspaceFileUri");
+    expect(readFileSync(join(repositoryRoot, "hosts/vscode/src/workspace-uri.ts"), "utf8"))
+      .toContain("vscode.Uri.joinPath");
     for (const command of commands) {
       expect(command.startsWith("ruleblast.")).toBe(true);
     }

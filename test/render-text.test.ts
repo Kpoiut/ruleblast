@@ -84,12 +84,15 @@ function currentResult(overrides: {
   readonly pathOverrides?: Readonly<Record<string, Partial<Projection>>>;
   readonly findings?: Finding[];
 } = {}): CurrentRuleBlastResult {
+  const splitCount = overrides.splitCount ?? 2;
     const paths = ["src/z.ts", "src/a.ts", "src/b.ts", "src/c.ts"].map((path) => {
       const selectedSources = overrides.sources === false ? [] : undefined;
+      const isSplit = splitCount !== 0 && (path === "src/a.ts" || path === "src/b.ts");
       const claude = projection(
         ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
         path,
         {
+          ...(isSplit ? { normalizedPayloadUnits: [["claude"]] } : {}),
           ...(selectedSources === undefined ? {} : { sources: selectedSources }),
           ...overrides.pathOverrides?.[path],
         },
@@ -99,7 +102,6 @@ function currentResult(overrides: {
         path,
         selectedSources === undefined ? {} : { sources: selectedSources },
     );
-    const isSplit = path === "src/a.ts" || path === "src/b.ts";
     return {
       path,
       projections: [claude, codex],
@@ -107,7 +109,6 @@ function currentResult(overrides: {
       isSplit,
     };
   });
-  const splitCount = overrides.splitCount ?? 2;
   if (splitCount === 0) {
     for (const path of paths) {
       path.payloadRelation = "SAME";
@@ -136,7 +137,11 @@ function diffResult(overrides: Partial<DiffRuleBlastResult> = {}): DiffRuleBlast
   const targetPath = "packages/api/internal/refund.ts";
   const claude = projection(ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID, targetPath);
   const codexBefore = projection(OPENAI_CODEX_CLI_PROFILE_ID, targetPath);
+  const claudeAfter = projection(ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID, targetPath, {
+    normalizedPayloadUnits: [["claude-after"]],
+  });
   const codexAfter = projection(OPENAI_CODEX_CLI_PROFILE_ID, targetPath, {
+    normalizedPayloadUnits: [["codex-after"]],
     normalizedPayloadDigest: "codex-after-payload",
     projectionDigest: "codex-after-projection",
   });
@@ -185,7 +190,7 @@ function diffResult(overrides: Partial<DiffRuleBlastResult> = {}): DiffRuleBlast
     paths: [{
       path: targetPath,
       before: [claude, codexBefore],
-      after: [claude, codexAfter],
+      after: [claudeAfter, codexAfter],
       changedProfiles: [OPENAI_CODEX_CLI_PROFILE_ID],
       beforePayloadRelation: "SAME",
       afterPayloadRelation: "DIFFERENT",
@@ -337,6 +342,7 @@ describe("renderText", () => {
       groups: [],
       paths: diffResult().paths.map((path) => ({
         ...path,
+        after: path.before,
         changedProfiles: [],
         beforePayloadRelation: "SAME",
         afterPayloadRelation: "SAME",

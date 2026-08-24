@@ -1,4 +1,5 @@
 import { presentationLabel } from "./application/profile-catalog.js";
+import { renderRuntimePairLines } from "./application/scoreboard-view.js";
 import type { ExplainResult } from "./cli-output.js";
 import type {
   CurrentRuleBlastResult,
@@ -78,6 +79,11 @@ function currentDetail(result: CurrentRuleBlastResult): string[] {
       );
     }
   }
+  const pairs = renderRuntimePairLines(result);
+  if (pairs.length > 0) {
+    lines.push("", "RUNTIME PAIRS");
+    for (const line of pairs) lines.push(`  ${line}`);
+  }
   const split = result.paths.filter((path) => path.isSplit === true);
   if (split.length > 0) {
     lines.push("", "SPLIT PATHS");
@@ -119,6 +125,11 @@ function diffDetail(result: DiffRuleBlastResult): string[] {
         `  ${presentationLabel(row.profile)}  ${formatCount(row.changedStackPathCount)} ${plural(row.changedStackPathCount, "stack")}`,
       );
     }
+  }
+  const pairs = renderRuntimePairLines(result);
+  if (pairs.length > 0) {
+    lines.push("", "RUNTIME PAIRS");
+    for (const line of pairs) lines.push(`  ${line}`);
   }
   if (result.groups.length > 0) {
     lines.push("", "GROUPS");

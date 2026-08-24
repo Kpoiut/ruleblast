@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml"><img src="https://github.com/Kpoiut/ruleblast/actions/workflows/verify.yml/badge.svg" alt="Verify workflow status"></a>
-  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.7"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.5.7">></a>
+  <a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.7"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.5.8">></a>
   <img src="https://img.shields.io/node/v/ruleblast" alt="supported Node.js versions">
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/ruleblast" alt="Apache-2.0 license"></a>
 </p>
@@ -32,7 +32,7 @@ npx --yes ruleblast@2.5.7 .
 npx --yes ruleblast@2.5.7 diff HEAD~1
 ```
 
-<p align="center"><sub>This tree is 2.5.7. Published CLI is ruleblast@2.5.7. Local · read-only · deterministic · no network or model call</sub></p>
+<p align="center"><sub>This tree is 2.5.8. Published CLI is ruleblast@2.5.7. Local · read-only · deterministic · no network or model call</sub></p>
 
 <p align="center">
   A Status Bar can say <code>Δ206</code> before anyone opens RuleBlast.<br>
@@ -236,6 +236,11 @@ npx --yes ruleblast@2.5.7 diff HEAD~1 --json
 | Continue | not a reality id | COMPATIBLE host | `.continue/mcpServers` |
 | Cline | not a reality id | COMPATIBLE host | paste `discovery/cline.mcp.json` |
 | Trae | not a reality id | COMPATIBLE host | same companion |
+| VSCodium | not a reality id | COMPATIBLE host | same companion vsix |
+| Roo Code | not a reality id | COMPATIBLE host | same companion + paste `discovery/roo-code.mcp.json` |
+| JetBrains AI Assistant | not a reality id | desktop MCP | paste `discovery/jetbrains.mcp.json` |
+| Visual Studio Copilot | not a reality id | desktop MCP | paste `discovery/visual-studio.mcp.json` (also reads `.vscode/mcp.json`) |
+| Neovim | not a reality id | desktop MCP | paste `discovery/neovim.mcp.json` into mcphub.nvim |
 | Zed | not a reality id | desktop MCP | paste `discovery/zed-context-servers.json` |
 
 </details>
@@ -244,14 +249,14 @@ npx --yes ruleblast@2.5.7 diff HEAD~1 --json
 
 Change `AGENTS.md`. See every file that now inherits a different instruction stack.
 
-The companion at [`hosts/vscode`](hosts/vscode) is the same four actions as the CLI: Scan, Diff, Explain, Case. One folder for VS Code (including GitHub Copilot Chat), Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, or Trae. Keys: `Ctrl+Alt+R` then `S`/`D`/`E`/`C`.
+The companion at [`hosts/vscode`](hosts/vscode) is the same four actions as the CLI: Scan, Diff, Explain, Case. One folder for VS Code (including GitHub Copilot Chat), Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, Trae, VSCodium, or Roo Code. JetBrains AI Assistant, Visual Studio Copilot, Neovim, Zed, and Claude Desktop use `--mcp`. Keys: `Ctrl+Alt+R` then `S`/`D`/`E`/`C`.
 
 ```bash
 npm run build
 npm run host:build
 ```
 
-Install the unpacked `hosts/vscode` folder, or pack `ruleblast-companion-2.5.7.vsix` with `npm run host:pack`. GitHub Release [`v2.5.7`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.7) serves `ruleblast-companion-2.5.7.vsix`. The Status Bar follows the active file from the last result. Compare selected realities opens the two stacks in the editor diff. Saving a file marks the last result stale; it does not start another analysis. Claude Desktop, ChatGPT/Codex desktop, and Zed use `--mcp`. Marketplace / Open VSX listings are separate publisher operations.
+Install the unpacked `hosts/vscode` folder, or pack `ruleblast-companion-2.5.8.vsix` with `npm run host:pack`. GitHub Release [`v2.5.7`](https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.7) serves `ruleblast-companion-2.5.7.vsix`. The Status Bar follows the active file from the last result. Compare selected realities opens the two stacks in the editor diff. Saving a file marks the last result stale; it does not start another analysis. Claude Desktop, ChatGPT/Codex desktop, and Zed use `--mcp`. Marketplace / Open VSX listings are separate publisher operations.
 
 ## Give your agent RuleBlast
 
@@ -272,8 +277,16 @@ MCP is the same four actions: `node dist/cli.js --mcp`.
 - Claude Code: [`.mcp.json`](.mcp.json)
 - Codex desktop / CLI / IDE: [`.codex/config.toml`](.codex/config.toml)
 - Continue: [`.continue/mcpServers/ruleblast.json`](.continue/mcpServers/ruleblast.json)
+- Cursor: [`.cursor/mcp.json`](.cursor/mcp.json)
+- Kiro: [`.kiro/settings/mcp.json`](.kiro/settings/mcp.json)
+- Antigravity: [`.agents/mcp_config.json`](.agents/mcp_config.json)
 - Claude Desktop: paste [discovery/claude-desktop.mcp.json](discovery/claude-desktop.mcp.json) into `claude_desktop_config.json`
 - Cline: paste [discovery/cline.mcp.json](discovery/cline.mcp.json)
+- Roo Code: paste [discovery/roo-code.mcp.json](discovery/roo-code.mcp.json)
+- Windsurf Cascade: paste [discovery/windsurf.mcp.json](discovery/windsurf.mcp.json) into `~/.codeium/windsurf/mcp_config.json`
+- JetBrains AI Assistant: paste [discovery/jetbrains.mcp.json](discovery/jetbrains.mcp.json)
+- Visual Studio Copilot: paste [discovery/visual-studio.mcp.json](discovery/visual-studio.mcp.json)
+- Neovim: paste [discovery/neovim.mcp.json](discovery/neovim.mcp.json) into mcphub.nvim
 - Zed: merge [discovery/zed-context-servers.json](discovery/zed-context-servers.json)
 
 </details>
@@ -309,7 +322,7 @@ Promoted Blast Case: official evidence, retrieval date, manifests, expected JSON
 
 ## Roadmap
 
-This tree is `2.5.7`. Published CLI is `ruleblast@2.5.7`. The product is overlay, work map, change alignment, and intent — which files now receive different AI instructions, and whether later work should CONTINUE or REJECT that inheritance. REJECT is not a recommendation to discard the Git change. Glance, `--paths-only`, `--index`, `explain --compare`, and a `PROOF` line disclose that same result. Offline `--detail` / `--receipt` can say a pinned evidence revision is SEALED, NO_KNOWN_DRIFT, or POSSIBLY_STALE, and print the Candidate Reality Conformance Lab, without a network fetch. Lab `ORACLE` is a sealed interpreter match on every packed Codex, Copilot, Claude, and Gemini fixture probe. Pack id is the lookup key for the executing reality. `RECORDED` is not a passing oracle. Candidate `LOADED` is a snapshot that constructed, not a passing projection. Candidate runtimes sit in the lab as `NOT_ADMITTED` under runtime IDs such as `xai/grok-build-cli` and `qwen/qwen-code-cli`. A model name is never a `--reality`. It is not a model-quality score.
+This tree is `2.5.8`. Published CLI is `ruleblast@2.5.7`. The product is overlay, work map, change alignment, and intent — which files now receive different AI instructions, and whether later work should CONTINUE or REJECT that inheritance. REJECT is not a recommendation to discard the Git change. Glance, `--paths-only`, `--index`, `explain --compare`, and a `PROOF` line disclose that same result. Offline `--detail` / `--receipt` can say a pinned evidence revision is SEALED, NO_KNOWN_DRIFT, or POSSIBLY_STALE, and print the Candidate Reality Conformance Lab, without a network fetch. Lab `ORACLE` is a sealed interpreter match on every packed Codex, Copilot, Claude, and Gemini fixture probe. Pack id is the lookup key for the executing reality. `RECORDED` is not a passing oracle. Candidate `LOADED` is a snapshot that constructed, not a passing projection. Candidate runtimes sit in the lab as `NOT_ADMITTED` under runtime IDs such as `xai/grok-build-cli` and `qwen/qwen-code-cli`. A model name is never a `--reality`. It is not a model-quality score.
 
 Today: Codex, Claude Code, opt-in Copilot CLI, and opt-in Gemini CLI. Same companion in VS Code-family editors, including Copilot Chat. Same four actions over `--mcp` for Claude Desktop and Codex desktop.
 

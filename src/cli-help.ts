@@ -97,7 +97,7 @@ CORE
 COMMON
   --json        Canonical JSON output.
   --paths-only  One attention path per line. Diff: changed stacks. Scan: current splits. Pipeable. Not --json.
-  --index       Agent/user compact index. SOURCE, CONTINUE, REJECT, SPLIT. All rows, no sample cap. Not --json.
+  --index       Agent/user compact index. PAIR, NEWPAIR, SOURCE, CONTINUE, REJECT, SPLIT. All rows, no sample cap. Not --json.
   --detail      Full human text of the same result. Includes EVIDENCE and LAB. Default text is the summary. Not --json.
   --compare     Explain only. Two selected-reality source stacks. Not --json.
   --reality     github/copilot-cli@1 and/or google/gemini-cli@1. Repeat to add both. Default JSON stays two-profile.
@@ -110,6 +110,12 @@ EVIDENCE
 
 TRANSPORT
   --mcp      Stdio transport of scan, diff, explain, and case.
+
+HOSTS
+  Companion  One VS Code-family adapter: VS Code, Copilot Chat, Cursor, Windsurf, Kiro,
+             Antigravity, Codex IDE, Continue, Cline, Trae, VSCodium, Roo Code.
+  MCP        JetBrains AI Assistant, Visual Studio Copilot, Neovim (mcphub), Zed,
+             Claude Desktop, Windsurf Cascade, Roo Code. A host is not a modeled reality.
 
 SKILLS
   Skills     Codex .agents/skills · Claude Code .claude/skills

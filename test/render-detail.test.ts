@@ -68,7 +68,11 @@ function currentResult(): CurrentRuleBlastResult {
     return {
       path,
       projections: [
-        projection(ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID, path),
+        projection(
+          ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
+          path,
+          isSplit ? { normalizedPayloadUnits: [["claude"]] } : {},
+        ),
         projection(OPENAI_CODEX_CLI_PROFILE_ID, path),
       ],
       payloadRelation: isSplit ? "DIFFERENT" as const : "SAME" as const,
@@ -115,7 +119,11 @@ function diffResult(): DiffRuleBlastResult {
   const targetPath = "packages/api/internal/refund.ts";
   const claude = projection(ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID, targetPath);
   const codexBefore = projection(OPENAI_CODEX_CLI_PROFILE_ID, targetPath);
+  const claudeAfter = projection(ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID, targetPath, {
+    normalizedPayloadUnits: [["claude-after"]],
+  });
   const codexAfter = projection(OPENAI_CODEX_CLI_PROFILE_ID, targetPath, {
+    normalizedPayloadUnits: [["codex-after"]],
     normalizedPayloadDigest: "codex-after-payload",
     projectionDigest: "codex-after-projection",
   });
@@ -170,7 +178,7 @@ function diffResult(): DiffRuleBlastResult {
     paths: [{
       path: targetPath,
       before: [claude, codexBefore],
-      after: [claude, codexAfter],
+      after: [claudeAfter, codexAfter],
       changedProfiles: [OPENAI_CODEX_CLI_PROFILE_ID],
       beforePayloadRelation: "SAME",
       afterPayloadRelation: "DIFFERENT",

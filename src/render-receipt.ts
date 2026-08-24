@@ -1,6 +1,7 @@
 import { renderConformanceLab } from "./application/conformance-lab.js";
 import { renderEvidenceReveal } from "./application/evidence-revision.js";
 import { presentationLabel } from "./application/profile-catalog.js";
+import { renderRuntimePairLines } from "./application/scoreboard-view.js";
 import type { ExplainResult } from "./cli-output.js";
 import {
   rbctxForCurrent,
@@ -50,6 +51,7 @@ export async function receiptForCurrent(
       ...result.counts.byProfile.map((profile) =>
         receiptProfileLine(profile.profile, profile.completePathCount, "complete")
       ),
+      ...renderRuntimePairLines(result),
       `unknown ${formatCount(result.counts.unknownPathCount)}`,
       `agent-allow ${agentAllow}`,
       `rbctx ${rbctx}`,
@@ -79,6 +81,7 @@ export async function receiptForDiff(
       ...result.counts.byProfile.map((profile) =>
         receiptProfileLine(profile.profile, profile.changedStackPathCount, "changed")
       ),
+      ...renderRuntimePairLines(result),
       `unknown ${formatCount(result.counts.unknownPathCount)}`,
       `agent-allow ${agentAllow}`,
       `rbctx ${rbctx}`,

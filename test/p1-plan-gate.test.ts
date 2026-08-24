@@ -110,10 +110,15 @@ describe("P1/B0 plan gate", () => {
     expect(changelog).toMatch(/^## 2\.3\.0 — RELEASED/mu);
     expect(changelog).not.toMatch(/^## 2\.3\.0 — SHIPPED TO MAIN/mu);
     expect(read("ROADMAP.md")).toMatch(/## \*\*RELEASED\*\* — `v2\.3\.0`/u);
-    expect(read("package.json")).toContain('"version": "2.5.7"');
+    expect(read("package.json")).toContain('"version": "2.5.8"');
   });
 
   it("records select-all discover origin once per queued path", () => {
+    const preparation = read("src/application/profile-preparation.ts");
+    expect(preparation).toContain(
+      "prepared.push(capturePreparedProfile(definition, await definition.prepare(snapshot)));",
+    );
+    expect(preparation).not.toContain("Promise.all");
     const source = read("src/packs/interpret-all.ts");
     expect(source).toContain(
       "queue: { path: string; depth: number; origin: DiscoverOrigin | undefined }[]",
@@ -137,7 +142,8 @@ describe("P1/B0 plan gate", () => {
 
     expect(read("src/render-context.ts")).toContain("hostShellDialect");
     expect(read("src/render-context.ts")).not.toMatch(/shellDialect:\s*"posix"/u);
-    expect(read("hosts/vscode/src/extension.ts")).toContain("await renderDetail(state.result)");
+    expect(read("hosts/vscode/src/extension.ts")).toContain("await renderDetail(state.result,");
+    expect(read("hosts/vscode/src/extension.ts")).toContain("hostTextContext");
 
     expect(read("src/snapshot.ts")).toContain("export function ownSnapshotEntry");
     expect(read("src/packs/interpret.ts")).toContain("ownSnapshotEntry");

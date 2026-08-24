@@ -17,6 +17,7 @@ import {
   vscodeFamilyHosts,
 } from "../src/discovery/surfaces.js";
 import { MCP_TOOL_NAMES } from "../src/mcp-stdio.js";
+import { advertisedPackage } from "../src/package-identity.js";
 
 const repositoryRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const read = (path: string): string =>
@@ -46,9 +47,19 @@ describe("compatible host catalog", () => {
       "continue",
       "cline",
       "trae",
+      "vscodium",
+      "roo-code",
     ]);
     expect(HOST_SURFACES.map((surface) => surface.id)).toContain("claude-desktop");
     expect(HOST_SURFACES.map((surface) => surface.id)).toContain("codex-desktop");
+    expect(HOST_SURFACES.map((surface) => surface.id)).toContain("jetbrains");
+    expect(HOST_SURFACES.map((surface) => surface.id)).toContain("visual-studio");
+    expect(HOST_SURFACES.map((surface) => surface.id)).toContain("neovim");
+    expect(HOST_SURFACES.find((surface) => surface.id === "jetbrains")?.adapter).toBe("mcp-stdio");
+    expect(HOST_SURFACES.find((surface) => surface.id === "visual-studio")?.adapter).toBe("mcp-stdio");
+    expect(HOST_SURFACES.find((surface) => surface.id === "neovim")?.adapter).toBe("mcp-stdio");
+    expect(HOST_SURFACES.find((surface) => surface.id === "vscodium")?.status).toBe("COMPATIBLE");
+    expect(HOST_SURFACES.find((surface) => surface.id === "roo-code")?.status).toBe("COMPATIBLE");
     expect(HOST_SURFACES.find((surface) => surface.id === "vscode")?.status).toBe("HOSTED");
     expect(vscodeFamilyHosts().filter((surface) => surface.id !== "vscode").every(
       (surface) => surface.status === "COMPATIBLE",
@@ -105,10 +116,17 @@ describe("compatible host catalog", () => {
       "discovery/claude-desktop.mcp.json",
       "discovery/cline.mcp.json",
       "discovery/zed-context-servers.json",
+      "discovery/jetbrains.mcp.json",
+      "discovery/visual-studio.mcp.json",
+      "discovery/neovim.mcp.json",
+      "discovery/windsurf.mcp.json",
+      "discovery/roo-code.mcp.json",
     ]);
     for (const surface of [...MCP_CONFIG_SURFACES, ...MCP_SNIPPET_SURFACES]) {
       const text = read(surface.path);
       expect(invokesRuleblastMcp(text, surface.format), surface.path).toBe(true);
+      expect(text).toContain(advertisedPackage());
+      expect(text).not.toMatch(/ruleblast@2\.4\./u);
       expect(text).not.toMatch(/autoApprove/u);
     }
     expect(read("src/mcp-stdio.ts")).not.toMatch(/from ["'].*profiles\//u);

@@ -1,5 +1,6 @@
 import { compareCodePoints } from "../domain/repository-path.js";
 import { attentionPaths } from "../domain/attention-paths.js";
+import { runtimePairDeltas, runtimePairSplits } from "../domain/payload-relation.js";
 import { sourcePathOf } from "../domain/source-blast.js";
 import type { RuleBlastResult } from "../model.js";
 import {
@@ -23,6 +24,25 @@ function uniqueSorted(values: readonly string[]): readonly string[] {
   return [...new Set(values.filter((value) => value !== ""))].sort(compareCodePoints);
 }
 
+function emitPairs(result: RuleBlastResult): readonly string[] {
+  const pairs = result.mode === "current"
+    ? runtimePairSplits(result.paths)
+    : runtimePairDeltas(result.paths);
+  const lines: string[] = [];
+  for (const pair of pairs) {
+    if (pair.differentPathCount > 0) {
+      lines.push(emit("PAIR", `${pair.left}\t${pair.right}\t${pair.differentPathCount}`));
+    }
+    if (pair.newlyDifferentPathCount > 0) {
+      lines.push(emit("NEWPAIR", `${pair.left}\t${pair.right}\t${pair.newlyDifferentPathCount}`));
+    }
+    if (pair.convergedPathCount > 0) {
+      lines.push(emit("CONVPAIR", `${pair.left}\t${pair.right}\t${pair.convergedPathCount}`));
+    }
+  }
+  return lines;
+}
+
 export function renderResultIndex(
   result: RuleBlastResult,
   context: ResultIndexContext = {},
@@ -30,6 +50,7 @@ export function renderResultIndex(
   const lines = [HEADER];
   if (result.mode === "current") {
     lines.push(emit("MODE", "scan"));
+    lines.push(...emitPairs(result));
     for (const path of attentionPaths(result)) lines.push(emit("SPLIT", path));
     return `${lines.join("\n")}\n`;
   }
@@ -55,6 +76,7 @@ export function renderResultIndex(
     if (law !== null) lines.push(emit("LAW", law));
   }
   lines.push(emit("STACK", String(result.counts.changedStackPathCount)));
+  lines.push(...emitPairs(result));
   const sources = uniqueSorted(
     result.changedInstructionSources.map((change) => sourcePathOf(change)),
   );

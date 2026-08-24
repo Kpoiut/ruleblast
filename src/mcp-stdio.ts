@@ -7,7 +7,7 @@ import {
   presentExplain,
   scanRepository,
 } from "./application/authority.js";
-import { isOptInReality, optInRealityIds } from "./application/profile-catalog.js";
+import { isOptInReality } from "./application/profile-catalog.js";
 import {
   currentHostProcess,
   hostProcessDialect,
@@ -30,9 +30,19 @@ import {
   probeGitStorageFormat,
 } from "./application/repository.js";
 import { explainExistingResult } from "./cli-output.js";
+import {
+  comparePathStacks,
+  formatProjectionCompare,
+} from "./application/projection-compare.js";
 import { renderResultIndex } from "./application/result-index.js";
 import { canonicalJson } from "./canonical.js";
 import { packageVersion } from "./package-identity.js";
+import {
+  assertMcpPresentation,
+  MCP_TOOLS,
+  mcpPresentationFlags,
+  mcpReceiptText,
+} from "./mcp-present.js";
 import { renderDetail } from "./render-detail.js";
 import {
   isGitObjectSnapshot,
@@ -64,71 +74,6 @@ function mcpHostProcess(host: McpHost): HostProcess {
   );
 }
 
-const ALLOWED = optInRealityIds();
-
-const TOOLS = Object.freeze([
-  Object.freeze({
-    name: "scan",
-    description:
-      "Current instruction stacks. Same as ruleblast [path]. Ask the human before running.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        startPath: { type: "string" },
-        realities: { type: "array", items: { type: "string" } },
-        detail: { type: "boolean" },
-        index: { type: "boolean" },
-      },
-    },
-  }),
-  Object.freeze({
-    name: "diff",
-    description:
-      "Which tracked stacks moved. Same as ruleblast diff [base]. Ask the human before running.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        base: { type: "string" },
-        to: { type: "string" },
-        startPath: { type: "string" },
-        realities: { type: "array", items: { type: "string" } },
-        detail: { type: "boolean" },
-        index: { type: "boolean" },
-      },
-    },
-  }),
-  Object.freeze({
-    name: "explain",
-    description:
-      "Why one path inherited this stack. Same as ruleblast explain <path>. Ask the human first.",
-    inputSchema: {
-      type: "object",
-      required: ["path"],
-      properties: {
-        path: { type: "string" },
-        from: { type: "string" },
-        to: { type: "string" },
-        startPath: { type: "string" },
-        realities: { type: "array", items: { type: "string" } },
-        detail: { type: "boolean" },
-      },
-    },
-  }),
-  Object.freeze({
-    name: "case",
-    description:
-      "Packaged 33→106 teaching receipt. Same as ruleblast case. Ask the human first.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        explainPath: { type: "string" },
-        detail: { type: "boolean" },
-        index: { type: "boolean" },
-      },
-    },
-  }),
-]);
-
 function objectParams(value: unknown): Record<string, unknown> {
   if (typeof value !== "object" || value === null || Array.isArray(value)) return {};
   return value as Record<string, unknown>;
@@ -140,11 +85,19 @@ function stringField(params: Record<string, unknown>, key: string): string | und
 }
 
 function wantsDetail(params: Record<string, unknown>): boolean {
-  return params.detail === true;
+  return mcpPresentationFlags(params).detail;
 }
 
 function wantsIndex(params: Record<string, unknown>): boolean {
-  return params.index === true;
+  return mcpPresentationFlags(params).index;
+}
+
+function wantsReceipt(params: Record<string, unknown>): boolean {
+  return mcpPresentationFlags(params).receipt;
+}
+
+function wantsCompare(params: Record<string, unknown>): boolean {
+  return mcpPresentationFlags(params).compare;
 }
 
 function realitiesOf(params: Record<string, unknown>): readonly string[] {
@@ -185,11 +138,13 @@ async function withDetail(
 }
 
 async function runScan(host: McpHost, params: Record<string, unknown>): Promise<string> {
+  assertMcpPresentation(mcpPresentationFlags(params), "scan");
   const start = stringField(params, "startPath") ?? host.cwd;
   const root = await findRepositoryRoot(start);
   const snapshot = await openTrackedWorktree(root);
   const result = await scanRepository({ snapshot, realities: realitiesOf(params) });
   if (wantsIndex(params)) return renderResultIndex(result);
+  if (wantsReceipt(params)) return mcpReceiptText(result, host);
   return canonicalJson(await withDetail({
     metrics: replayMetricsFromResult(result),
     result,
@@ -200,6 +155,7 @@ async function runScan(host: McpHost, params: Record<string, unknown>): Promise<
 }
 
 async function runDiff(host: McpHost, params: Record<string, unknown>): Promise<string> {
+  assertMcpPresentation(mcpPresentationFlags(params), "diff");
   const start = stringField(params, "startPath") ?? host.cwd;
   const root = await findRepositoryRoot(start);
   const base = stringField(params, "base") ?? "HEAD";
@@ -239,6 +195,7 @@ async function runDiff(host: McpHost, params: Record<string, unknown>): Promise<
       to: to === "WORKTREE" ? "WORKTREE" : to,
     });
   }
+  if (wantsReceipt(params)) return mcpReceiptText(pair.result, host);
   return canonicalJson(await withDetail(payload, params, pair.result, hostTextContext(mcpHostProcess(host), {
     beforeLabel: base,
     afterLabel: to === "WORKTREE" ? "WORKTREE" : to,
@@ -247,6 +204,7 @@ async function runDiff(host: McpHost, params: Record<string, unknown>): Promise<
 }
 
 async function runExplain(host: McpHost, params: Record<string, unknown>): Promise<string> {
+  assertMcpPresentation(mcpPresentationFlags(params), "explain");
   const path = stringField(params, "path");
   if (path === undefined) throw new TypeError("explain requires path");
   const start = stringField(params, "startPath") ?? host.cwd;
@@ -257,6 +215,8 @@ async function runExplain(host: McpHost, params: Record<string, unknown>): Promi
   if (from === undefined) {
     const snapshot = await openTrackedWorktree(root);
     const explained = await explainRepository({ snapshot, path, realities });
+    if (wantsCompare(params)) return formatProjectionCompare(comparePathStacks(explained.explain.path));
+    if (wantsReceipt(params)) return mcpReceiptText(explained.explain, host);
     if (wantsDetail(params)) {
       return renderDetail(explained.explain, hostTextContext(mcpHostProcess(host), {
         currentLabel: "WORKTREE",
@@ -268,6 +228,8 @@ async function runExplain(host: McpHost, params: Record<string, unknown>): Promi
   const before = await openGitSnapshot(root, from);
   const after = to === "WORKTREE" ? await openTrackedWorktree(root) : await openGitSnapshot(root, to);
   const explained = await explainRepository({ before, after, path, realities });
+  if (wantsCompare(params)) return formatProjectionCompare(comparePathStacks(explained.explain.path));
+  if (wantsReceipt(params)) return mcpReceiptText(explained.explain, host);
   if (wantsDetail(params)) {
     return renderDetail(explained.explain, hostTextContext(mcpHostProcess(host), {
       beforeLabel: from,
@@ -279,6 +241,7 @@ async function runExplain(host: McpHost, params: Record<string, unknown>): Promi
 }
 
 async function runCase(host: McpHost, params: Record<string, unknown>): Promise<string> {
+  assertMcpPresentation(mcpPresentationFlags(params), "case");
   const result = await openPackagedCase();
   const explainPath = stringField(params, "explainPath");
   if (explainPath === undefined) {
@@ -289,6 +252,7 @@ async function runCase(host: McpHost, params: Record<string, unknown>): Promise<
         to: presentation.afterLabel,
       });
     }
+    if (wantsReceipt(params)) return mcpReceiptText(result, host);
     return canonicalJson(await withDetail({
       metrics: replayMetricsFromResult(result),
       result,
@@ -300,6 +264,7 @@ async function runCase(host: McpHost, params: Record<string, unknown>): Promise<
   }
   const { explain } = explainExistingResult(result, explainPath);
   const presentation = packagedCasePresentation();
+  if (wantsReceipt(params)) return mcpReceiptText(explain, host);
   if (wantsDetail(params)) {
     return renderDetail(explain, hostTextContext(mcpHostProcess(host), {
       beforeLabel: presentation.beforeLabel,
@@ -343,7 +308,7 @@ export async function dispatchMcpRequest(
       });
     }
     if (request.method === "ping") return ok(id, {});
-    if (request.method === "tools/list") return ok(id, { tools: TOOLS });
+    if (request.method === "tools/list") return ok(id, { tools: MCP_TOOLS });
     if (request.method === "tools/call") return ok(id, await callTool(host, objectParams(request.params)));
     return fail(id, -32601, `Method not found: ${request.method}`);
   } catch (error: unknown) {

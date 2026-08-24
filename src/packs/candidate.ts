@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { compareCodePoints } from "../domain/repository-path.js";
 import { ManifestSnapshot } from "../snapshot.js";
 import { InvalidPackError, decodePackEvidence } from "./compile.js";
-import { isCandidateIdShape } from "../domain/runtime-id.js";
+import { isUnversionedRuntimeId } from "../domain/runtime-id.js";
 import { bundledDirectoryForPackId, listContainedDirectories } from "./load.js";
 import type { PackClaim } from "./schema.js";
 
@@ -105,8 +105,8 @@ export function decodeCandidateSurface(value: unknown): CandidateSurface {
   const schema = expectString(object.schema, "candidate.schema");
   if (schema !== CANDIDATE_SCHEMA_ID) fail(`unsupported candidate schema: ${schema}`);
   const id = expectString(object.id, "candidate.id");
-  if (!isCandidateIdShape(id)) {
-    fail(`candidate.id is not a runtime surface id: ${JSON.stringify(id)}`);
+  if (!isUnversionedRuntimeId(id)) {
+    fail(`candidate.id must be an unversioned runtime surface id: ${JSON.stringify(id)}`);
   }
   const admission = expectString(object.admission, "candidate.admission");
   if (admission !== "not-admitted") fail("candidate.admission must be not-admitted");

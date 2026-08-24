@@ -8,6 +8,7 @@ import type {
 } from "../engine/application/host-session.js";
 import { companionTree } from "../engine/application/host-session.js";
 import { CONTROL_BINDINGS } from "../engine/application/authority.js";
+import { workspaceFileUri } from "./workspace-uri.js";
 
 export type { ScoreboardNode };
 
@@ -89,9 +90,7 @@ export class RuleBlastTreeProvider implements vscode.TreeDataProvider<Scoreboard
       : new vscode.ThemeIcon(KIND_ICON[element.kind], new vscode.ThemeColor(tint));
 
     if (element.path !== undefined && this.root !== null) {
-      item.resourceUri = vscode.Uri.file(
-        `${this.root.replace(/[\\/]+$/u, "")}/${element.path}`,
-      );
+      item.resourceUri = workspaceFileUri(this.root, element.path);
     }
     if (element.intent !== undefined) {
       item.command = commandFor(element, item.resourceUri);

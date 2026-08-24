@@ -6,7 +6,7 @@ import {
 import { classifyChangeAlignment } from "./blast-overlay.js";
 import { adjunctRenderContext, overlayNodes } from "./overlay-tree.js";
 import { presentationFor, presentationLabel } from "./profile-catalog.js";
-import { scoreboardView, uncertainPathCount } from "./scoreboard-view.js";
+import { renderRuntimePairLines, scoreboardView, uncertainPathCount } from "./scoreboard-view.js";
 import type {
   CompanionState,
   ScoreboardNode,
@@ -61,6 +61,23 @@ function realityNode(state: CompanionState): ScoreboardNode {
     kind: "reality",
     label: realityLabel(state.realities),
     intent: "SELECT_REALITY",
+  };
+}
+
+function pairGroup(result: NonNullable<CompanionState["result"]>): ScoreboardNode | null {
+  const lines = renderRuntimePairLines(result);
+  if (lines.length === 0) return null;
+  return {
+    id: "pairs",
+    kind: "group",
+    label: "Runtime pairs",
+    collapsed: false,
+    children: lines.map((line) => metricLeaf(
+      `pair:${line}`,
+      line,
+      line,
+      "split",
+    )),
   };
 }
 
@@ -123,9 +140,13 @@ export function companionTree(state: CompanionState): ScoreboardNode[] {
     nodes.push(metricLeaf(
       "stale",
       "STALE",
-      "RuleBlast last result is stale because the workspace changed",
+      state.staleCause === "realities"
+        ? "RuleBlast last result is stale because selected realities changed"
+        : "RuleBlast last result is stale because the workspace changed",
       "uncertain",
     ));
+    const pairs = pairGroup(result);
+    if (pairs !== null) nodes.push(pairs);
     const blast = blastGroup(state);
     if (blast !== null) nodes.push(blast);
     nodes.push(realityNode(state));
@@ -159,6 +180,9 @@ export function companionTree(state: CompanionState): ScoreboardNode[] {
     `${uncertain} paths have incomplete projections`,
     uncertain > 0 ? "uncertain" : undefined,
   ));
+
+  const pairs = pairGroup(result);
+  if (pairs !== null) nodes.push(pairs);
 
   const blast = blastGroup(state);
   if (blast !== null) nodes.push(blast);

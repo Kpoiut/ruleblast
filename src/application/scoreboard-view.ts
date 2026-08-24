@@ -1,3 +1,8 @@
+import {
+  runtimePairDeltas,
+  runtimePairSplits,
+  type RuntimePairSplit,
+} from "../domain/payload-relation.js";
 import type { Completeness, RuleBlastResult } from "../model.js";
 import { presentationFor } from "./profile-catalog.js";
 
@@ -70,6 +75,44 @@ export function scoreboardView(result: RuleBlastResult): ScoreboardView {
     }),
     findingCount: result.findings.length,
   });
+}
+
+export function runtimePairSplitsFor(result: RuleBlastResult): readonly RuntimePairSplit[] {
+  if (result.mode === "current") return runtimePairSplits(result.paths);
+  return runtimePairDeltas(result.paths);
+}
+
+function formatPairLine(pair: RuntimePairSplit): string | null {
+  if (
+    pair.differentPathCount === 0 &&
+    pair.newlyDifferentPathCount === 0 &&
+    pair.convergedPathCount === 0
+  ) {
+    return null;
+  }
+  const left = presentationFor(pair.left);
+  const right = presentationFor(pair.right);
+  const parts = [`${left.badge}≠${right.badge}  ${pair.differentPathCount} different`];
+  if (pair.newlyDifferentPathCount > 0) {
+    parts.push(`${pair.newlyDifferentPathCount} newly split`);
+  }
+  if (pair.convergedPathCount > 0) {
+    parts.push(`${pair.convergedPathCount} converged`);
+  }
+  return parts.join(" · ");
+}
+
+export function renderRuntimePairLines(result: RuleBlastResult): readonly string[] {
+  return Object.freeze(
+    runtimePairSplitsFor(result)
+      .map(formatPairLine)
+      .filter((line): line is string => line !== null),
+  );
+}
+
+export function pushRuntimePairLines(lines: string[], result: RuleBlastResult): void {
+  const pairs = renderRuntimePairLines(result);
+  if (pairs.length > 0) lines.push("", ...pairs);
 }
 
 export function renderScoreboard(view: ScoreboardView): string {

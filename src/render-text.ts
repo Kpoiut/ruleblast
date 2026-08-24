@@ -1,5 +1,6 @@
 import { advertisedPackage } from "./package-identity.js";
 import { presentationLabel } from "./application/profile-catalog.js";
+import { pushRuntimePairLines } from "./application/scoreboard-view.js";
 import { tallyRealityGroups } from "./domain/reality-cluster.js";
 import { summarizeSourceBlasts } from "./domain/source-blast.js";
 import type {
@@ -220,6 +221,7 @@ function renderCurrent(
         formatCount(count),
         `tracked ${plural(count, "path")} ${count === 1 ? "is" : "are"} split across profiles.`,
       );
+      pushRuntimePairLines(lines, result);
     } else if (result.counts.partialPathCount > 0 ||
         result.counts.unknownPathCount > 0 ||
         result.counts.indeterminatePathCount > 0) {
@@ -332,6 +334,7 @@ function renderDiff(
       ? `${formatCount(split)} ${plural(split, "path")} newly split across profiles.`
       : `${formatCount(split)} ${plural(split, "path")} now ${split === 1 ? "lives" : "live"} in two AI realities.`
     : "No paths newly split across profiles.");
+  pushRuntimePairLines(lines, result);
 
   const converged = result.counts.convergedPathCount;
   if (converged > 0) {

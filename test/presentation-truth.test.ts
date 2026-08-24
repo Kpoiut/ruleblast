@@ -7,10 +7,12 @@ import {
 import {
   companionBegin,
   companionMarkStale,
+  companionSetReality,
   companionSucceed,
   initialCompanionState,
 } from "../src/application/host-session.js";
 import { diffRepository, scanRepository } from "../src/application/authority.js";
+import { GOOGLE_GEMINI_CLI_PROFILE_ID } from "../src/model.js";
 import { ManifestSnapshot } from "../src/snapshot.js";
 
 function snapshot(files: Readonly<Record<string, string>>): ManifestSnapshot {
@@ -142,9 +144,27 @@ describe("Presentation Truth Reducer", () => {
     expect(snap.workspaceTruth.glance.treeViewBadge).toBeUndefined();
     expect(snap.workspaceTruth.glance.treeViewDescription).toBe("STALE");
     expect(snap.explainPolicy.freshness).toBe("stale");
-    expect(snap.explainPolicy.banner).toContain("RULEBLAST · STALE");
+    expect(snap.explainPolicy.banner).toContain("previous tracked-worktree snapshot");
     expect(snap.resourceIndex.get("src/a.ts")?.decoration).toBeNull();
     expect(snap.resourceIndex.get("AGENTS.md")?.lens?.staleTitle).toContain("STALE");
+  });
+
+  it("names Select Reality STALE without claiming the worktree moved", async () => {
+    const scan = await scanRepository({
+      snapshot: snapshot({ "AGENTS.md": "root", "src/a.ts": "code" }),
+    });
+    const snap = derivePresentationTruth(
+      companionSetReality(
+        companionSucceed(initialCompanionState(), scan),
+        GOOGLE_GEMINI_CLI_PROFILE_ID,
+      ),
+    );
+    expect(snap.workspaceTruth.phase).toBe("stale");
+    if (snap.workspaceTruth.phase !== "stale") return;
+    expect(snap.explainPolicy.banner).toContain("different selected realities");
+    expect(snap.explainPolicy.banner).not.toContain("tracked-worktree snapshot");
+    expect(snap.workspaceTruth.glance.accessibleStatusText)
+      .toContain("selected realities changed");
   });
 
   it("keeps an atomic snapshot: later generation ignores the older commit", () => {

@@ -119,11 +119,11 @@ describe("offline evidence-revision reveal", () => {
     const codex = reveal.bundled.find((row) => row.id === "openai/codex-cli@1");
     expect(codex).toBeDefined();
     const root = mkdtempSync(join(tmpdir(), "ruleblast-evidence-"));
-    const directory = join(root, "openai-codex-cli@1");
+    const directory = join(root, "openai-codex-cli");
     mkdirSync(directory);
     writeFileSync(join(directory, "candidate.json"), JSON.stringify({
       schema: "ruleblast.candidate.v1",
-      id: "openai/codex-cli@1",
+      id: "openai/codex-cli",
       label: "Codex CLI",
       admission: "not-admitted",
       stability: "watch",
@@ -156,11 +156,11 @@ describe("offline evidence-revision reveal", () => {
       readFileSync(join(repositoryRoot, "packs/bundled/openai-codex-cli@1/evidence.json"), "utf8"),
     ) as unknown;
     const root = mkdtempSync(join(tmpdir(), "ruleblast-evidence-match-"));
-    const directory = join(root, "openai-codex-cli@1");
+    const directory = join(root, "openai-codex-cli");
     mkdirSync(directory);
     writeFileSync(join(directory, "candidate.json"), JSON.stringify({
       schema: "ruleblast.candidate.v1",
-      id: "openai/codex-cli@1",
+      id: "openai/codex-cli",
       label: "Codex CLI",
       admission: "not-admitted",
       stability: "watch",

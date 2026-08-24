@@ -61,10 +61,11 @@ export function revealEvidenceRevisions(
   const candidateRoot = roots.candidateRoot ?? candidatePacksRoot();
   const candidates = readCandidateInventory(candidateRoot);
   const byId = new Map(candidates.map((item) => [item.id, item]));
+  const runtimeStem = (id: string): string => id.replace(/@[1-9][0-9]*$/u, "");
   const bundled = listContainedDirectories(bundledRoot).map((name) => {
     const pack = readPackDirectory(join(bundledRoot, name));
     const digest = evidenceDigest(pack.evidence);
-    const candidate = byId.get(pack.pack.id);
+    const candidate = byId.get(pack.pack.id) ?? byId.get(runtimeStem(pack.pack.id));
     const candidateDigest = candidate === undefined ? null : evidenceDigest(candidate.evidence);
     const status: EvidenceStatus = candidateDigest === null
       ? "SEALED"
@@ -79,8 +80,9 @@ export function revealEvidenceRevisions(
     });
   }).sort((left, right) => compareCodePoints(left.id, right.id));
   const modeled = new Set(bundled.map((row) => row.id));
+  const modeledStems = new Set(bundled.map((row) => runtimeStem(row.id)));
   const extra = candidates
-    .filter((item) => !modeled.has(item.id))
+    .filter((item) => !modeled.has(item.id) && !modeledStems.has(item.id))
     .map((item) => Object.freeze({
       id: item.id,
       label: item.label,

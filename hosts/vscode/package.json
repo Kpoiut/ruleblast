@@ -2,7 +2,7 @@
   "name": "ruleblast",
   "displayName": "RuleBlast — Git Diff for Agent Instructions",
   "description": "Git diff for AI agent repository instructions. Change AGENTS.md. See every file that inherits it. Shows the blast radius of AGENTS.md and CLAUDE.md changes.",
-  "version": "2.5.7",
+  "version": "2.5.8",
   "publisher": "kpoiut",
   "license": "Apache-2.0",
   "icon": "media/icon.png",
@@ -29,13 +29,18 @@
     "codex",
     "continue",
     "cline",
-    "trae"
+    "trae",
+    "vscodium",
+    "roo-code"
   ],
   "extensionKind": ["workspace"],
   "capabilities": {
     "untrustedWorkspaces": { "supported": false }
   },
   "activationEvents": [
+    "workspaceContains:.git",
+    "workspaceContains:AGENTS.md",
+    "workspaceContains:CLAUDE.md",
     "onView:ruleblast.scoreboard",
     "onCommand:ruleblast.scanWorkspace",
     "onCommand:ruleblast.diffFrom",
@@ -73,7 +78,10 @@
         { "command": "ruleblast.scanWorkspace", "when": "view == ruleblast.scoreboard", "group": "navigation@1" },
         { "command": "ruleblast.diffFrom", "when": "view == ruleblast.scoreboard", "group": "navigation@2" },
         { "command": "ruleblast.explainActiveFile", "when": "view == ruleblast.scoreboard", "group": "navigation@3" },
-        { "command": "ruleblast.openVerifiedCase", "when": "view == ruleblast.scoreboard", "group": "navigation@4" }
+        { "command": "ruleblast.openVerifiedCase", "when": "view == ruleblast.scoreboard", "group": "navigation@4" },
+        { "command": "ruleblast.showDetail", "when": "view == ruleblast.scoreboard", "group": "navigation@5" },
+        { "command": "ruleblast.showIndex", "when": "view == ruleblast.scoreboard", "group": "navigation@6" },
+        { "command": "ruleblast.selectReality", "when": "view == ruleblast.scoreboard", "group": "navigation@7" }
       ],
       "explorer/context": [
         { "command": "ruleblast.explainActiveFile", "when": "resourceScheme == file", "group": "ruleblast@1" }
@@ -106,7 +114,7 @@
     "viewsWelcome": [
       {
         "view": "ruleblast.scoreboard",
-        "contents": "RuleBlast — Git diff for AI agent repository instructions.\nChange AGENTS.md. See every file that now inherits a different instruction.\nStatus Bar follows the file you open. Compare puts two realities side by side.\n[Scan now](command:ruleblast.scanWorkspace)\n[Diff from HEAD](command:ruleblast.diffFrom)\n[Explain active file](command:ruleblast.explainActiveFile)\n[Open verified case](command:ruleblast.openVerifiedCase)\nCtrl+Alt+R then S · D · E · C"
+        "contents": "RuleBlast — Git diff for AI agent repository instructions.\nChange AGENTS.md. See every file that now inherits a different instruction.\nSame companion in VS Code, Copilot Chat, Cursor, Windsurf, Kiro, Antigravity, Codex IDE, Continue, Cline, Trae, VSCodium, and Roo Code. JetBrains, Visual Studio, Neovim, Zed, and Claude Desktop use `--mcp`.\nStatus Bar follows the file you open. Compare puts two realities side by side.\n[Scan now](command:ruleblast.scanWorkspace)\n[Diff from HEAD](command:ruleblast.diffFrom)\n[Explain active file](command:ruleblast.explainActiveFile)\n[Open verified case](command:ruleblast.openVerifiedCase)\n[Show detail](command:ruleblast.showDetail)\n[Show index](command:ruleblast.showIndex)\n[Select reality](command:ruleblast.selectReality)\nCtrl+Alt+R then S · D · E · C"
       }
     ]
   }

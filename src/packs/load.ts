@@ -3,6 +3,7 @@ import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { compareCodePoints } from "../domain/repository-path.js";
 import { InvalidPackError, compilePack, decodePackBundle } from "./compile.js";
+import { assertSealedCalibrationRecord } from "./calibration.js";
 import type { CompiledPack } from "./schema.js";
 
 const bundledRoot = join(dirname(fileURLToPath(import.meta.url)), "../../packs/bundled");
@@ -74,11 +75,13 @@ function readJson(path: string): unknown {
 
 export function readPackDirectory(directory: string): CompiledPack {
   try {
-    return compilePack(decodePackBundle({
+    const compiled = compilePack(decodePackBundle({
       pack: readJson(join(directory, "pack.json")),
       evidence: readJson(join(directory, "evidence.json")),
       resolver: readJson(join(directory, "resolver.json")),
     }));
+    assertSealedCalibrationRecord(directory, compiled.pack.id);
+    return compiled;
   } catch (error) {
     if (error instanceof InvalidPackError) throw error;
     throw new InvalidPackError(`unreadable pack directory: ${String(error)}`);

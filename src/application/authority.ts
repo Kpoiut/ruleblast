@@ -109,6 +109,8 @@ export async function explainRepository(
   return { explain, view: explainViewFromResult(explain) };
 }
 
+export { currentHostProcess, hostProcessDialect, hostTextContext } from "./host-process.js";
+
 export function presentExplain(
   explain: CurrentExplainResult | DiffExplainResult,
   shellDialect?: Parameters<typeof explainPresentationContext>[1],
@@ -158,6 +160,7 @@ export type {
   HostCommand,
   HostWorkspace,
   ScoreboardNode,
+  StaleCause,
 } from "./host-session.js";
 export { renderScoreboard, scoreboardView } from "./scoreboard-view.js";
 export { attentionPaths } from "../domain/attention-paths.js";
@@ -180,7 +183,9 @@ export {
 export {
   PresentationSession,
   STALE_EXPLAIN_BANNER,
+  STALE_REALITY_BANNER,
   derivePresentationTruth,
+  staleBannerFor,
   staleExplainBanner,
   uncertainPathCount,
 } from "./presentation-truth.js";

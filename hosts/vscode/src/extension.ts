@@ -24,6 +24,9 @@ import {
   rememberDiffBases,
   presentExplain,
   presentationLabel,
+  currentHostProcess,
+  hostProcessDialect,
+  hostTextContext,
   renderDetail,
   renderResultIndex,
   probeGitStorageFormat,
@@ -44,6 +47,7 @@ import {
   compareUri,
 } from "./explain-provider.js";
 import { InstructionLensProvider } from "./codelens.js";
+import { workspaceFileUri } from "./workspace-uri.js";
 
 let state = initialCompanionState();
 const session = new PresentationSession();
@@ -105,7 +109,11 @@ function paint(snapshot: PresentationSnapshot, status: vscode.StatusBarItem): vo
     treeView.description = glance.treeViewDescription;
   }
   if (state.explainText !== null) {
-    documents.update(state.explainText, snapshot.explainPolicy.freshness === "stale");
+    documents.update(
+      state.explainText,
+      snapshot.explainPolicy.freshness === "stale",
+      state.staleCause,
+    );
   }
 }
 
@@ -125,7 +133,7 @@ function commitPresentation(
 }
 
 async function showExplainDocument(text: string, isStale = false): Promise<void> {
-  documents.update(text, isStale);
+  documents.update(text, isStale, state.staleCause);
   let doc = await vscode.workspace.openTextDocument(EXPLAIN_URI);
   if (doc.languageId !== "markdown") {
     doc = await vscode.languages.setTextDocumentLanguage(doc, "markdown");
@@ -143,7 +151,7 @@ async function openInstructionSource(path: string): Promise<void> {
   const root = currentRoot();
   const snapshot = session.snapshot;
   if (root === undefined || snapshot === null) return;
-  const fileUri = vscode.Uri.file(`${root.replace(/[\\/]+$/u, "")}/${path}`);
+  const fileUri = workspaceFileUri(root, path);
   const compare = snapshot.compare;
   const staleWorktree = snapshot.workspaceTruth.phase === "stale" &&
     compare?.afterKind === "worktree";
@@ -332,7 +340,11 @@ export function activate(context: vscode.ExtensionContext): void {
     }),
     vscode.commands.registerCommand("ruleblast.explainScoreboardPath", async (path: unknown) => {
       if (typeof path !== "string" || path === "") return;
-      const next = companionExplainFromResult(state, path, presentExplain);
+      const next = companionExplainFromResult(
+        state,
+        path,
+        (explain) => presentExplain(explain, hostProcessDialect(currentHostProcess())),
+      );
       if (next.explainText !== null) {
         await showExplainDocument(next.explainText, next.lifecycle === "STALE");
       } else {
@@ -366,7 +378,11 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.window.activeTextEditor?.document.isDirty === true,
       );
       if (dirty.result !== null) {
-        const next = companionExplainFromResult(dirty, relative, presentExplain);
+        const next = companionExplainFromResult(
+          dirty,
+          relative,
+          (explain) => presentExplain(explain, hostProcessDialect(currentHostProcess())),
+        );
         if (next.explainText !== null) {
           await showExplainDocument(next.explainText, next.lifecycle === "STALE");
         } else {
@@ -381,33 +397,37 @@ export function activate(context: vscode.ExtensionContext): void {
           path: relative,
           realities: dirty.realities,
         });
-        const text = presentExplain(explained.explain);
+        const text = presentExplain(
+          explained.explain,
+          hostProcessDialect(currentHostProcess()),
+        );
         await showExplainDocument(text, dirty.lifecycle === "STALE");
         return companionExplain(dirty, explained.view, text);
       });
     }),
     vscode.commands.registerCommand("ruleblast.selectReality", async () => {
       const picked = await vscode.window.showQuickPick(
-        [
-          { label: "Default only (Codex + Claude Code)", id: "" },
-          ...optInRealityIds().map((reality) => ({
-            label: presentationLabel(reality),
-            description: reality,
-            id: reality,
-          })),
-        ],
+        optInRealityIds().map((reality) => ({
+          label: presentationLabel(reality),
+          description: reality,
+          id: reality,
+        })),
         {
           title: "RuleBlast opt-in realities",
-          placeHolder: "Empty default, or add Copilot CLI and/or Gemini CLI",
+          placeHolder: "None = Codex + Claude Code. Add Copilot CLI and/or Gemini CLI.",
           canPickMany: true,
         },
       );
       if (picked === undefined) return;
       const selected = Array.isArray(picked) ? picked : [picked];
-      const realities = selected.some((item) => item.id === "")
-        ? []
-        : selected.map((item) => item.id).filter((id) => id !== "");
-      commitPresentation(companionSetRealities(state, realities), status);
+      const realities = selected.map((item) => item.id).filter((id) => id !== "");
+      const next = companionSetRealities(state, realities);
+      commitPresentation(next, status);
+      if (next.lifecycle === "STALE" && next.result !== null) {
+        vscode.window.showInformationMessage(
+          "Scan or Diff again to apply selected realities.",
+        );
+      }
     }),
     vscode.commands.registerCommand("ruleblast.openVerifiedCase", async () => {
       await withRoot(status, "case", async () =>
@@ -419,7 +439,19 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.window.showErrorMessage("Run scan, diff, or case first.");
         return;
       }
-      const text = await renderDetail(state.result);
+      const host = currentHostProcess();
+      const text = await renderDetail(state.result, state.result.mode === "current"
+        ? hostTextContext(host, {
+            currentLabel: state.result.snapshot.label,
+            caseLabel: null,
+          })
+        : hostTextContext(host, {
+            beforeLabel: state.result.before.label,
+            afterLabel: state.result.after.kind === "worktree"
+              ? "WORKTREE"
+              : state.result.after.label,
+            caseLabel: null,
+          }));
       await showExplainDocument(text, state.lifecycle === "STALE");
     }),
     vscode.commands.registerCommand("ruleblast.showIndex", async () => {

@@ -12,6 +12,8 @@ SOURCE
     CX Codex               1
 1,229 paths now live in two AI realities.
 
+CC≠CX  1 different · 1 newly split
+
 The largest fracture starts at packages/api/internal/.
 
 EXPLAIN

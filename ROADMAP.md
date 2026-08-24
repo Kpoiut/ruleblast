@@ -493,9 +493,15 @@ This tree is `2.5.7`. Latest independently verified public npm distribution is `
 
 Catalog and candidate ids are an allowlist. No model-name denylist. No invented empty stubs. Forming candidates keep their unversioned id; `@1` is not implied. Candidate JSON names `surface` as data. CLI and MCP share one `HostProcess` for platform quoting. This package includes `2.5.2`–`2.5.6`: Claude and Gemini interpreted from `resolver.json` (all four bundled realities `INTERPRET` / `ORACLE`), host quoting and macOS verify, shared Git spawn and `ownSnapshotEntry()`. Included development commits: `cda8834b3bc79f52123eb4f05019b35d775c9655`, `796c5d9abdde755f5827351358b747ce30260cb1`, `f4154fd063e99f0f6e43e78b2e62ce2516cbdf0e`, `7b99d529355383977ad4589d746fe83c87a59185`, `742e27d07cec76e72a18c40598315e0b11b2b146`, `cf6badd2ab376f1aa7f6f9b1d3be9559c1457503`. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
 
-## **NEXT** — Runtime calibration without a fifth reality
+## **SHIPPED TO MAIN** — `v2.5.8`: Sealed runtime calibration and host discovery
 
-ORACLE remains an implementation-oracle: interpreter bytes match the adapter oracle. A later calibration against vendor-runtime introspection, if a surface exposes it deterministically, does not add a fifth bundled reality.
+This tree is `2.5.8`. Latest independently verified public npm distribution remains `2.5.7`. Companion version is `2.5.8`. Pack `ruleblast-companion-2.5.8.vsix`. Do not overwrite Marketplace `2.2.0` or `2.2.1`.
+
+Human text, `--index`, `--receipt`, `--detail`, and the companion scoreboard measure runtime-pair disagreement on the same snapshot (`CX≠CC` and the other pairs), including the default two-profile path and newly split / converged pairs on diff. One aggregate split count is not which pair moved. Profile prepare captures each `project` method before the next prepare runs. Pack load fails closed without sealed `calibration.json`. A sealed four-runtime matrix counts every disagreeing catalog pair on one snapshot. Benchmark times all four catalog interpreters on one 10k snapshot. MCP configs pin `ruleblast@2.5.7`. MCP `receipt` is the compact scoreboard. MCP explain accepts `compare`. Companion activates on `.git` without scanning. Empty Select Reality is the default two-profile set. VSCodium and Roo Code share the companion. JetBrains, Visual Studio, Neovim, Windsurf Cascade, and Roo are MCP-discoverable. Sealed `calibration.json` can match a vendor dump or record `NO_INTROSPECTION` on `--detail` only. Compact lab stays engine/proof/probes. Candidate promotion requires an unversioned id, versioned modeled id, evidence revision, resolver digest, five axes, `ORACLE`, and calibration. Overlay wall still four analysis pairs. Not a kernel. Not a fifth action. Not a fifth bundled reality.
+
+## **NEXT** — Vendor dump when a surface publishes one
+
+The calibration engine is in `2.5.8`. A later sealed vendor-runtime dump, if a surface documents a deterministic offline observation, can mark `CALIBRATED` without making that CLI the analysis authority.
 
 ## **HORIZON** — `v3`: Prove the overlay at corpus scale
 
@@ -550,7 +556,7 @@ Across every stage, RuleBlast remains:
 - free of a CI/CD product, security scanner, agent framework, and universal configuration registry;
 - capped at three runtime dependencies unless removing the cap is supported by measured, reviewable evidence;
 - capped at four bundled realities; no fifth before Reality Packs;
-- at most two host classes: the terminal reference host and one VS Code-compatible companion renderer. Cursor, Windsurf, Kiro, and Antigravity share that companion. `--mcp` is a transport of the four actions, not a third host class.
+- at most two host classes: the terminal reference host and one VS Code-compatible companion renderer. Cursor, Windsurf, Kiro, Antigravity, VSCodium, and Roo Code share that companion. `--mcp` is a transport of the four actions, not a third host class.
 
 The 1.6 line admits one product dimension per release: 1.6.0 is the fourth reality, 1.6.1 is the companion host, 1.6.2 is last-result explain and shared visual presentation. A proposal that needs a fifth action, arbitrary executable extension, hidden network access, or host-specific resolver is a different project.
 

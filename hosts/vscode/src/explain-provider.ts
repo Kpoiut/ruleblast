@@ -1,5 +1,8 @@
 import * as vscode from "vscode";
-import { STALE_EXPLAIN_BANNER } from "../engine/application/authority.js";
+import {
+  staleBannerFor,
+  type StaleCause,
+} from "../engine/application/authority.js";
 
 export const EXPLAIN_URI = vscode.Uri.parse("ruleblast:/explain.md");
 export const REALITY_LEFT_URI = vscode.Uri.parse("ruleblast:/reality/left");
@@ -27,8 +30,8 @@ export class ExplainDocumentProvider implements vscode.TextDocumentContentProvid
 
   readonly onDidChange = this.emitter.event;
 
-  public update(text: string, isStale = false): void {
-    this.content = isStale ? `${STALE_EXPLAIN_BANNER}\n${text}` : text;
+  public update(text: string, isStale = false, cause: StaleCause | null = null): void {
+    this.content = isStale ? `${staleBannerFor(cause)}\n${text}` : text;
     this.emitter.fire(EXPLAIN_URI);
   }
 

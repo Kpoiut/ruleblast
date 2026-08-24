@@ -234,7 +234,11 @@ async function measureInterpreterChain(snapshot) {
   if (value.counts.candidatePathCount !== PATH_COUNT || value.counts.byProfile.length !== 4) {
     throw new Error("Benchmark lost four-reality catalog analysis");
   }
-  return { allCurrentMs: elapsedMs, engines };
+  return {
+    allCurrentMs: elapsedMs,
+    splitPathCount: value.counts.currentSplitPathCount,
+    engines,
+  };
 }
 
 export async function runBenchmark() {

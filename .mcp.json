@@ -3,7 +3,7 @@
     "ruleblast": {
       "type": "stdio",
       "command": "npx",
-      "args": ["--yes", "ruleblast@2.4.5", "--mcp"]
+      "args": ["--yes", "ruleblast@2.5.7", "--mcp"]
     }
   }
 }

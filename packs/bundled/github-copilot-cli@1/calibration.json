@@ -1,0 +1,16 @@
+{
+  "schema": "ruleblast.runtime-calibration.v1",
+  "packId": "github/copilot-cli@1",
+  "observation": "no-introspection",
+  "evidence": [
+    {
+      "claimId": "copilot.calibration.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",
+      "retrievedAt": "2026-08-24",
+      "sourceRevision": "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-24",
+      "claim": "Copilot CLI documents custom instruction files. It does not document a deterministic offline dump of the resolved repository-instruction set. Calibration is no-introspection. Copilot CLI is not a live analysis authority."
+    }
+  ],
+  "probes": []
+}

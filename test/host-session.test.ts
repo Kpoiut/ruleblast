@@ -146,7 +146,12 @@ describe("companion session", () => {
     state = companionSetReality(state, GOOGLE_GEMINI_CLI_PROFILE_ID);
     expect(state.realities).toEqual([GOOGLE_GEMINI_CLI_PROFILE_ID]);
     expect(state.lifecycle).toBe("STALE");
+    expect(state.staleCause).toBe("realities");
     expect(state.result).toBe(result);
+    const workspace = companionMarkStale(companionSucceed(initialCompanionState(), result));
+    expect(workspace.staleCause).toBe("workspace");
+    expect(companionSetReality(workspace, GOOGLE_GEMINI_CLI_PROFILE_ID).staleCause)
+      .toBe("workspace");
     expect(() => companionSetReality(state, "cursor/editor@1")).toThrow(/opt-in reality/i);
     const both = companionSetRealities(state, [
       GOOGLE_GEMINI_CLI_PROFILE_ID,

@@ -1,3 +1,4 @@
+import { compareCodePoints } from "./repository-path.js";
 import type {
   Completeness,
   PayloadRelation,
@@ -108,6 +109,113 @@ export function aggregatePayloadRelation(
         : "SAME",
     hasIndeterminateCoverage,
   };
+}
+
+export interface RuntimePairSplit {
+  readonly left: string;
+  readonly right: string;
+  readonly differentPathCount: number;
+  readonly newlyDifferentPathCount: number;
+  readonly convergedPathCount: number;
+}
+
+function pairKey(left: string, right: string): string {
+  return `${left}\0${right}`;
+}
+
+function catalogProfiles(
+  rows: readonly { readonly projections: readonly Projection[] }[],
+): readonly string[] {
+  return [...new Set(rows.flatMap((row) => row.projections.map((item) => item.profile)))]
+    .sort(compareCodePoints);
+}
+
+function emptyPairCounts(profiles: readonly string[]): Map<string, [number, number, number]> {
+  const counts = new Map<string, [number, number, number]>();
+  for (let left = 0; left < profiles.length; left += 1) {
+    for (let right = left + 1; right < profiles.length; right += 1) {
+      counts.set(pairKey(profiles[left]!, profiles[right]!), [0, 0, 0]);
+    }
+  }
+  return counts;
+}
+
+function freezePairs(
+  counts: ReadonlyMap<string, readonly [number, number, number]>,
+): readonly RuntimePairSplit[] {
+  return Object.freeze([...counts].map(([key, [differentPathCount, newlyDifferentPathCount, convergedPathCount]]) => {
+    const [left, right] = key.split("\0");
+    return Object.freeze({
+      left: left!,
+      right: right!,
+      differentPathCount,
+      newlyDifferentPathCount,
+      convergedPathCount,
+    });
+  }));
+}
+
+export function runtimePairSplits(
+  rows: readonly { readonly projections: readonly Projection[] }[],
+): readonly RuntimePairSplit[] {
+  const profiles = catalogProfiles(rows);
+  if (profiles.length < 2) return Object.freeze([]);
+  const counts = emptyPairCounts(profiles);
+  for (const row of rows) {
+    const byId = new Map(row.projections.map((item) => [item.profile, item]));
+    for (let left = 0; left < profiles.length; left += 1) {
+      for (let right = left + 1; right < profiles.length; right += 1) {
+        const leftProjection = byId.get(profiles[left]!);
+        const rightProjection = byId.get(profiles[right]!);
+        if (leftProjection === undefined || rightProjection === undefined) continue;
+        if (comparePayloadRelation(leftProjection, rightProjection) !== "DIFFERENT") continue;
+        const key = pairKey(profiles[left]!, profiles[right]!);
+        const current = counts.get(key);
+        if (current === undefined) continue;
+        current[0] += 1;
+      }
+    }
+  }
+  return freezePairs(counts);
+}
+
+export function runtimePairDeltas(
+  rows: readonly {
+    readonly before: readonly Projection[];
+    readonly after: readonly Projection[];
+  }[],
+): readonly RuntimePairSplit[] {
+  const profiles = catalogProfiles(rows.flatMap((row) => [
+    { projections: row.before },
+    { projections: row.after },
+  ]));
+  if (profiles.length < 2) return Object.freeze([]);
+  const counts = emptyPairCounts(profiles);
+  for (const row of rows) {
+    const beforeById = new Map(row.before.map((item) => [item.profile, item]));
+    const afterById = new Map(row.after.map((item) => [item.profile, item]));
+    for (let left = 0; left < profiles.length; left += 1) {
+      for (let right = left + 1; right < profiles.length; right += 1) {
+        const key = pairKey(profiles[left]!, profiles[right]!);
+        const current = counts.get(key);
+        if (current === undefined) continue;
+        const afterLeft = afterById.get(profiles[left]!);
+        const afterRight = afterById.get(profiles[right]!);
+        const afterRelation = afterLeft !== undefined && afterRight !== undefined
+          ? comparePayloadRelation(afterLeft, afterRight)
+          : null;
+        if (afterRelation === "DIFFERENT") current[0] += 1;
+        const beforeLeft = beforeById.get(profiles[left]!);
+        const beforeRight = beforeById.get(profiles[right]!);
+        const beforeRelation = beforeLeft !== undefined && beforeRight !== undefined
+          ? comparePayloadRelation(beforeLeft, beforeRight)
+          : null;
+        if (beforeRelation === "SAME" && afterRelation === "DIFFERENT") current[1] += 1;
+        if (beforeRelation === "DIFFERENT" && afterRelation === "SAME") current[2] += 1;
+      }
+    }
+  }
+  return freezePairs(counts);
 }
 
 export function splitState(relation: PayloadRelation): boolean | null {

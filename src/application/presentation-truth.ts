@@ -81,6 +81,13 @@ export interface PresentationSnapshot {
 export const STALE_EXPLAIN_BANNER =
   "RULEBLAST · STALE\nThis explanation belongs to the previous tracked-worktree snapshot.\nRe-run Explain or Diff to refresh.\n\n────────────────────────────────\n";
 
+export const STALE_REALITY_BANNER =
+  "RULEBLAST · STALE\nThis result used different selected realities.\nScan or Diff again to apply the current selection.\n\n────────────────────────────────\n";
+
+export function staleBannerFor(cause: CompanionState["staleCause"]): string {
+  return cause === "realities" ? STALE_REALITY_BANNER : STALE_EXPLAIN_BANNER;
+}
+
 export function staleExplainBanner(content: string): string {
   return `${STALE_EXPLAIN_BANNER}\n${content}`;
 }
@@ -268,8 +275,12 @@ export function derivePresentationTruth(
       phase: "stale",
       glance: glance(
         "RB · STALE",
-        "RuleBlast: last result is stale because the workspace changed",
-        "Last result is stale. [Diff again](command:ruleblast.diffFrom)",
+        state.staleCause === "realities"
+          ? "RuleBlast: last result is stale because selected realities changed"
+          : "RuleBlast: last result is stale because the workspace changed",
+        state.staleCause === "realities"
+          ? "Last result is stale. [Scan now](command:ruleblast.scanWorkspace) or [Diff again](command:ruleblast.diffFrom)"
+          : "Last result is stale. [Diff again](command:ruleblast.diffFrom)",
         "STALE",
       ),
     };
@@ -319,7 +330,7 @@ export function derivePresentationTruth(
     resourceIndex: buildResourceIndex(state.result, live),
     explainPolicy: Object.freeze({
       freshness: explainFreshness,
-      banner: stale ? STALE_EXPLAIN_BANNER : null,
+      banner: stale ? staleBannerFor(state.staleCause) : null,
     }),
     compare: compareRefs(state.result),
   });

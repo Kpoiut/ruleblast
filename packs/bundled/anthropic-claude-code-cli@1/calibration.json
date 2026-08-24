@@ -1,0 +1,16 @@
+{
+  "schema": "ruleblast.runtime-calibration.v1",
+  "packId": "anthropic/claude-code-cli@1",
+  "observation": "no-introspection",
+  "evidence": [
+    {
+      "claimId": "claude.calibration.1",
+      "sourceType": "vendor-doc",
+      "sourceUrl": "https://code.claude.com/docs/en/memory",
+      "retrievedAt": "2026-08-24",
+      "sourceRevision": "2026-08-24",
+      "claim": "Claude Code documents project memory, rules, and imports. It does not document a deterministic offline dump of the resolved repository-instruction set. Calibration is no-introspection. Claude Code is not a live analysis authority."
+    }
+  ],
+  "probes": []
+}

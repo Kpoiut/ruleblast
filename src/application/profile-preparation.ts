@@ -127,12 +127,9 @@ export async function prepareDefinitions(
 ): Promise<readonly PreparedProfile[]> {
   const prepared: PreparedProfile[] = [];
   for (const definition of definitions) {
-    prepared.push(capturePreparedProfile(
-      definition,
-      await definition.prepare(snapshot),
-    ));
+    prepared.push(capturePreparedProfile(definition, await definition.prepare(snapshot)));
   }
-  return prepared;
+  return Object.freeze(prepared);
 }
 
 export async function preparePairs(
@@ -150,7 +147,10 @@ export async function preparePairs(
       definition,
       await definition.prepare(after),
     );
-    pairs.push({ before: beforePrepared, after: afterPrepared });
+    pairs.push(Object.freeze({
+      before: beforePrepared,
+      after: afterPrepared,
+    }));
   }
-  return pairs;
+  return Object.freeze(pairs);
 }

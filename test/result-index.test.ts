@@ -17,7 +17,7 @@ function projection(path: string, profile: string, digest: string): Projection {
     status: "COMPLETE",
     composition: "ORDERED",
     sources: [],
-    normalizedPayloadUnits: [],
+    normalizedPayloadUnits: [[digest]],
     projectionDigest: digest,
     normalizedPayloadDigest: digest,
     evidence: [],
@@ -195,6 +195,35 @@ describe("result index", () => {
       findings: [],
     };
     const text = renderResultIndex(result);
-    expect(text).toBe("# ruleblast.index v1\nMODE\tscan\nSPLIT\tsrc/split.ts\n");
+    expect(text).toContain("MODE\tscan\n");
+    expect(text).toContain("PAIR\tanthropic/claude-code-cli@1\t");
+    expect(text).toContain("openai/codex-cli@1\t1\n");
+    expect(text).toContain("SPLIT\tsrc/split.ts\n");
+  });
+
+  it("indexes newly split pairs on diff without collapsing them into STACK", () => {
+    const path = "src/split.ts";
+    const result = diffResult([{
+      path,
+      before: [
+        projection(path, "openai/codex-cli@1", "same"),
+        projection(path, "anthropic/claude-code-cli@1", "same"),
+      ],
+      after: [
+        projection(path, "openai/codex-cli@1", "codex"),
+        projection(path, "anthropic/claude-code-cli@1", "claude"),
+      ],
+      changedProfiles: ["openai/codex-cli@1"],
+      beforePayloadRelation: "SAME",
+      afterPayloadRelation: "DIFFERENT",
+      wasSplit: false,
+      isSplit: true,
+      causes: ["AGENTS.md"],
+    }]);
+    const text = renderResultIndex(result);
+    expect(text).toContain("MODE\tdiff\n");
+    expect(text).toContain("PAIR\tanthropic/claude-code-cli@1\topenai/codex-cli@1\t1\n");
+    expect(text).toContain("NEWPAIR\tanthropic/claude-code-cli@1\topenai/codex-cli@1\t1\n");
+    expect(text).not.toContain("CONVPAIR\t");
   });
 });

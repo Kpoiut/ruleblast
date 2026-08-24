@@ -58,11 +58,20 @@ describe("control keys", () => {
     expect(keys.every((row) => row.key.startsWith("ctrl+alt+r "))).toBe(true);
     expect(keys.map((row) => row.key.slice(-1))).toEqual(["s", "d", "e", "c"]);
     const title = manifest.contributes.menus?.["view/title"] ?? [];
+    expect(title.map((row) => row.command).slice(0, 4)).toEqual([
+      "ruleblast.scanWorkspace",
+      "ruleblast.diffFrom",
+      "ruleblast.explainActiveFile",
+      "ruleblast.openVerifiedCase",
+    ]);
     expect(title.map((row) => row.command)).toEqual([
       "ruleblast.scanWorkspace",
       "ruleblast.diffFrom",
       "ruleblast.explainActiveFile",
       "ruleblast.openVerifiedCase",
+      "ruleblast.showDetail",
+      "ruleblast.showIndex",
+      "ruleblast.selectReality",
     ]);
     expect(manifest.contributes.menus?.["explorer/context"]?.some(
       (row) => row.command === "ruleblast.explainActiveFile",

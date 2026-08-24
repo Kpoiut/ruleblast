@@ -102,8 +102,9 @@ async function verifyProbe(
   profile: ProfileDefinition,
   value: unknown,
   index: number,
+  prefix: string,
 ): Promise<void> {
-  const label = `oracle.probes[${index}]`;
+  const label = `${prefix}[${index}]`;
   const probe = expectKeys(value, [
     "snapshot",
     "projectionDigests",
@@ -137,16 +138,25 @@ async function verifyProbe(
   }
 }
 
+export async function assertSealedProbes(
+  profile: ProfileDefinition,
+  probes: unknown,
+  prefix: string,
+): Promise<number> {
+  if (!Array.isArray(probes) || probes.length === 0) {
+    fail(`${prefix} must be a non-empty array`);
+  }
+  for (let index = 0; index < probes.length; index += 1) {
+    await verifyProbe(profile, probes[index], index, prefix);
+  }
+  return probes.length;
+}
+
 async function verifyProbes(
   profile: ProfileDefinition,
   probes: unknown,
 ): Promise<void> {
-  if (!Array.isArray(probes) || probes.length === 0) {
-    fail("oracle.probes must be a non-empty array");
-  }
-  for (let index = 0; index < probes.length; index += 1) {
-    await verifyProbe(profile, probes[index], index);
-  }
+  await assertSealedProbes(profile, probes, "oracle.probes");
 }
 
 async function verifyInterpret(

@@ -2,6 +2,16 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.5.8 — SHIPPED TO MAIN
+
+- Scan, diff, `--detail`, `--receipt`, `--index`, and the companion scoreboard name **which runtime pair disagrees** (`CX≠CC`, and every other pair when more realities are selected). Diff also names newly split and converged pairs. `--index` emits `PAIR`, `NEWPAIR`, and `CONVPAIR`. The default two-profile path no longer hides the pair behind an aggregate split count. Canonical JSON is unchanged. Not model quality.
+- Profile `prepare` captures each prepared `project` method before the next profile `prepare` runs. A later prepare cannot replace a captured method. Four catalog interpreters are still measured together on one snapshot (live matrix plus the 10k benchmark chain).
+- Bundled pack load fails closed without sealed `calibration.json`. A sealed vendor dump still matches interpreter probes or fails closed. Compact lab stays `INTERPRET` / `ORACLE` plus probes. `NO_INTROSPECTION` is identity/`--detail` only. Vendor CLI is not live authority.
+- MCP configs pin advertised `ruleblast@2.5.7`. MCP `receipt` is the compact scoreboard. MCP explain accepts `compare`, exclusive of `detail`/`index`/`receipt`. JetBrains, Visual Studio, Neovim, Windsurf Cascade, and Roo can read the scoreboard without a fifth action.
+- VSCodium and Roo Code share the VS Code companion. Companion activates on `.git` / `AGENTS.md` / `CLAUDE.md` without auto-analysis. Scoreboard title bar exposes Detail, Index, and Select Reality. Empty Select Reality is Codex + Claude Code; adding Copilot or Gemini no longer gets clobbered by a “Default only” multi-select item. Select Reality STALE says selected realities changed, not that the worktree moved. Show Detail quotes the host shell. Scoreboard paths use `Uri.joinPath`. Composer and Grok-the-model stay unknown ids. Not a third host class. Not a fifth bundled reality.
+- Forming candidate ids are unversioned. Promotion to `id@N` requires evidence revision, resolver digest, five axes, `ORACLE`, and calibration. `surface` is data, not a resolver branch.
+- Overlay wall and the 5 s clock are unchanged. Published CLI remains `ruleblast@2.5.7`.
+
 ## 2.5.7 — RELEASED
 
 - Runtime classification is an allowlist of catalog and candidate ids, exact match only. `xai/grok-build-cli@1` is not the forming candidate. A denylist of model product names is not a gate. Empty watch stubs are not inventory.

@@ -9,7 +9,11 @@ import {
   classifyRuntimeSurfaceId,
   publicRealityRefusal,
 } from "../src/application/runtime-surfaces.js";
-import { isCandidateIdShape } from "../src/domain/runtime-id.js";
+import {
+  isCandidateIdShape,
+  isUnversionedRuntimeId,
+  isVersionedRuntimeId,
+} from "../src/domain/runtime-id.js";
 import { decodeCandidateSurface } from "../src/packs/candidate.js";
 
 function candidate(id: string, extra: Record<string, unknown> = {}): unknown {
@@ -99,5 +103,8 @@ describe("runtime surface ids", () => {
     expect(() => decodeCandidateSurface(missingSurface)).toThrow(/missing fields/u);
     expect(() => decodeCandidateSurface(candidate("grok-4"))).toThrow(/runtime surface id/u);
     expect(decodeCandidateSurface(candidate("xai/grok-build-cli")).surface).toBe("cli");
+    expect(isUnversionedRuntimeId("xai/grok-build-cli")).toBe(true);
+    expect(isVersionedRuntimeId("openai/codex-cli@1")).toBe(true);
+    expect(isUnversionedRuntimeId("openai/codex-cli@1")).toBe(false);
   });
 });

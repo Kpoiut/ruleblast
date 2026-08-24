@@ -88,6 +88,7 @@ describe("MCP stdio transport", () => {
     for (const tool of tools) {
       expect(tool.inputSchema.properties).toMatchObject({
         detail: { type: "boolean" },
+        receipt: { type: "boolean" },
       });
     }
     for (const tool of tools.filter((item) => item.name !== "explain")) {
@@ -95,6 +96,60 @@ describe("MCP stdio transport", () => {
         index: { type: "boolean" },
       });
     }
+    const explain = tools.find((item) => item.name === "explain");
+    expect(explain?.inputSchema.properties).toMatchObject({
+      compare: { type: "boolean" },
+    });
+  });
+
+  it("returns compare text for explain and refuses compare on case", async () => {
+    const compared = await dispatchMcpRequest({
+      jsonrpc: "2.0",
+      id: 8,
+      method: "tools/call",
+      params: {
+        name: "explain",
+        arguments: { path: "src/cli.ts", compare: true },
+      },
+    }, host);
+    const text = (compared as { result: { content: readonly { text: string }[]; isError?: boolean } })
+      .result;
+    expect(text.isError).not.toBe(true);
+    expect(text.content[0]!.text).toContain("RULEBLAST COMPARE · src/cli.ts");
+    const refused = await dispatchMcpRequest({
+      jsonrpc: "2.0",
+      id: 9,
+      method: "tools/call",
+      params: { name: "case", arguments: { compare: true } },
+    }, host);
+    const failed = (refused as { result: { isError?: boolean; content: readonly { text: string }[] } })
+      .result;
+    expect(failed.isError).toBe(true);
+    expect(failed.content[0]?.text).toMatch(/compare applies only to explain/u);
+  });
+
+  it("returns a compact receipt for the packaged case without combining exclusive flags", async () => {
+    const called = await dispatchMcpRequest({
+      jsonrpc: "2.0",
+      id: 6,
+      method: "tools/call",
+      params: { name: "case", arguments: { receipt: true } },
+    }, host);
+    const text = (called as { result: { content: readonly { text: string }[]; isError?: boolean } })
+      .result;
+    expect(text.isError).not.toBe(true);
+    expect(text.content[0]!.text).toContain("RULEBLAST PROOF");
+    expect(text.content[0]!.text).toContain("LAB");
+    const conflict = await dispatchMcpRequest({
+      jsonrpc: "2.0",
+      id: 7,
+      method: "tools/call",
+      params: { name: "case", arguments: { receipt: true, index: true } },
+    }, host);
+    const failed = (conflict as { result: { isError?: boolean; content: readonly { text: string }[] } })
+      .result;
+    expect(failed.isError).toBe(true);
+    expect(failed.content[0]?.text).toMatch(/cannot combine/u);
   });
 
   it("returns detailed human text for the packaged case when requested", async () => {
