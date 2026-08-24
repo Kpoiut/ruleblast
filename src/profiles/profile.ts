@@ -1,6 +1,9 @@
 import type { ProfileId, Projection } from "../model.js";
-import { canonicalJson, sha256 } from "../canonical.js";
+import { sha256 } from "../canonical.js";
+import { digestNormalizedPayload, digestProjectionIdentity } from "../domain/payload-relation.js";
 import type { RepositorySnapshot } from "../snapshot.js";
+
+export { digestNormalizedPayload, digestProjectionIdentity };
 
 export interface EvidenceRef {
   readonly url: string;
@@ -38,13 +41,6 @@ export function unitizePayloadContributions(
       }
       return lines.map((line) => sha256(`${PAYLOAD_LINE_DOMAIN}${line}`));
     });
-}
-
-export function digestNormalizedPayload(
-  units: readonly (readonly string[])[],
-  composition: Projection["composition"],
-): string {
-  return sha256(canonicalJson({ composition, units }));
 }
 
 const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;

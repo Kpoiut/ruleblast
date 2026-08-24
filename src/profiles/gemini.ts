@@ -1,4 +1,4 @@
-import { canonicalJson, sha256 } from "../canonical.js";
+import { digestProjectionIdentity } from "../domain/projection-seal.js";
 import {
   ancestorDirectories,
   compareCodePoints,
@@ -70,7 +70,6 @@ export function createGeminiProfile(config: {
   readonly id: string;
   readonly evidence: readonly EvidenceRef[];
 }): ProfileDefinition {
-  const revisions = Object.freeze(config.evidence.map((item) => item.revision));
   return {
   id: config.id,
   evidence: config.evidence,
@@ -185,20 +184,17 @@ export function createGeminiProfile(config: {
           composition: "ORDERED",
           sources,
           normalizedPayloadUnits: units,
-          projectionDigest: sha256(canonicalJson({
+          projectionDigest: digestProjectionIdentity({
             profile: config.id,
             context,
             status,
             composition: "ORDERED",
-            sources: sources.map((item) => ({
-              path: item.path,
-              disposition: item.disposition,
-              digest: item.digest,
-              bytesUsed: item.bytesUsed,
-              truncated: item.truncated,
-            })),
-            evidenceRevision: revisions,
-          })),
+            sources,
+            normalizedPayloadUnits: units,
+            evidence,
+            projectionDigest: null,
+            normalizedPayloadDigest: null,
+          }),
           normalizedPayloadDigest: digestNormalizedPayload(units, "ORDERED"),
           evidence,
         };

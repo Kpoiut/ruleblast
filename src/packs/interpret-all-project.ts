@@ -1,5 +1,5 @@
 import { Minimatch } from "minimatch";
-import { canonicalJson, sha256, sha256MovingTarget } from "../canonical.js";
+import { digestProjectionIdentity } from "../domain/projection-seal.js";
 import { compareCodePoints, pathBasename, pathDirname } from "../domain/repository-path.js";
 import type { Projection, ResolvedSource } from "../model.js";
 import type { SnapshotEntry } from "../snapshot.js";
@@ -126,15 +126,17 @@ export function projectCopilot(
     composition: "UNSPECIFIED",
     sources,
     normalizedPayloadUnits: units,
-    projectionDigest: sha256(canonicalJson({
+    projectionDigest: digestProjectionIdentity({
       profile: pack.pack.id,
       context,
-      sources: sources.map((source) => ({
-        path: source.path,
-        disposition: source.disposition,
-        digest: source.digest,
-      })),
-    })),
+      status,
+      composition: "UNSPECIFIED",
+      sources,
+      normalizedPayloadUnits: units,
+      evidence,
+      projectionDigest: null,
+      normalizedPayloadDigest: null,
+    }),
     normalizedPayloadDigest: digestNormalizedPayload(units, "UNSPECIFIED"),
     evidence,
   };
@@ -298,24 +300,6 @@ export function projectMarkdown(
     targetPath,
     repositoryOnly: true as const,
   };
-  const effectiveSources = state.sources.map(({ path, disposition, truncated }) => ({
-    path, disposition, truncated,
-  }));
-  const digestFor = sha256MovingTarget((path) => ({
-    composition,
-    context: {
-      cwd: ".",
-      repositoryOnly: true,
-      targetPath: path,
-      trigger: "READ_TARGET",
-    },
-    effectiveSources,
-    evidence: state.evidence,
-    evidenceRevisions: revisions,
-    normalizedPayloadUnits: units,
-    profile: pack.pack.id,
-    status: state.status,
-  }));
   return {
     profile: pack.pack.id,
     context,
@@ -323,7 +307,17 @@ export function projectMarkdown(
     composition,
     sources: state.sources,
     normalizedPayloadUnits: units,
-    projectionDigest: digestFor(targetPath),
+    projectionDigest: digestProjectionIdentity({
+      profile: pack.pack.id,
+      context,
+      status: state.status,
+      composition,
+      sources: state.sources,
+      normalizedPayloadUnits: units,
+      evidence: state.evidence,
+      projectionDigest: null,
+      normalizedPayloadDigest: null,
+    }),
     normalizedPayloadDigest: digestNormalizedPayload(units, composition),
     evidence: state.evidence,
   };

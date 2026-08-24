@@ -1,5 +1,5 @@
-import { canonicalJson, sha256 } from "../canonical.js";
 import { ancestorDirectories, joinRepositoryPath, pathDirname } from "../domain/repository-path.js";
+import { digestProjectionIdentity } from "../domain/projection-seal.js";
 import type { Projection, ResolvedSource } from "../model.js";
 import { digestNormalizedPayload, unitizePayloadContributions } from "../profiles/profile.js";
 import type { ClaudeDocumentExpansion } from "./ops-markdown.js";
@@ -8,7 +8,7 @@ import type { CompiledPack } from "./schema.js";
 export function projectOrderedMarkdown(
   pack: CompiledPack,
   resolver: CompiledPack["resolver"],
-  revisions: readonly string[],
+  _revisions: readonly string[],
   claims: readonly string[],
   fileNames: readonly string[],
   expansions: ReadonlyMap<string, ClaudeDocumentExpansion>,
@@ -79,20 +79,17 @@ export function projectOrderedMarkdown(
     composition: "ORDERED",
     sources: material.sources,
     normalizedPayloadUnits: units,
-    projectionDigest: sha256(canonicalJson({
+    projectionDigest: digestProjectionIdentity({
       profile: pack.pack.id,
       context,
       status: material.status,
       composition: "ORDERED",
-      sources: material.sources.map((item) => ({
-        path: item.path,
-        disposition: item.disposition,
-        digest: item.digest,
-        bytesUsed: item.bytesUsed,
-        truncated: item.truncated,
-      })),
-      evidenceRevision: revisions,
-    })),
+      sources: material.sources,
+      normalizedPayloadUnits: units,
+      evidence,
+      projectionDigest: null,
+      normalizedPayloadDigest: null,
+    }),
     normalizedPayloadDigest: digestNormalizedPayload(units, "ORDERED"),
     evidence,
   };

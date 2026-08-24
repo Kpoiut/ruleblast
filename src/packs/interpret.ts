@@ -1,4 +1,4 @@
-import { sha256, sha256MovingTarget } from "../canonical.js";
+import { sha256 } from "../canonical.js";
 import {
   compareCodePoints,
   joinRepositoryPath,
@@ -7,6 +7,7 @@ import {
 } from "../domain/repository-path.js";
 import type { Projection, ResolvedSource } from "../model.js";
 import { ownSnapshotEntry, type RepositorySnapshot, type SnapshotEntry } from "../snapshot.js";
+import { movingProjectionDigest } from "../domain/projection-seal.js";
 import {
   defineEvidenceRef,
   digestNormalizedPayload,
@@ -148,10 +149,6 @@ function advanceDirectory(
   };
 }
 
-function assembleOrdered(contributions: readonly string[]): string {
-  return contributions.filter((contribution) => contribution !== "").join("\n\n");
-}
-
 export function interpretCompiledPack(pack: CompiledPack): ProfileDefinition {
   if (!canInterpretResolver(pack.resolver)) {
     throw new InvalidPackError(
@@ -235,21 +232,16 @@ export function interpretCompiledPack(pack: CompiledPack): ProfileDefinition {
             const material = projectMaterial(stateFor(directory));
             cachedMaterial = {
               material,
-              digestFor: sha256MovingTarget((path) => ({
-                assembledPayload: material.assembledPayload,
-                composition: "ORDERED",
-                context: {
-                  cwd: directory,
-                  repositoryOnly: true,
-                  targetPath: path,
-                  trigger: "STARTUP",
-                },
-                effectiveSources: material.effectiveSources,
-                evidenceRevisions: revisions,
-                normalizedPayloadUnits: material.units,
+              digestFor: movingProjectionDigest({
                 profile: pack.pack.id,
+                cwd: directory,
+                trigger: "STARTUP",
                 status: material.status,
-              })),
+                composition: "ORDERED",
+                sources: material.sources,
+                units: material.units,
+                evidence: material.evidence,
+              }),
             };
             materials.set(directory, cachedMaterial);
           }
@@ -274,11 +266,6 @@ function projectMaterial(resolution: Resolution) {
     units,
     normalizedPayloadDigest: digestNormalizedPayload(units, "ORDERED"),
     evidence: resolution.evidence,
-    assembledPayload: assembleOrdered(resolution.contributions),
-    effectiveSources: resolution.sources
-      .filter((item) => item.disposition === "SELECTED" || item.disposition === "SELECTED_EMPTY")
-      .map(({ path, disposition, bytesUsed, truncated }) =>
-        ({ path, disposition, bytesUsed, truncated })),
   };
 }
 

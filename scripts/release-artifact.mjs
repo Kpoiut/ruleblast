@@ -53,9 +53,18 @@ function assertExactKeys(value, expected, description) {
   }
 }
 
+function canonicalPath(path) {
+  const resolved = resolve(path);
+  try {
+    const real = realpathSync(resolved);
+    return process.platform === "win32" ? real.toLowerCase() : real;
+  } catch {
+    return process.platform === "win32" ? resolved.toLowerCase() : resolved;
+  }
+}
+
 function samePath(left, right) {
-  const normalize = (path) => process.platform === "win32" ? path.toLowerCase() : path;
-  return normalize(resolve(left)) === normalize(resolve(right));
+  return canonicalPath(left) === canonicalPath(right);
 }
 
 function expectedReleaseDirectory(repositoryRoot) {
@@ -63,8 +72,9 @@ function expectedReleaseDirectory(repositoryRoot) {
 }
 
 function assertDirectory(path, description) {
-  const stat = lstatSync(path);
-  if (!stat.isDirectory() || stat.isSymbolicLink() || !samePath(realpathSync(path), path)) {
+  const resolved = resolve(path);
+  const stat = lstatSync(resolved);
+  if (!stat.isDirectory() || stat.isSymbolicLink()) {
     fail(`${description} must be a real directory, not a symlink or junction`);
   }
 }

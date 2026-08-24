@@ -120,7 +120,7 @@ describe("candidate reality conformance lab", () => {
     expect(byId["anthropic/claude-code-cli@1"]?.proof).toBe("ORACLE");
     expect(byId["google/gemini-cli@1"]?.proof).toBe("ORACLE");
     expect(byId["google/gemini-cli@1"]?.engine).toBe("INTERPRET");
-    expect(lab.bundled.every((row) => row.calibration === "NO_INTROSPECTION")).toBe(true);
+    expect(lab.bundled.every((row) => row.calibration === "CALIBRATED")).toBe(true);
     expect(lab.candidates.every((row) => row.calibration === "UNEXECUTED")).toBe(true);
     const bundledRoot = join(repositoryRoot, "packs/bundled");
     const bundledDirs = readdirSync(bundledRoot, { withFileTypes: true })
@@ -242,8 +242,12 @@ describe("candidate reality conformance lab", () => {
     expect(lab).toContain("load LOADED");
     expect(lab).toContain("interpreter NONE");
     expect(lab).toContain("proof UNEXECUTED");
-    expect(lab).not.toContain("NO_INTROSPECTION");
+    expect(lab).toContain("CALIBRATED");
+    expect(lab).toContain("ORACLE is implementation proof.");
+    expect(lab).toContain("CALIBRATED is a sealed vendor-source dump.");
+    expect(lab).toContain("NO_INTROSPECTION is not a vendor dump.");
     expect(lab).not.toContain("calibration UNEXECUTED");
+    expect(identified).toContain("CALIBRATED");
     expect(identified).toContain("NO_INTROSPECTION");
     expect(identified).toContain("calibration UNEXECUTED");
     expect(lab).toContain("no interpreter-admissible resolver");

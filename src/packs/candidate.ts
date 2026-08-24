@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { compareCodePoints } from "../domain/repository-path.js";
 import { ManifestSnapshot } from "../snapshot.js";
@@ -131,6 +131,9 @@ export function decodeCandidateSurface(value: unknown): CandidateSurface {
 }
 
 export function readCandidateSurface(directory: string): CandidateSurface {
+  if (existsSync(join(directory, "admission.json"))) {
+    fail("candidate admission.json is not a public --reality; promotion is not admitted");
+  }
   return decodeCandidateSurface(readJsonFile(join(directory, "candidate.json")));
 }
 

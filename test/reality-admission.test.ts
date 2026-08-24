@@ -1,9 +1,10 @@
-import { readFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { canonicalJson, sha256 } from "../src/canonical.js";
-import { FIXTURE_AXES, decodeCandidateSurface } from "../src/packs/candidate.js";
+import { FIXTURE_AXES, decodeCandidateSurface, readCandidateSurface } from "../src/packs/candidate.js";
 import { InvalidPackError } from "../src/packs/compile.js";
 import { uninterpretableReasons } from "../src/packs/interpret-admit.js";
 import { readPackDirectory } from "../src/packs/load.js";
@@ -142,5 +143,16 @@ describe("reality admission invariant", () => {
     expect(decodeCandidateSurface(candidate("acme/tool-cli", { surface: "harness" })).surface)
       .toBe("harness");
     expect(uninterpretableReasons(pack.resolver)).toEqual([]);
+  });
+
+  it("refuses a candidate directory that carries admission.json", () => {
+    const directory = join(mkdtempSync(join(tmpdir(), "ruleblast-admit-")), "xai-grok-build-cli");
+    mkdirSync(directory);
+    writeFileSync(
+      join(directory, "candidate.json"),
+      readFileSync(join(repositoryRoot, "packs/candidate/xai-grok-build-cli/candidate.json")),
+    );
+    writeFileSync(join(directory, "admission.json"), "{}");
+    expect(() => readCandidateSurface(directory)).toThrow(/admission\.json/u);
   });
 });

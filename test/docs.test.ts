@@ -522,6 +522,7 @@ describe("repository documentation integrity", () => {
       "v2.5.6",
       "v2.5.7",
       "v2.5.8",
+      "v2.5.9",
       "v3.0",
       "v4.0",
     ]) {

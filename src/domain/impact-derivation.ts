@@ -1,5 +1,6 @@
 import { compareCodePoints, pathDirname } from "./repository-path.js";
 import type {
+  Completeness,
   Finding,
   FindingCode,
   ImpactGroup,
@@ -7,6 +8,19 @@ import type {
   ProfileId,
   Projection,
 } from "../model.js";
+
+export function incrementCompleteness(
+  counts: {
+    completePathCount: number;
+    partialPathCount: number;
+    unknownPathCount: number;
+  },
+  status: Completeness,
+): void {
+  if (status === "COMPLETE") counts.completePathCount += 1;
+  else if (status === "PARTIAL") counts.partialPathCount += 1;
+  else counts.unknownPathCount += 1;
+}
 
 function findingCode(evidence: string): FindingCode | null {
   if (evidence.startsWith("UNSUPPORTED_GLOB_SEMANTIC:")) {

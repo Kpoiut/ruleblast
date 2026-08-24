@@ -1,4 +1,4 @@
-import { sha256, sha256MovingTarget } from "../canonical.js";
+import { sha256 } from "../canonical.js";
 import {
   ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
   type Projection,
@@ -30,6 +30,7 @@ import {
   pathBasename,
   pathDirname,
 } from "../domain/repository-path.js";
+import { movingProjectionDigest } from "../domain/projection-seal.js";
 import {
   defineEvidenceRef,
   digestNormalizedPayload,
@@ -79,9 +80,6 @@ interface ProjectionMaterial {
   readonly units: readonly (readonly string[])[];
   readonly normalizedPayloadDigest: string;
   readonly evidence: readonly string[];
-  readonly effectiveSources: readonly {
-    path: string; disposition: ResolvedSource["disposition"]; truncated: boolean;
-  }[];
 }
 
 function boundarySource(
@@ -113,8 +111,6 @@ function projectionMaterial(resolution: Resolution): ProjectionMaterial {
     units,
     normalizedPayloadDigest: digestNormalizedPayload(units, resolution.composition),
     evidence: resolution.evidence,
-    effectiveSources: resolution.sources.map(({ path, disposition, truncated }) =>
-      ({ path, disposition, truncated })),
   };
 }
 
@@ -327,7 +323,6 @@ export function createClaudeProfile(config: {
   readonly id: string;
   readonly evidence: readonly EvidenceRef[];
 }): ProfileDefinition {
-  const revisions = Object.freeze(config.evidence.map((item) => item.revision));
   return Object.freeze({
     id: config.id,
     evidence: config.evidence,
@@ -352,21 +347,16 @@ export function createClaudeProfile(config: {
             );
             cached = {
               material,
-              digestFor: sha256MovingTarget((path) => ({
-                composition: material.composition,
-                context: {
-                  cwd: ".",
-                  repositoryOnly: true,
-                  targetPath: path,
-                  trigger: "READ_TARGET",
-                },
-                effectiveSources: material.effectiveSources,
-                evidence: material.evidence,
-                evidenceRevisions: revisions,
-                normalizedPayloadUnits: material.units,
+              digestFor: movingProjectionDigest({
                 profile: config.id,
+                cwd: ".",
+                trigger: "READ_TARGET",
                 status: material.status,
-              })),
+                composition: material.composition,
+                sources: material.sources,
+                units: material.units,
+                evidence: material.evidence,
+              }),
             };
             cache.set(cacheKey, cached);
           }

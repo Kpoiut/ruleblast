@@ -45,7 +45,7 @@ describe("route catalog", () => {
     expect(help).toContain("--json stays canonical");
     expect(help).toContain("--paths-only");
     expect(help).toContain("--index");
-    expect(help).toContain("PAIR, NEWPAIR, SOURCE, CONTINUE, REJECT");
+    expect(help).toContain("PAIR/PAIRPATH, NEWPAIR/NEWPAIRPATH, CONVPAIR/CONVPAIRPATH, INDPAIR/INDPAIRPATH");
     expect(help).toContain("--compare");
     expect(help).toContain("--detail");
     expect(help).toContain("Includes EVIDENCE and LAB");
@@ -54,6 +54,8 @@ describe("route catalog", () => {
     expect(help).toContain("[--detail]");
     expect(help).toContain("ruleblast explain <path>");
     expect(help).toContain("[--compare]");
+    expect(help).toContain("pathsOnly");
+    expect(help).toContain("witness");
   });
 });
 

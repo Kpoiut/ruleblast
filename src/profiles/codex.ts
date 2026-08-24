@@ -1,4 +1,4 @@
-import { sha256, sha256MovingTarget } from "../canonical.js";
+import { sha256 } from "../canonical.js";
 import {
   ancestorDirectories,
   compareCodePoints,
@@ -12,6 +12,7 @@ import {
   type ResolvedSource,
 } from "../model.js";
 import { ownSnapshotEntry, type RepositorySnapshot, type SnapshotEntry } from "../snapshot.js";
+import { movingProjectionDigest } from "../domain/projection-seal.js";
 import {
   defineEvidenceRef,
   digestNormalizedPayload,
@@ -46,14 +47,7 @@ interface ProjectionMaterial {
   readonly units: readonly (readonly string[])[];
   readonly normalizedPayloadDigest: string;
   readonly evidence: readonly string[];
-  readonly assembledPayload: string;
-  readonly effectiveSources: readonly {
-    path: string; disposition: ResolvedSource["disposition"];
-    bytesUsed: number; truncated: boolean;
-  }[];
 }
-
-
 
 function source(
   path: string,
@@ -160,12 +154,6 @@ function projectionMaterial(resolution: Resolution): ProjectionMaterial {
     units,
     normalizedPayloadDigest: digestNormalizedPayload(units, "ORDERED"),
     evidence: resolution.evidence,
-    assembledPayload: assembleCodexProjectInstructions(resolution.contributions),
-    effectiveSources: resolution.sources
-      .filter((source) => source.disposition === "SELECTED" ||
-        source.disposition === "SELECTED_EMPTY")
-      .map(({ path, disposition, bytesUsed, truncated }) =>
-        ({ path, disposition, bytesUsed, truncated })),
   };
 }
 
@@ -218,7 +206,6 @@ export function createCodexProfile(config: {
   readonly byteLimit: number;
 }): ProfileDefinition {
   const names = Object.freeze([config.overrideName, config.agentsName]);
-  const revisions = Object.freeze(config.evidence.map((item) => item.revision));
   return Object.freeze({
     id: config.id,
     evidence: config.evidence,
@@ -267,21 +254,16 @@ export function createCodexProfile(config: {
             ));
             cached = {
               material,
-              digestFor: sha256MovingTarget((path) => ({
-                assembledPayload: material.assembledPayload,
-                composition: "ORDERED",
-                context: {
-                  cwd: directory,
-                  repositoryOnly: true,
-                  targetPath: path,
-                  trigger: "STARTUP",
-                },
-                effectiveSources: material.effectiveSources,
-                evidenceRevisions: revisions,
-                normalizedPayloadUnits: material.units,
+              digestFor: movingProjectionDigest({
                 profile: config.id,
+                cwd: directory,
+                trigger: "STARTUP",
                 status: material.status,
-              })),
+                composition: "ORDERED",
+                sources: material.sources,
+                units: material.units,
+                evidence: material.evidence,
+              }),
             };
             cachedMaterials.set(directory, cached);
           }

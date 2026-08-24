@@ -1,5 +1,4 @@
 import {
-  type Completeness,
   type CurrentImpactCounts,
   type CurrentProfileCounts,
   type CurrentRuleBlastResult,
@@ -17,12 +16,14 @@ import {
 } from "./application/profile-preparation.js";
 import { analyzePreparedDiff } from "./application/diff-analysis.js";
 import {
+  incrementCompleteness,
   projectionFindings,
   sortAndDedupeFindings,
 } from "./domain/impact-derivation.js";
 import { compareCodePoints } from "./domain/repository-path.js";
 import {
-  aggregatePayloadRelation,
+  currentPairEvents,
+  pathPayloadRelation,
   splitState,
 } from "./domain/payload-relation.js";
 import type { ProfileDefinition } from "./profiles/profile.js";
@@ -52,15 +53,6 @@ function emptyCurrentProfileCounts(profile: ProfileId): CurrentProfileCounts {
     partialPathCount: 0,
     unknownPathCount: 0,
   };
-}
-
-function incrementCompleteness(
-  counts: CurrentProfileCounts,
-  status: Completeness,
-): void {
-  if (status === "COMPLETE") counts.completePathCount += 1;
-  else if (status === "PARTIAL") counts.partialPathCount += 1;
-  else counts.unknownPathCount += 1;
 }
 
 export async function analyzeCurrent(
@@ -94,7 +86,10 @@ export async function analyzeCurrent(
       incrementCompleteness(profileCounts, projection.status);
       findings.push(...projectionFindings(projection, null));
     });
-    const aggregate = aggregatePayloadRelation(projections);
+    const aggregate = pathPayloadRelation(
+      projections,
+      currentPairEvents([{ path, projections }]),
+    );
     counts.currentSplitPathCount += aggregate.relation === "DIFFERENT" ? 1 : 0;
     counts.partialPathCount += projections.some(
       (projection) => projection.status === "PARTIAL",

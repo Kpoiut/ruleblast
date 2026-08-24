@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 import { canonicalJson, sha256 } from "../src/canonical.js";
 import { openTrackedWorktree } from "../src/git.js";
 import { analyzeCurrent, analyzeDiff } from "../src/impact.js";
+import { digestProjectionIdentity } from "../src/domain/payload-relation.js";
 import {
   ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
   OPENAI_CODEX_CLI_PROFILE_ID,
@@ -320,12 +321,16 @@ describe("performance-shape invariant", () => {
                   context: { cwd: ".", trigger: "STARTUP", targetPath, repositoryOnly: true },
                   status: "COMPLETE", composition: "ORDERED", sources: [source],
                   normalizedPayloadUnits: units,
-                  projectionDigest: sha256(`${id}:${content}:${directory}`),
+                  projectionDigest: null,
                   normalizedPayloadDigest: digestNormalizedPayload(units, "ORDERED"), evidence: [],
                 };
                 cache.set(directory, value);
               }
-              return { ...value, context: { ...value.context, targetPath } };
+              const projection = { ...value, context: { ...value.context, targetPath } };
+              return {
+                ...projection,
+                projectionDigest: digestProjectionIdentity(projection),
+              };
             },
           } satisfies PreparedProfile;
         },

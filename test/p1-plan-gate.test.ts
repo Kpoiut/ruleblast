@@ -91,6 +91,8 @@ describe("P1/B0 plan gate", () => {
     expect(bench).toContain("defaultProfileDefinitions()");
     expect(bench).toContain("PROFILE_CATALOG");
     expect(bench).toContain("measureInterpreterChain");
+    expect(bench).toContain("runtimePairSplits");
+    expect(bench).toContain("CALIBRATED");
     expect(bench).not.toContain("claudeProfile");
     expect(bench).not.toContain("codexProfile");
   });
@@ -110,7 +112,7 @@ describe("P1/B0 plan gate", () => {
     expect(changelog).toMatch(/^## 2\.3\.0 — RELEASED/mu);
     expect(changelog).not.toMatch(/^## 2\.3\.0 — SHIPPED TO MAIN/mu);
     expect(read("ROADMAP.md")).toMatch(/## \*\*RELEASED\*\* — `v2\.3\.0`/u);
-    expect(read("package.json")).toContain('"version": "2.5.8"');
+    expect(read("package.json")).toContain('"version": "2.5.9"');
   });
 
   it("records select-all discover origin once per queued path", () => {

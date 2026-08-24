@@ -25,7 +25,7 @@ WHY THIS PATH COUNTS
 RELATION · DIFFERENT
 
 KEEP
-  rbctx RBCTX1:f9e8ad519eaf
+  rbctx RBCTX1:e7639552649e
   next agent: reuse this explanation unless rbctx moves; do not repeat the same path work
 
 Repository-only · Git-tracked sources · resolver revision 1

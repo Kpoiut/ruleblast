@@ -2,7 +2,8 @@ import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { canonicalJson, sha256 } from "../src/canonical.js";
+import { canonicalJson } from "../src/canonical.js";
+import { digestProjectionIdentity } from "../src/domain/projection-seal.js";
 import { InvalidPackError } from "../src/packs/compile.js";
 import { interpretCompiledPack } from "../src/packs/interpret.js";
 import { loadBundledPack } from "../src/packs/load.js";
@@ -64,7 +65,9 @@ async function expectAdapterProbes(
     const paths = await snapshot.listPaths();
     const targets = paths.length === 0 ? ["file.ts"] : paths;
     for (const target of targets) {
-      expect(sha256(canonicalJson(prepared.project(target)))).toBe(
+      const projection = prepared.project(target);
+      expect(projection.projectionDigest).toBe(digestProjectionIdentity(projection));
+      expect(digestProjectionIdentity(projection)).toBe(
         probe?.projectionDigests[target],
       );
     }
@@ -104,7 +107,9 @@ describe("codex interpreter oracle probes", () => {
       const targets = paths.length === 0 ? ["file.ts"] : paths;
       for (const target of targets) {
         expect(canonicalJson(engine.project(target))).toBe(canonicalJson(adapter.project(target)));
-        expect(sha256(canonicalJson(engine.project(target)))).toBe(
+        const projection = engine.project(target);
+        expect(projection.projectionDigest).toBe(digestProjectionIdentity(projection));
+        expect(digestProjectionIdentity(projection)).toBe(
           probe?.projectionDigests[target],
         );
       }

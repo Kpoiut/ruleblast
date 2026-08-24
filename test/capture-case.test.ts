@@ -318,7 +318,7 @@ describe("captureCase", () => {
       resolverRevision: 1,
       producer: {
         gitCommit: producerCommit,
-        packageVersion: "2.5.8",
+        packageVersion: "2.5.9",
         dependencyClosureDigest: expect.stringMatching(/^[0-9a-f]{64}$/u),
       },
       releaseReproductionCommand:
@@ -665,7 +665,7 @@ describe("captureCase", () => {
       .rejects.toThrow(/ancestor|junction|symlink/iu);
   });
 
-  it("rejects a dependency project nested below a symlinked parent", async () => {
+  it("rejects a dependency project root that is itself a symlink", async () => {
     const producer = await captureProducer();
     const digestDependencyClosure = producer.digestDependencyClosure as
       (projectRoot: string, lockBytes: Buffer) => Promise<string>;
@@ -694,8 +694,8 @@ describe("captureCase", () => {
         version: descriptor.version,
       }));
     }
-    const alias = join(linkedParent, "alias");
-    symlinkSync(realParent, alias, process.platform === "win32" ? "junction" : "dir");
+    const alias = join(linkedParent, "project");
+    symlinkSync(root, alias, process.platform === "win32" ? "junction" : "dir");
     const lockBytes = Buffer.from(JSON.stringify({
       name: "fixture",
       version: "1.0.0",
@@ -703,7 +703,7 @@ describe("captureCase", () => {
       packages,
     }));
 
-    await expect(digestDependencyClosure(join(alias, "project"), lockBytes))
+    await expect(digestDependencyClosure(alias, lockBytes))
       .rejects.toThrow(/project root|junction|symlink/iu);
   });
 

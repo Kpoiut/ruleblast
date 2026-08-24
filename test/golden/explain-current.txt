@@ -27,7 +27,7 @@ UNRESOLVED
   [UNKNOWN_PROJECTION] CC Claude Code · projection is unknown
 
 KEEP
-  rbctx RBCTX1:d1a5cba20ba1
+  rbctx RBCTX1:d55c4dc899c7
   next agent: reuse this explanation unless rbctx moves; do not repeat the same path work
 
 Repository-only · Git-tracked sources · resolver revision 1

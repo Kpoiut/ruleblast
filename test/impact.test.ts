@@ -13,7 +13,9 @@ import {
 } from "../src/model.js";
 import {
   aggregatePayloadRelation,
+  assertProjectionDigestSeal,
   comparePayloadRelation,
+  digestProjectionIdentity,
   splitState,
 } from "../src/domain/payload-relation.js";
 import { compareCodePoints } from "../src/domain/repository-path.js";
@@ -22,7 +24,10 @@ import {
   projectPreparedProfiles,
 } from "../src/application/projection-boundary.js";
 import { analyzeCurrent, analyzeDiff } from "../src/impact.js";
-import { unitizePayloadContributions } from "../src/profiles/profile.js";
+import {
+  digestNormalizedPayload,
+  unitizePayloadContributions,
+} from "../src/profiles/profile.js";
 import type {
   PreparedProfile,
   ProfileDefinition,
@@ -50,11 +55,15 @@ function projection(
     composition,
     sources: [],
     normalizedPayloadUnits: units,
-    projectionDigest: status === "UNKNOWN" ? null : sha256(JSON.stringify({ units, composition })),
-    normalizedPayloadDigest: status === "UNKNOWN" ? null : sha256(JSON.stringify({ units })),
+    projectionDigest: null,
+    normalizedPayloadDigest: status === "UNKNOWN"
+      ? null
+      : digestNormalizedPayload(units, composition),
     evidence: [],
   };
-  return { ...base, ...overrides };
+  const merged = { ...base, ...overrides };
+  if (merged.projectionDigest !== null || merged.status === "UNKNOWN") return merged;
+  return { ...merged, projectionDigest: digestProjectionIdentity(merged) };
 }
 
 function manifest(
@@ -123,9 +132,7 @@ function scriptedProjection(
       repositoryOnly: true,
     },
     sources: sources.map((source) => ({ ...source })),
-    projectionDigest: status === "UNKNOWN"
-      ? null
-      : sha256(`${profile}:${targetPath}:${digestRevision}`),
+    evidence: digestRevision === "stable" ? [] : [`stack:${digestRevision}`],
   });
 }
 
@@ -208,6 +215,34 @@ describe("payload relation", () => {
     const invalid = { ...projection([a], "ORDERED"), projectionDigest: null };
     expect(() => comparePayloadRelation(invalid, projection([a], "ORDERED")))
       .toThrow(/COMPLETE.*projectionDigest/);
+  });
+
+  it("fails closed when projectionDigest is not the identity seal", () => {
+    const left = projection([a, b], "ORDERED");
+    const forged = {
+      ...left,
+      projectionDigest: "0".repeat(64),
+    };
+    expect(() => assertProjectionDigestSeal(forged)).toThrow(/identity seal/u);
+    expect(left.projectionDigest).toBe(digestProjectionIdentity(left));
+    const unitsMoved = projection([b, a], "ORDERED");
+    expect(unitsMoved.projectionDigest).not.toBe(left.projectionDigest);
+  });
+
+  it("fails closed when an ORDERED payload digest is not the units seal", () => {
+    const left = projection([a, b], "ORDERED");
+    const forged = {
+      ...projection([a, b], "ORDERED"),
+      normalizedPayloadDigest: "0".repeat(64),
+    };
+    expect(() => comparePayloadRelation(left, forged)).toThrow(/units seal/u);
+    const missing = {
+      ...projection([a, b], "ORDERED"),
+      normalizedPayloadDigest: null,
+    };
+    expect(comparePayloadRelation(missing, projection([a, b], "ORDERED"))).toBe("SAME");
+    expect(comparePayloadRelation(left, projection([a, b], "ORDERED"))).toBe("SAME");
+    expect(comparePayloadRelation(left, projection([b, a], "ORDERED"))).toBe("DIFFERENT");
   });
 
   it("captures snapshot methods before callers can replace them", async () => {
@@ -484,10 +519,21 @@ describe("impact analysis", () => {
     );
     const unspecified = scriptedProfile(
       ANTHROPIC_CLAUDE_CODE_CLI_PROFILE_ID,
-      (_phase, target, profile) => ({
-        ...scriptedProjection(profile, target, "same", "stable"),
-        composition: "UNSPECIFIED",
-      }),
+      (_phase, target, profile) => {
+        const base = scriptedProjection(profile, target, "same", "stable");
+        const resealed = {
+          ...base,
+          composition: "UNSPECIFIED" as const,
+          normalizedPayloadDigest: digestNormalizedPayload(
+            base.normalizedPayloadUnits,
+            "UNSPECIFIED",
+          ),
+        };
+        return {
+          ...resealed,
+          projectionDigest: digestProjectionIdentity(resealed),
+        };
+      },
       [],
     );
     const result = await analyzeCurrent({

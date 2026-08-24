@@ -1,16 +1,180 @@
 {
   "schema": "ruleblast.runtime-calibration.v1",
   "packId": "github/copilot-cli@1",
-  "observation": "no-introspection",
+  "observation": "vendor-dump",
   "evidence": [
     {
-      "claimId": "copilot.calibration.1",
+      "claimId": "github.calibration.dump.1",
       "sourceType": "vendor-doc",
       "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",
       "retrievedAt": "2026-08-24",
       "sourceRevision": "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-24",
-      "claim": "Copilot CLI documents custom instruction files. It does not document a deterministic offline dump of the resolved repository-instruction set. Calibration is no-introspection. Copilot CLI is not a live analysis authority."
+      "claim": "Pinned Copilot CLI custom-instruction docs executed offline: .github/copilot-instructions.md, applyTo-gated instruction files, AGENTS.md / CLAUDE.md / GEMINI.md. Not a live Copilot CLI. Not interpreter self-match."
     }
   ],
-  "probes": []
+  "probes": [
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "copilot-repo",
+        "entries": [
+          {
+            "path": ".github/copilot-instructions.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "cmVwby13aWRlCg=="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "targets": {
+        ".github/copilot-instructions.md": {
+          "loadedPaths": [
+            ".github/copilot-instructions.md"
+          ],
+          "loadedTexts": [
+            "repo-wide\n"
+          ],
+          "vendorAssembly": "repo-wide\n",
+          "truncated": false
+        },
+        "src/file.ts": {
+          "loadedPaths": [
+            ".github/copilot-instructions.md"
+          ],
+          "loadedTexts": [
+            "repo-wide\n"
+          ],
+          "vendorAssembly": "repo-wide\n",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "copilot-agents",
+        "entries": [
+          {
+            "path": "AGENTS.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "YWdlbnRzCg=="
+          },
+          {
+            "path": "CLAUDE.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y2xhdWRlCg=="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "targets": {
+        "AGENTS.md": {
+          "loadedPaths": [
+            "AGENTS.md",
+            "CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "agents\n",
+            "claude\n"
+          ],
+          "vendorAssembly": "agents\n\n\nclaude\n",
+          "truncated": false
+        },
+        "CLAUDE.md": {
+          "loadedPaths": [
+            "AGENTS.md",
+            "CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "agents\n",
+            "claude\n"
+          ],
+          "vendorAssembly": "agents\n\n\nclaude\n",
+          "truncated": false
+        },
+        "src/file.ts": {
+          "loadedPaths": [
+            "AGENTS.md",
+            "CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "agents\n",
+            "claude\n"
+          ],
+          "vendorAssembly": "agents\n\n\nclaude\n",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "copilot-apply",
+        "entries": [
+          {
+            "path": ".github/instructions/ts.instructions.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "LS0tCmFwcGx5VG86ICIqKi8qLnRzIgotLS0KdHMtb25seQo="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "ZG9jCg=="
+          }
+        ]
+      },
+      "targets": {
+        ".github/instructions/ts.instructions.md": {
+          "loadedPaths": [],
+          "loadedTexts": [],
+          "vendorAssembly": "",
+          "truncated": false
+        },
+        "README.md": {
+          "loadedPaths": [],
+          "loadedTexts": [],
+          "vendorAssembly": "",
+          "truncated": false
+        },
+        "src/file.ts": {
+          "loadedPaths": [
+            ".github/instructions/ts.instructions.md"
+          ],
+          "loadedTexts": [
+            "---\napplyTo: \"**/*.ts\"\n---\nts-only\n"
+          ],
+          "vendorAssembly": "---\napplyTo: \"**/*.ts\"\n---\nts-only\n",
+          "truncated": false
+        }
+      }
+    }
+  ],
+  "runtime": {
+    "surfaceId": "github/copilot-cli@1",
+    "revision": "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-24",
+    "observationMethod": "sealed-offline-dump",
+    "artifactDigest": "8861bf0cdf31f734fa8c32ed2d88d1a5d8cfa6b509ac485eb4402ae59fbf319c",
+    "probeSchema": "ruleblast.runtime-observation.v1"
+  }
 }

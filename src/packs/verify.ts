@@ -1,7 +1,10 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { canonicalJson, sha256 } from "../canonical.js";
 import { ManifestSnapshot } from "../snapshot.js";
+import {
+  assertProjectionSeals,
+  digestProjectionIdentity,
+} from "../domain/projection-seal.js";
 import { InvalidPackError } from "./compile.js";
 import { interpretCompiledPack, uninterpretableReasons } from "./interpret.js";
 import { profileFromCompiledPack } from "./profile.js";
@@ -129,7 +132,13 @@ async function verifyProbe(
   }
   const digests = expectDigestMap(probe.projectionDigests, targets, `${label}.projectionDigests`);
   for (const target of targets) {
-    const actual = sha256(canonicalJson(prepared.project(target)));
+    const projection = prepared.project(target);
+    try {
+      assertProjectionSeals(projection);
+    } catch (error) {
+      fail(`${label} ${target}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+    const actual = digestProjectionIdentity(projection);
     if (actual !== digests[target]) {
       fail(
         `${label} projection digest mismatch for ${target}: expected ${digests[target]} actual ${actual}`,

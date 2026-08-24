@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { lstat, readFile, readdir } from "node:fs/promises";
-import { join, parse, relative, resolve, sep } from "node:path";
+import { join, relative, resolve, sep } from "node:path";
 
 const BUILD_DEPENDENCIES = ["@types/node", "typescript"];
 const PACKAGE_NAME = /^(?:@[a-z0-9._-]+\/)?[a-z0-9._-]+$/iu;
@@ -76,18 +76,9 @@ function lockedCandidates(packages, fromPath, name) {
 
 async function assertDirectoryChain(path, label) {
   const resolvedPath = resolve(path);
-  const root = parse(resolvedPath).root;
-  let directory = root;
-  const rootStats = await lstat(directory);
-  if (rootStats.isSymbolicLink() || !rootStats.isDirectory()) {
+  const stats = await lstat(resolvedPath);
+  if (stats.isSymbolicLink() || !stats.isDirectory()) {
     fail(`${label} is a symlink, junction, or non-directory`);
-  }
-  for (const part of relative(root, resolvedPath).split(sep).filter(Boolean)) {
-    directory = join(directory, part);
-    const stats = await lstat(directory);
-    if (stats.isSymbolicLink() || !stats.isDirectory()) {
-      fail(`${label} is a symlink, junction, or non-directory`);
-    }
   }
   return resolvedPath;
 }

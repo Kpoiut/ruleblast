@@ -180,9 +180,8 @@ export async function renderConformanceLab(
   for (const row of view.bundled) {
     const label = presentationFor(row.id);
     const identity = mode === "identity" ? `  ${row.id}` : "";
-    const calibration = mode === "identity" ? `  ${row.calibration}` : "";
     lines.push(
-      `  ${label.badge} ${label.shortLabel}${identity}  ${row.engine}  ${row.proof}${calibration}  ${formatOps(row.missingOperations)}  ${row.probeCount} probes`,
+      `  ${label.badge} ${label.shortLabel}${identity}  ${row.engine}  ${row.proof}  ${row.calibration}  ${formatOps(row.missingOperations)}  ${row.probeCount} probes`,
     );
   }
   for (const row of view.candidates) {
@@ -196,6 +195,9 @@ export async function renderConformanceLab(
   }
   lines.push("Not model quality.");
   lines.push("IDs name runtimes, not models.");
+  lines.push("ORACLE is implementation proof.");
+  lines.push("CALIBRATED is a sealed vendor-source dump.");
+  lines.push("NO_INTROSPECTION is not a vendor dump.");
   lines.push("RECORDED is not a passing oracle.");
   return `${lines.join("\n")}\n`;
 }

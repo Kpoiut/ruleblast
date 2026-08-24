@@ -19,13 +19,18 @@ import type {
   Projection,
 } from "../src/model.js";
 import type { GitObjectSnapshot } from "../src/snapshot.js";
+import {
+  digestNormalizedPayload,
+  digestProjectionIdentity,
+} from "../src/domain/payload-relation.js";
 
 function projection(
   profile: string,
   status: Projection["status"],
-  digest: string | null,
+  payload: string | null,
 ): Projection {
-  return {
+  const units = payload === null ? [] : [[payload]];
+  const base: Projection = {
     profile,
     context: {
       cwd: ".",
@@ -36,11 +41,15 @@ function projection(
     status,
     composition: "ORDERED",
     sources: [],
-    normalizedPayloadUnits: [],
-    projectionDigest: digest,
-    normalizedPayloadDigest: digest,
+    normalizedPayloadUnits: units,
+    projectionDigest: null,
+    normalizedPayloadDigest: status === "UNKNOWN"
+      ? null
+      : digestNormalizedPayload(units, "ORDERED"),
     evidence: [],
   };
+  if (status === "UNKNOWN") return base;
+  return { ...base, projectionDigest: digestProjectionIdentity(base) };
 }
 
 function transition(
@@ -357,16 +366,16 @@ describe("blast overlay classifier", () => {
     expect(classifyObserved("MODIFY", incomplete)).toBe("UNRESOLVED");
   });
 
-  it("increments splitObservedPathCount for OTHER paths including an incomplete sibling", async () => {
+  it("counts overlay splits only from proven DIFFERENT pair events, not an isSplit stamp", async () => {
     const inSplit = transition(
       ["openai/codex-cli@1"],
       [
-        projection("openai/codex-cli@1", "COMPLETE", "a"),
-        projection("anthropic/claude-code-cli@1", "UNKNOWN", null),
+        projection("openai/codex-cli@1", "COMPLETE", "same"),
+        projection("anthropic/claude-code-cli@1", "COMPLETE", "same"),
       ],
       [
-        projection("openai/codex-cli@1", "COMPLETE", "b"),
-        projection("anthropic/claude-code-cli@1", "UNKNOWN", null),
+        projection("openai/codex-cli@1", "COMPLETE", "codex"),
+        projection("anthropic/claude-code-cli@1", "COMPLETE", "claude"),
       ],
       {
         path: "src/in.ts",
@@ -422,10 +431,51 @@ describe("blast overlay classifier", () => {
       { path: "src/in.ts", kind: "MODIFY", relation: "IN_BLAST" },
       { path: "src/partial.ts", kind: "MODIFY", relation: "UNRESOLVED" },
     ]);
-    expect(overlay.splitObservedPathCount).toBe(2);
+    expect(overlay.splitObservedPathCount).toBe(1);
     expect(renderBlastOverlay(overlay)).toContain(
-      "2 currently have a proven profile payload difference",
+      "1 currently have a proven profile payload difference",
     );
+    expect(classifyChangeAlignment(overlay)).toBe("UNRESOLVED");
+  });
+
+  it("names DIVERGENT only when an observed other path has a proven DIFFERENT pair", async () => {
+    const overlay = await buildOverlayP1(
+      gitObject({
+        "src/in.ts": "1".repeat(40),
+        "docs/out.md": "3".repeat(40),
+      }),
+      gitObject({
+        "src/in.ts": "5".repeat(40),
+        "docs/out.md": "7".repeat(40),
+      }),
+      overlayResult([
+        transition(
+          ["openai/codex-cli@1"],
+          [
+            projection("openai/codex-cli@1", "COMPLETE", "same"),
+            projection("anthropic/claude-code-cli@1", "COMPLETE", "same"),
+          ],
+          [
+            projection("openai/codex-cli@1", "COMPLETE", "codex"),
+            projection("anthropic/claude-code-cli@1", "COMPLETE", "claude"),
+          ],
+          {
+            path: "src/in.ts",
+            isSplit: true,
+            afterPayloadRelation: "DIFFERENT",
+          },
+        ),
+        transition(
+          [],
+          [projection("openai/codex-cli@1", "COMPLETE", "same")],
+          [projection("openai/codex-cli@1", "COMPLETE", "same")],
+          { path: "docs/out.md", isSplit: false, afterPayloadRelation: "SAME" },
+        ),
+      ]),
+    );
+    expect(overlay.unresolvedCount).toBe(0);
+    expect(overlay.splitObservedPathCount).toBe(1);
+    expect(classifyChangeAlignment(overlay)).toBe("DIVERGENT");
   });
 
   it("joins the recorded openai/codex paste-burst blob oids into IN and OUTSIDE", async () => {

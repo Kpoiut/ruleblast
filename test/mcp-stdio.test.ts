@@ -94,12 +94,50 @@ describe("MCP stdio transport", () => {
     for (const tool of tools.filter((item) => item.name !== "explain")) {
       expect(tool.inputSchema.properties).toMatchObject({
         index: { type: "boolean" },
+        pathsOnly: { type: "boolean" },
+        witness: { type: "boolean" },
       });
     }
     const explain = tools.find((item) => item.name === "explain");
     expect(explain?.inputSchema.properties).toMatchObject({
       compare: { type: "boolean" },
+      witness: { type: "boolean" },
     });
+    expect(explain?.inputSchema.properties).not.toHaveProperty("pathsOnly");
+  });
+
+  it("returns paths-only and witness for the packaged case", async () => {
+    const paths = await dispatchMcpRequest({
+      jsonrpc: "2.0",
+      id: 10,
+      method: "tools/call",
+      params: { name: "case", arguments: { pathsOnly: true } },
+    }, host);
+    const pathText = (paths as { result: { content: readonly { text: string }[]; isError?: boolean } })
+      .result;
+    expect(pathText.isError).not.toBe(true);
+    expect(pathText.content[0]!.text).toMatch(/^[^\n]+\n/u);
+    expect(pathText.content[0]!.text).not.toContain("RULEBLAST");
+    const witnessed = await dispatchMcpRequest({
+      jsonrpc: "2.0",
+      id: 11,
+      method: "tools/call",
+      params: { name: "case", arguments: { witness: true } },
+    }, host);
+    const witnessText = (witnessed as { result: { content: readonly { text: string }[]; isError?: boolean } })
+      .result;
+    expect(witnessText.isError).not.toBe(true);
+    expect(witnessText.content[0]!.text).toMatch(/WHY|witness|SELECTED|source/iu);
+    const refused = await dispatchMcpRequest({
+      jsonrpc: "2.0",
+      id: 12,
+      method: "tools/call",
+      params: { name: "explain", arguments: { path: "src/cli.ts", pathsOnly: true } },
+    }, host);
+    const failed = (refused as { result: { isError?: boolean; content: readonly { text: string }[] } })
+      .result;
+    expect(failed.isError).toBe(true);
+    expect(failed.content[0]?.text).toMatch(/pathsOnly cannot be used with explain/u);
   });
 
   it("returns compare text for explain and refuses compare on case", async () => {

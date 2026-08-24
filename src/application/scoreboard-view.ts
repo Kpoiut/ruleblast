@@ -1,6 +1,5 @@
 import {
-  runtimePairDeltas,
-  runtimePairSplits,
+  pairTopologyFor,
   type RuntimePairSplit,
 } from "../domain/payload-relation.js";
 import type { Completeness, RuleBlastResult } from "../model.js";
@@ -78,15 +77,15 @@ export function scoreboardView(result: RuleBlastResult): ScoreboardView {
 }
 
 export function runtimePairSplitsFor(result: RuleBlastResult): readonly RuntimePairSplit[] {
-  if (result.mode === "current") return runtimePairSplits(result.paths);
-  return runtimePairDeltas(result.paths);
+  return pairTopologyFor(result).splits;
 }
 
 function formatPairLine(pair: RuntimePairSplit): string | null {
   if (
     pair.differentPathCount === 0 &&
     pair.newlyDifferentPathCount === 0 &&
-    pair.convergedPathCount === 0
+    pair.convergedPathCount === 0 &&
+    pair.indeterminatePathCount === 0
   ) {
     return null;
   }
@@ -98,6 +97,9 @@ function formatPairLine(pair: RuntimePairSplit): string | null {
   }
   if (pair.convergedPathCount > 0) {
     parts.push(`${pair.convergedPathCount} converged`);
+  }
+  if (pair.indeterminatePathCount > 0) {
+    parts.push(`${pair.indeterminatePathCount} indeterminate`);
   }
   return parts.join(" · ");
 }

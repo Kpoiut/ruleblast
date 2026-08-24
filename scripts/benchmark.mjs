@@ -11,6 +11,7 @@ import {
   defaultProfileDefinitions,
 } from "../dist/application/profile-catalog.js";
 import { diffExplain } from "../dist/cli-output.js";
+import { runtimePairSplits } from "../dist/domain/payload-relation.js";
 import { analyzeCurrent, analyzeDiff } from "../dist/impact.js";
 import { explainPresentationContext, renderExplain } from "../dist/render-explain.js";
 import { ManifestSnapshot } from "../dist/snapshot.js";
@@ -182,10 +183,17 @@ async function measureLab() {
   if (interpretOracleCount !== 4 || fingerprintAdapterCount !== 0) {
     throw new Error("Lab lost 4/4 interpreter ORACLE coverage");
   }
+  const calibratedCount = lab.bundled.filter((row) =>
+    row.calibration === "CALIBRATED"
+  ).length;
+  if (calibratedCount !== 4) {
+    throw new Error("Lab lost sealed CALIBRATED vendor-source dumps on a bundled reality");
+  }
   const rows = lab.bundled.map((row) => ({
     id: row.id,
     engine: row.engine,
     proof: row.proof,
+    calibration: row.calibration,
     missingOperations: row.missingOperations,
     probeCount: row.probeCount,
   }));
@@ -199,6 +207,7 @@ async function measureLab() {
     candidates: lab.candidates.length,
     interpretOracleCount,
     fingerprintAdapterCount,
+    noIntrospectionCount,
     sealedProbeCount: rows.reduce((sum, row) => sum + row.probeCount, 0),
     rows,
   };
@@ -234,9 +243,15 @@ async function measureInterpreterChain(snapshot) {
   if (value.counts.candidatePathCount !== PATH_COUNT || value.counts.byProfile.length !== 4) {
     throw new Error("Benchmark lost four-reality catalog analysis");
   }
+  const pairs = runtimePairSplits(value.paths);
+  if (pairs.length !== 6) {
+    throw new Error(`Benchmark lost four-reality pair matrix: ${pairs.length}`);
+  }
   return {
     allCurrentMs: elapsedMs,
     splitPathCount: value.counts.currentSplitPathCount,
+    pairCount: pairs.length,
+    disagreeingPairCount: pairs.filter((pair) => pair.differentPathCount > 0).length,
     engines,
   };
 }

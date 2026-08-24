@@ -1,5 +1,6 @@
 import { Minimatch } from "minimatch";
-import { canonicalJson, sha256 } from "../canonical.js";
+import { sha256 } from "../canonical.js";
+import { digestProjectionIdentity } from "../domain/projection-seal.js";
 import { compareCodePoints, pathBasename, pathDirname } from "../domain/repository-path.js";
 import { parseFrontmatterGlobs } from "../packs/ops-frontmatter.js";
 import {
@@ -202,15 +203,17 @@ export function createCopilotProfile(config: {
           composition: "UNSPECIFIED",
           sources,
           normalizedPayloadUnits: units,
-          projectionDigest: sha256(canonicalJson({
+          projectionDigest: digestProjectionIdentity({
             profile: config.id,
             context,
-            sources: sources.map((source) => ({
-              path: source.path,
-              disposition: source.disposition,
-              digest: source.digest,
-            })),
-          })),
+            status: partial ? "PARTIAL" : "COMPLETE",
+            composition: "UNSPECIFIED",
+            sources,
+            normalizedPayloadUnits: units,
+            evidence,
+            projectionDigest: null,
+            normalizedPayloadDigest: null,
+          }),
           normalizedPayloadDigest: digestNormalizedPayload(units, "UNSPECIFIED"),
           evidence,
         };

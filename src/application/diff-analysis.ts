@@ -12,12 +12,14 @@ import { preparePairs, validateProfiles } from "./profile-preparation.js";
 import {
   buildImpactGroups,
   effectiveSourcePaths,
+  incrementCompleteness,
   projectionFindings,
   sortAndDedupeFindings,
 } from "../domain/impact-derivation.js";
 import { compareCodePoints } from "../domain/repository-path.js";
 import {
-  aggregatePayloadRelation,
+  currentPairEvents,
+  pathPayloadRelation,
   splitState,
   worstCompleteness,
 } from "../domain/payload-relation.js";
@@ -39,15 +41,6 @@ function emptyDiffProfileCounts(profile: ProfileId): DiffProfileCounts {
     unknownPathCount: 0,
     changedStackPathCount: 0,
   };
-}
-
-function incrementCompleteness(
-  counts: DiffProfileCounts,
-  status: Completeness,
-): void {
-  if (status === "COMPLETE") counts.completePathCount += 1;
-  else if (status === "PARTIAL") counts.partialPathCount += 1;
-  else counts.unknownPathCount += 1;
 }
 
 export async function analyzePreparedDiff(
@@ -127,8 +120,14 @@ export async function analyzePreparedDiff(
       findings.push(...projectionFindings(beforeProjection, "before"));
       findings.push(...projectionFindings(afterProjection, "after"));
     }
-    const beforeAggregate = aggregatePayloadRelation(beforeProjections);
-    const afterAggregate = aggregatePayloadRelation(afterProjections);
+    const beforeAggregate = pathPayloadRelation(
+      beforeProjections,
+      currentPairEvents([{ path, projections: beforeProjections }]),
+    );
+    const afterAggregate = pathPayloadRelation(
+      afterProjections,
+      currentPairEvents([{ path, projections: afterProjections }]),
+    );
     counts.changedStackPathCount += changedProfiles.length > 0 ? 1 : 0;
     counts.newlySplitPathCount += beforeAggregate.relation === "SAME" &&
       afterAggregate.relation === "DIFFERENT" ? 1 : 0;

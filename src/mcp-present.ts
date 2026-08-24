@@ -1,4 +1,7 @@
 import { resolveAgentAllow } from "./domain/agent-allow.js";
+import { attentionPaths } from "./domain/attention-paths.js";
+import { renderWitness, witnessForProjection } from "./domain/witness.js";
+import { packWitnessHint } from "./packs/witness-hints.js";
 import type { ExplainResult } from "./cli-output.js";
 import type {
   CurrentRuleBlastResult,
@@ -15,6 +18,8 @@ export interface McpPresentationFlags {
   readonly index: boolean;
   readonly receipt: boolean;
   readonly compare: boolean;
+  readonly pathsOnly: boolean;
+  readonly witness: boolean;
 }
 
 export function mcpPresentationFlags(
@@ -25,6 +30,8 @@ export function mcpPresentationFlags(
     index: params.index === true,
     receipt: params.receipt === true,
     compare: params.compare === true,
+    pathsOnly: params.pathsOnly === true,
+    witness: params.witness === true,
   });
 }
 
@@ -35,11 +42,40 @@ export function assertMcpPresentation(
   if (flags.compare && action !== "explain") {
     throw new TypeError("compare applies only to explain");
   }
-  const exclusive = [flags.index, flags.receipt, flags.detail, flags.compare]
-    .filter(Boolean).length;
-  if (exclusive > 1) {
-    throw new TypeError("detail, index, receipt, and compare cannot combine");
+  if (flags.pathsOnly && action === "explain") {
+    throw new TypeError("pathsOnly cannot be used with explain");
   }
+  const exclusive = [
+    flags.index,
+    flags.receipt,
+    flags.detail,
+    flags.compare,
+    flags.pathsOnly,
+    flags.witness,
+  ].filter(Boolean).length;
+  if (exclusive > 1) {
+    throw new TypeError("detail, index, receipt, compare, pathsOnly, and witness cannot combine");
+  }
+}
+
+export function mcpPathsOnlyText(
+  result: CurrentRuleBlastResult | DiffRuleBlastResult,
+): string {
+  const paths = attentionPaths(result);
+  return paths.length === 0 ? "" : `${paths.join("\n")}\n`;
+}
+
+export function mcpWitnessText(
+  result: CurrentRuleBlastResult | DiffRuleBlastResult | ExplainResult,
+): string {
+  const projections = "analysisMode" in result
+    ? ("projections" in result.path ? result.path.projections : [...result.path.before, ...result.path.after])
+    : result.mode === "current"
+      ? result.paths.flatMap((path) => path.projections)
+      : result.paths.flatMap((path) => [...path.before, ...path.after]);
+  return renderWitness(projections.map((projection) =>
+    witnessForProjection(projection, packWitnessHint),
+  ));
 }
 
 export const MCP_TOOLS = Object.freeze([
@@ -55,6 +91,8 @@ export const MCP_TOOLS = Object.freeze([
         detail: { type: "boolean" },
         index: { type: "boolean" },
         receipt: { type: "boolean" },
+        pathsOnly: { type: "boolean" },
+        witness: { type: "boolean" },
       },
     },
   }),
@@ -72,6 +110,8 @@ export const MCP_TOOLS = Object.freeze([
         detail: { type: "boolean" },
         index: { type: "boolean" },
         receipt: { type: "boolean" },
+        pathsOnly: { type: "boolean" },
+        witness: { type: "boolean" },
       },
     },
   }),
@@ -91,6 +131,7 @@ export const MCP_TOOLS = Object.freeze([
         detail: { type: "boolean" },
         receipt: { type: "boolean" },
         compare: { type: "boolean" },
+        witness: { type: "boolean" },
       },
     },
   }),
@@ -105,6 +146,8 @@ export const MCP_TOOLS = Object.freeze([
         detail: { type: "boolean" },
         index: { type: "boolean" },
         receipt: { type: "boolean" },
+        pathsOnly: { type: "boolean" },
+        witness: { type: "boolean" },
       },
     },
   }),

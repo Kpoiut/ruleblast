@@ -97,7 +97,7 @@ CORE
 COMMON
   --json        Canonical JSON output.
   --paths-only  One attention path per line. Diff: changed stacks. Scan: current splits. Pipeable. Not --json.
-  --index       Agent/user compact index. PAIR, NEWPAIR, SOURCE, CONTINUE, REJECT, SPLIT. All rows, no sample cap. Not --json.
+  --index       Agent/user compact index. PAIR/PAIRPATH, NEWPAIR/NEWPAIRPATH, CONVPAIR/CONVPAIRPATH, INDPAIR/INDPAIRPATH, SOURCE, CONTINUE, REJECT, SPLIT. Counts fold from path rows. All rows, no sample cap. Not --json.
   --detail      Full human text of the same result. Includes EVIDENCE and LAB. Default text is the summary. Not --json.
   --compare     Explain only. Two selected-reality source stacks. Not --json.
   --reality     github/copilot-cli@1 and/or google/gemini-cli@1. Repeat to add both. Default JSON stays two-profile.
@@ -110,6 +110,8 @@ EVIDENCE
 
 TRANSPORT
   --mcp      Stdio transport of scan, diff, explain, and case.
+             Tools accept the same presentation flags: detail, index, receipt,
+             compare (explain), pathsOnly, witness. Exclusive of each other.
 
 HOSTS
   Companion  One VS Code-family adapter: VS Code, Copilot Chat, Cursor, Windsurf, Kiro,

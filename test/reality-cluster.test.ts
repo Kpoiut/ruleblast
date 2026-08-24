@@ -5,6 +5,7 @@ import {
   clusterEquivalentProjections,
   tallyRealityGroups,
 } from "../src/domain/reality-cluster.js";
+import { digestNormalizedPayload } from "../src/domain/payload-relation.js";
 
 const line = (value: string): string =>
   sha256(`ruleblast-payload-line-v1\0${value}`);
@@ -31,7 +32,7 @@ function projection(
       ? sha256(JSON.stringify({ units, composition }))
       : null,
     normalizedPayloadDigest: status === "COMPLETE"
-      ? sha256(JSON.stringify({ units }))
+      ? digestNormalizedPayload(units, composition)
       : null,
     evidence: [],
   };

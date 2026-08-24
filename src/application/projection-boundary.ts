@@ -1,4 +1,8 @@
-import { assertUsableProjection } from "../domain/payload-relation.js";
+import {
+  assertNormalizedPayloadSeal,
+  assertProjectionDigestSeal,
+  assertUsableProjection,
+} from "../domain/payload-relation.js";
 import { assertCanonicalRepositoryPath } from "../domain/repository-path.js";
 import type {
   Projection,
@@ -332,6 +336,8 @@ export function projectPreparedProfiles(
       );
     }
     assertUsableProjection(projection);
+    assertNormalizedPayloadSeal(projection);
+    assertProjectionDigestSeal(projection);
     return projection;
   });
 }

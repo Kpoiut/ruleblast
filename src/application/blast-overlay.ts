@@ -1,5 +1,6 @@
 import type { DiffRuleBlastResult, PathTransition } from "../model.js";
 import { blobIdentityKind } from "../domain/git-blob-identity.js";
+import { currentPairEvents } from "../domain/payload-relation.js";
 import { compareCodePoints, unionSortedPaths } from "../domain/repository-path.js";
 import type { GitObjectSnapshot } from "../snapshot.js";
 
@@ -352,7 +353,10 @@ export async function buildOverlayP1(
   const unresolvedCount = observed.filter((row) => row.relation === "UNRESOLVED").length;
   const splitObservedPathCount = observed.filter((row) => {
     if (row.kind === "DELETE") return false;
-    return transitions.get(row.path)?.isSplit === true;
+    const transition = transitions.get(row.path);
+    if (transition === undefined) return false;
+    return currentPairEvents([{ path: row.path, projections: transition.after }])
+      .some((event) => event.different);
   }).length;
   return Object.freeze({
     observedPathCount: observed.length,

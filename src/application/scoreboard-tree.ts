@@ -176,7 +176,7 @@ export function companionTree(state: CompanionState): ScoreboardNode[] {
   }
   nodes.push(metricLeaf(
     "metric-uncertain",
-    `? ${uncertain} unresolved`,
+    `? ${uncertain} incomplete`,
     `${uncertain} paths have incomplete projections`,
     uncertain > 0 ? "uncertain" : undefined,
   ));

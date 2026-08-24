@@ -1,16 +1,226 @@
 {
   "schema": "ruleblast.runtime-calibration.v1",
   "packId": "google/gemini-cli@1",
-  "observation": "no-introspection",
+  "observation": "vendor-dump",
   "evidence": [
     {
-      "claimId": "gemini.calibration.1",
+      "claimId": "google.calibration.dump.1",
       "sourceType": "vendor-implementation",
-      "sourceUrl": "https://github.com/google-gemini/gemini-cli/blob/v0.55.1/packages/core/src/utils/memoryDiscovery.ts",
+      "sourceUrl": "https://github.com/google-gemini/gemini-cli/blob/41327e407da58aa01c409ef6685b7b5d379f295e/packages/core/src/utils/memoryDiscovery.ts",
       "retrievedAt": "2026-08-24",
       "sourceRevision": "google-gemini/gemini-cli@v0.55.1#41327e407da58aa01c409ef6685b7b5d379f295e",
-      "claim": "Gemini CLI memory discovery is pinned as implementation evidence. The documented surface does not publish a deterministic offline dump of the resolved repository-instruction set. Calibration is no-introspection. Gemini CLI is not a live analysis authority."
+      "claim": "Pinned Gemini memoryDiscovery.ts and processImports tree format executed offline: upward GEMINI.md variants, @path inlining, concatenateInstructions Context-from wrappers with repository-relative paths. Not a live Gemini CLI. Not interpreter self-match."
     }
   ],
-  "probes": []
+  "probes": [
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "gemini-hierarchy",
+        "entries": [
+          {
+            "path": "GEMINI.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "cm9vdAo="
+          },
+          {
+            "path": "src/GEMINI.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "bmVzdGVkCg=="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "targets": {
+        "GEMINI.md": {
+          "loadedPaths": [
+            "GEMINI.md"
+          ],
+          "loadedTexts": [
+            "root\n"
+          ],
+          "vendorAssembly": "--- Context from: GEMINI.md ---\nroot\n--- End of Context from: GEMINI.md ---",
+          "truncated": false
+        },
+        "src/GEMINI.md": {
+          "loadedPaths": [
+            "GEMINI.md",
+            "src/GEMINI.md"
+          ],
+          "loadedTexts": [
+            "root\n",
+            "nested\n"
+          ],
+          "vendorAssembly": "--- Context from: GEMINI.md ---\nroot\n--- End of Context from: GEMINI.md ---\n\n--- Context from: src/GEMINI.md ---\nnested\n--- End of Context from: src/GEMINI.md ---",
+          "truncated": false
+        },
+        "src/file.ts": {
+          "loadedPaths": [
+            "GEMINI.md",
+            "src/GEMINI.md"
+          ],
+          "loadedTexts": [
+            "root\n",
+            "nested\n"
+          ],
+          "vendorAssembly": "--- Context from: GEMINI.md ---\nroot\n--- End of Context from: GEMINI.md ---\n\n--- Context from: src/GEMINI.md ---\nnested\n--- End of Context from: src/GEMINI.md ---",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "gemini-import",
+        "entries": [
+          {
+            "path": "GEMINI.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "QGEubWQK"
+          },
+          {
+            "path": "a.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "VkFMVUVfQgo="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "targets": {
+        "GEMINI.md": {
+          "loadedPaths": [
+            "GEMINI.md"
+          ],
+          "loadedTexts": [
+            "<!-- Imported from: a.md -->\nVALUE_B\n\n<!-- End of import from: a.md -->\n"
+          ],
+          "vendorAssembly": "--- Context from: GEMINI.md ---\n<!-- Imported from: a.md -->\nVALUE_B\n\n<!-- End of import from: a.md -->\n--- End of Context from: GEMINI.md ---",
+          "truncated": false
+        },
+        "a.md": {
+          "loadedPaths": [
+            "GEMINI.md"
+          ],
+          "loadedTexts": [
+            "<!-- Imported from: a.md -->\nVALUE_B\n\n<!-- End of import from: a.md -->\n"
+          ],
+          "vendorAssembly": "--- Context from: GEMINI.md ---\n<!-- Imported from: a.md -->\nVALUE_B\n\n<!-- End of import from: a.md -->\n--- End of Context from: GEMINI.md ---",
+          "truncated": false
+        },
+        "src/file.ts": {
+          "loadedPaths": [
+            "GEMINI.md"
+          ],
+          "loadedTexts": [
+            "<!-- Imported from: a.md -->\nVALUE_B\n\n<!-- End of import from: a.md -->\n"
+          ],
+          "vendorAssembly": "--- Context from: GEMINI.md ---\n<!-- Imported from: a.md -->\nVALUE_B\n\n<!-- End of import from: a.md -->\n--- End of Context from: GEMINI.md ---",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "gemini-names",
+        "entries": [
+          {
+            "path": ".gemini/settings.json",
+            "kind": "file",
+            "executable": false,
+            "base64": "eyJjb250ZXh0Ijp7ImZpbGVOYW1lIjoiQ09OVEVYVC5tZCJ9fQo="
+          },
+          {
+            "path": "GEMINI.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "ZGVmYXVsdAo="
+          },
+          {
+            "path": "CONTEXT.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "ZXh0cmEK"
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "targets": {
+        ".gemini/settings.json": {
+          "loadedPaths": [
+            "CONTEXT.md",
+            "GEMINI.md"
+          ],
+          "loadedTexts": [
+            "extra\n",
+            "default\n"
+          ],
+          "vendorAssembly": "--- Context from: CONTEXT.md ---\nextra\n--- End of Context from: CONTEXT.md ---\n\n--- Context from: GEMINI.md ---\ndefault\n--- End of Context from: GEMINI.md ---",
+          "truncated": false
+        },
+        "CONTEXT.md": {
+          "loadedPaths": [
+            "CONTEXT.md",
+            "GEMINI.md"
+          ],
+          "loadedTexts": [
+            "extra\n",
+            "default\n"
+          ],
+          "vendorAssembly": "--- Context from: CONTEXT.md ---\nextra\n--- End of Context from: CONTEXT.md ---\n\n--- Context from: GEMINI.md ---\ndefault\n--- End of Context from: GEMINI.md ---",
+          "truncated": false
+        },
+        "GEMINI.md": {
+          "loadedPaths": [
+            "CONTEXT.md",
+            "GEMINI.md"
+          ],
+          "loadedTexts": [
+            "extra\n",
+            "default\n"
+          ],
+          "vendorAssembly": "--- Context from: CONTEXT.md ---\nextra\n--- End of Context from: CONTEXT.md ---\n\n--- Context from: GEMINI.md ---\ndefault\n--- End of Context from: GEMINI.md ---",
+          "truncated": false
+        },
+        "src/file.ts": {
+          "loadedPaths": [
+            "CONTEXT.md",
+            "GEMINI.md"
+          ],
+          "loadedTexts": [
+            "extra\n",
+            "default\n"
+          ],
+          "vendorAssembly": "--- Context from: CONTEXT.md ---\nextra\n--- End of Context from: CONTEXT.md ---\n\n--- Context from: GEMINI.md ---\ndefault\n--- End of Context from: GEMINI.md ---",
+          "truncated": false
+        }
+      }
+    }
+  ],
+  "runtime": {
+    "surfaceId": "google/gemini-cli@1",
+    "revision": "google-gemini/gemini-cli@v0.55.1#41327e407da58aa01c409ef6685b7b5d379f295e",
+    "observationMethod": "sealed-offline-dump",
+    "artifactDigest": "0f87f18726bd67b188fe342b5d91b345e889c5555ef276e44a29c202e8cfc789",
+    "probeSchema": "ruleblast.runtime-observation.v1"
+  }
 }

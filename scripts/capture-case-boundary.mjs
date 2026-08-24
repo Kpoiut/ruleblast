@@ -8,7 +8,7 @@ import {
   realpath,
   unlink,
 } from "node:fs/promises";
-import { dirname, join, parse, resolve, sep } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { promisify } from "node:util";
 
 const runFile = promisify(execFile);
@@ -92,21 +92,15 @@ export async function assertRepositoryRemote(checkout, repository) {
 
 async function assertDirectoryChain(path) {
   const absolute = resolve(path);
-  const parsed = parse(absolute);
-  const parts = absolute.slice(parsed.root.length).split(sep).filter(Boolean);
-  let cursor = parsed.root;
-  for (const part of parts) {
-    cursor = join(cursor, part);
-    let stats;
-    try {
-      stats = await lstat(cursor);
-    } catch (error) {
-      if (error?.code === "ENOENT") return;
-      throw error;
-    }
-    if (stats.isSymbolicLink() || !stats.isDirectory()) {
-      throw new Error(`Case destination contains a symlink or non-directory: ${cursor}`);
-    }
+  let stats;
+  try {
+    stats = await lstat(absolute);
+  } catch (error) {
+    if (error?.code === "ENOENT") return;
+    throw error;
+  }
+  if (stats.isSymbolicLink() || !stats.isDirectory()) {
+    throw new Error(`Case destination contains a symlink or non-directory: ${absolute}`);
   }
 }
 

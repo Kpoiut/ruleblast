@@ -17,6 +17,10 @@ import {
   type ResolvedSource,
   type SnapshotRef,
 } from "../src/model.js";
+import {
+  digestNormalizedPayload,
+  digestProjectionIdentity,
+} from "../src/domain/payload-relation.js";
 import { captureTextPresentationContext } from "../src/render-context.js";
 import { hostShellDialect } from "../src/render-format.js";
 import {
@@ -59,7 +63,17 @@ function projection(
   targetPath: string,
   overrides: Partial<Projection> = {},
 ): Projection {
-  return {
+  const {
+    normalizedPayloadUnits: unitOverride,
+    composition: compositionOverride,
+    status: statusOverride,
+    normalizedPayloadDigest: digestOverride,
+    ...rest
+  } = overrides;
+  const units = unitOverride ?? [["payload"]];
+  const composition = compositionOverride ?? "ORDERED";
+  const status = statusOverride ?? "COMPLETE";
+  const assembled: Projection = {
     profile,
     context: {
       cwd: ".",
@@ -67,15 +81,19 @@ function projection(
       targetPath,
       repositoryOnly: true,
     },
-    status: "COMPLETE",
-    composition: "ORDERED",
     sources: [source(profile.startsWith("openai/") ? "AGENTS.md" : "CLAUDE.md")],
-    normalizedPayloadUnits: [["payload"]],
-    projectionDigest: `${profile}-projection`,
-    normalizedPayloadDigest: "shared-payload",
+    projectionDigest: null,
     evidence: [],
-    ...overrides,
+    ...rest,
+    status,
+    composition,
+    normalizedPayloadUnits: units,
+    normalizedPayloadDigest: digestOverride === null || status === "UNKNOWN"
+      ? null
+      : digestNormalizedPayload(units, composition),
   };
+  if (status === "UNKNOWN") return assembled;
+  return { ...assembled, projectionDigest: digestProjectionIdentity(assembled) };
 }
 
 function currentResult(overrides: {

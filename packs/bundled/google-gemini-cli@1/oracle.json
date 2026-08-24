@@ -1,1 +1,163 @@
-{"schema":"ruleblast.interpreter-oracle.v1","kind":"interpret","packId":"google/gemini-cli@1","probes":[{"snapshot":{"schemaVersion":1,"label":"gemini-control-one-hop-after","entries":[{"path":"GEMINI.md","kind":"file","executable":false,"base64":"QGEubWQK"},{"path":"a.md","kind":"file","executable":false,"base64":"VkFMVUVfQgo="},{"path":"src/file.ts","kind":"file","executable":false,"base64":"dGFyZ2V0Cg=="}]},"projectionDigests":{"GEMINI.md":"9d793b02a7e7b66c0cda4b8a584e6f3759dfef96297902851023f8f5f26c39a2","a.md":"3a8ee1f5d37cecf3f419eda99842d3c5b58ce57bb1fe349373081c0003ae2b47","src/file.ts":"d94526399f234fdea079ce8d74006496ce64deaf10335460daee4542c6beb586"},"sourceDependencyPaths":["GEMINI.md","a.md"]},{"snapshot":{"schemaVersion":1,"label":"gemini-control-one-hop-before","entries":[{"path":"GEMINI.md","kind":"file","executable":false,"base64":"QGEubWQK"},{"path":"a.md","kind":"file","executable":false,"base64":"VkFMVUVfQQo="},{"path":"src/file.ts","kind":"file","executable":false,"base64":"dGFyZ2V0Cg=="}]},"projectionDigests":{"GEMINI.md":"a0a9410661924df07a81e70a5e83be1a3f36762b2737a77d93fd986dea83fcf4","a.md":"199b4264ee733e4c4f16f687600e2384ab697d5c405aed1c9eeea045d9fae0fc","src/file.ts":"3cdf5c54d21abbf8d7486ad41c3f0749e6279d903f3f49c5a52135bac0ba6c4e"},"sourceDependencyPaths":["GEMINI.md","a.md"]},{"snapshot":{"schemaVersion":1,"label":"gemini-probe-two-hop-after","entries":[{"path":"GEMINI.md","kind":"file","executable":false,"base64":"QGEubWQK"},{"path":"a.md","kind":"file","executable":false,"base64":"QGIubWQK"},{"path":"b.md","kind":"file","executable":false,"base64":"VkFMVUVfQgo="},{"path":"src/file.ts","kind":"file","executable":false,"base64":"dGFyZ2V0Cg=="}]},"projectionDigests":{"GEMINI.md":"5510cfc222d8782baf5aedead466e1fe7af2599d8b076c886c0afdfd066d836d","a.md":"10138ab081edc85491275ec612e852200b79d425bed3713ae9d9f5c1648930c8","b.md":"f082c967d67c0551ec883e9a06ab4bc405a78dd4da63803faca7e713e4aa7b94","src/file.ts":"43dc9be1f07aac5d72d66237307f9f9143050f18f4d7b260252a9b07adc39e30"},"sourceDependencyPaths":["GEMINI.md","a.md","b.md"]},{"snapshot":{"schemaVersion":1,"label":"gemini-probe-two-hop-before","entries":[{"path":"GEMINI.md","kind":"file","executable":false,"base64":"QGEubWQK"},{"path":"a.md","kind":"file","executable":false,"base64":"QGIubWQK"},{"path":"b.md","kind":"file","executable":false,"base64":"VkFMVUVfQQo="},{"path":"src/file.ts","kind":"file","executable":false,"base64":"dGFyZ2V0Cg=="}]},"projectionDigests":{"GEMINI.md":"a6b8771707112db8f030c4b994f9901944e204ff72f57654afaddac839f09d28","a.md":"4bc22fe0abb0e8ddebc47f3782f4a8b7b7a78014bc00617a75d3299d15a6774c","b.md":"cd35c88678abcbf1d8c40638ba569e5c917db660817fcc1db238717c804d1c7d","src/file.ts":"c58472617e6e9ea4c063822cf477b34da4b73e9536a540afb651e2b52472197c"},"sourceDependencyPaths":["GEMINI.md","a.md","b.md"]}]}
+{
+  "schema": "ruleblast.interpreter-oracle.v1",
+  "kind": "interpret",
+  "packId": "google/gemini-cli@1",
+  "probes": [
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "gemini-control-one-hop-after",
+        "entries": [
+          {
+            "path": "GEMINI.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "QGEubWQK"
+          },
+          {
+            "path": "a.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "VkFMVUVfQgo="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "dGFyZ2V0Cg=="
+          }
+        ]
+      },
+      "sourceDependencyPaths": [
+        "GEMINI.md",
+        "a.md"
+      ],
+      "projectionDigests": {
+        "GEMINI.md": "14807df839df6fc3672f13507deaf237e9f69b7d3009156b0d7a71b4786728ce",
+        "a.md": "55635bfb927f4c826eeb31d6ae5c6527d46a6cd107e6ef1b69bf9034c0dd7e85",
+        "src/file.ts": "f375c9b2d44ceea7de71d49a3ebcadddc577504a720488f49de18dd059ff54fa"
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "gemini-control-one-hop-before",
+        "entries": [
+          {
+            "path": "GEMINI.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "QGEubWQK"
+          },
+          {
+            "path": "a.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "VkFMVUVfQQo="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "dGFyZ2V0Cg=="
+          }
+        ]
+      },
+      "sourceDependencyPaths": [
+        "GEMINI.md",
+        "a.md"
+      ],
+      "projectionDigests": {
+        "GEMINI.md": "fc085295d5ffc8f1bf8d9a1aca204e4cf6e6a8cecf6f7ec215bacc10dda72ada",
+        "a.md": "e0ae1e9b42a94a79a2f6480adb05c41a074ba9adcb13c7174290758db568b709",
+        "src/file.ts": "06e3cabcf328568c9a9268fab2b53c84f5ab943dcaeb41666203b572bcfeceed"
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "gemini-probe-two-hop-after",
+        "entries": [
+          {
+            "path": "GEMINI.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "QGEubWQK"
+          },
+          {
+            "path": "a.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "QGIubWQK"
+          },
+          {
+            "path": "b.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "VkFMVUVfQgo="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "dGFyZ2V0Cg=="
+          }
+        ]
+      },
+      "sourceDependencyPaths": [
+        "GEMINI.md",
+        "a.md",
+        "b.md"
+      ],
+      "projectionDigests": {
+        "GEMINI.md": "c1265593fc147a91340bac89e77855733fa8a59aa6530a3d0b89127000b832fe",
+        "a.md": "1cd75e5b982481faca8698c92a61e9b29f654deb4c96bd190bf5dfd103e5b883",
+        "b.md": "8db071ef3c9343c819c864cb7bdbfcf7a107bf52a8db4ac073082c06481b1200",
+        "src/file.ts": "e43c9f2020b27b35dda241be2274a33c29346305c6825924e9714f392b0d975f"
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "gemini-probe-two-hop-before",
+        "entries": [
+          {
+            "path": "GEMINI.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "QGEubWQK"
+          },
+          {
+            "path": "a.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "QGIubWQK"
+          },
+          {
+            "path": "b.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "VkFMVUVfQQo="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "dGFyZ2V0Cg=="
+          }
+        ]
+      },
+      "sourceDependencyPaths": [
+        "GEMINI.md",
+        "a.md",
+        "b.md"
+      ],
+      "projectionDigests": {
+        "GEMINI.md": "6391a569d9f5c47a69b3dcbe94a453b0d5d0d3613a5bd682e8336d506ec960a1",
+        "a.md": "1763a5bf07a62f3d866d1295bc720f0bd9d094a918d4906ec90716291860d8ea",
+        "b.md": "5a4c032eb1e23df7461c260f8a1580e654487f81fad9172e268a4eef56fc9f7d",
+        "src/file.ts": "a32a6810d01295679bacec14c16ec348bb7218cb1c486bf3e2f7dff19c4e8311"
+      }
+    }
+  ]
+}

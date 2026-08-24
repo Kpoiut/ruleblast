@@ -1,16 +1,268 @@
 {
   "schema": "ruleblast.runtime-calibration.v1",
   "packId": "anthropic/claude-code-cli@1",
-  "observation": "no-introspection",
+  "observation": "vendor-dump",
   "evidence": [
     {
-      "claimId": "claude.calibration.1",
+      "claimId": "anthropic.calibration.dump.1",
       "sourceType": "vendor-doc",
       "sourceUrl": "https://code.claude.com/docs/en/memory",
       "retrievedAt": "2026-08-24",
-      "sourceRevision": "2026-08-24",
-      "claim": "Claude Code documents project memory, rules, and imports. It does not document a deterministic offline dump of the resolved repository-instruction set. Calibration is no-introspection. Claude Code is not a live analysis authority."
+      "sourceRevision": "code.claude.com/docs/en/memory@2026-08-24",
+      "claim": "Pinned Claude Code memory docs executed offline: CLAUDE.md / CLAUDE.local.md / .claude/CLAUDE.md concatenation, HTML-comment strip, path-scoped .claude/rules. Not a live Claude CLI. Not interpreter self-match."
     }
   ],
-  "probes": []
+  "probes": [
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "claude-ancestors",
+        "entries": [
+          {
+            "path": "CLAUDE.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "cm9vdAo="
+          },
+          {
+            "path": "src/CLAUDE.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "bmVzdGVkCg=="
+          },
+          {
+            "path": "src/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "targets": {
+        "CLAUDE.md": {
+          "loadedPaths": [
+            "CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "root\n"
+          ],
+          "vendorAssembly": "root\n",
+          "truncated": false
+        },
+        "src/CLAUDE.md": {
+          "loadedPaths": [
+            "CLAUDE.md",
+            "src/CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "root\n",
+            "nested\n"
+          ],
+          "vendorAssembly": "root\n\n\nnested\n",
+          "truncated": false
+        },
+        "src/app.ts": {
+          "loadedPaths": [
+            "CLAUDE.md",
+            "src/CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "root\n",
+            "nested\n"
+          ],
+          "vendorAssembly": "root\n\n\nnested\n",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "claude-comments",
+        "entries": [
+          {
+            "path": "CLAUDE.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "a2VlcAo8IS0tIHNlY3JldCAtLT4KbW9yZQo="
+          },
+          {
+            "path": "src/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "targets": {
+        "CLAUDE.md": {
+          "loadedPaths": [
+            "CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "keep\n\nmore\n"
+          ],
+          "vendorAssembly": "keep\n\nmore\n",
+          "truncated": false
+        },
+        "src/app.ts": {
+          "loadedPaths": [
+            "CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "keep\n\nmore\n"
+          ],
+          "vendorAssembly": "keep\n\nmore\n",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "claude-local",
+        "entries": [
+          {
+            "path": "CLAUDE.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "cm9vdAo="
+          },
+          {
+            "path": "CLAUDE.local.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "bG9jYWwK"
+          },
+          {
+            "path": "src/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "targets": {
+        "CLAUDE.local.md": {
+          "loadedPaths": [
+            "CLAUDE.md",
+            "CLAUDE.local.md"
+          ],
+          "loadedTexts": [
+            "root\n",
+            "local\n"
+          ],
+          "vendorAssembly": "root\n\n\nlocal\n",
+          "truncated": false
+        },
+        "CLAUDE.md": {
+          "loadedPaths": [
+            "CLAUDE.md",
+            "CLAUDE.local.md"
+          ],
+          "loadedTexts": [
+            "root\n",
+            "local\n"
+          ],
+          "vendorAssembly": "root\n\n\nlocal\n",
+          "truncated": false
+        },
+        "src/app.ts": {
+          "loadedPaths": [
+            "CLAUDE.md",
+            "CLAUDE.local.md"
+          ],
+          "loadedTexts": [
+            "root\n",
+            "local\n"
+          ],
+          "vendorAssembly": "root\n\n\nlocal\n",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "claude-rules",
+        "entries": [
+          {
+            "path": "CLAUDE.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "cm9vdAo="
+          },
+          {
+            "path": ".claude/rules/ts.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "LS0tCnBhdGhzOgogIC0gIioqLyoudHMiCi0tLQpydWxlLWJvZHkK"
+          },
+          {
+            "path": "src/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "ZG9jCg=="
+          }
+        ]
+      },
+      "targets": {
+        ".claude/rules/ts.md": {
+          "loadedPaths": [
+            "CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "root\n"
+          ],
+          "vendorAssembly": "root\n",
+          "truncated": false
+        },
+        "CLAUDE.md": {
+          "loadedPaths": [
+            "CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "root\n"
+          ],
+          "vendorAssembly": "root\n",
+          "truncated": false
+        },
+        "README.md": {
+          "loadedPaths": [
+            "CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "root\n"
+          ],
+          "vendorAssembly": "root\n",
+          "truncated": false
+        },
+        "src/app.ts": {
+          "loadedPaths": [
+            ".claude/rules/ts.md",
+            "CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "rule-body\n",
+            "root\n"
+          ],
+          "vendorAssembly": "rule-body\n\n\nroot\n",
+          "truncated": false
+        }
+      }
+    }
+  ],
+  "runtime": {
+    "surfaceId": "anthropic/claude-code-cli@1",
+    "revision": "code.claude.com/docs/en/memory@2026-08-24",
+    "observationMethod": "sealed-offline-dump",
+    "artifactDigest": "e8a1cfe4fe2010a440da1a8d8a3c030ce91aa95f8257dbcf74da8ad62d202e97",
+    "probeSchema": "ruleblast.runtime-observation.v1"
+  }
 }

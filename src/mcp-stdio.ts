@@ -40,8 +40,10 @@ import { packageVersion } from "./package-identity.js";
 import {
   assertMcpPresentation,
   MCP_TOOLS,
+  mcpPathsOnlyText,
   mcpPresentationFlags,
   mcpReceiptText,
+  mcpWitnessText,
 } from "./mcp-present.js";
 import { renderDetail } from "./render-detail.js";
 import {
@@ -100,6 +102,14 @@ function wantsCompare(params: Record<string, unknown>): boolean {
   return mcpPresentationFlags(params).compare;
 }
 
+function wantsPathsOnly(params: Record<string, unknown>): boolean {
+  return mcpPresentationFlags(params).pathsOnly;
+}
+
+function wantsWitness(params: Record<string, unknown>): boolean {
+  return mcpPresentationFlags(params).witness;
+}
+
 function realitiesOf(params: Record<string, unknown>): readonly string[] {
   const value = params.realities;
   if (value === undefined) return [];
@@ -143,6 +153,8 @@ async function runScan(host: McpHost, params: Record<string, unknown>): Promise<
   const root = await findRepositoryRoot(start);
   const snapshot = await openTrackedWorktree(root);
   const result = await scanRepository({ snapshot, realities: realitiesOf(params) });
+  if (wantsPathsOnly(params)) return mcpPathsOnlyText(result);
+  if (wantsWitness(params)) return mcpWitnessText(result);
   if (wantsIndex(params)) return renderResultIndex(result);
   if (wantsReceipt(params)) return mcpReceiptText(result, host);
   return canonicalJson(await withDetail({
@@ -188,6 +200,8 @@ async function runDiff(host: McpHost, params: Record<string, unknown>): Promise<
       adjunctRenderContext(pair.result),
     );
   }
+  if (wantsPathsOnly(params)) return mcpPathsOnlyText(pair.result);
+  if (wantsWitness(params)) return mcpWitnessText(pair.result);
   if (wantsIndex(params)) {
     return renderResultIndex(pair.result, {
       overlay: pair.overlay,
@@ -216,6 +230,7 @@ async function runExplain(host: McpHost, params: Record<string, unknown>): Promi
     const snapshot = await openTrackedWorktree(root);
     const explained = await explainRepository({ snapshot, path, realities });
     if (wantsCompare(params)) return formatProjectionCompare(comparePathStacks(explained.explain.path));
+    if (wantsWitness(params)) return mcpWitnessText(explained.explain);
     if (wantsReceipt(params)) return mcpReceiptText(explained.explain, host);
     if (wantsDetail(params)) {
       return renderDetail(explained.explain, hostTextContext(mcpHostProcess(host), {
@@ -229,6 +244,7 @@ async function runExplain(host: McpHost, params: Record<string, unknown>): Promi
   const after = to === "WORKTREE" ? await openTrackedWorktree(root) : await openGitSnapshot(root, to);
   const explained = await explainRepository({ before, after, path, realities });
   if (wantsCompare(params)) return formatProjectionCompare(comparePathStacks(explained.explain.path));
+  if (wantsWitness(params)) return mcpWitnessText(explained.explain);
   if (wantsReceipt(params)) return mcpReceiptText(explained.explain, host);
   if (wantsDetail(params)) {
     return renderDetail(explained.explain, hostTextContext(mcpHostProcess(host), {
@@ -246,6 +262,8 @@ async function runCase(host: McpHost, params: Record<string, unknown>): Promise<
   const explainPath = stringField(params, "explainPath");
   if (explainPath === undefined) {
     const presentation = packagedCasePresentation();
+    if (wantsPathsOnly(params)) return mcpPathsOnlyText(result);
+    if (wantsWitness(params)) return mcpWitnessText(result);
     if (wantsIndex(params)) {
       return renderResultIndex(result, {
         from: presentation.beforeLabel,
@@ -264,6 +282,7 @@ async function runCase(host: McpHost, params: Record<string, unknown>): Promise<
   }
   const { explain } = explainExistingResult(result, explainPath);
   const presentation = packagedCasePresentation();
+  if (wantsWitness(params)) return mcpWitnessText(explain);
   if (wantsReceipt(params)) return mcpReceiptText(explain, host);
   if (wantsDetail(params)) {
     return renderDetail(explain, hostTextContext(mcpHostProcess(host), {

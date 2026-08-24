@@ -33,6 +33,7 @@ import {
   openTrackedWorktree,
   probeGitStorageFormat,
 } from "../src/git.js";
+import { digestNormalizedPayload } from "../src/domain/payload-relation.js";
 import { claudeProfile } from "../src/profiles/claude.js";
 import { codexProfile } from "../src/profiles/codex.js";
 
@@ -53,7 +54,9 @@ function currentResult(
     sources: [],
     normalizedPayloadUnits: [],
     projectionDigest: status === "COMPLETE" ? "projection" : null,
-    normalizedPayloadDigest: status === "COMPLETE" ? "payload" : null,
+    normalizedPayloadDigest: status === "COMPLETE"
+      ? digestNormalizedPayload([], "ORDERED")
+      : null,
     evidence: [],
   };
   return {

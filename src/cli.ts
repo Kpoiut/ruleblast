@@ -2,7 +2,7 @@
 
 import { realpathSync } from "node:fs";
 import { resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { CliUsageError, parseArgs } from "./args.js";
 import { packageVersion } from "./package-identity.js";
 import {
@@ -216,15 +216,23 @@ function processIo(): CliIo {
   };
 }
 
-export function isDirectEntry(moduleUrl: string, entryPath: string | undefined): boolean {
-  if (entryPath === undefined) return false;
-  let path = resolve(entryPath);
+function canonicalFileUrl(path: string): string {
   try {
-    path = realpathSync(path);
+    return pathToFileURL(realpathSync(path)).href;
   } catch (error: unknown) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    return pathToFileURL(resolve(path)).href;
   }
-  return moduleUrl === pathToFileURL(path).href;
+}
+
+export function isDirectEntry(moduleUrl: string, entryPath: string | undefined): boolean {
+  if (entryPath === undefined) return false;
+  const entryUrl = canonicalFileUrl(resolve(entryPath));
+  try {
+    return canonicalFileUrl(fileURLToPath(moduleUrl)) === entryUrl;
+  } catch {
+    return moduleUrl === entryUrl;
+  }
 }
 
 if (isDirectEntry(import.meta.url, process.argv[1])) {

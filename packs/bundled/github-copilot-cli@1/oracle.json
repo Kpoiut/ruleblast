@@ -1,1 +1,111 @@
-{"schema":"ruleblast.interpreter-oracle.v1","kind":"interpret","packId":"github/copilot-cli@1","probes":[{"snapshot":{"schemaVersion":1,"label":"copilot agents and claude files","entries":[{"path":"AGENTS.md","kind":"file","executable":false,"base64":"Y29kZXgtc2hhcGVk"},{"path":"CLAUDE.md","kind":"file","executable":false,"base64":"Y2xhdWRlLXNoYXBlZA=="},{"path":"src/file.ts","kind":"file","executable":false,"base64":"Y29kZQ=="}]},"projectionDigests":{"AGENTS.md":"e9c885f31e0b265ce2c861a5bce866a19b8807e1520453f59868291d4980af9f","CLAUDE.md":"57b84ba1f3100e6e3e3e185cc0357193860eb585aba077336c92c1877c46f993","src/file.ts":"03db0807934043a86c9966f10e4ac90a10627f960474fff9fe9dcd5bd699324a"},"sourceDependencyPaths":["AGENTS.md","CLAUDE.md"]},{"snapshot":{"schemaVersion":1,"label":"copilot modular file without applyTo","entries":[{"path":".github/instructions/loose.instructions.md","kind":"file","executable":false,"base64":"bm8gZnJvbnRtYXR0ZXI="},{"path":"src/file.ts","kind":"file","executable":false,"base64":"Y29kZQ=="}]},"projectionDigests":{".github/instructions/loose.instructions.md":"7b18cd701a2250c2c69a3c2cf7bed9937ced64aeac8b0b581200b246a29b0303","src/file.ts":"069515614d1546cec256da61337c8a0bee5229bae0f79c0cd2d3177237f0cd50"},"sourceDependencyPaths":[".github/instructions/loose.instructions.md"]},{"snapshot":{"schemaVersion":1,"label":"copilot repo-wide instructions","entries":[{"path":".github/copilot-instructions.md","kind":"file","executable":false,"base64":"cmVwbyB3aWRl"},{"path":".github/instructions/front.instructions.md","kind":"file","executable":false,"base64":"LS0tCmFwcGx5VG86IHdlYi8qKgotLS0KZnJvbnQgb25seQ=="},{"path":"web/app.ts","kind":"file","executable":false,"base64":"Y29kZQ=="},{"path":"src/core.ts","kind":"file","executable":false,"base64":"Y29kZQ=="}]},"projectionDigests":{".github/copilot-instructions.md":"60c8bd3594491cd8791981df5a47e5aa7b1b8f558215a42a855ff5ab8383828a",".github/instructions/front.instructions.md":"8d644809468cc0d8ad421782be250dd5b3b0f1f628d6c8d72ac4051fd87be3af","src/core.ts":"e9b42f5d840b5c596ee57f62098e5eb0dbc7af6f8f2832c49d23291ce7ad0e2d","web/app.ts":"d3ea0d9db7fee47428216b1ed4d4aaf55c1317979937244bbc9c33ad4e9b3499"},"sourceDependencyPaths":[".github/copilot-instructions.md",".github/instructions/front.instructions.md"]}]}
+{
+  "schema": "ruleblast.interpreter-oracle.v1",
+  "kind": "interpret",
+  "packId": "github/copilot-cli@1",
+  "probes": [
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "copilot agents and claude files",
+        "entries": [
+          {
+            "path": "AGENTS.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZXgtc2hhcGVk"
+          },
+          {
+            "path": "CLAUDE.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y2xhdWRlLXNoYXBlZA=="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQ=="
+          }
+        ]
+      },
+      "sourceDependencyPaths": [
+        "AGENTS.md",
+        "CLAUDE.md"
+      ],
+      "projectionDigests": {
+        "AGENTS.md": "2fefd1e56d1dd4bd78f0e682b87fe17bdf1eed98747e9a48b15841b0b03e00da",
+        "CLAUDE.md": "7fdf086baaf9ac813be92f42ea696ad0e24a44f5c4c75380a63314dca6fd2b7f",
+        "src/file.ts": "849b6055082bf3a43728227071cda9eb8c76c727ee8e272d2a7f72f73590a177"
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "copilot modular file without applyTo",
+        "entries": [
+          {
+            "path": ".github/instructions/loose.instructions.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "bm8gZnJvbnRtYXR0ZXI="
+          },
+          {
+            "path": "src/file.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQ=="
+          }
+        ]
+      },
+      "sourceDependencyPaths": [
+        ".github/instructions/loose.instructions.md"
+      ],
+      "projectionDigests": {
+        ".github/instructions/loose.instructions.md": "9f1f8af919517e4300ee941c15bd18bd24f51007da4dc63988939162f825c1a1",
+        "src/file.ts": "5a98909119b4a05be374d97df191785bf28b37dcba794718ca187c58ae21c32f"
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "copilot repo-wide instructions",
+        "entries": [
+          {
+            "path": ".github/copilot-instructions.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "cmVwbyB3aWRl"
+          },
+          {
+            "path": ".github/instructions/front.instructions.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "LS0tCmFwcGx5VG86IHdlYi8qKgotLS0KZnJvbnQgb25seQ=="
+          },
+          {
+            "path": "web/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQ=="
+          },
+          {
+            "path": "src/core.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQ=="
+          }
+        ]
+      },
+      "sourceDependencyPaths": [
+        ".github/copilot-instructions.md",
+        ".github/instructions/front.instructions.md"
+      ],
+      "projectionDigests": {
+        ".github/copilot-instructions.md": "bc93527fd644acbbdff3a9ce9254227b181b6b293991e27a0864349c6056f612",
+        ".github/instructions/front.instructions.md": "d44a3919db9bc06f31d1dfd37da0e6917f087ce31b518ee42258c944131b62df",
+        "src/core.ts": "a7302df33b18e84e02b5b90dc771dc3afc25f46dd0ce8a0f9ec1a34f5a21ddb7",
+        "web/app.ts": "12181207ea5ddb3366982d08e9bc3bd170ef17593347b4b6e1caaad140383b4f"
+      }
+    }
+  ]
+}

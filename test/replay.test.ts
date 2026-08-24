@@ -28,4 +28,21 @@ describe("replay metrics", () => {
     expect(replayed.digest).toBe(replayDigest(metrics));
     expect(replayed.metrics).toEqual(metrics);
   });
+
+  it("folds replay metrics from path rows, not a lying counts stamp", async () => {
+    const result = await openPackagedCase();
+    const forged = {
+      ...result,
+      counts: {
+        ...result.counts,
+        changedStackPathCount: 0,
+        currentSplitPathCount: 99,
+        newlySplitPathCount: 7,
+      },
+    };
+    const metrics = replayMetricsFromResult(forged);
+    expect(metrics.changedStackPathCount).toBe(106);
+    expect(metrics.currentSplitPathCount).toBe(0);
+    expect(metrics.newlySplitPathCount).toBe(0);
+  });
 });
