@@ -40,6 +40,7 @@ import { packageVersion } from "./package-identity.js";
 import {
   assertMcpPresentation,
   MCP_TOOLS,
+  McpInvalidParamsError,
   mcpPathsOnlyText,
   mcpPresentationFlags,
   mcpReceiptText,
@@ -220,7 +221,7 @@ async function runDiff(host: McpHost, params: Record<string, unknown>): Promise<
 async function runExplain(host: McpHost, params: Record<string, unknown>): Promise<string> {
   assertMcpPresentation(mcpPresentationFlags(params), "explain");
   const path = stringField(params, "path");
-  if (path === undefined) throw new TypeError("explain requires path");
+  if (path === undefined) throw new McpInvalidParamsError("explain requires path");
   const start = stringField(params, "startPath") ?? host.cwd;
   const root = await findRepositoryRoot(start);
   const from = stringField(params, "from");
@@ -352,6 +353,7 @@ export async function dispatchMcpRequest(
     return fail(id, -32601, `Method not found: ${request.method}`);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "MCP tool failed";
+    if (error instanceof McpInvalidParamsError) return fail(id, -32602, message);
     if (request.method === "tools/call") return ok(id, toolResult(message, true));
     return fail(id, -32000, message);
   }

@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Pair payload comparison. Units are the law: ORDERED digest
+ * mismatch only short-circuits DIFFERENT after the units seal matches. SAME
+ * compares units. Incomplete/RUNTIME_DECIDED is INDETERMINATE. Pair counts
+ * fold from one event walk.
+ */
 import { compareCodePoints } from "./repository-path.js";
 import type {
   Completeness,
@@ -15,9 +21,11 @@ export {
   assertUsableProjection,
   digestNormalizedPayload,
   digestProjectionIdentity,
+  markPayloadSealed,
   movingProjectionDigest,
 } from "./projection-seal.js";
 
+/** Folded SAME / DIFFERENT / INDETERMINATE for every pair on one path. */
 export interface AggregatePayloadRelation {
   readonly relation: PayloadRelation;
   readonly hasIndeterminateCoverage: boolean;
@@ -57,6 +65,9 @@ function equalMultiset(
     [...leftCounts].every(([key, count]) => rightCounts.get(key) === count);
 }
 
+/**
+ * Seals fail closed. Mixed ORDERED/UNORDERED with equal units is INDETERMINATE.
+ */
 export function comparePayloadRelation(
   left: Projection,
   right: Projection,
@@ -100,6 +111,7 @@ export interface RuntimePairRelation {
   readonly relation: PayloadRelation;
 }
 
+/** Path-event. SAME with no before is omitted. NEWPAIR=SAME→DIFFERENT. */
 export interface RuntimePairEvent {
   readonly left: string;
   readonly right: string;
@@ -123,6 +135,7 @@ export interface PairDeltaRow {
   readonly after: readonly Projection[];
 }
 
+/** Every unordered pair among the projections, ids sorted by code point. */
 export function pairRelations(
   projections: readonly Projection[],
 ): readonly RuntimePairRelation[] {
@@ -170,6 +183,7 @@ function pushPairEvent(
   }));
 }
 
+/** Current-mode events. `before` is always null. */
 export function currentPairEvents(
   rows: readonly PairPathRow[],
 ): readonly RuntimePairEvent[] {
@@ -182,6 +196,7 @@ export function currentPairEvents(
   return Object.freeze(events);
 }
 
+/** Diff-mode events. Missing before-pair is treated as no prior relation. */
 export function diffPairEvents(
   rows: readonly PairDeltaRow[],
 ): readonly RuntimePairEvent[] {
@@ -202,6 +217,7 @@ export function diffPairEvents(
   return Object.freeze(events);
 }
 
+/** Fold from events. Incomplete status is INDETERMINATE even with no IND event. */
 export function pathPayloadRelation(
   projections: readonly Projection[],
   events: readonly RuntimePairEvent[],
@@ -220,6 +236,7 @@ export function pathPayloadRelation(
   };
 }
 
+/** Same fold as {@link pathPayloadRelation}, comparing pairs directly. */
 export function aggregatePayloadRelation(
   projections: readonly Projection[],
 ): AggregatePayloadRelation {
@@ -250,6 +267,7 @@ export function aggregatePayloadRelation(
   };
 }
 
+/** Folded PAIR / NEWPAIR / CONVPAIR / INDPAIR for one profile pair. */
 export interface RuntimePairSplit {
   readonly left: string;
   readonly right: string;
@@ -298,6 +316,7 @@ function freezePairs(
   }));
 }
 
+/** PAIR/NEWPAIR/CONVPAIR/INDPAIR counts per profile pair. */
 export function splitsFromEvents(
   events: readonly RuntimePairEvent[],
   profiles: readonly string[],
@@ -315,6 +334,7 @@ export function splitsFromEvents(
   return freezePairs(counts);
 }
 
+/** One event walk plus the split fold. Use this instead of a second pair pass. */
 export function pairTopologyFor(
   result:
     | { readonly mode: "current"; readonly paths: readonly PairPathRow[] }
@@ -355,6 +375,7 @@ export function runtimePairDeltas(
   return pairTopologyFor({ mode: "diff", paths: rows }).splits;
 }
 
+/** true = DIFFERENT, false = SAME, null = INDETERMINATE. */
 export function splitState(relation: PayloadRelation): boolean | null {
   return relation === "DIFFERENT"
     ? true
@@ -363,6 +384,7 @@ export function splitState(relation: PayloadRelation): boolean | null {
       : null;
 }
 
+/** UNKNOWN beats PARTIAL beats COMPLETE. */
 export function worstCompleteness(
   before: Completeness,
   after: Completeness,

@@ -7,18 +7,18 @@
   "discover": {
     "origins": [
       {
-        "kind": "fixed",
-        "paths": [".github/copilot-instructions.md"],
+        "kind": "glob",
+        "pattern": "**/.github/copilot-instructions.md",
         "scopeAnchor": ".github"
       },
       {
-        "kind": "fixed",
-        "paths": [".claude/CLAUDE.md"],
+        "kind": "glob",
+        "pattern": "**/.claude/CLAUDE.md",
         "scopeAnchor": ".claude"
       },
       {
         "kind": "glob",
-        "pattern": ".github/instructions/**/*.instructions.md",
+        "pattern": "**/.github/instructions/**/*.instructions.md",
         "scopeAnchor": ".github",
         "apply": {
           "kind": "frontmatter-glob",
@@ -34,7 +34,7 @@
         "names": ["AGENTS.md", "CLAUDE.md", "GEMINI.md"]
       }
     ],
-    "claimIds": ["copilot.repo.1", "copilot.apply.1", "copilot.agent.1"]
+    "claimIds": ["copilot.repo.1", "copilot.nested.1", "copilot.apply.1", "copilot.agent.1"]
   },
   "select": {
     "mode": "all",

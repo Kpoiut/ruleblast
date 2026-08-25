@@ -915,6 +915,212 @@ describe("impact analysis", () => {
     expect(String(failure)).not.toContain("Alice");
   });
 
+  it("freezes interned captured arrays so a later path cannot be rewritten through aliasing", async () => {
+    const shared = scriptedProjection(
+      OPENAI_CODEX_CLI_PROFILE_ID,
+      "a.ts",
+      "payload",
+      "stable",
+    );
+    const prepared: PreparedProfile = {
+      id: OPENAI_CODEX_CLI_PROFILE_ID,
+      sourceDependencyPaths: [],
+      project(targetPath: string): Projection {
+        const next = { ...shared, context: { ...shared.context, targetPath } };
+        return { ...next, projectionDigest: digestProjectionIdentity(next) };
+      },
+    };
+    const [first] = projectPreparedProfiles([prepared], "a.ts");
+    const [second] = projectPreparedProfiles([prepared], "b.ts");
+    expect(first?.sources).toBe(second?.sources);
+    expect(() => {
+      first!.sources.push(first!.sources[0]!);
+    }).toThrow(TypeError);
+    expect(() => {
+      first!.normalizedPayloadUnits[0]![0] = "mutated";
+    }).toThrow(TypeError);
+    expect(second?.normalizedPayloadUnits[0]?.[0]).not.toBe("mutated");
+  });
+
+  it("does not intern identity across reused sources with a different status", () => {
+    const sources = scriptedProjection(
+      OPENAI_CODEX_CLI_PROFILE_ID,
+      "a.ts",
+      "payload",
+      "stable",
+    ).sources;
+    const complete = scriptedProjection(
+      OPENAI_CODEX_CLI_PROFILE_ID,
+      "a.ts",
+      "payload",
+      "stable",
+    );
+    complete.sources = sources;
+    const unknown = {
+      ...complete,
+      status: "UNKNOWN" as const,
+      projectionDigest: null,
+      context: { ...complete.context, targetPath: "b.ts" },
+    };
+    unknown.sources = sources;
+    const prepared: PreparedProfile = {
+      id: OPENAI_CODEX_CLI_PROFILE_ID,
+      sourceDependencyPaths: [],
+      project(targetPath: string): Projection {
+        return targetPath === "a.ts" ? complete : unknown;
+      },
+    };
+    const [first] = projectPreparedProfiles([prepared], "a.ts");
+    const [second] = projectPreparedProfiles([prepared], "b.ts");
+    expect(first?.status).toBe("COMPLETE");
+    expect(second?.status).toBe("UNKNOWN");
+  });
+
+  it("does not intern identity across reused sources with a different cwd", () => {
+    const shared = scriptedProjection(
+      OPENAI_CODEX_CLI_PROFILE_ID,
+      "a.ts",
+      "payload",
+      "stable",
+    );
+    const prepared: PreparedProfile = {
+      id: OPENAI_CODEX_CLI_PROFILE_ID,
+      sourceDependencyPaths: [],
+      project(targetPath: string): Projection {
+        const next = {
+          ...shared,
+          context: {
+            ...shared.context,
+            cwd: targetPath === "a.ts" ? "." : "src",
+            targetPath,
+          },
+        };
+        return { ...next, projectionDigest: digestProjectionIdentity(next) };
+      },
+    };
+    const [first] = projectPreparedProfiles([prepared], "a.ts");
+    const [second] = projectPreparedProfiles([prepared], "b.ts");
+    expect(first?.context.cwd).toBe(".");
+    expect(second?.context.cwd).toBe("src");
+    expect(second?.projectionDigest).toBe(digestProjectionIdentity(second!));
+  });
+
+  it("does not intern identity across reused sources with a different trigger", () => {
+    const shared = scriptedProjection(
+      OPENAI_CODEX_CLI_PROFILE_ID,
+      "a.ts",
+      "payload",
+      "stable",
+    );
+    const prepared: PreparedProfile = {
+      id: OPENAI_CODEX_CLI_PROFILE_ID,
+      sourceDependencyPaths: [],
+      project(targetPath: string): Projection {
+        const next = {
+          ...shared,
+          context: {
+            ...shared.context,
+            trigger: targetPath === "a.ts" ? "READ_TARGET" as const : "STARTUP" as const,
+            targetPath,
+          },
+        };
+        return { ...next, projectionDigest: digestProjectionIdentity(next) };
+      },
+    };
+    const [first] = projectPreparedProfiles([prepared], "a.ts");
+    const [second] = projectPreparedProfiles([prepared], "b.ts");
+    expect(first?.context.trigger).toBe("READ_TARGET");
+    expect(second?.context.trigger).toBe("STARTUP");
+    expect(second?.projectionDigest).toBe(digestProjectionIdentity(second!));
+  });
+
+  it("rejects extra source fields after interned capture", () => {
+    const sources: ResolvedSource[] = [{
+      path: "rules.md",
+      disposition: "SELECTED",
+      digest: sha256("rules"),
+      bytesUsed: 5,
+      truncated: false,
+    }];
+    let poison = false;
+    const prepared: PreparedProfile = {
+      id: OPENAI_CODEX_CLI_PROFILE_ID,
+      sourceDependencyPaths: [],
+      project(targetPath: string): Projection {
+        if (poison) Object.assign(sources[0]!, { checkout: "C:/secret" });
+        const next = scriptedProjection(
+          OPENAI_CODEX_CLI_PROFILE_ID,
+          targetPath,
+          "payload",
+          "stable",
+        );
+        next.sources = sources;
+        return { ...next, projectionDigest: digestProjectionIdentity(next) };
+      },
+    };
+    projectPreparedProfiles([prepared], "a.ts");
+    poison = true;
+    expect(() => projectPreparedProfiles([prepared], "b.ts")).toThrow(/missing or unknown fields/);
+  });
+
+  it("recaptures interned sources when the producer mutates disposition", () => {
+    const sources: ResolvedSource[] = [{
+      path: "rules.md",
+      disposition: "SELECTED",
+      digest: sha256("rules"),
+      bytesUsed: 5,
+      truncated: false,
+    }];
+    let flipped = false;
+    const prepared: PreparedProfile = {
+      id: OPENAI_CODEX_CLI_PROFILE_ID,
+      sourceDependencyPaths: [],
+      project(targetPath: string): Projection {
+        if (flipped) sources[0]!.disposition = "SHADOWED";
+        const next = scriptedProjection(
+          OPENAI_CODEX_CLI_PROFILE_ID,
+          targetPath,
+          "payload",
+          "stable",
+        );
+        next.sources = sources;
+        return { ...next, projectionDigest: digestProjectionIdentity(next) };
+      },
+    };
+    const [first] = projectPreparedProfiles([prepared], "a.ts");
+    flipped = true;
+    const [second] = projectPreparedProfiles([prepared], "b.ts");
+    expect(first?.sources[0]?.disposition).toBe("SELECTED");
+    expect(second?.sources[0]?.disposition).toBe("SHADOWED");
+    expect(second?.projectionDigest).toBe(digestProjectionIdentity(second!));
+  });
+
+  it("rejects a forged units seal when interned units are reused", () => {
+    const shared = scriptedProjection(
+      OPENAI_CODEX_CLI_PROFILE_ID,
+      "a.ts",
+      "payload",
+      "stable",
+    );
+    const prepared: PreparedProfile = {
+      id: OPENAI_CODEX_CLI_PROFILE_ID,
+      sourceDependencyPaths: [],
+      project(targetPath: string): Projection {
+        const next = { ...shared, context: { ...shared.context, targetPath } };
+        const projection = {
+          ...next,
+          projectionDigest: digestProjectionIdentity(next),
+        };
+        if (targetPath === "b.ts") {
+          return { ...projection, normalizedPayloadDigest: "0".repeat(64) };
+        }
+        return projection;
+      },
+    };
+    projectPreparedProfiles([prepared], "a.ts");
+    expect(() => projectPreparedProfiles([prepared], "b.ts")).toThrow(/units seal/i);
+  });
+
   it.each([
     ["context extra", (value: Projection) => Object.assign(value.context, { checkout: "C:/secret" })],
     ["source extra", (value: Projection) => Object.assign(value.sources[0]!, { checkout: "C:/secret" })],

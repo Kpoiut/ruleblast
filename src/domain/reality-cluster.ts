@@ -1,16 +1,25 @@
+/**
+ * @fileoverview Cluster selected realities by payload equality, not brand.
+ *
+ * SAME units join a cluster. Incomplete projections are `unresolved`, not
+ * clustered. This is not a quality score.
+ */
 import type { Projection } from "../model.js";
 import { comparePayloadRelation } from "./payload-relation.js";
 import { compareCodePoints } from "./repository-path.js";
 
+/** Equivalent complete profiles on one path, ids sorted. */
 export interface RealityCluster {
   readonly members: readonly string[];
 }
 
+/** Clusters plus profiles that were not COMPLETE on this path. */
 export interface PathRealityGroups {
   readonly clusters: readonly RealityCluster[];
   readonly unresolved: readonly string[];
 }
 
+/** Paths that share one cluster key. `samplePaths` keeps a single example. */
 export interface RealityGroupTally {
   readonly key: string;
   readonly clusters: readonly RealityCluster[];
@@ -29,6 +38,7 @@ function findRoot(parent: number[], index: number): number {
   return current;
 }
 
+/** Union-find on SAME pairs. Unresolved ids stay out of every cluster. */
 export function clusterEquivalentProjections(
   projections: readonly Projection[],
 ): PathRealityGroups {
@@ -70,6 +80,7 @@ function groupKey(groups: PathRealityGroups): string {
   ].filter((part) => part !== "").join("|");
 }
 
+/** Collapse paths that share the same cluster key; samplePaths keeps one path. */
 export function tallyRealityGroups(
   paths: readonly {
     readonly path: string;

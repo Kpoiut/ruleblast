@@ -1,4 +1,3 @@
-import { Minimatch } from "minimatch";
 import { digestProjectionIdentity } from "../domain/projection-seal.js";
 import { compareCodePoints, pathBasename, pathDirname } from "../domain/repository-path.js";
 import type { Projection, ResolvedSource } from "../model.js";
@@ -8,7 +7,9 @@ import {
   unitizePayloadContributions,
 } from "../profiles/profile.js";
 import {
+  claudeRuleSubtree,
   decideClaudeRule,
+  isUnderSubtree,
   type ClaudeProjectSettings,
   type ParsedClaudeRule,
 } from "./ops-glob.js";
@@ -17,6 +18,7 @@ import {
   type CapturedClaudeFile,
   type PreparedClaudeDocument,
 } from "./ops-markdown.js";
+import { matchGlob } from "./ops-match.js";
 import type { CompiledPack, DiscoverOrigin, FrontmatterApply } from "./schema.js";
 
 const FILE_REFERENCE = /(?:^|\s)@([A-Za-z0-9_./-]+)/u;
@@ -53,7 +55,7 @@ function scopeOf(path: string, origin: DiscoverOrigin): string {
 
 function matchesApplyTo(patterns: readonly string[], targetPath: string): boolean {
   return patterns.some((pattern) =>
-    new Minimatch(pattern, { dot: true, nobrace: false }).match(targetPath)
+    matchGlob(pattern, targetPath, { dot: true, nobrace: false })
   );
 }
 
@@ -282,6 +284,7 @@ export function projectMarkdown(
     }
   }
   for (const row of globRows) {
+    if (!isUnderSubtree(claudeRuleSubtree(row.path), targetPath)) continue;
     const file = files.get(row.path)!;
     const rule = rules.get(row.path);
     if (rule === undefined) continue;

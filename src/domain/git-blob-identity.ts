@@ -1,8 +1,16 @@
+/**
+ * @fileoverview Git blob object-name identity for overlay OTHER membership.
+ *
+ * Overlay does not read blobs on the analysis path. Same object name is not a
+ * change even when mode or kind flipped. Gitlinks are excluded elsewhere.
+ */
 import { createHash } from "node:crypto";
 import type { GitStorageObjectFormat } from "../snapshot.js";
 
+/** Object-name motion. null from {@link blobIdentityKind} means same OID. */
 export type BlobIdentityKind = "ADD" | "DELETE" | "MODIFY";
 
+/** Git object name for `blob <len>\0` plus bytes, sha1 or sha256. */
 export function gitBlobOid(
   bytes: Uint8Array,
   format: GitStorageObjectFormat,

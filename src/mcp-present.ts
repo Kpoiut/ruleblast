@@ -35,15 +35,23 @@ export function mcpPresentationFlags(
   });
 }
 
+export class McpInvalidParamsError extends TypeError {
+  readonly code = -32602 as const;
+  constructor(message: string) {
+    super(message);
+    this.name = "McpInvalidParamsError";
+  }
+}
+
 export function assertMcpPresentation(
   flags: McpPresentationFlags,
   action: "scan" | "diff" | "explain" | "case",
 ): void {
   if (flags.compare && action !== "explain") {
-    throw new TypeError("compare applies only to explain");
+    throw new McpInvalidParamsError("compare applies only to explain");
   }
   if (flags.pathsOnly && action === "explain") {
-    throw new TypeError("pathsOnly cannot be used with explain");
+    throw new McpInvalidParamsError("pathsOnly cannot be used with explain");
   }
   const exclusive = [
     flags.index,
@@ -54,7 +62,9 @@ export function assertMcpPresentation(
     flags.witness,
   ].filter(Boolean).length;
   if (exclusive > 1) {
-    throw new TypeError("detail, index, receipt, compare, pathsOnly, and witness cannot combine");
+    throw new McpInvalidParamsError(
+      "detail, index, receipt, compare, pathsOnly, and witness cannot combine",
+    );
   }
 }
 

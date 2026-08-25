@@ -212,6 +212,17 @@ describe("MCP stdio transport", () => {
     });
   });
 
+  it("fails closed on invalid UTF-8 in a JSON-RPC frame", () => {
+    const frame = Buffer.from('{"jsonrpc":"2.0","id":1,"method":"ping"}\n', "utf8");
+    frame[2] = 0xff;
+    const { messages } = consumeMcpBuffer(frame);
+    expect(messages).toEqual([{
+      jsonrpc: "2.0",
+      id: null,
+      error: { code: -32700, message: "Parse error" },
+    }]);
+  });
+
   it("returns a JSON-RPC parse error instead of throwing on invalid frames", () => {
     const frame = Buffer.from("Content-Length: 12\r\n\r\n{not-json!!!", "utf8");
     expect(() => consumeMcpBuffer(frame)).not.toThrow();
@@ -340,10 +351,11 @@ describe("MCP stdio transport", () => {
       method: "tools/call",
       params: { name: "explain", arguments: { path: "src/cli.ts", pathsOnly: true } },
     }, host);
-    const failed = (refused as { result: { isError?: boolean; content: readonly { text: string }[] } })
-      .result;
-    expect(failed.isError).toBe(true);
-    expect(failed.content[0]?.text).toMatch(/pathsOnly cannot be used with explain/u);
+    expect(refused).toMatchObject({
+      jsonrpc: "2.0",
+      id: 12,
+      error: { code: -32602, message: expect.stringMatching(/pathsOnly cannot be used with explain/u) },
+    });
   });
 
   it("returns compare text for explain and refuses compare on case", async () => {
@@ -366,10 +378,11 @@ describe("MCP stdio transport", () => {
       method: "tools/call",
       params: { name: "case", arguments: { compare: true } },
     }, host);
-    const failed = (refused as { result: { isError?: boolean; content: readonly { text: string }[] } })
-      .result;
-    expect(failed.isError).toBe(true);
-    expect(failed.content[0]?.text).toMatch(/compare applies only to explain/u);
+    expect(refused).toMatchObject({
+      jsonrpc: "2.0",
+      id: 9,
+      error: { code: -32602, message: expect.stringMatching(/compare applies only to explain/u) },
+    });
   });
 
   it("returns a compact receipt for the packaged case without combining exclusive flags", async () => {
@@ -390,10 +403,11 @@ describe("MCP stdio transport", () => {
       method: "tools/call",
       params: { name: "case", arguments: { receipt: true, index: true } },
     }, host);
-    const failed = (conflict as { result: { isError?: boolean; content: readonly { text: string }[] } })
-      .result;
-    expect(failed.isError).toBe(true);
-    expect(failed.content[0]?.text).toMatch(/cannot combine/u);
+    expect(conflict).toMatchObject({
+      jsonrpc: "2.0",
+      id: 7,
+      error: { code: -32602, message: expect.stringMatching(/cannot combine/u) },
+    });
   });
 
   it("returns detailed human text for the packaged case when requested", async () => {

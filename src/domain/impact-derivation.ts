@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Profile-neutral completeness counts, findings, and impact groups.
+ *
+ * Vendor logic stays in adapters. Findings are derived from projection status,
+ * composition, and evidence prefixes — never from model compliance.
+ */
 import { compareCodePoints, pathDirname } from "./repository-path.js";
 import type {
   Completeness,
@@ -9,6 +15,7 @@ import type {
   Projection,
 } from "../model.js";
 
+/** Mutate running COMPLETE/PARTIAL/UNKNOWN counters for one projection. */
 export function incrementCompleteness(
   counts: {
     completePathCount: number;
@@ -32,6 +39,11 @@ function findingCode(evidence: string): FindingCode | null {
   return null;
 }
 
+/**
+ * Findings for one projection. `phase` prefixes detail on diff (`before:` /
+ * `after:`). Scan passes null. UNSPECIFIED composition is a finding, not a
+ * guessed order.
+ */
 export function projectionFindings(
   projection: Projection,
   phase: "before" | "after" | null,
@@ -85,6 +97,7 @@ function compareNullableProfile(
   return compareCodePoints(left, right);
 }
 
+/** Dedupe by code/profile/path/detail, then sort path → profile → code → detail. */
 export function sortAndDedupeFindings(
   findings: readonly Finding[],
 ): Finding[] {
@@ -106,6 +119,7 @@ export function sortAndDedupeFindings(
   );
 }
 
+/** Source paths that are not SHADOWED. Overlap across profiles is allowed. */
 export function effectiveSourcePaths(
   projections: readonly Projection[],
 ): Set<string> {
@@ -130,6 +144,10 @@ function nearestCause(causes: readonly string[]): string | null {
   return sorted[0] ?? null;
 }
 
+/**
+ * Group changed-stack paths by dirname of the nearest cause.
+ * Sample paths cap at 3, code-point sorted. Counts can overlap across groups.
+ */
 export function buildImpactGroups(
   paths: readonly PathTransition[],
 ): ImpactGroup[] {

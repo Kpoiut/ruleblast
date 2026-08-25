@@ -13,7 +13,7 @@
       },
       {
         "kind": "glob",
-        "pattern": ".claude/rules/**/*.md",
+        "pattern": "**/.claude/rules/**/*.md",
         "apply": {
           "kind": "frontmatter-glob",
           "field": "paths",
@@ -30,7 +30,7 @@
         "names": ["CLAUDE.md", "CLAUDE.local.md"]
       }
     ],
-    "claimIds": ["claude.memory.1", "claude.ancestors.1", "claude.rules.1"]
+    "claimIds": ["claude.memory.1", "claude.ancestors.1", "claude.rules.1", "claude.nested-rules.1"]
   },
   "select": {
     "mode": "all",

@@ -3,6 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { canonicalJson } from "../../src/canonical.js";
+import { InvalidPackError } from "../../src/packs/compile.js";
 import { loadBundledPack } from "../../src/packs/load.js";
 import {
   canInterpretResolver,
@@ -66,9 +67,10 @@ describe("spec-driven pack interpreter", () => {
     expect(canInterpretResolver(loadBundledPack("anthropic-claude-code-cli@1").resolver))
       .toBe(true);
     const profile = readFileSync(join(repositoryRoot, "src/packs/profile.ts"), "utf8");
-    expect(profile).toContain("createClaudeProfile");
-    expect(profile).toContain("createGeminiProfile");
-    expect(profile).toContain("createCopilotProfile");
+    expect(profile).toContain("interpretCompiledPack");
+    expect(profile).not.toContain("createClaudeProfile");
+    expect(profile).not.toContain("createGeminiProfile");
+    expect(profile).not.toContain("createCopilotProfile");
     expect(readFileSync(join(repositoryRoot, "src/packs/interpret.ts"), "utf8"))
       .not.toContain("createClaudeProfile");
     expect(readFileSync(join(repositoryRoot, "src/packs/interpret-all.ts"), "utf8"))
@@ -93,6 +95,10 @@ describe("spec-driven pack interpreter", () => {
       .not.toContain("Claude instruction symlink");
     expect(uninterpretableReasons({ ...geminiResolver, assemble: { ...geminiResolver.assemble, mode: "unspecified" } }))
       .toEqual([]);
+    expect(() => profileFromCompiledPack({
+      ...loadBundledPack("google-gemini-cli@1"),
+      resolver: { ...geminiResolver, transform: [{ kind: "byte-budget", bytes: 0, claimIds: ["probe"] }] },
+    })).toThrow(InvalidPackError);
   });
 
   it("rejects transform combinations the live interpreter does not fully execute", () => {
@@ -121,6 +127,15 @@ describe("spec-driven pack interpreter", () => {
     expect(uninterpretableReasons({
       ...claude,
       transform: [...claude.transform, imported!],
+    })).toContain("transform");
+    const gemini = loadBundledPack("google-gemini-cli@1").resolver;
+    expect(uninterpretableReasons({
+      ...gemini,
+      transform: [...gemini.transform, extraComment],
+    })).toContain("transform");
+    expect(uninterpretableReasons({
+      ...claude,
+      assemble: { ...claude.assemble, mode: "ordered" },
     })).toContain("transform");
   });
 

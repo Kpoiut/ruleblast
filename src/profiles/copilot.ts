@@ -1,8 +1,8 @@
-import { Minimatch } from "minimatch";
 import { sha256 } from "../canonical.js";
 import { digestProjectionIdentity } from "../domain/projection-seal.js";
 import { compareCodePoints, pathBasename, pathDirname } from "../domain/repository-path.js";
 import { parseFrontmatterGlobs } from "../packs/ops-frontmatter.js";
+import { matchGlob } from "../packs/ops-match.js";
 import {
   GITHUB_COPILOT_CLI_PROFILE_ID,
   type Projection,
@@ -41,6 +41,12 @@ const COPILOT_EVIDENCE = Object.freeze([
     retrievedAt: "2026-08-14",
     revision: "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-14",
     claim: "Copilot CLI loads repository-wide .github/copilot-instructions.md from standard locations.",
+  }),
+  defineEvidenceRef({
+    url: "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",
+    retrievedAt: "2026-08-25",
+    revision: "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-25",
+    claim: "Copilot CLI discovers .github/copilot-instructions.md, .claude/CLAUDE.md, and .github/instructions/**/*.instructions.md in standard locations: repository root, cwd, intermediate directories, and nested directories on the path of a file it is working on. Modular *.instructions.md files are not discovered in intermediate directories.",
   }),
   defineEvidenceRef({
     url: "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",
@@ -110,7 +116,7 @@ function parseApplyTo(text: string): readonly string[] | null {
 
 function matchesApplyTo(patterns: readonly string[], targetPath: string): boolean {
   return patterns.some((pattern) =>
-    new Minimatch(pattern, { dot: true, nobrace: false }).match(targetPath)
+    matchGlob(pattern, targetPath, { dot: true, nobrace: false })
   );
 }
 

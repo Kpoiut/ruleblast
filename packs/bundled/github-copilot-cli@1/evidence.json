@@ -8,6 +8,14 @@
     "claim": "Copilot CLI loads repository-wide .github/copilot-instructions.md from standard locations."
   },
   {
+    "claimId": "copilot.nested.1",
+    "sourceType": "vendor-doc",
+    "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",
+    "retrievedAt": "2026-08-25",
+    "sourceRevision": "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-25",
+    "claim": "Copilot CLI discovers .github/copilot-instructions.md, .claude/CLAUDE.md, and .github/instructions/**/*.instructions.md in standard locations: repository root, cwd, intermediate directories, and nested directories on the path of a file it is working on. Modular *.instructions.md files are not discovered in intermediate directories."
+  },
+  {
     "claimId": "copilot.apply.1",
     "sourceType": "vendor-doc",
     "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",

@@ -32,6 +32,14 @@
     "claim": "Claude Code documents recursively discovered project rules."
   },
   {
+    "claimId": "claude.nested-rules.1",
+    "sourceType": "vendor-doc",
+    "sourceUrl": "https://code.claude.com/docs/en/memory",
+    "retrievedAt": "2026-08-25",
+    "sourceRevision": "anthropic/claude-code-cli@1:nested-rules",
+    "claim": "Claude Code documents nested .claude/rules directories that load on demand in the directory that contains .claude; path-scoped rules apply when their paths frontmatter matches the target inside that subtree."
+  },
+  {
     "claimId": "claude.globs.1",
     "sourceType": "vendor-doc",
     "sourceUrl": "https://code.claude.com/docs/en/memory",

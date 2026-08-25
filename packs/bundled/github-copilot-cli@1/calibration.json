@@ -141,18 +141,24 @@
       "targets": {
         ".claude/CLAUDE.md": {
           "loadedPaths": [
+            ".claude/CLAUDE.md",
+            ".claude/CLAUDE.md"
+          ],
+          "loadedTexts": [
+            "nested-claude\n",
+            "nested-claude\n"
+          ],
+          "vendorAssembly": "nested-claude\n\n\nnested-claude\n",
+          "truncated": false
+        },
+        "src/file.ts": {
+          "loadedPaths": [
             ".claude/CLAUDE.md"
           ],
           "loadedTexts": [
             "nested-claude\n"
           ],
           "vendorAssembly": "nested-claude\n",
-          "truncated": false
-        },
-        "src/file.ts": {
-          "loadedPaths": [],
-          "loadedTexts": [],
-          "vendorAssembly": "",
           "truncated": false
         }
       }
@@ -206,13 +212,145 @@
           "truncated": false
         }
       }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "copilot-nested",
+        "entries": [
+          {
+            "path": ".github/copilot-instructions.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "cm9vdCBjb3BpbG90Cg=="
+          },
+          {
+            "path": "packages/api/.github/copilot-instructions.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "bmVzdGVkIGNvcGlsb3QK"
+          },
+          {
+            "path": "packages/api/src/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          },
+          {
+            "path": "packages/ui/src/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "targets": {
+        ".github/copilot-instructions.md": {
+          "loadedPaths": [
+            ".github/copilot-instructions.md"
+          ],
+          "loadedTexts": [
+            "root copilot\n"
+          ],
+          "vendorAssembly": "root copilot\n",
+          "truncated": false
+        },
+        "packages/api/.github/copilot-instructions.md": {
+          "loadedPaths": [
+            ".github/copilot-instructions.md",
+            "packages/api/.github/copilot-instructions.md"
+          ],
+          "loadedTexts": [
+            "root copilot\n",
+            "nested copilot\n"
+          ],
+          "vendorAssembly": "root copilot\n\n\nnested copilot\n",
+          "truncated": false
+        },
+        "packages/api/src/app.ts": {
+          "loadedPaths": [
+            ".github/copilot-instructions.md",
+            "packages/api/.github/copilot-instructions.md"
+          ],
+          "loadedTexts": [
+            "root copilot\n",
+            "nested copilot\n"
+          ],
+          "vendorAssembly": "root copilot\n\n\nnested copilot\n",
+          "truncated": false
+        },
+        "packages/ui/src/app.ts": {
+          "loadedPaths": [
+            ".github/copilot-instructions.md"
+          ],
+          "loadedTexts": [
+            "root copilot\n"
+          ],
+          "vendorAssembly": "root copilot\n",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "copilot-nested-modular",
+        "entries": [
+          {
+            "path": "packages/api/.github/instructions/api.instructions.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "LS0tCmFwcGx5VG86IHBhY2thZ2VzL2FwaS8qKgotLS0KYXBpIG9ubHkK"
+          },
+          {
+            "path": "packages/api/src/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          },
+          {
+            "path": "packages/ui/src/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "targets": {
+        "packages/api/.github/instructions/api.instructions.md": {
+          "loadedPaths": [
+            "packages/api/.github/instructions/api.instructions.md"
+          ],
+          "loadedTexts": [
+            "---\napplyTo: packages/api/**\n---\napi only\n"
+          ],
+          "vendorAssembly": "---\napplyTo: packages/api/**\n---\napi only\n",
+          "truncated": false
+        },
+        "packages/api/src/app.ts": {
+          "loadedPaths": [
+            "packages/api/.github/instructions/api.instructions.md"
+          ],
+          "loadedTexts": [
+            "---\napplyTo: packages/api/**\n---\napi only\n"
+          ],
+          "vendorAssembly": "---\napplyTo: packages/api/**\n---\napi only\n",
+          "truncated": false
+        },
+        "packages/ui/src/app.ts": {
+          "loadedPaths": [],
+          "loadedTexts": [],
+          "vendorAssembly": "",
+          "truncated": false
+        }
+      }
     }
   ],
   "runtime": {
     "surfaceId": "github/copilot-cli@1",
     "revision": "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions@2026-08-24",
     "observationMethod": "sealed-offline-dump",
-    "artifactDigest": "f4022a74a909a72184bfb99656f6b7b329070c47f22bb99a8198bdcfa8e48f7e",
+    "artifactDigest": "634b780d510485415b9258f03e835e8155294028bfdb8b6cd12dc42f891b95a4",
     "probeSchema": "ruleblast.runtime-observation.v1"
   }
 }

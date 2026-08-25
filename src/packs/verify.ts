@@ -5,9 +5,12 @@ import {
   assertProjectionSeals,
   digestProjectionIdentity,
 } from "../domain/projection-seal.js";
+import { createClaudeProfile } from "../profiles/claude.js";
+import { createCopilotProfile } from "../profiles/copilot.js";
+import { createGeminiProfile } from "../profiles/gemini.js";
 import { InvalidPackError } from "./compile.js";
 import { interpretCompiledPack, uninterpretableReasons } from "./interpret.js";
-import { profileFromCompiledPack } from "./profile.js";
+import { evidenceFromPack } from "./profile.js";
 import type { CompiledPack } from "./schema.js";
 import type { ProfileDefinition } from "../profiles/profile.js";
 
@@ -168,6 +171,17 @@ async function verifyProbes(
   await assertSealedProbes(profile, probes, "oracle.probes");
 }
 
+/** Lab-only: uninterpretable oracles still replay probes on the handwritten adapter. */
+function fingerprintAdapterOracle(pack: CompiledPack): ProfileDefinition {
+  const bound = { id: pack.pack.id, evidence: evidenceFromPack(pack) };
+  if (pack.resolver.fingerprint === "claude-v1") return createClaudeProfile(bound);
+  if (pack.resolver.fingerprint === "gemini-v1") return createGeminiProfile(bound);
+  if (pack.resolver.fingerprint === "copilot-v1") return createCopilotProfile(bound);
+  throw new InvalidPackError(
+    `Pack engine not implemented for fingerprint ${pack.resolver.fingerprint}`,
+  );
+}
+
 async function verifyInterpret(
   pack: CompiledPack,
   oracle: Record<string, unknown>,
@@ -204,7 +218,7 @@ async function verifyFingerprint(
   } catch (error) {
     if (!(error instanceof InvalidPackError)) throw error;
   }
-  const profile = profileFromCompiledPack(pack);
+  const profile = fingerprintAdapterOracle(pack);
   await verifyProbes(profile, oracle.probes);
   return Object.freeze({
     engine: "FINGERPRINT",

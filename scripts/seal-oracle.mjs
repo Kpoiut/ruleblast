@@ -1,4 +1,4 @@
-import { writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { digestProjectionIdentity } from "../dist/domain/projection-seal.js";
@@ -8,21 +8,27 @@ import { ManifestSnapshot } from "../dist/snapshot.js";
 
 const repositoryRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const packs = [
-  "openai-codex-cli@1",
-  "anthropic-claude-code-cli@1",
-  "google-gemini-cli@1",
-  "github-copilot-cli@1",
+  ["openai-codex-cli@1", "test/fixtures/codex"],
+  ["anthropic-claude-code-cli@1", "test/fixtures/claude"],
+  ["google-gemini-cli@1", "test/fixtures/gemini"],
+  ["github-copilot-cli@1", "test/fixtures/copilot"],
 ];
 
-for (const directory of packs) {
+for (const [directory, fixtureRelative] of packs) {
   const packRoot = join(repositoryRoot, "packs/bundled", directory);
   const pack = loadBundledPack(directory);
   const profile = interpretCompiledPack(pack);
   const oraclePath = join(packRoot, "oracle.json");
-  const oracle = JSON.parse(await (await import("node:fs/promises")).readFile(oraclePath, "utf8"));
+  const oracle = JSON.parse(readFileSync(oraclePath, "utf8"));
+  const files = readdirSync(join(repositoryRoot, fixtureRelative))
+    .filter((name) => name.endsWith(".json"))
+    .sort();
   const probes = [];
-  for (const probe of oracle.probes) {
-    const snapshot = new ManifestSnapshot(probe.snapshot);
+  for (const file of files) {
+    const snapshotJson = JSON.parse(
+      readFileSync(join(repositoryRoot, fixtureRelative, file), "utf8"),
+    );
+    const snapshot = new ManifestSnapshot(snapshotJson);
     const prepared = await profile.prepare(snapshot);
     const paths = await snapshot.listPaths();
     const targets = paths.length === 0 ? ["file.ts"] : paths;
@@ -32,7 +38,7 @@ for (const directory of packs) {
       projectionDigests[target] = digestProjectionIdentity(projection);
     }
     probes.push({
-      snapshot: probe.snapshot,
+      snapshot: snapshotJson,
       sourceDependencyPaths: [...prepared.sourceDependencyPaths],
       projectionDigests,
     });

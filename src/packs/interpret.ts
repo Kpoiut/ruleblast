@@ -286,10 +286,10 @@ function makeProjection(
     context,
     status: material.status,
     composition: "ORDERED",
-    sources: material.sources.map((item) => ({ ...item })),
-    normalizedPayloadUnits: material.units.map((unit) => [...unit]),
+    sources: material.sources as ResolvedSource[],
+    normalizedPayloadUnits: material.units as string[][],
     projectionDigest: digestFor(targetPath),
     normalizedPayloadDigest: material.normalizedPayloadDigest,
-    evidence: [...material.evidence],
+    evidence: material.evidence as string[],
   };
 }

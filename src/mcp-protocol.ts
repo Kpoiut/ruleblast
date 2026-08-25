@@ -47,15 +47,31 @@ export function encodeMcpFrame(
   return Buffer.concat([body, Buffer.from("\n", "ascii")]);
 }
 
-function parseJsonRpcBody(body: string): unknown {
+const UTF8_STRICT = new TextDecoder("utf-8", { fatal: true });
+
+function decodeUtf8Strict(bytes: Buffer): string | null {
   try {
-    return JSON.parse(body);
+    return UTF8_STRICT.decode(bytes);
   } catch {
-    return {
-      jsonrpc: "2.0",
-      id: null,
-      error: { code: -32700, message: "Parse error" },
-    };
+    return null;
+  }
+}
+
+function parseError(): JsonRpcFailure {
+  return {
+    jsonrpc: "2.0",
+    id: null,
+    error: { code: -32700, message: "Parse error" },
+  };
+}
+
+function parseJsonRpcBody(body: Buffer | string): unknown {
+  const text = typeof body === "string" ? body : decodeUtf8Strict(body);
+  if (text === null) return parseError();
+  try {
+    return JSON.parse(text);
+  } catch {
+    return parseError();
   }
 }
 
@@ -119,7 +135,7 @@ export function consumeMcpBuffer(buffer: Buffer | Uint8Array | string): {
     if (!isContentLengthPrefix(rest)) {
       const taken = takeNdjsonLine(rest);
       if (taken === null) break;
-      messages.push(parseJsonRpcBody(taken.line.toString("utf8")));
+      messages.push(parseJsonRpcBody(taken.line));
       rest = taken.next;
       framing = "ndjson";
       continue;
@@ -139,7 +155,7 @@ export function consumeMcpBuffer(buffer: Buffer | Uint8Array | string): {
       throw new RangeError("MCP frame exceeded maximum size");
     }
     if (rest.length < end + length) break;
-    messages.push(parseJsonRpcBody(rest.subarray(end, end + length).toString("utf8")));
+    messages.push(parseJsonRpcBody(rest.subarray(end, end + length)));
     rest = rest.subarray(end + length);
     framing = "content-length";
   }

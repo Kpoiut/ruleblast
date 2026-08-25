@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "label": "Claude nested rules stay in the parent-of-.claude subtree",
+  "entries": [
+    {
+      "path": "packages/api/.claude/rules/ts.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "LS0tCnBhdGhzOgogIC0gIioqLyoudHMiCi0tLQpuZXN0ZWQgdHMgcnVsZQo="
+    },
+    {
+      "path": "packages/api/app.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQo="
+    },
+    {
+      "path": "packages/ui/app.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQo="
+    }
+  ]
+}

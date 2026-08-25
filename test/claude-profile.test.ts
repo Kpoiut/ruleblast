@@ -123,6 +123,40 @@ describe("Claude profile", () => {
     });
   });
 
+  it("does not leak a nested .claude/rules file outside its parent-of-.claude subtree", async () => {
+    const api = await project("nested-rules-subtree", "packages/api/app.ts");
+    const ui = await project("nested-rules-subtree", "packages/ui/app.ts");
+    expect(api.sources.map((source) => [source.path, source.disposition])).toEqual([
+      ["packages/api/.claude/rules/ts.md", "APPLIED_RULE"],
+    ]);
+    expect(ui.sources.map((source) => source.path)).not.toContain(
+      "packages/api/.claude/rules/ts.md",
+    );
+    expect(ui.status).toBe("COMPLETE");
+  });
+
+  it("applies a nested .claude/rules file by documented paths frontmatter", async () => {
+    const api = await project("nested-rules", "packages/api/app.ts");
+    const ui = await project("nested-rules", "packages/ui/app.ts");
+    expect(api.status).toBe("COMPLETE");
+    expect(api.sources.map((source) => [source.path, source.disposition])).toEqual([
+      ["packages/api/.claude/rules/api.md", "APPLIED_RULE"],
+    ]);
+    expect(ui.sources.map((source) => source.path)).not.toContain(
+      "packages/api/.claude/rules/api.md",
+    );
+    const resolver = JSON.parse(
+      await readFile(new URL("../packs/bundled/anthropic-claude-code-cli@1/resolver.json", import.meta.url), "utf8"),
+    ) as {
+      readonly discover: {
+        readonly origins: readonly { readonly kind: string; readonly pattern?: string }[];
+      };
+    };
+    expect(resolver.discover.origins.some((origin) =>
+      origin.kind === "glob" && origin.pattern === "**/.claude/rules/**/*.md"
+    )).toBe(true);
+  });
+
   it("applies a paths rule only to a documented glob match", async () => {
     const apiProjection = await project(
       "rule-path-match",
@@ -778,13 +812,13 @@ describe("Claude profile", () => {
   });
 
   it("pins individual official evidence claims without runtime fetching", () => {
-    expect(claudeProfile.evidence).toHaveLength(7);
+    expect(claudeProfile.evidence).toHaveLength(8);
     expect(claudeProfile.evidence.every((item) =>
       item.url === "https://code.claude.com/docs/en/memory" &&
       item.retrievedAt === "2026-08-12",
     )).toBe(true);
     expect(claudeProfile.evidence.map((item) => item.claim).join(" ")).toMatch(
-      /locations.*ancestor.*imports.*rules.*glob.*exclude.*comment/is,
+      /locations.*ancestor.*imports.*rules.*nested.*glob.*exclude.*comment/is,
     );
   });
 

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "label": "copilot nested standard-location modular instructions",
+  "entries": [
+    {
+      "path": "packages/api/.github/instructions/api.instructions.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "LS0tCmFwcGx5VG86IHBhY2thZ2VzL2FwaS8qKgotLS0KYXBpIG9ubHkK"
+    },
+    {
+      "path": "packages/api/src/app.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQo="
+    },
+    {
+      "path": "packages/ui/src/app.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQo="
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "label": "copilot nested standard-location instructions",
+  "entries": [
+    {
+      "path": ".github/copilot-instructions.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "cm9vdCBjb3BpbG90Cg=="
+    },
+    {
+      "path": "packages/api/.github/copilot-instructions.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "bmVzdGVkIGNvcGlsb3QK"
+    },
+    {
+      "path": "packages/api/src/app.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQo="
+    },
+    {
+      "path": "packages/ui/src/app.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQo="
+    }
+  ]
+}

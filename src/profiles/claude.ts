@@ -16,8 +16,10 @@ import {
   type PreparedClaudeDocument,
 } from "./claude-imports.js";
 import {
+  claudeRuleSubtree,
   decideClaudeRule,
   isClaudeRulePath,
+  isUnderSubtree,
   parseClaudeProjectSettings,
   parseClaudeRule,
   type ClaudeProjectSettings,
@@ -216,6 +218,7 @@ function resolveTarget(
 
   let applicableRules = 0;
   for (const rule of rules) {
+    if (!isUnderSubtree(claudeRuleSubtree(rule.file.path), targetPath)) continue;
     const exclusion = settings.exclusion(rule.file.path);
     state.status = combineStatus(state.status, exclusion.status);
     state.evidence.push(...exclusion.evidence);
@@ -306,6 +309,7 @@ const EVIDENCE_CLAIMS = [
   ["ancestor-loading", "Claude Code documents ancestor and nested on-demand memory loading."],
   ["imports", "Claude Code documents relative recursive @path imports and their bounded depth."],
   ["rules", "Claude Code documents recursively discovered project rules."],
+  ["nested-rules", "Claude Code documents nested .claude/rules directories that load on demand in the directory that contains .claude; path-scoped rules apply when their paths frontmatter matches the target inside that subtree."],
   ["path-globs", "Claude Code documents path glob and brace patterns for conditional rules."],
   ["excludes", "Claude Code documents claudeMdExcludes matched against absolute paths."],
   ["comments", "Claude Code documents HTML comment stripping with fenced-code preservation."],

@@ -1,9 +1,9 @@
 import { parse as parseYaml } from "yaml";
-import { Minimatch } from "minimatch";
 import {
   ancestorDirectories,
   joinRepositoryPath,
 } from "../domain/repository-path.js";
+import { matchGlob } from "./ops-match.js";
 import {
   makeObservation,
   type CalibrationPackId,
@@ -38,7 +38,7 @@ export function fileAt(
 }
 
 function globMatch(pattern: string, path: string): boolean {
-  return new Minimatch(pattern, { dot: true }).match(path);
+  return matchGlob(pattern, path, { dot: true });
 }
 
 /** Vendor docs: strip block HTML comments; keep fenced and inline code. */
@@ -170,9 +170,22 @@ export function observeClaude(
   for (const path of [...files.keys()].sort((left, right) =>
     left < right ? -1 : left > right ? 1 : 0
   )) {
-    if (!path.startsWith(".claude/rules/") || !path.endsWith(".md")) continue;
+    if (
+      !path.endsWith(".md") ||
+      (!path.startsWith(".claude/rules/") && !path.includes("/.claude/rules/"))
+    ) {
+      continue;
+    }
     const rule = files.get(path);
     if (rule === undefined || rule.kind !== "file") continue;
+    const scope = path.startsWith(".claude/rules/")
+      ? "."
+      : path.includes("/.claude/rules/")
+        ? path.slice(0, path.indexOf("/.claude/rules/"))
+        : ".";
+    if (!(scope === "." || targetPath === scope || targetPath.startsWith(`${scope}/`))) {
+      continue;
+    }
     const patterns = parseFrontmatterField(rule.text, "paths");
     if (patterns !== null && !patterns.some((pattern) => globMatch(pattern, targetPath))) {
       continue;
@@ -192,19 +205,53 @@ export function observeClaude(
   return makeObservation("anthropic/claude-code-cli@1", loaded, false);
 }
 
+function isAncestorScope(scope: string, targetPath: string): boolean {
+  return scope === "." || targetPath === scope || targetPath.startsWith(`${scope}/`);
+}
+
+function copilotRepoScope(path: string): string | null {
+  if (path === ".github/copilot-instructions.md") return ".";
+  if (path.endsWith("/.github/copilot-instructions.md")) {
+    return path.slice(0, -"/.github/copilot-instructions.md".length);
+  }
+  return null;
+}
+
+function copilotDotClaudeScope(path: string): string | null {
+  if (path === ".claude/CLAUDE.md") return ".";
+  if (path.endsWith("/.claude/CLAUDE.md")) {
+    return path.slice(0, -"/.claude/CLAUDE.md".length);
+  }
+  return null;
+}
+
 export function observeCopilot(
   files: ReadonlyMap<string, IndexedFile>,
   targetPath: string,
 ): TargetObservation {
   const loaded: LoadedFile[] = [];
-  const repo = files.get(".github/copilot-instructions.md");
-  if (repo !== undefined && repo.kind === "file" && repo.text.trim() !== "") {
+  const sortedPaths = [...files.keys()].sort((left, right) =>
+    left < right ? -1 : left > right ? 1 : 0
+  );
+  for (const path of sortedPaths) {
+    const scope = copilotRepoScope(path);
+    if (scope === null) continue;
+    if (!isAncestorScope(scope, targetPath)) continue;
+    const repo = files.get(path);
+    if (repo === undefined || repo.kind !== "file" || repo.text.trim() === "") continue;
     loaded.push({ path: repo.path, text: repo.text });
   }
-  for (const path of [...files.keys()].sort((left, right) =>
-    left < right ? -1 : left > right ? 1 : 0
-  )) {
-    if (!path.startsWith(".github/instructions/") || !path.endsWith(".instructions.md")) {
+  for (const path of sortedPaths) {
+    if (
+      !path.endsWith(".instructions.md") ||
+      (!path.startsWith(".github/instructions/") && !path.includes("/.github/instructions/"))
+    ) {
+      continue;
+    }
+    const modularScope = path.startsWith(".github/instructions/")
+      ? "."
+      : path.slice(0, path.indexOf("/.github/instructions/"));
+    if (!isAncestorScope(modularScope, targetPath)) {
       continue;
     }
     const instruction = files.get(path);
@@ -222,6 +269,14 @@ export function observeCopilot(
       if (found.text.trim() === "") continue;
       loaded.push({ path: found.path, text: found.text });
     }
+  }
+  for (const path of sortedPaths) {
+    const scope = copilotDotClaudeScope(path);
+    if (scope === null) continue;
+    if (!isAncestorScope(scope, targetPath)) continue;
+    const found = files.get(path);
+    if (found === undefined || found.kind !== "file" || found.text.trim() === "") continue;
+    loaded.push({ path: found.path, text: found.text });
   }
   return makeObservation("github/copilot-cli@1", loaded, false);
 }

@@ -1,6 +1,6 @@
-import { Minimatch } from "minimatch";
 import { sha256 } from "../canonical.js";
-import { compareCodePoints, pathBasename } from "../domain/repository-path.js";
+import { movingProjectionDigest } from "../domain/projection-seal.js";
+import { compareCodePoints, pathBasename, pathDirname } from "../domain/repository-path.js";
 import type { Projection, ResolvedSource } from "../model.js";
 import { ownSnapshotEntry, type RepositorySnapshot } from "../snapshot.js";
 import {
@@ -17,6 +17,7 @@ import {
   parseClaudeRule,
   type ParsedClaudeRule,
 } from "./ops-glob.js";
+import { matchGlob } from "./ops-match.js";
 import { parseJsonUnionNames } from "./ops-json.js";
 import {
   expandImportedMarkdown,
@@ -34,7 +35,7 @@ function applyOf(origin: DiscoverOrigin): FrontmatterApply | undefined {
 }
 
 function globMatch(pattern: string, path: string): boolean {
-  return new Minimatch(pattern, { dot: true }).match(path);
+  return matchGlob(pattern, path, { dot: true });
 }
 
 function originHits(
@@ -243,25 +244,64 @@ export function interpretSelectAllPack(pack: CompiledPack): ProfileDefinition {
         origins.find((item) => item.kind === "ancestors")?.names ??
         resolver.select.names;
       const cached = new Map<string, Projection>();
+      const materials = new Map<string, {
+        readonly projection: Projection;
+        readonly digestFor: (targetPath: string) => string;
+      }>();
+      const applySensitive = ordered.some((row) => row.applyPatterns !== null);
+      const ruleSensitive = rules.size > 0;
       return Object.freeze({
         id: pack.pack.id,
         sourceDependencyPaths: Object.freeze(ordered.map((item) => item.path)),
         project(targetPath: string): Projection {
           const hit = cached.get(targetPath);
           if (hit !== undefined) return hit;
-          const projection = !markdown
-            ? projectCopilot(
-              pack, resolver, claims, atPartial, ordered, targetPath,
-            )
-            : orderedAssemble
-              ? projectOrderedMarkdown(
-                pack, resolver, revisions, claims, ancestorNames, expansions, emptyPaths,
-                union?.path, unionStatus, unionEvidence, chainCache, targetPath,
+          const pathSensitive = !markdown ? applySensitive : !orderedAssemble && ruleSensitive;
+          const cacheKey = pathSensitive ? targetPath : pathDirname(targetPath);
+          let cachedMaterial = materials.get(cacheKey);
+          if (cachedMaterial === undefined) {
+            const built = !markdown
+              ? projectCopilot(
+                pack, resolver, claims, atPartial, ordered, targetPath,
               )
-              : projectMarkdown(
-                pack, resolver, revisions, ordered, files, documents, settings,
-                rules, excludes?.path, maxDepth, targetPath,
-              );
+              : orderedAssemble
+                ? projectOrderedMarkdown(
+                  pack, resolver, revisions, claims, ancestorNames, expansions, emptyPaths,
+                  union?.path, unionStatus, unionEvidence, chainCache, targetPath,
+                )
+                : projectMarkdown(
+                  pack, resolver, revisions, ordered, files, documents, settings,
+                  rules, excludes?.path, maxDepth, targetPath,
+                );
+            cachedMaterial = {
+              projection: built,
+              digestFor: movingProjectionDigest({
+                profile: built.profile,
+                cwd: built.context.cwd,
+                trigger: built.context.trigger,
+                status: built.status,
+                composition: built.composition,
+                sources: built.sources,
+                units: built.normalizedPayloadUnits,
+                evidence: built.evidence,
+              }),
+            };
+            materials.set(cacheKey, cachedMaterial);
+          }
+          const built = cachedMaterial.projection;
+          const projection = built.context.targetPath === targetPath
+            ? built
+            : {
+              profile: built.profile,
+              context: { ...built.context, targetPath },
+              status: built.status,
+              composition: built.composition,
+              sources: built.sources,
+              normalizedPayloadUnits: built.normalizedPayloadUnits,
+              projectionDigest: cachedMaterial.digestFor(targetPath),
+              normalizedPayloadDigest: built.normalizedPayloadDigest,
+              evidence: built.evidence,
+            };
           cached.set(targetPath, projection);
           return projection;
         },

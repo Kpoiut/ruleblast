@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "label": "copilot nested .claude/CLAUDE.md",
+  "entries": [
+    {
+      "path": "packages/api/.claude/CLAUDE.md",
+      "kind": "file",
+      "executable": false,
+      "base64": "bmVzdGVkIGNsYXVkZQo="
+    },
+    {
+      "path": "packages/api/src/app.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQo="
+    },
+    {
+      "path": "packages/ui/src/app.ts",
+      "kind": "file",
+      "executable": false,
+      "base64": "Y29kZQo="
+    }
+  ]
+}

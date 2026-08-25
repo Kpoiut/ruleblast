@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Compact RBCTX fingerprints for last-result / companion binding.
+ *
+ * Not a projection digest. Truncated SHA-256 of a versioned canonical record.
+ * Evidence is sorted so order in the producer does not move the fingerprint.
+ */
 import { canonicalJson, sha256 } from "../canonical.js";
 import type {
   CurrentRuleBlastResult,
@@ -5,8 +11,10 @@ import type {
   Projection,
 } from "../model.js";
 
+/** Fingerprint prefix. Bump when the hashed record shape changes. */
 export const RBCTX_VERSION = "RBCTX1";
 
+/** One projection: `RBCTX1:` plus 12 hex chars. */
 export function rbctxForProjection(projection: Projection): string {
   const digest = sha256(canonicalJson({
     v: RBCTX_VERSION,
@@ -28,6 +36,7 @@ export function rbctxForProjection(projection: Projection): string {
   return `${RBCTX_VERSION}:${digest.slice(0, 12)}`;
 }
 
+/** Whole current result: snapshot label plus per-path projection fingerprints. */
 export function rbctxForCurrent(result: CurrentRuleBlastResult): string {
   return fingerprint("current", result.snapshot.label, result.paths.map((path) => ({
     path: path.path,
@@ -35,6 +44,7 @@ export function rbctxForCurrent(result: CurrentRuleBlastResult): string {
   })));
 }
 
+/** Explain-current binding for one path. */
 export function rbctxForExplainCurrent(
   label: string,
   path: string,
@@ -46,6 +56,7 @@ export function rbctxForExplainCurrent(
   }]);
 }
 
+/** Explain-diff binding: before then after identities on one path. */
 export function rbctxForExplainDiff(
   bound: string,
   path: string,
@@ -61,6 +72,7 @@ export function rbctxForExplainDiff(
   }]);
 }
 
+/** Whole diff result: `before.label>after.label` plus per-path identities. */
 export function rbctxForDiff(result: DiffRuleBlastResult): string {
   return fingerprint(
     "diff",

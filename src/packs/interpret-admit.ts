@@ -29,6 +29,20 @@ function uniqueTransformKinds(transform: readonly TransformSpec[]): boolean {
   return new Set(kinds).size === kinds.length;
 }
 
+/** Only transform sets the live interpreter actually runs, not every known kind. */
+function executedSelectAllTransforms(resolver: ResolverSpec): boolean {
+  const kinds = [...new Set(resolver.transform.map((item) => item.kind))].sort().join(",");
+  const claudeKinds = "at-path-import,json-exclude-globs,strip-html-comments";
+  const geminiKinds = "at-path-import,json-union-names";
+  if (resolver.assemble.mode === "unspecified") {
+    return kinds === "" || kinds === claudeKinds || kinds === geminiKinds;
+  }
+  if (resolver.assemble.mode === "ordered") {
+    return kinds === geminiKinds;
+  }
+  return false;
+}
+
 export function uninterpretableReasons(resolver: ResolverSpec): readonly string[] {
   const reasons: string[] = [];
   if (resolver.onSymlink !== "unknown-unfollowed" && resolver.onSymlink !== "partial-unfollowed") {
@@ -42,8 +56,7 @@ export function uninterpretableReasons(resolver: ResolverSpec): readonly string[
   if (orderedBudgetPath(resolver) && resolver.transform.length !== 1) {
     reasons.push("transform");
   }
-  if (selectAllPath(resolver) &&
-      resolver.transform.some((item) => item.kind === "byte-budget")) {
+  if (selectAllPath(resolver) && !executedSelectAllTransforms(resolver)) {
     reasons.push("transform");
   }
   for (const transform of resolver.transform) {

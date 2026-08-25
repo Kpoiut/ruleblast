@@ -1,5 +1,6 @@
 import { braceExpand, minimatch } from "minimatch";
 import type { Projection } from "../model.js";
+import { pathDirname } from "../domain/repository-path.js";
 import { parseFrontmatterGlobs } from "./ops-frontmatter.js";
 import type { CapturedClaudeFile } from "./ops-markdown.js";
 
@@ -269,7 +270,21 @@ export function decideClaudeRule(
 }
 
 export function isClaudeRulePath(path: string): boolean {
-  return path.startsWith(".claude/rules/") && path.endsWith(".md");
+  return path.endsWith(".md") &&
+    (path.startsWith(".claude/rules/") || path.includes("/.claude/rules/"));
+}
+
+/** Nested `.claude/rules` load on demand in the directory that contains `.claude`. */
+export function claudeRuleSubtree(path: string): string {
+  const nested = "/.claude/rules/";
+  const index = path.indexOf(nested);
+  if (index > 0) return path.slice(0, index);
+  if (path.startsWith(".claude/rules/")) return ".";
+  return pathDirname(path);
+}
+
+export function isUnderSubtree(scope: string, targetPath: string): boolean {
+  return scope === "." || targetPath === scope || targetPath.startsWith(`${scope}/`);
 }
 
 function emptySettings(

@@ -1,5 +1,12 @@
+/**
+ * @fileoverview Why-edges for `--witness`. Provenance, not actor telemetry.
+ *
+ * Edges restatement of modeled discovery/selection. No inferred winner on
+ * PARTIAL/UNKNOWN. Pack hints may name a rule; missing hint stays generic.
+ */
 import type { Projection, ResolvedSource, SourceDisposition } from "../model.js";
 
+/** Pack-supplied rule name and human detail for one disposition. */
 export interface WitnessHint {
   readonly rule: string;
   readonly inputs: readonly string[];
@@ -12,6 +19,7 @@ export type WitnessHintLookup = (
   sourcePath: string,
 ) => WitnessHint | null;
 
+/** Causal decision on one edge. UNCERTAIN is completeness, not a guessed winner. */
 export type WitnessDecision =
   | "DISCOVERED"
   | "SELECTED"
@@ -24,6 +32,7 @@ export type WitnessDecision =
   | "UNRESOLVED"
   | "UNCERTAIN";
 
+/** One modeled why-edge. `uncertainty` is NONE/PARTIAL/UNKNOWN, never inferred. */
 export interface WitnessEdge {
   readonly rule: string;
   readonly evidenceRevision: string;
@@ -33,6 +42,7 @@ export interface WitnessEdge {
   readonly detail: string;
 }
 
+/** Versioned witness for one profile at one target path. */
 export interface WitnessGraph {
   readonly version: "RBWIT1";
   readonly profile: string;
@@ -40,6 +50,10 @@ export interface WitnessGraph {
   readonly edges: readonly WitnessEdge[];
 }
 
+/**
+ * Build RBWIT1 edges: one per source, plus budget-truncation and completeness.
+ * Hint lookup is optional; SHADOWED/EXCLUDED still use those decisions.
+ */
 export function witnessForProjection(
   projection: Projection,
   hint: WitnessHintLookup | null = null,
@@ -155,6 +169,7 @@ function edgeForSource(
   };
 }
 
+/** Human WHY block. Empty graphs print `(no modeled edges)`. */
 export function renderWitness(graphs: readonly WitnessGraph[]): string {
   const lines = ["WHY this resolution", ""];
   for (const graph of graphs) {

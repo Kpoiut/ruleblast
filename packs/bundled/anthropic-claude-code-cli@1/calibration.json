@@ -256,13 +256,117 @@
           "truncated": false
         }
       }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "claude-nested-rules",
+        "entries": [
+          {
+            "path": "packages/api/.claude/rules/api.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "LS0tCnBhdGhzOgogIC0gInBhY2thZ2VzL2FwaS8qKiIKLS0tCmFwaSBydWxlCg=="
+          },
+          {
+            "path": "packages/api/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          },
+          {
+            "path": "packages/ui/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "targets": {
+        "packages/api/.claude/rules/api.md": {
+          "loadedPaths": [
+            "packages/api/.claude/rules/api.md"
+          ],
+          "loadedTexts": [
+            "api rule\n"
+          ],
+          "vendorAssembly": "api rule\n",
+          "truncated": false
+        },
+        "packages/api/app.ts": {
+          "loadedPaths": [
+            "packages/api/.claude/rules/api.md"
+          ],
+          "loadedTexts": [
+            "api rule\n"
+          ],
+          "vendorAssembly": "api rule\n",
+          "truncated": false
+        },
+        "packages/ui/app.ts": {
+          "loadedPaths": [],
+          "loadedTexts": [],
+          "vendorAssembly": "",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "claude-nested-rules-subtree",
+        "entries": [
+          {
+            "path": "packages/api/.claude/rules/ts.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "LS0tCnBhdGhzOgogIC0gIioqLyoudHMiCi0tLQpuZXN0ZWQgdHMgcnVsZQo="
+          },
+          {
+            "path": "packages/api/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          },
+          {
+            "path": "packages/ui/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "targets": {
+        "packages/api/.claude/rules/ts.md": {
+          "loadedPaths": [],
+          "loadedTexts": [],
+          "vendorAssembly": "",
+          "truncated": false
+        },
+        "packages/api/app.ts": {
+          "loadedPaths": [
+            "packages/api/.claude/rules/ts.md"
+          ],
+          "loadedTexts": [
+            "nested ts rule\n"
+          ],
+          "vendorAssembly": "nested ts rule\n",
+          "truncated": false
+        },
+        "packages/ui/app.ts": {
+          "loadedPaths": [],
+          "loadedTexts": [],
+          "vendorAssembly": "",
+          "truncated": false
+        }
+      }
     }
   ],
   "runtime": {
     "surfaceId": "anthropic/claude-code-cli@1",
     "revision": "code.claude.com/docs/en/memory@2026-08-24",
     "observationMethod": "sealed-offline-dump",
-    "artifactDigest": "e8a1cfe4fe2010a440da1a8d8a3c030ce91aa95f8257dbcf74da8ad62d202e97",
+    "artifactDigest": "87187297dbd8b27ad1fe3f878b7ae76f4958c0a0e64ed4e3c496daa0c901fd19",
     "probeSchema": "ruleblast.runtime-observation.v1"
   }
 }

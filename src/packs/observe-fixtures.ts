@@ -94,6 +94,22 @@ export function calibrationSnapshots(packId: CalibrationPackId): readonly unknow
         ["src/app.ts", "code\n"],
         ["README.md", "doc\n"],
       ]),
+      calibrationManifest("claude-nested-rules", [
+        [
+          "packages/api/.claude/rules/api.md",
+          "---\npaths:\n  - \"packages/api/**\"\n---\napi rule\n",
+        ],
+        ["packages/api/app.ts", "code\n"],
+        ["packages/ui/app.ts", "code\n"],
+      ]),
+      calibrationManifest("claude-nested-rules-subtree", [
+        [
+          "packages/api/.claude/rules/ts.md",
+          "---\npaths:\n  - \"**/*.ts\"\n---\nnested ts rule\n",
+        ],
+        ["packages/api/app.ts", "code\n"],
+        ["packages/ui/app.ts", "code\n"],
+      ]),
     ];
   }
   return [
@@ -117,6 +133,20 @@ export function calibrationSnapshots(packId: CalibrationPackId): readonly unknow
       ],
       ["src/file.ts", "code\n"],
       ["README.md", "doc\n"],
+    ]),
+    calibrationManifest("copilot-nested", [
+      [".github/copilot-instructions.md", "root copilot\n"],
+      ["packages/api/.github/copilot-instructions.md", "nested copilot\n"],
+      ["packages/api/src/app.ts", "code\n"],
+      ["packages/ui/src/app.ts", "code\n"],
+    ]),
+    calibrationManifest("copilot-nested-modular", [
+      [
+        "packages/api/.github/instructions/api.instructions.md",
+        "---\napplyTo: packages/api/**\n---\napi only\n",
+      ],
+      ["packages/api/src/app.ts", "code\n"],
+      ["packages/ui/src/app.ts", "code\n"],
     ]),
   ];
 }

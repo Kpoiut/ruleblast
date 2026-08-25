@@ -615,6 +615,74 @@
     {
       "snapshot": {
         "schemaVersion": 1,
+        "label": "Claude nested rules stay in the parent-of-.claude subtree",
+        "entries": [
+          {
+            "path": "packages/api/.claude/rules/ts.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "LS0tCnBhdGhzOgogIC0gIioqLyoudHMiCi0tLQpuZXN0ZWQgdHMgcnVsZQo="
+          },
+          {
+            "path": "packages/api/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          },
+          {
+            "path": "packages/ui/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "sourceDependencyPaths": [
+        "packages/api/.claude/rules/ts.md"
+      ],
+      "projectionDigests": {
+        "packages/api/.claude/rules/ts.md": "4a37ebd1b4f25ebd40d0abb12dbfea78d2e2bf9a407737e92b0ff65824f48a0b",
+        "packages/api/app.ts": "14a60881176f98bddf4cc2d1da5202252208b4e5cff1423f7dacab2647ec03c9",
+        "packages/ui/app.ts": "29d1a5ab292c7068659ebdc7bece0340508ad3b92ec79419f1e3f823929eeef7"
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
+        "label": "Claude nested on-demand .claude/rules",
+        "entries": [
+          {
+            "path": "packages/api/.claude/rules/api.md",
+            "kind": "file",
+            "executable": false,
+            "base64": "LS0tCnBhdGhzOgogIC0gInBhY2thZ2VzL2FwaS8qKiIKLS0tCmFwaSBydWxlCg=="
+          },
+          {
+            "path": "packages/api/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          },
+          {
+            "path": "packages/ui/app.ts",
+            "kind": "file",
+            "executable": false,
+            "base64": "Y29kZQo="
+          }
+        ]
+      },
+      "sourceDependencyPaths": [
+        "packages/api/.claude/rules/api.md"
+      ],
+      "projectionDigests": {
+        "packages/api/.claude/rules/api.md": "a2f61141f740aed831993f7279a3f0d06897a942a4d68dda0a6ab8ad0d556472",
+        "packages/api/app.ts": "809e9e028ce6a9a5045ff973352703547e5f630a9c31f3f8fd48860d4c07f2b9",
+        "packages/ui/app.ts": "29d1a5ab292c7068659ebdc7bece0340508ad3b92ec79419f1e3f823929eeef7"
+      }
+    },
+    {
+      "snapshot": {
+        "schemaVersion": 1,
         "label": "Claude nested on-demand memory",
         "entries": [
           {

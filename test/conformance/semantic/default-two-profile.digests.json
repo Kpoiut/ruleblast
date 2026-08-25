@@ -28,6 +28,8 @@
   "claude/instruction-symlink.json": "0743f088030e2f26991225b897a18c5aa8ed5eb0386d5bed8fd0eb7a25ea84e8",
   "claude/local.json": "9df03a42909411d962d6dc829bebfb8fdea0e00424cb8b468ebcfe8a5f779e1c",
   "claude/malformed-frontmatter.json": "fc9c2eaae9d61b0885c47d52a7a836cfb49680f1ab7d3b1ad8116e2710a34a22",
+  "claude/nested-rules.json": "f30d8b1bc4fc8a3160e2624f183043a10b2e82446b7db8cb8867f2b5db0ddce0",
+  "claude/nested-rules-subtree.json": "b2ba87810cd0e9bdc30876a3fa5a5f3360a219481501e3606e7d0e126127d0bc",
   "claude/nested.json": "51af92331746f0e571f74cb1f2245622d133969c980dbfae3e6af9c716cf4c50",
   "claude/root.json": "d7b02d072fc8665f4f40cdfadbb6f125ed1e8c72543e152019974c61f51f61de",
   "claude/rule-braces.json": "08e381e81441b8d0706f34f38b171583c5cffa3b0a654f9306bd98b00d7415f0",

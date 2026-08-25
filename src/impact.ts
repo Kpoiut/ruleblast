@@ -22,8 +22,7 @@ import {
 } from "./domain/impact-derivation.js";
 import { compareCodePoints } from "./domain/repository-path.js";
 import {
-  currentPairEvents,
-  pathPayloadRelation,
+  aggregatePayloadRelation,
   splitState,
 } from "./domain/payload-relation.js";
 import type { ProfileDefinition } from "./profiles/profile.js";
@@ -86,10 +85,7 @@ export async function analyzeCurrent(
       incrementCompleteness(profileCounts, projection.status);
       findings.push(...projectionFindings(projection, null));
     });
-    const aggregate = pathPayloadRelation(
-      projections,
-      currentPairEvents([{ path, projections }]),
-    );
+    const aggregate = aggregatePayloadRelation(projections);
     counts.currentSplitPathCount += aggregate.relation === "DIFFERENT" ? 1 : 0;
     counts.partialPathCount += projections.some(
       (projection) => projection.status === "PARTIAL",

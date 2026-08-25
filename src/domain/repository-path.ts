@@ -1,3 +1,11 @@
+/**
+ * @fileoverview Canonical repository-relative path helpers.
+ *
+ * Paths are `/`-separated UTF-8 strings, never Windows drive paths, never
+ * `\\`, never `.` / `..` / empty segments. Git pathnames that are not UTF-8
+ * fail closed rather than becoming replacement-character COMPLETE paths.
+ */
+/** Unicode code-point order, not UTF-16 unit order. */
 export function compareCodePoints(left: string, right: string): number {
   let leftIndex = 0;
   let rightIndex = 0;
@@ -52,16 +60,19 @@ export function unionSortedPaths(
   return merged;
 }
 
+/** Last `/` segment. Root-relative names have no slash and return themselves. */
 export function pathBasename(path: string): string {
   const slash = path.lastIndexOf("/");
   return slash === -1 ? path : path.slice(slash + 1);
 }
 
+/** Parent directory, or `"."` for a root-level name. */
 export function pathDirname(path: string): string {
   const slash = path.lastIndexOf("/");
   return slash === -1 ? "." : path.slice(0, slash);
 }
 
+/** `"."` then each ancestor of `dirname(target)` toward the file's directory. */
 export function ancestorDirectories(targetPath: string): string[] {
   const targetDirectory = pathDirname(targetPath);
   if (targetDirectory === ".") return ["."];
@@ -69,6 +80,7 @@ export function ancestorDirectories(targetPath: string): string[] {
   return [".", ...segments.map((_, index) => segments.slice(0, index + 1).join("/"))];
 }
 
+/** Join a canonical directory (`"."` is repository root) with a single name. */
 export function joinRepositoryPath(directory: string, name: string): string {
   return directory === "." ? name : `${directory}/${name}`;
 }
@@ -86,6 +98,11 @@ export function decodeGitPathname(bytes: Buffer | Uint8Array): string {
 
 const WINDOWS_DRIVE_PATTERN = /^[A-Za-z]:/;
 
+/**
+ * Fail closed unless `value` is a canonical repository-relative path.
+ *
+ * @throws {TypeError} empty, NUL, backslash, absolute, drive, or `.`/`..` segment
+ */
 export function assertCanonicalRepositoryPath(
   value: unknown,
   description: string,

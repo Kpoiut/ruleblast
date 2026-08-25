@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Source-centric blast summaries.
+ *
+ * Source counts overlap: do not add them into a unique blast radius.
+ * A consumer file is an affected path, not a cause.
+ */
 import { compareCodePoints } from "./repository-path.js";
 import type {
   DiffRuleBlastResult,
@@ -10,6 +16,7 @@ export interface SourceBlastProfileCount {
   readonly affectedPathCount: number;
 }
 
+/** One instruction source and the overlapping paths that inherited its edit. */
 export interface SourceBlastSummary {
   readonly sourcePath: string;
   readonly kind: InstructionSourceChange["kind"];
@@ -21,10 +28,15 @@ export interface SourceBlastSummary {
 const RENDER_LIMIT = 3;
 const EXAMPLE_LIMIT = 3;
 
+/** After path, else before path. Empty string is not a named source. */
 export function sourcePathOf(change: InstructionSourceChange): string {
   return change.afterPath ?? change.beforePath ?? "";
 }
 
+/**
+ * Per changed instruction source: affected paths by profile, three examples,
+ * overlapping `changedStackPathCount`. Default render cap is 3 sources.
+ */
 export function summarizeSourceBlasts(
   result: DiffRuleBlastResult,
   profiles?: readonly ProfileId[],

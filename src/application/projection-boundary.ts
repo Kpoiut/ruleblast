@@ -2,6 +2,7 @@ import {
   assertNormalizedPayloadSeal,
   assertProjectionDigestSeal,
   assertUsableProjection,
+  markPayloadSealed,
 } from "../domain/payload-relation.js";
 import { assertCanonicalRepositoryPath } from "../domain/repository-path.js";
 import type {
@@ -17,6 +18,12 @@ import type {
   RepositorySnapshot,
   SnapshotEntry,
 } from "../snapshot.js";
+import {
+  internProducer,
+  internedObjectArrayMatch,
+  internedStringArrayMatch,
+  internedStringGridMatch,
+} from "./projection-intern.js";
 
 function copySnapshotRef(reference: SnapshotRef): SnapshotRef {
   return {
@@ -273,6 +280,52 @@ function captureResolvedSource(value: unknown, index: number): ResolvedSource {
   };
 }
 
+const internedSources = new WeakMap<object, ResolvedSource[]>();
+const internedUnits = new WeakMap<object, string[][]>();
+const internedEvidence = new WeakMap<object, string[]>();
+
+function captureProjectionSources(value: unknown): ResolvedSource[] {
+  return internProducer(
+    internedSources,
+    value,
+    (interned, raw) => internedObjectArrayMatch(interned, raw, SOURCE_FIELDS),
+    () =>
+    Object.freeze(
+      captureDenseArray(value, "projection.sources").map((item, index) =>
+        Object.freeze(captureResolvedSource(item, index)),
+      ),
+    ) as ResolvedSource[],
+  );
+}
+
+function captureProjectionUnits(value: unknown): string[][] {
+  return internProducer(internedUnits, value, internedStringGridMatch, () =>
+    Object.freeze(
+      captureDenseArray(value, "projection.normalizedPayloadUnits")
+        .map((unit, index) => Object.freeze(captureDenseArray(
+          unit,
+          `projection.normalizedPayloadUnits[${index}]`,
+        ).map((digest) => {
+          if (typeof digest !== "string") {
+            throw new TypeError("Projection normalized payload digest must be a string");
+          }
+          return digest;
+        }))),
+    ) as string[][],
+  );
+}
+
+function captureProjectionEvidence(value: unknown): string[] {
+  return internProducer(internedEvidence, value, internedStringArrayMatch, () =>
+    Object.freeze(
+      captureDenseArray(value, "projection.evidence").map((item) => {
+        if (typeof item !== "string") throw new TypeError("Projection evidence must be strings");
+        return item;
+      }),
+    ) as string[],
+  );
+}
+
 function captureProjection(value: unknown): Projection {
   const descriptors = captureClosedRecord(value, PROJECTION_FIELDS, "projection");
   const profile = dataValue(descriptors, "profile");
@@ -287,35 +340,18 @@ function captureProjection(value: unknown): Projection {
       (status === "COMPLETE" && typeof projectionDigest !== "string")) {
     throw new TypeError("Projection has invalid fields");
   }
-  const sources = captureDenseArray(dataValue(descriptors, "sources"), "projection.sources")
-    .map(captureResolvedSource);
-  const normalizedPayloadUnits = captureDenseArray(
-    dataValue(descriptors, "normalizedPayloadUnits"),
-    "projection.normalizedPayloadUnits",
-  ).map((unit, index) => captureDenseArray(
-    unit,
-    `projection.normalizedPayloadUnits[${index}]`,
-  ).map((digest) => {
-    if (typeof digest !== "string") {
-      throw new TypeError("Projection normalized payload digest must be a string");
-    }
-    return digest;
-  }));
-  const evidence = captureDenseArray(dataValue(descriptors, "evidence"), "projection.evidence")
-    .map((item) => {
-      if (typeof item !== "string") throw new TypeError("Projection evidence must be strings");
-      return item;
-    });
   return {
     profile,
     context: captureProjectionContext(dataValue(descriptors, "context")),
     status: status as Projection["status"],
     composition: composition as Projection["composition"],
-    sources,
-    normalizedPayloadUnits,
+    sources: captureProjectionSources(dataValue(descriptors, "sources")),
+    normalizedPayloadUnits: captureProjectionUnits(
+      dataValue(descriptors, "normalizedPayloadUnits"),
+    ),
     projectionDigest,
     normalizedPayloadDigest,
-    evidence,
+    evidence: captureProjectionEvidence(dataValue(descriptors, "evidence")),
   };
 }
 
@@ -324,7 +360,8 @@ export function projectPreparedProfiles(
   targetPath: string,
 ): Projection[] {
   return preparedProfiles.map((prepared) => {
-    const projection = captureProjection(prepared.project(targetPath));
+    const raw = prepared.project(targetPath);
+    const projection = captureProjection(raw);
     if (projection.profile !== prepared.id) {
       throw new TypeError(
         `Projected profile id ${projection.profile} does not match prepared id ${prepared.id}`,
@@ -337,7 +374,8 @@ export function projectPreparedProfiles(
     }
     assertUsableProjection(projection);
     assertNormalizedPayloadSeal(projection);
-    assertProjectionDigestSeal(projection);
+    assertProjectionDigestSeal(projection, raw.sources);
+    markPayloadSealed(projection);
     return projection;
   });
 }
