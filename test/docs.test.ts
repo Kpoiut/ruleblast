@@ -90,7 +90,7 @@ describe("README story contract", () => {
   it("keeps README status badges as closed img tags without stray text", () => {
     expect(readme).not.toMatch(/<img\b[^>]*>>/u);
     expect(readme).toContain(
-      '<a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.9"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.5.10"></a>',
+      '<a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.9"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.5.11"></a>',
     );
   });
 
@@ -531,6 +531,7 @@ describe("repository documentation integrity", () => {
       "v2.5.8",
       "v2.5.9",
       "v2.5.10",
+      "v2.5.11",
       "v3.0",
       "v4.0",
     ]) {

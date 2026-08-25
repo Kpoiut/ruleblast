@@ -2,6 +2,11 @@
 
 All notable user-visible changes to RuleBlast are recorded here.
 
+## 2.5.11 — SHIPPED TO MAIN
+
+- Tree identity is `2.5.11`. Nested Copilot/Claude, interned seals, interpreter-only pack load, MCP `-32602`/`-32700`, and SHA-pinned Verify remain as shipped in `2.5.10`. Canonical JSON is unchanged.
+- Local `npm run release:check` is the GO preflight: `check`, packed-install smoke, production-module line bind, and 10,000-path p95 < 1,000 ms. Public CLI remains `ruleblast@2.5.9`. Overlay wall and the 5 s clock are unchanged. Not a fifth action.
+
 ## 2.5.10 — SHIPPED TO MAIN
 
 - Agent-allow is fail-closed: `.ruleblast-allow` empty, whitespace, garbage, or unreadable is `ask`, not `yes`. Env tokens are unchanged. RuleBlast still does not write that file.
