@@ -322,7 +322,7 @@ describe("captureCase", () => {
         dependencyClosureDigest: expect.stringMatching(/^[0-9a-f]{64}$/u),
       },
       releaseReproductionCommand:
-        `npx ruleblast@2.5.9 diff ${fixture.base} --to ${fixture.head} --json`,
+        `npx ruleblast@2.5.11 diff ${fixture.base} --to ${fixture.head} --json`,
       resultCore: {
         mode: "diff",
         before: { kind: "git", label: fixture.base, oid: fixture.base },

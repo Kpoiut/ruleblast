@@ -19,8 +19,8 @@ export function packageVersion(): string {
   return descriptor.value;
 }
 
-/** Last independently verified public npm pin. Not inferred from this tree. */
-export const PUBLISHED_PACKAGE_VERSION = "2.5.9";
+/** Advertised install pin for this tree. Independently verified npm is a separate receipt. */
+export const PUBLISHED_PACKAGE_VERSION = "2.5.11";
 
 export function advertisedPackage(): string {
   return `ruleblast@${PUBLISHED_PACKAGE_VERSION}`;

@@ -46,12 +46,12 @@ MCP stdio: `ruleblast --mcp`. Four tools: scan, diff, explain, case.
 
 | Symptom | Command |
 |---|---|
-| What does each pinned CLI project now? | `npx --yes ruleblast@2.5.9 . --color=never` |
-| Which stacks moved? | `npx --yes ruleblast@2.5.9 diff HEAD~1 --to HEAD --color=never` |
-| Why this path? | `npx --yes ruleblast@2.5.9 explain <path> --from HEAD~1 --to HEAD --json` |
-| Teaching receipt, no clone | `npx --yes ruleblast@2.5.9 case --color=never` |
+| What does each pinned CLI project now? | `npx --yes ruleblast@2.5.11 . --color=never` |
+| Which stacks moved? | `npx --yes ruleblast@2.5.11 diff HEAD~1 --to HEAD --color=never` |
+| Why this path? | `npx --yes ruleblast@2.5.11 explain <path> --from HEAD~1 --to HEAD --json` |
+| Teaching receipt, no clone | `npx --yes ruleblast@2.5.11 case --color=never` |
 
-Published CLI: `npx --yes ruleblast@2.5.9`. MCP stdio: `npx --yes ruleblast@2.5.9 --mcp`. Add `--receipt` for the compact scoreboard (per-profile inheritance, not live agent telemetry). Add `--witness` for why-edges. Add `--paths-only` for one attention path per line. Add `--index` for the compact PAIR/NEWPAIR/CONVPAIR/INDPAIR map whose counts fold from PAIRPATH/NEWPAIRPATH/CONVPAIRPATH/INDPAIRPATH rows (every row; large-repo agent form). Add `--detail` for EVIDENCE and the Candidate Reality Conformance Lab (sealed oracle.json interpreter proof, sealed calibration.json vendor-source dump, and candidate fixture axes; RECORDED is not a passing oracle; CALIBRATED is a sealed vendor-source dump; NO_INTROSPECTION is not a vendor dump). Add `--compare` on explain for two selected-reality stacks. Add `--reality github/copilot-cli@1` or `--reality google/gemini-cli@1` only when that surface is requested. Repeat `--reality` for both. Default `--json` stays two-profile.
+Published CLI: `npx --yes ruleblast@2.5.11`. MCP stdio: `npx --yes ruleblast@2.5.11 --mcp`. Add `--receipt` for the compact scoreboard (per-profile inheritance, not live agent telemetry). Add `--witness` for why-edges. Add `--paths-only` for one attention path per line. Add `--index` for the compact PAIR/NEWPAIR/CONVPAIR/INDPAIR map whose counts fold from PAIRPATH/NEWPAIRPATH/CONVPAIRPATH/INDPAIRPATH rows (every row; large-repo agent form). Add `--detail` for EVIDENCE and the Candidate Reality Conformance Lab (sealed oracle.json interpreter proof, sealed calibration.json vendor-source dump, and candidate fixture axes; RECORDED is not a passing oracle; CALIBRATED is a sealed vendor-source dump; NO_INTROSPECTION is not a vendor dump). Add `--compare` on explain for two selected-reality stacks. Add `--reality github/copilot-cli@1` or `--reality google/gemini-cli@1` only when that surface is requested. Repeat `--reality` for both. Default `--json` stays two-profile.
 
 ## Rules
 

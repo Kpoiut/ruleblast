@@ -90,7 +90,7 @@ describe("README story contract", () => {
   it("keeps README status badges as closed img tags without stray text", () => {
     expect(readme).not.toMatch(/<img\b[^>]*>>/u);
     expect(readme).toContain(
-      '<a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.9"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.5.11"></a>',
+      '<a href="https://github.com/Kpoiut/ruleblast/releases/tag/v2.5.11"><img src="https://img.shields.io/github/package-json/v/Kpoiut/ruleblast" alt="this tree 2.5.11"></a>',
     );
   });
 
@@ -107,7 +107,7 @@ describe("README story contract", () => {
       "WORK MAP",
       "CHANGE ALIGNMENT",
       "assets/ruleblast-causal-proof.gif",
-      "npx --yes ruleblast@2.5.9 .",
+      "npx --yes ruleblast@2.5.11 .",
       "## What Git missed",
       "assets/ruleblast-visual-benchmark.png",
       "which-files-inherit-agents-md.md",
@@ -115,7 +115,7 @@ describe("README story contract", () => {
       "PROOF.md",
       "## Install",
       "## Run the verified case",
-      "npx --yes ruleblast@2.5.9 case --json",
+      "npx --yes ruleblast@2.5.11 case --json",
       "Exact packaged-case terminal transcript",
       "## Explain one path",
       "## Scope",
@@ -199,21 +199,21 @@ describe("README story contract", () => {
   it("documents one-command, global, local, maintenance, and source installs", () => {
     for (const command of [
       "node --version",
-      "npm view ruleblast@2.5.9 version",
-      "npx --yes ruleblast@2.5.9",
-      "npx --yes ruleblast@2.5.9 --help",
+      "npm view ruleblast@2.5.11 version",
+      "npx --yes ruleblast@2.5.11",
+      "npx --yes ruleblast@2.5.11 --help",
       "cd <your-git-repository>",
-      "npm install --global ruleblast@2.5.9",
+      "npm install --global ruleblast@2.5.11",
       "ruleblast --version",
       "ruleblast --help",
       "ruleblast",
-      "npm install --save-dev --save-exact ruleblast@2.5.9",
+      "npm install --save-dev --save-exact ruleblast@2.5.11",
       "npx ruleblast --version",
       "npx ruleblast --help",
       "npm uninstall --global ruleblast",
       "npm uninstall --save-dev ruleblast",
       "npm cache verify",
-      "git clone --branch v2.5.9 --depth 1 https://github.com/Kpoiut/ruleblast.git",
+      "git clone --branch v2.5.11 --depth 1 https://github.com/Kpoiut/ruleblast.git",
       "npm ci --ignore-scripts",
       "npm run build",
       "node dist/cli.js --version",
@@ -225,10 +225,10 @@ describe("README story contract", () => {
       expect(readme).toContain(command);
     }
     for (const action of [
-      "npx --yes ruleblast@2.5.9 .",
-      "npx --yes ruleblast@2.5.9 diff HEAD~1",
-      "npx --yes ruleblast@2.5.9 explain src/args.ts --from HEAD~1",
-      "npx --yes ruleblast@2.5.9 case",
+      "npx --yes ruleblast@2.5.11 .",
+      "npx --yes ruleblast@2.5.11 diff HEAD~1",
+      "npx --yes ruleblast@2.5.11 explain src/args.ts --from HEAD~1",
+      "npx --yes ruleblast@2.5.11 case",
     ]) {
       expect(readme).toContain(action);
     }

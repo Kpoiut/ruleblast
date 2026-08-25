@@ -441,7 +441,7 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.0.2 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.0\.2 — SHIPPED TO MAIN/u);
     expect(read("package.json")).toContain("blast radius of AGENTS.md and CLAUDE.md");
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.5\.9"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.5\.11"/u);
     expect(released).toContain("Latest independently verified public npm distribution at that tag is `2.0.2`");
   });
 
@@ -475,7 +475,7 @@ describe("public release maturity", () => {
     expect(released).not.toMatch(/Claude Desktop|Antigravity|Marketplace/iu);
     expect(read("CHANGELOG.md")).toContain("## 2.1.0 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.1\.0 — SHIPPED TO MAIN/u);
-    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.5\.9"/u);
+    expect(read(".github/actions/ruleblast/action.yml")).toMatch(/default: "2\.5\.11"/u);
     expect(released).toContain("Latest independently verified public npm distribution at that tag is `2.1.0`");
   });
 
@@ -782,7 +782,7 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.4.5 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.4\.5 — SHIPPED TO MAIN/u);
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
   });
 
@@ -819,7 +819,7 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.4.6 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.4\.6 — SHIPPED TO MAIN/u);
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
     expect(read("CHANGELOG.md")).toContain("ruleblast-companion-2.4.6.vsix");
   });
@@ -957,9 +957,9 @@ describe("public release maturity", () => {
     expect(read("CHANGELOG.md")).toContain("## 2.5.0 — RELEASED");
     expect(read("CHANGELOG.md")).not.toMatch(/## 2\.5\.0 — SHIPPED TO MAIN/u);
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
-    expect(read("README.md")).toContain("ruleblast-companion-2.5.9.vsix");
+    expect(read("README.md")).toContain("ruleblast-companion-2.5.11.vsix");
   });
 
   it("records v2.5.1 as Copilot interpreted from resolver.json", () => {
@@ -997,9 +997,9 @@ describe("public release maturity", () => {
     expect(read("package.json")).toContain('"version": "2.5.11"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.11"');
     expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.5.11`");
-    expect(read("README.md")).toContain("ruleblast-companion-2.5.9.vsix");
+    expect(read("README.md")).toContain("ruleblast-companion-2.5.11.vsix");
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
   });
 
@@ -1026,7 +1026,7 @@ describe("public release maturity", () => {
     expect(read("package.json")).toContain('"version": "2.5.11"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.11"');
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
   });
 
@@ -1053,7 +1053,7 @@ describe("public release maturity", () => {
     expect(read("package.json")).toContain('"version": "2.5.11"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.11"');
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
   });
 
@@ -1081,7 +1081,7 @@ describe("public release maturity", () => {
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.11"');
     expect(read(".github/workflows/verify.yml")).toContain("macos-latest");
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
   });
 
@@ -1109,7 +1109,7 @@ describe("public release maturity", () => {
     expect(read("package.json")).toContain('"version": "2.5.11"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.11"');
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
   });
 
@@ -1137,7 +1137,7 @@ describe("public release maturity", () => {
     expect(read("package.json")).toContain('"version": "2.5.11"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.11"');
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
   });
 
@@ -1182,7 +1182,7 @@ describe("public release maturity", () => {
     expect(read("package.json")).toContain('"version": "2.5.11"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.11"');
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
   });
 
@@ -1215,7 +1215,7 @@ describe("public release maturity", () => {
     expect(read("package.json")).toContain('"version": "2.5.11"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.11"');
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
   });
 
@@ -1260,7 +1260,7 @@ describe("public release maturity", () => {
     expect(read("package.json")).toContain('"version": "2.5.11"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.11"');
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
   });
 
@@ -1288,7 +1288,7 @@ describe("public release maturity", () => {
     expect(read("package.json")).toContain('"version": "2.5.11"');
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.11"');
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
   });
 
@@ -1316,7 +1316,7 @@ describe("public release maturity", () => {
     expect(read("hosts/vscode/package.json")).toContain('"version": "2.5.11"');
     expect(read("CONTRIBUTING.md")).toContain("This tree is RuleBlast `v2.5.11`");
     expect(read("src/package-identity.ts")).toContain(
-      'PUBLISHED_PACKAGE_VERSION = "2.5.9"',
+      'PUBLISHED_PACKAGE_VERSION = "2.5.11"',
     );
   });
 

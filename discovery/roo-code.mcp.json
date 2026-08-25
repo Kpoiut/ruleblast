@@ -2,7 +2,7 @@
   "mcpServers": {
     "ruleblast": {
       "command": "npx",
-      "args": ["--yes", "ruleblast@2.5.9", "--mcp"]
+      "args": ["--yes", "ruleblast@2.5.11", "--mcp"]
     }
   }
 }
